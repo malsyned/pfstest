@@ -16,6 +16,10 @@ static int passed;
 static int failed;
 static int ignored;
 
+list_t tests = LIST_EMPTY();
+list_t before = LIST_EMPTY();
+list_t after = LIST_EMPTY();
+
 void fail_with_printer(void (*printer)(const void *), const void *object)
 {
     printf("FAIL");
@@ -93,21 +97,15 @@ void run_test(pfstest_t *the_test)
     }
 }
 
-list_t tests = LIST_EMPTY();
-
 void register_test(pfstest_t *the_test)
 {
     list_append(&tests, (list_node_t *)the_test);
 }
 
-list_t before = LIST_EMPTY();
-
 void register_before(pfstest_hook_t *the_hook)
 {
     list_append(&before, (list_node_t *)the_hook);
 }
-
-list_t after = LIST_EMPTY();
 
 void register_after(pfstest_hook_t *the_hook)
 {
@@ -125,25 +123,15 @@ static void do_hook_list(list_t *list)
     }
 }
 
-static void do_before_list(void)
-{
-    do_hook_list(&before);
-}
-
-static void do_after_list(void)
-{
-    do_hook_list(&after);
-}
-
 static void do_tests_list(void)
 {
     list_node_t *test_node = list_head(&tests);
 
     while (test_node != NULL) {
         pfstest_t *test = (pfstest_t *)test_node;
-        do_before_list();
+        do_hook_list(&before);
         run_test(test);
-        do_after_list();
+        do_hook_list(&after);
         test_node = test_node->next;
     }
 }
