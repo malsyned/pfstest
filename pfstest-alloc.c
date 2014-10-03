@@ -25,7 +25,7 @@ struct alignment_struct
 
 #define ALIGNMENT offsetof(struct alignment_struct, alignment_union)
 #define ALIGN_MASK (~(ALIGNMENT - 1))
-#include <stdio.h>
+
 void *pfstest_alloc(size_t size)
 {
     size_t node_size = sizeof(pfstest_list_node_t);
