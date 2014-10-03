@@ -11,7 +11,6 @@ typedef struct
     pfstest_list_node_t list;
     const char *name;
     const char *file;
-    int line;
     unsigned int flags;
     void (*function)(void);
 } pfstest_t;
@@ -19,9 +18,9 @@ typedef struct
 #define _pfstest_function_name(name) __pfstest__ ## name
 #define _pfstest_decl(name) static void _pfstest_function_name(name)(void)
 
-#define _pfstest_object(name, flags)                \
-    pfstest_t name[1] =                             \
-    {{ {NULL}, # name, __FILE__, __LINE__, flags,   \
+#define _pfstest_object(name, flags)            \
+    pfstest_t name[1] =                         \
+    {{ {NULL}, # name, __FILE__, flags,         \
        _pfstest_function_name(name) }}
 
 #define _pfstest_init_define(name)              \
@@ -44,6 +43,8 @@ typedef struct
     _pfstest_protos(name, _PFSTEST_FLAG_IGNORED)
 
 void pfstest_fail(const char *message);
+void pfstest_fail_with_printer(void (*printer)(const void *),
+                               const void *object);
 void pfstest_register_test(pfstest_t *the_test);
 int pfstest_run_tests(void);
 

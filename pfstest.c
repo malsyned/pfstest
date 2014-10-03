@@ -56,7 +56,7 @@ static void ignore(void)
 
 static void run_test(pfstest_t *the_test)
 {
-    printf("%s:%d: %s() ", the_test->file, the_test->line, the_test->name);
+    printf("%s:%s ", the_test->file, the_test->name);
 
     fail_expected = (the_test->flags & _PFSTEST_FLAG_EXPECT_FAIL);
 

@@ -87,7 +87,7 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = pfstest-list.c pfstest.c sample-tests.c avr-main.c
+SRC = pfstest-list.c pfstest-value.c pfstest-matcher.c pfstest-assert.c pfstest.c sample-tests.c assert-that-tests.c avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
