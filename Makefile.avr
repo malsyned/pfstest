@@ -40,6 +40,8 @@
 #----------------------------------------------------------------------------
 
 
+include Makefile.src.in
+
 SIMULAVR=$$HOME/local/bin/simulavr
 
 .DEFAULT: all
@@ -87,9 +89,7 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = pfstest-list.c pfstest-value.c pfstest-matcher.c pfstest-assert.c \
-      pfstest-core.c \
-      sample-tests.c assert-that-tests.c avr-main.c
+SRC = $(COMMON_SRC) avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

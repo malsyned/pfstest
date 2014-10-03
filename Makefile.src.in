@@ -1,0 +1,8 @@
+# -*- Makefile -*-
+
+PFSTEST_SRC := pfstest-list.c pfstest-value.c pfstest-matcher.c \
+              pfstest-assert.c pfstest-core.c 
+
+TESTS_SRC := sample-tests.c assert-that-tests.c
+
+COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)

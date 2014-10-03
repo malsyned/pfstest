@@ -1,3 +1,5 @@
+include Makefile.src.in
+
 CFLAGS := -g -O0 -Wall -Werror -MD -MP
 
 .PHONY: all
@@ -7,9 +9,9 @@ all: sample-tests
 run: sample-tests
 	echo ; ./sample-tests
 
-sample-tests: pfstest-list.o pfstest-value.o pfstest-matcher.o \
-              pfstest-assert.o pfstest-core.o \
-              sample-tests.o assert-that-tests.o main.o
+SRC :=  $(COMMON_SRC) main.c
+
+sample-tests: $(SRC:%.c=%.o)
 
 .PHONY: clean
 clean:
