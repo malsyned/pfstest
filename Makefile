@@ -7,7 +7,7 @@ all: sample-tests
 run: sample-tests
 	echo ; ./sample-tests
 
-sample-tests: list.o pfstest.o sample-tests.o main.o
+sample-tests: pfstest-list.o pfstest.o sample-tests.o main.o
 
 .PHONY: clean
 clean:

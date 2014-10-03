@@ -1,8 +1,8 @@
-#include "list.h"
+#include "pfstest-list.h"
 
 #include <stdlib.h>
 
-void list_append(list_t *list, list_node_t *node)
+void pfstest_list_append(pfstest_list_t *list, pfstest_list_node_t *node)
 {
     if (list->head == NULL) {
         list->head = node;
@@ -13,7 +13,7 @@ void list_append(list_t *list, list_node_t *node)
     }
 }
 
-list_node_t *list_head(list_t *list)
+pfstest_list_node_t *pfstest_list_head(pfstest_list_t *list)
 {
     return list->head;
 }

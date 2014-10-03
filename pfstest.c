@@ -16,11 +16,12 @@ static int passed;
 static int failed;
 static int ignored;
 
-list_t tests = LIST_EMPTY();
-list_t before = LIST_EMPTY();
-list_t after = LIST_EMPTY();
+static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
+static pfstest_list_t before = PFSTEST_LIST_EMPTY();
+static pfstest_list_t after = PFSTEST_LIST_EMPTY();
 
-void fail_with_printer(void (*printer)(const void *), const void *object)
+void pfstest_fail_with_printer(void (*printer)(const void *),
+                               const void *object)
 {
     printf("FAIL");
     printf("\n");
@@ -29,15 +30,15 @@ void fail_with_printer(void (*printer)(const void *), const void *object)
     longjmp(test_jmp_buf, RESULT_FAIL);
 }
 
-void message_printer(const void *object)
+static void message_printer(const void *object)
 {
     const char *message = object;
     printf("    %s", message);
 }
 
-void fail(const char *message)
+void pfstest_fail(const char *message)
 {
-    fail_with_printer(message_printer, message);
+    pfstest_fail_with_printer(message_printer, message);
 }
 
 static void pass(void)
@@ -50,18 +51,18 @@ static void ignore(void)
     longjmp(test_jmp_buf, RESULT_IGNORE);
 }
 
-void run_test(pfstest_t *the_test)
+static void run_test(pfstest_t *the_test)
 {
     printf("%s:%d: %s() ", the_test->file, the_test->line, the_test->name);
 
-    if (the_test->flags & PFSTEST_FLAG_EXPECT_FAIL)
+    if (the_test->flags & _PFSTEST_FLAG_EXPECT_FAIL)
         fail_expected = true;
     else
         fail_expected = false;
 
     switch (setjmp(test_jmp_buf)) {
         case 0:
-            if (the_test->flags & PFSTEST_FLAG_IGNORED) {
+            if (the_test->flags & _PFSTEST_FLAG_IGNORED) {
                 ignore();
             }
             the_test->function();
@@ -97,24 +98,24 @@ void run_test(pfstest_t *the_test)
     }
 }
 
-void register_test(pfstest_t *the_test)
+void pfstest_register_test(pfstest_t *the_test)
 {
-    list_append(&tests, (list_node_t *)the_test);
+    pfstest_list_append(&tests, (pfstest_list_node_t *)the_test);
 }
 
-void register_before(pfstest_hook_t *the_hook)
+void pfstest_register_before(pfstest_hook_t *the_hook)
 {
-    list_append(&before, (list_node_t *)the_hook);
+    pfstest_list_append(&before, (pfstest_list_node_t *)the_hook);
 }
 
-void register_after(pfstest_hook_t *the_hook)
+void pfstest_register_after(pfstest_hook_t *the_hook)
 {
-    list_append(&after, (list_node_t *)the_hook);
+    pfstest_list_append(&after, (pfstest_list_node_t *)the_hook);
 }
 
-static void do_hook_list(list_t *list)
+static void do_hook_list(pfstest_list_t *list)
 {
-    list_node_t *hook_node = list_head(list);
+    pfstest_list_node_t *hook_node = pfstest_list_head(list);
 
     while (hook_node != NULL) {
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
@@ -125,7 +126,7 @@ static void do_hook_list(list_t *list)
 
 static void do_tests_list(void)
 {
-    list_node_t *test_node = list_head(&tests);
+    pfstest_list_node_t *test_node = pfstest_list_head(&tests);
 
     while (test_node != NULL) {
         pfstest_t *test = (pfstest_t *)test_node;
@@ -136,7 +137,7 @@ static void do_tests_list(void)
     }
 }
 
-int run_tests(void)
+int pfstest_run_tests(void)
 {
     printf("PFSTest 0.1\n");
     printf("===========\n");
