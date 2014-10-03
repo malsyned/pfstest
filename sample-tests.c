@@ -2,35 +2,35 @@
 
 #include "pfstest.h"
 
-test(passes)
+test(should_pass)
 {
 }
 
-test(fails)
+test(should_fail)
 {
     fail("failure message");
     printf("!!! BUG !!!\n");
 }
 
-ignore_test(ignored)
+ignore_test(should_be_ignored)
 {
     fail("!!! BUG !!!");
 }
 
-failing_test(expected_failure)
+failing_test(should_expect_failure)
 {
-    fail("!!! BUG !!!");
+    fail("no surprise");
 }
 
-failing_test(fails_to_fail)
+failing_test(should_fail_to_fail)
 {
 }
 
 void test_suite(void)
 {
-    run_test(passes);
-    run_test(fails);
-    run_test(ignored);
-    run_test(expected_failure);
-    run_test(fails_to_fail);
+    run_test(should_pass);
+    run_test(should_fail);
+    run_test(should_be_ignored);
+    run_test(should_expect_failure);
+    run_test(should_fail_to_fail);
 }
