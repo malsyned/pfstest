@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-void list_append(struct list *list, struct list_node *node)
+void list_append(list_t *list, list_node_t *node)
 {
     if (list->head == NULL) {
         list->head = node;
@@ -13,7 +13,7 @@ void list_append(struct list *list, struct list_node *node)
     }
 }
 
-struct list_node *list_head(struct list *list)
+list_node_t *list_head(list_t *list)
 {
     return list->head;
 }

@@ -1,20 +1,22 @@
 #ifndef LIST_H
 #define LIST_H
 
-struct list_node
+typedef struct _list_node list_node_t;
+
+struct _list_node
 {
-    struct list_node *next;
+    list_node_t *next;
 };
 
-struct list
+typedef struct
 {
-    struct list_node *head;
-    struct list_node *tail;
-};
+    list_node_t *head;
+    list_node_t *tail;
+} list_t;
 
 #define LIST_EMPTY() {NULL, NULL}
 
-void list_append(struct list *list, struct list_node *node);
-struct list_node *list_head(struct list *list);
+void list_append(list_t *list, list_node_t *node);
+list_node_t *list_head(list_t *list);
 
 #endif /* !LIST_H */

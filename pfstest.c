@@ -46,7 +46,7 @@ static void ignore(void)
     longjmp(test_jmp_buf, RESULT_IGNORE);
 }
 
-void run_test(struct pfstest *the_test)
+void run_test(pfstest_t *the_test)
 {
     printf("%s:%d: %s() ", the_test->file, the_test->line, the_test->name);
 
@@ -93,21 +93,21 @@ void run_test(struct pfstest *the_test)
     }
 }
 
-struct list tests = LIST_EMPTY();
+list_t tests = LIST_EMPTY();
 
-void register_test(struct pfstest *the_test)
+void register_test(pfstest_t *the_test)
 {
-    list_append(&tests, (struct list_node *)the_test);
+    list_append(&tests, (list_node_t *)the_test);
 }
 
 int run_tests(void)
 {
-    struct list_node *test_node = list_head(&tests);
+    list_node_t *test_node = list_head(&tests);
 
     printf("PFSTest 0.1\n");
     printf("===========\n");
     while (test_node != NULL) {
-        struct pfstest *test = (struct pfstest *)test_node;
+        pfstest_t *test = (pfstest_t *)test_node;
         run_test(test);
         test_node = test_node->next;
     }
