@@ -2,10 +2,6 @@
 
 #include "pfstest.h"
 
-int pass_count = 0;
-int fail_count = 0;
-int ignore_count = 0;
-
 test(passes)
 {
 }
