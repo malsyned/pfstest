@@ -23,7 +23,10 @@ static pfstest_list_t after = PFSTEST_LIST_EMPTY();
 void pfstest_fail_with_printer(void (*printer)(const void *),
                                const void *object)
 {
-    printf("FAIL");
+    if (fail_expected)
+        printf("FAIL (expected)");
+    else
+        printf("FAIL");
     printf("\n");
     printer(object);
     printf("\n");
@@ -55,10 +58,7 @@ static void run_test(pfstest_t *the_test)
 {
     printf("%s:%d: %s() ", the_test->file, the_test->line, the_test->name);
 
-    if (the_test->flags & _PFSTEST_FLAG_EXPECT_FAIL)
-        fail_expected = true;
-    else
-        fail_expected = false;
+    fail_expected = (the_test->flags & _PFSTEST_FLAG_EXPECT_FAIL);
 
     switch (setjmp(test_jmp_buf)) {
         case 0:
@@ -80,7 +80,7 @@ static void run_test(pfstest_t *the_test)
         case RESULT_FAIL:
             if (fail_expected) {
                 fail_expected = false;
-                printf("    (expected failure)\n    ");
+                printf("    ");
                 pass();
             }
     
