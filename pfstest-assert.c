@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-struct assert_that_data
+struct assert_that_args
 {
     const char *file;
     int line;
@@ -15,15 +15,15 @@ struct assert_that_data
 
 static void assert_that_printer(const void *data)
 {
-    const struct assert_that_data *this = data;
+    const struct assert_that_args *args = data;
 
     printf("    Failed assertion: %s (%s:%d)\n",
-           this->message, this->file, this->line);
+           args->message, args->file, args->line);
     printf("            Expected: ");
-    pfstest_matcher_print(this->matcher);
+    pfstest_matcher_print(args->matcher);
     printf("\n");
     printf("              Actual: ");
-    pfstest_value_print(this->actual);
+    pfstest_value_print(args->actual);
 }
 
 void _pfstest_assert_that(const char *file,
@@ -32,14 +32,14 @@ void _pfstest_assert_that(const char *file,
                           pfstest_value_t *actual,
                           pfstest_matcher_t *matcher)
 {
-    struct assert_that_data data;
-    data.message = message;
-    data.file = file;
-    data.line = line;
-    data.actual = actual;
-    data.matcher = matcher;
+    struct assert_that_args args;
+    args.message = message;
+    args.file = file;
+    args.line = line;
+    args.actual = actual;
+    args.matcher = matcher;
 
     if (!pfstest_matcher_matches(matcher, actual)) {
-        pfstest_fail_with_printer(assert_that_printer, &data);
+        pfstest_fail_with_printer(assert_that_printer, &args);
     }
 }
