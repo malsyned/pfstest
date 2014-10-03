@@ -1,0 +1,14 @@
+PFSTest 0.1
+===========
+sample-tests.c:5: should_pass() PASS
+sample-tests.c:9: should_fail() FAIL
+    failure message
+sample-tests.c:15: should_be_ignored() IGNORED
+sample-tests.c:20: should_expect_failure() FAIL
+    no surprise
+    (expected failure)
+    PASS
+sample-tests.c:25: should_fail_to_fail() FAIL
+    Test passed when failure expected
+
+Run complete. 2 passed, 2 failed, 1 ignored
