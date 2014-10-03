@@ -45,7 +45,7 @@ SIMULAVR=$$HOME/local/bin/simulavr
 .DEFAULT: all
 .PHONY: run
 run: all
-	$(SIMULAVR) --device $(MCU) -f $(TARGET).elf -W 0x20,- -T exit
+	$(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $(TARGET).elf -W 0x20,- -T exit
 
 # MCU name
 MCU = atmega128
