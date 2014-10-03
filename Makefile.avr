@@ -45,7 +45,7 @@ SIMULAVR=$$HOME/local/bin/simulavr
 .DEFAULT: all
 .PHONY: run
 run: all
-	$(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $(TARGET).elf -W 0x20,- -T exit
+	echo ; $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $(TARGET).elf -W 0x20,- -T exit
 
 # MCU name
 MCU = atmega128
@@ -87,7 +87,7 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = pfstest.c sample-tests.c avr-main.c
+SRC = list.c pfstest.c sample-tests.c avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

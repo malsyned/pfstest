@@ -36,12 +36,12 @@ void fail(const char *message)
     fail_with_printer(message_printer, message);
 }
 
-static void pass()
+static void pass(void)
 {
     longjmp(test_jmp_buf, RESULT_PASS);
 }
 
-static void ignore()
+static void ignore(void)
 {
     longjmp(test_jmp_buf, RESULT_IGNORE);
 }
@@ -93,11 +93,24 @@ void run_test(struct pfstest *the_test)
     }
 }
 
-int run_suite(void (*the_suite)(void))
+struct list tests = LIST_EMPTY();
+
+void register_test(struct pfstest *the_test)
 {
+    list_append(&tests, (struct list_node *)the_test);
+}
+
+int run_tests(void)
+{
+    struct list_node *test_node = list_head(&tests);
+
     printf("PFSTest 0.1\n");
     printf("===========\n");
-    the_suite();
+    while (test_node != NULL) {
+        struct pfstest *test = (struct pfstest *)test_node;
+        run_test(test);
+        test_node = test_node->next;
+    }
     printf("\nRun complete. %d passed, %d failed, %d ignored\n",
            passed, failed, ignored);
 

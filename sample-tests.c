@@ -25,12 +25,3 @@ failing_test(should_expect_failure)
 failing_test(should_fail_to_fail)
 {
 }
-
-void test_suite(void)
-{
-    run_test(should_pass);
-    run_test(should_fail);
-    run_test(should_be_ignored);
-    run_test(should_expect_failure);
-    run_test(should_fail_to_fail);
-}

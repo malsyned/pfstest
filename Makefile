@@ -5,9 +5,9 @@ all: sample-tests
 
 .PHONY: run
 run: sample-tests
-	./sample-tests
+	echo ; ./sample-tests
 
-sample-tests: pfstest.o sample-tests.o main.o
+sample-tests: list.o pfstest.o sample-tests.o main.o
 
 .PHONY: clean
 clean:

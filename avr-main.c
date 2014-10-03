@@ -15,10 +15,9 @@ static int dbg_putchar(char c, FILE *stream)
 
 static FILE mystdout = FDEV_SETUP_STREAM(dbg_putchar, NULL, _FDEV_SETUP_WRITE);
 
-void test_suite(void);
-
 int main(void)
 {
     stdout = &mystdout;
-    return run_suite(test_suite);
+
+    return run_tests();
 }
