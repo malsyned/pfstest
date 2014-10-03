@@ -1,6 +1,6 @@
 #include "pfstest-assert.h"
 
-#include "pfstest.h"            /* for fail_with_printer */
+#include "pfstest-core.h"
 
 #include <stdio.h>
 

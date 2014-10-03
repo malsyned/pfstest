@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include "pfstest.h"
-#include "pfstest-assert.h"
 
 static void some_value_printer(pfstest_value_t *value)
 {

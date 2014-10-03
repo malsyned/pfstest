@@ -1,4 +1,4 @@
-#include "pfstest.h"
+#include "pfstest-core.h"
 
 #include <setjmp.h>
 #include <stdlib.h>
