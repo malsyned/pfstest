@@ -14,20 +14,15 @@ struct pfstest
 };
 
 #define _test_function_name(name) __test__ ## name
-#define _test_struct_name(name) __test_struct__ ## name
 #define _test_decl(name) static void _test_function_name(name)(void)
 
 #define _test_struct(name, flags)                                       \
-    struct pfstest _test_struct_name(name) =                            \
-    { # name, __FILE__, __LINE__, flags, _test_function_name(name) }    \
-
-#define _test_struct_ptr(name)                          \
-    struct pfstest *name = &_test_struct_name(name)     \
+    struct pfstest name[1] =                                            \
+    {{ # name, __FILE__, __LINE__, flags, _test_function_name(name) }}
 
 #define _test_protos(name, flags)               \
     _test_decl(name);                           \
     _test_struct(name, flags);                  \
-    _test_struct_ptr(name);                     \
     _test_decl(name)
 
 #define test(name) _test_protos(name, 0)
