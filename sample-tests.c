@@ -34,8 +34,3 @@ void test_suite(void)
     run_test(expected_failure);
     run_test(fails_to_fail);
 }
-
-int main(void)
-{
-    return run_suite(test_suite);
-}

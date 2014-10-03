@@ -7,10 +7,10 @@ all: sample-tests
 run: sample-tests
 	./sample-tests
 
-sample-tests: pfstest.o sample-tests.o
+sample-tests: pfstest.o sample-tests.o main.o
 
 .PHONY: clean
 clean:
-	rm -f *.o *.d test mock_tests
+	rm -f *.o *.d sample-tests
 
 -include $(wildcard *.d)

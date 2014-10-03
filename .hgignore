@@ -1,3 +1,13 @@
 \.d$
 \.o$
+\.eep$
+\..fuse$
+\.elf$
+\.hex$
+\.lock$
+\.lss$
+\.lst$
+\.map$
+\.sym$
+\.orig$
 ^sample-tests$
