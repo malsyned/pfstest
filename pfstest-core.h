@@ -80,34 +80,34 @@ typedef struct
 void pfstest_register_before(pfstest_hook_t *the_hook);
 void pfstest_register_after(pfstest_hook_t *the_hook);
 
-#ifndef PFSTEST_NOALIAS_TEST
+#ifndef PFSTEST_NOALIAS_test
 # define test pfstest
 #endif
-#ifndef PFSTEST_NOALIAS_FAILING_TEST
+#ifndef PFSTEST_NOALIAS_failing_test
 # define failing_test pfstest_failing_test
 #endif
-#ifndef PFSTEST_NOALIAS_IGNORE_TEST
+#ifndef PFSTEST_NOALIAS_ignore_test
 # define ignore_test pfstest_ignore_test
 #endif
-#ifndef PFSTEST_NOALIAS_FAIL
+#ifndef PFSTEST_NOALIAS_fail
 # define fail pfstest_fail
 #endif
-#ifndef PFSTEST_NOALIAS_REGISTER_TEST
+#ifndef PFSTEST_NOALIAS_register_test
 # define register_test pfstest_register_test
 #endif
-#ifndef PFSTEST_NOALIAS_RUN_TESTS
+#ifndef PFSTEST_NOALIAS_run_tests
 # define run_tests pfstest_run_tests
 #endif
-#ifndef PFSTEST_NOALIAS_BEFORE_TESTS
+#ifndef PFSTEST_NOALIAS_before_tests
 # define before_tests pfstest_before_tests
 #endif
-#ifndef PFSTEST_NOALIAS_AFTER_TESTS
+#ifndef PFSTEST_NOALIAS_after_tests
 # define after_tests pfstest_after_tests
 #endif
-#ifndef PFSTEST_NOALIAS_REGISTER_BEFORE
+#ifndef PFSTEST_NOALIAS_register_before
 # define register_before pfstest_register_before
 #endif
-#ifndef PFSTEST_NOALIAS_REGISTER_AFTER
+#ifndef PFSTEST_NOALIAS_register_after
 # define register_after pfstest_register_after
 #endif
 

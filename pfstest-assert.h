@@ -12,7 +12,7 @@ void _pfstest_assert_that(const char *file,
 #define pfstest_assert_that(message, actual, matcher)                   \
     _pfstest_assert_that(__FILE__, __LINE__, message, actual, matcher)
 
-#ifndef PFSTEST_NOALIAS_ASSERT_THAT
+#ifndef PFSTEST_NOALIAS_assert_that
 # define assert_that pfstest_assert_that
 #endif
 
