@@ -54,9 +54,9 @@ test(should_call_befores_and_afters)
     if (before1_called == 0)
         fail("before1 not called");
     if (before1_called != 1)
-        fail("before1 not unwound");
+        fail("after1 not called");
     if (before2_called == 0)
         fail("before2 not called");
     if (before2_called != 1)
-        fail("before2 not unwound");
+        fail("after2 not called");
 }
