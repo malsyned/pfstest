@@ -17,3 +17,9 @@ pfstest_list_node_t *pfstest_list_head(pfstest_list_t *list)
 {
     return list->head;
 }
+
+void pfstest_list_reset(pfstest_list_t *list)
+{
+    list->head = NULL;
+    list->tail = NULL;
+}

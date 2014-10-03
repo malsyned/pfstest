@@ -1,6 +1,8 @@
 #ifndef PFSTEST_CORE_H
 #define PFSTEST_CORE_H
 
+#include <stdlib.h>
+
 #include "pfstest-list.h"
 
 #define _PFSTEST_FLAG_IGNORED 0x1

@@ -1,9 +1,10 @@
 #include "pfstest-core.h"
 
 #include <setjmp.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "pfstest-alloc.h"
 
 #define RESULT_PASS 1
 #define RESULT_FAIL 2
@@ -57,6 +58,7 @@ static void ignore(void)
 static void run_test(pfstest_t *the_test)
 {
     printf("%s:%s ", the_test->file, the_test->name);
+    fflush(stdout);
 
     fail_expected = (the_test->flags & _PFSTEST_FLAG_EXPECT_FAIL);
 
@@ -133,6 +135,7 @@ static void do_tests_list(void)
         do_hook_list(&before);
         run_test(test);
         do_hook_list(&after);
+        pfstest_free_all();
         test_node = test_node->next;
     }
 }

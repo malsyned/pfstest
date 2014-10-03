@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#define __ASSERT_USE_STDERR
+#include <assert.h>
+
 #include "pfstest.h"
 
 /*
@@ -15,9 +18,25 @@ static int dbg_putchar(char c, FILE *stream)
 
 static FILE mystdout = FDEV_SETUP_STREAM(dbg_putchar, NULL, _FDEV_SETUP_WRITE);
 
+extern char *__brkval;
+extern char *__malloc_heap_start;
+
+size_t malloc_used(void)
+{
+    if (__brkval == 0)          /* Uninitialized case */
+        return 0;
+    else
+        return (size_t)(__brkval - __malloc_heap_start);
+}
+
 int main(void)
 {
     stdout = &mystdout;
+    stderr = &mystdout;
 
-    return run_tests();
+    int r = run_tests();
+    
+    assert(malloc_used() == 0);
+
+    return r;
 }

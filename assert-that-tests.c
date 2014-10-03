@@ -51,3 +51,19 @@ failing_test(should_fail_assertion)
 {
     assert_that("always fails", some_value, matches_nothing);
 }
+
+failing_test(should_cope_with_null_string)
+{
+    /* This is a failing test so that the output can be visually inspected */
+    assert_that(NULL, some_value, matches_nothing);
+}
+
+failing_test(should_cope_with_null_value)
+{
+    assert_that("assert_that handles null value", NULL, matches_anything);
+}
+
+failing_test(should_cope_with_null_matcher)
+{
+    assert_that("assert_that handles null matcher", some_value, NULL);
+}
