@@ -44,7 +44,7 @@ include Makefile.src.in
 
 SIMULAVR=$$HOME/local/bin/simulavr
 
-.DEFAULT: all
+.DEFAULT_GOAL := all
 .PHONY: run
 run: all
 	echo ; $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $(TARGET).elf -W 0x20,- -T exit
