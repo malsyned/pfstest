@@ -25,3 +25,38 @@ failing_test(should_expect_failure)
 failing_test(should_fail_to_fail)
 {
 }
+
+int before1_called = 0;
+int before2_called = 0;
+
+before_tests(before1)
+{
+    before1_called++;
+}
+
+before_tests(before2)
+{
+    before2_called++;
+}
+
+after_tests(after1)
+{
+    before1_called--;
+}
+
+after_tests(after2)
+{
+    before2_called--;
+}
+
+test(should_call_befores_and_afters)
+{
+    if (before1_called == 0)
+        fail("before1 not called");
+    if (before1_called != 1)
+        fail("before1 not unwound");
+    if (before2_called == 0)
+        fail("before2 not called");
+    if (before2_called != 1)
+        fail("before2 not unwound");
+}

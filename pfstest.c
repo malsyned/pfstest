@@ -100,17 +100,59 @@ void register_test(pfstest_t *the_test)
     list_append(&tests, (list_node_t *)the_test);
 }
 
-int run_tests(void)
+list_t before = LIST_EMPTY();
+
+void register_before(pfstest_hook_t *the_hook)
+{
+    list_append(&before, (list_node_t *)the_hook);
+}
+
+list_t after = LIST_EMPTY();
+
+void register_after(pfstest_hook_t *the_hook)
+{
+    list_append(&after, (list_node_t *)the_hook);
+}
+
+static void do_hook_list(list_t *list)
+{
+    list_node_t *hook_node = list_head(list);
+
+    while (hook_node != NULL) {
+        pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
+        hook->function();
+        hook_node = hook_node->next;
+    }
+}
+
+static void do_before_list(void)
+{
+    do_hook_list(&before);
+}
+
+static void do_after_list(void)
+{
+    do_hook_list(&after);
+}
+
+static void do_tests_list(void)
 {
     list_node_t *test_node = list_head(&tests);
 
-    printf("PFSTest 0.1\n");
-    printf("===========\n");
     while (test_node != NULL) {
         pfstest_t *test = (pfstest_t *)test_node;
+        do_before_list();
         run_test(test);
+        do_after_list();
         test_node = test_node->next;
     }
+}
+
+int run_tests(void)
+{
+    printf("PFSTest 0.1\n");
+    printf("===========\n");
+    do_tests_list();
     printf("\nRun complete. %d passed, %d failed, %d ignored\n",
            passed, failed, ignored);
 
