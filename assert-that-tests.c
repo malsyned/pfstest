@@ -8,10 +8,10 @@ static void some_value_printer(pfstest_value_t *value)
     printf("some value");
 }
 
-static pfstest_value_t some_value = {
+static pfstest_value_t some_value[1] = {{
     .printer = some_value_printer,
     .data = NULL,
-};
+}};
 
 static bool always_return_true(pfstest_matcher_t *matcher,
                                pfstest_value_t *actual)
@@ -19,16 +19,11 @@ static bool always_return_true(pfstest_matcher_t *matcher,
     return true;
 }
 
-static pfstest_matcher_t anything = {
+static pfstest_matcher_t matches_anything[1] = {{
     .printer = NULL,
     .test = always_return_true,
     .data = NULL,
-};
-
-test(should_pass_assert_that)
-{
-    assert_that("always passes", &some_value, &anything);
-}
+}};
 
 static bool always_return_false(pfstest_matcher_t *matcher,
                                 pfstest_value_t *actual)
@@ -41,13 +36,18 @@ static void nothing_printer(pfstest_matcher_t *matcher)
     printf("nothing (guaranteed to fail)");
 }
 
-static pfstest_matcher_t nothing = {
+static pfstest_matcher_t matches_nothing[1] = {{
     .printer = nothing_printer,
     .test = always_return_false,
     .data = NULL,
-};
+}};
 
-failing_test(should_fail_assert_that)
+test(should_pass_assertion)
 {
-    assert_that("always fails", &some_value, &nothing);
+    assert_that("always passes", some_value, matches_anything);
+}
+
+failing_test(should_fail_assertion)
+{
+    assert_that("always fails", some_value, matches_nothing);
 }
