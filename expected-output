@@ -10,5 +10,6 @@ sample-tests.c:20: should_expect_failure() FAIL
     PASS
 sample-tests.c:25: should_fail_to_fail() FAIL
     Test passed when failure expected
+sample-tests.c:52: should_call_befores_and_afters() PASS
 
-Run complete. 2 passed, 2 failed, 1 ignored
+Run complete. 3 passed, 2 failed, 1 ignored
