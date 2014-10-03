@@ -8,7 +8,7 @@
 
 typedef struct
 {
-    pfstest_list_t list;
+    pfstest_list_node_t list;
     const char *name;
     const char *file;
     int line;
@@ -49,7 +49,7 @@ int pfstest_run_tests(void);
 
 typedef struct 
 {
-    pfstest_list_t list;
+    pfstest_list_node_t list;
     void (*function)(void);
 } pfstest_hook_t;
 
