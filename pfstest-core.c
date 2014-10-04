@@ -92,7 +92,7 @@ static void run_test(void)
         case RESULT_PASS:
             if (fail_expected) {
                 fail_expected = false;
-                fail("Test passed when failure expected");
+                pfstest_fail("Test passed when failure expected");
             }
 
             passed++;
