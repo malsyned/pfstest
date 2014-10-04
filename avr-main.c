@@ -31,10 +31,7 @@ size_t malloc_used(void)
 
 int main(void)
 {
-    char *argv[] = {"avr-main", "-v", NULL};
-
     stdout = &mystdout;
-    stderr = &mystdout;
 
     int r = run_all_tests_verbose();
     
