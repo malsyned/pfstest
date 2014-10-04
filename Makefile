@@ -3,18 +3,28 @@ include Makefile.src.in
 CFLAGS := -g -O0 -Wall -Werror -MD -MP
 
 .PHONY: all
-all: sample-tests
+all: core-tests tests
 
-.PHONY: run
-run: sample-tests
-	echo ; ./sample-tests
+.PHONY: test-core
+test-core: core-tests
+	./core-tests | diff -u expected-output -
 
-SRC :=  $(COMMON_SRC) main.c
+.PHONY: test
+test: tests
+	echo ; ./tests
 
-sample-tests: $(SRC:%.c=%.o)
+SRC := $(COMMON_SRC) main.c
+
+CORE_SRC := $(CORE_COMMON_SRC) main.c
+
+core-tests: $(CORE_SRC:%.c=%.o)
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+tests: $(SRC:%.c=%.o)
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 .PHONY: clean
 clean:
-	rm -f *.o *.d sample-tests
+	rm -f *.o *.d tests core-tests
 
 -include $(wildcard *.d)

@@ -10,4 +10,5 @@
 \.map$
 \.sym$
 \.orig$
-^sample-tests$
+^core-tests$
+^tests$
