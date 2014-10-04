@@ -3,9 +3,9 @@
 
 #include "pfstest.h"
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    int r = run_tests();
+    int r = run_tests(argc, argv);
 
     struct mallinfo mi = mallinfo();
 

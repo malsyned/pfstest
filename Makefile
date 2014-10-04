@@ -7,11 +7,11 @@ all: core-tests tests
 
 .PHONY: test-core
 test-core: core-tests
-	./core-tests | diff -u expected-output -
+	./core-tests -v | diff -u expected-output -
 
 .PHONY: test
 test: tests
-	echo ; ./tests
+	echo ; ./tests $(ARGS)
 
 SRC := $(COMMON_SRC) main.c
 

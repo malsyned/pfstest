@@ -48,7 +48,9 @@ void pfstest_fail(const char *message);
 void pfstest_fail_with_printer(void (*printer)(const void *),
                                const void *object);
 void pfstest_register_test(pfstest_t *the_test);
-int pfstest_run_tests(void);
+int pfstest_run_tests(int argc, char *argv[]);
+int pfstest_run_all_tests(void);
+int pfstest_run_all_tests_verbose(void);
 
 typedef struct 
 {
@@ -99,6 +101,12 @@ void pfstest_register_after(pfstest_hook_t *the_hook);
 #endif
 #ifndef PFSTEST_NOALIAS_run_tests
 # define run_tests pfstest_run_tests
+#endif
+#ifndef PFSTEST_NOALIAS_run_all_tests
+# define run_all_tests pfstest_run_all_tests
+#endif
+#ifndef PFSTEST_NOALIAS_run_all_tests_verbose
+# define run_all_tests_verbose pfstest_run_all_tests_verbose
 #endif
 #ifndef PFSTEST_NOALIAS_before_tests
 # define before_tests pfstest_before_tests
