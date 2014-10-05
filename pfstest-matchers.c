@@ -94,3 +94,32 @@ pfstest_matcher_t *is_the_pointer(void *p)
                                is_the_pointer_test,
                                the_pointer(p));
 }
+
+/* is_the_memory */
+
+static bool is_the_memory_test(pfstest_matcher_t *matcher,
+                               pfstest_value_t *actual)
+{
+    pfstest_value_t *expected =
+        (pfstest_value_t *)pfstest_matcher_data(matcher);
+
+    void *expected_memory = pfstest_value_data(expected);
+    size_t expected_memory_size = pfstest_value_size(expected);
+
+    void *actual_memory = pfstest_value_data(actual);
+    size_t actual_memory_size = pfstest_value_size(actual);
+
+    if (expected_memory_size != actual_memory_size)
+        return false;
+
+    return (0 == memcmp(expected_memory,
+                        actual_memory,
+                        expected_memory_size));
+}
+
+pfstest_matcher_t *is_the_memory(void *m, size_t size)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_memory_test,
+                               the_memory(m, size));
+}

@@ -48,3 +48,43 @@ failing_test(should_fail_on_different_pointers)
     assert_that("different pointers fail",
                 the_pointer(p1), is_the_pointer(p2));
 }
+
+test(should_match_memory)
+{
+    char actual[] = {1, 2, 3, 4, 5};
+    char expected[] = {1, 2, 3, 4, 5};
+
+    assert_that("same memory passes",
+                the_memory(actual, sizeof(actual)),
+                is_the_memory(expected, sizeof(expected)));
+}
+
+failing_test(should_fail_on_different_memory)
+{
+    char actual[] = {1, 2, 3, 4, 5};
+    char expected[] = {1, 2, 4, 4, 5};
+
+    assert_that("different memory fails",
+                the_memory(actual, sizeof(actual)),
+                is_the_memory(expected, sizeof(expected)));
+}
+
+failing_test(should_fail_expecting_shorter_memory)
+{
+    char actual[] = {1, 2, 3, 4, 5};
+    char expected[] = {1, 2, 3, 4, 5};
+
+    assert_that("longer memory fails",
+                the_memory(actual, sizeof(actual)),
+                is_the_memory(expected, sizeof(expected) - 1));
+}
+
+failing_test(should_fail_expecting_longer_memory)
+{
+    char actual[] = {1, 2, 3, 4, 5};
+    char expected[] = {1, 2, 3, 4, 5};
+
+    assert_that("shorter memory fails",
+                the_memory(actual, sizeof(actual) - 1),
+                is_the_memory(expected, sizeof(expected)));
+}
