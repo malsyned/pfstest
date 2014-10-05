@@ -74,3 +74,23 @@ pfstest_matcher_t *is_the_string(char *s)
                                is_the_string_test,
                                the_string(s));
 }
+
+/* is_the_pointer */
+
+static bool is_the_pointer_test(pfstest_matcher_t *matcher,
+                                pfstest_value_t *actual)
+{
+    pfstest_value_t *expected =
+        (pfstest_value_t *)pfstest_matcher_data(matcher);
+    void *expected_pointer = pfstest_value_data(expected);
+    void *actual_pointer = pfstest_value_data(actual);
+
+    return (expected_pointer == actual_pointer);
+}
+
+pfstest_matcher_t *is_the_pointer(void *p)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_pointer_test,
+                               the_pointer(p));
+}

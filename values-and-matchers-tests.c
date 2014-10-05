@@ -30,3 +30,21 @@ failing_test(should_fail_on_different_strings)
     assert_that("different strings fail",
                 the_string("foo"), is_the_string("bar"));
 }
+
+test(should_match_pointers)
+{
+    char *p1 = "foo";
+    char *p2 = p1;
+
+    assert_that("same pointers pass",
+                the_pointer(p1), is_the_pointer(p2));
+}
+
+failing_test(should_fail_on_different_pointers)
+{
+    char *p1 = "foo";
+    char *p2 = "bar";
+
+    assert_that("different pointers fail",
+                the_pointer(p1), is_the_pointer(p2));
+}

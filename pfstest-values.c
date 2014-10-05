@@ -64,3 +64,17 @@ pfstest_value_t *the_string(char *s)
 
     return pfstest_value_new(the_string_printer, data);
 }
+
+/* the_pointer */
+
+static void the_pointer_printer(pfstest_value_t *value)
+{
+    void *data = pfstest_value_data(value);
+
+    printf("the pointer %p", data);
+}
+
+pfstest_value_t *the_pointer(void *p)
+{
+    return pfstest_value_new(the_pointer_printer, p);
+}
