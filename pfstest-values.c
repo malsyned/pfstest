@@ -14,6 +14,13 @@
 #define INTMAX_CAST intmax_t
 #endif
 
+#ifndef PRIuMAX
+# define PRIuMAX "lu"
+# define UINTMAX_CAST unsigned long int
+#else
+#define UINTMAX_CAST uintmax_t
+#endif
+
 /* the_int */
 
 static void the_int_printer(pfstest_value_t *value)
@@ -29,6 +36,23 @@ pfstest_value_t *the_int(intmax_t i)
     *data = i;
     
     return pfstest_value_new(the_int_printer, data, sizeof(i));
+}
+
+/* the_uint */
+
+static void the_uint_printer(pfstest_value_t *value)
+{
+    uintmax_t u = *(uintmax_t *)pfstest_value_data(value);
+
+    printf("the uint %" PRIuMAX, (UINTMAX_CAST)u);
+}
+
+pfstest_value_t *the_uint(uintmax_t u)
+{
+    uintmax_t *data = pfstest_alloc(sizeof(u));
+    *data = u;
+
+    return pfstest_value_new(the_uint_printer, data, sizeof(u));
 }
 
 /* the_char */

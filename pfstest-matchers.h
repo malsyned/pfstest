@@ -7,6 +7,7 @@
 #include "pfstest-matcher.h"
 
 pfstest_matcher_t *is_the_int(intmax_t i);
+pfstest_matcher_t *is_the_uint(uintmax_t u);
 pfstest_matcher_t *is_the_char(char c);
 pfstest_matcher_t *is_the_string(char *s);
 pfstest_matcher_t *is_the_pointer(void *p);

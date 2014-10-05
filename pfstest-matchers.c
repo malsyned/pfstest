@@ -35,6 +35,26 @@ pfstest_matcher_t *is_the_int(intmax_t i)
                                the_int(i));
 }
 
+/* is_the_uint */
+
+static bool is_the_uint_test(pfstest_matcher_t *matcher,
+                             pfstest_value_t *actual)
+{
+    pfstest_value_t *expected =
+        (pfstest_value_t *)pfstest_matcher_data(matcher);
+    uintmax_t expected_uint = *(uintmax_t *)pfstest_value_data(expected);
+    uintmax_t actual_uint = *(uintmax_t *)pfstest_value_data(actual);
+
+    return (expected_uint == actual_uint);
+}
+
+pfstest_matcher_t *is_the_uint(uintmax_t u)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_uint_test,
+                               the_uint(u));
+}
+
 /* is_the_char */
 
 static bool is_the_char_test(pfstest_matcher_t *matcher,

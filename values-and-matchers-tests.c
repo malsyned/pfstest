@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "pfstest.h"
 
 test(should_match_ints)
@@ -7,7 +9,19 @@ test(should_match_ints)
 
 failing_test(should_fail_on_different_ints)
 {
-    assert_that("different ints fail", the_int(5), is_the_int(6));
+    assert_that("different ints fail", the_int(-6), is_the_int(6));
+}
+
+test(should_match_uints)
+{
+    assert_that("same uints pass",
+                the_uint(UINTMAX_MAX), is_the_uint(UINTMAX_MAX));
+}
+
+failing_test(should_fail_on_different_uints)
+{
+    assert_that("different uints fail",
+                the_uint(5), is_the_uint(UINTMAX_MAX));
 }
 
 test(should_match_chars)
