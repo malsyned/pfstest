@@ -71,7 +71,7 @@ static void the_pointer_printer(pfstest_value_t *value)
 {
     void *data = pfstest_value_data(value);
 
-    printf("the pointer %p", data);
+    printf("the pointer <%p>", data);
 }
 
 pfstest_value_t *the_pointer(void *p)
@@ -87,7 +87,7 @@ static void the_memory_printer(pfstest_value_t *value)
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    printf("{");
+    printf("the memory {");
     for (i = 0; i < size; i++) {
         printf("0x%02x", data[i]);
         if (i < size - 1)
