@@ -5,7 +5,7 @@
 
 #include "pfstest-values.h"
 
-static void is_the_int_printer(pfstest_matcher_t *matcher)
+static void is_the_whatever_printer(pfstest_matcher_t *matcher)
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
@@ -13,6 +13,8 @@ static void is_the_int_printer(pfstest_matcher_t *matcher)
     printf("= ");
     pfstest_value_print(expected);
 }
+
+/* is_the_int */
 
 static bool is_the_int_test(pfstest_matcher_t *matcher,
                             pfstest_value_t *actual)
@@ -27,7 +29,27 @@ static bool is_the_int_test(pfstest_matcher_t *matcher,
 
 pfstest_matcher_t *is_the_int(intmax_t i)
 {
-    return pfstest_matcher_new(is_the_int_printer,
+    return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_int_test,
                                the_int(i));
+}
+
+/* is_the_char */
+
+static bool is_the_char_test(pfstest_matcher_t *matcher,
+                             pfstest_value_t *actual)
+{
+    pfstest_value_t *expected =
+        (pfstest_value_t *)pfstest_matcher_data(matcher);
+    char expected_char = *(char *)pfstest_value_data(expected);
+    char actual_char = *(char *)pfstest_value_data(actual);
+
+    return (expected_char == actual_char);
+}
+
+pfstest_matcher_t *is_the_char(char c)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_char_test,
+                               the_char(c));
 }

@@ -13,6 +13,8 @@
 #define INTMAX_CAST intmax_t
 #endif
 
+/* the_int */
+
 static void the_int_printer(pfstest_value_t *value)
 {
     intmax_t i = *(intmax_t *)pfstest_value_data(value);
@@ -26,4 +28,21 @@ pfstest_value_t *the_int(intmax_t i)
     *data = i;
     
     return pfstest_value_new(the_int_printer, data);
+}
+
+/* the_char */
+
+static void the_char_printer(pfstest_value_t *value)
+{
+    char c = *(char *)pfstest_value_data(value);
+
+    printf("the char '%c'", c);
+}
+
+pfstest_value_t *the_char(char c)
+{
+    char *data = pfstest_alloc(sizeof(c));
+    *data = c;
+
+    return pfstest_value_new(the_char_printer, data);
 }
