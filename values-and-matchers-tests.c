@@ -19,3 +19,14 @@ failing_test(should_fail_on_different_chars)
 {
     assert_that("different chars fail", the_char('c'), is_the_char('d'));
 }
+
+test(should_match_strings)
+{
+    assert_that("same strings pass", the_string("foo"), is_the_string("foo"));
+}
+
+failing_test(should_fail_on_different_strings)
+{
+    assert_that("different strings fail",
+                the_string("foo"), is_the_string("bar"));
+}

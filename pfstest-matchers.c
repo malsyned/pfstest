@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "pfstest-values.h"
 
@@ -52,4 +53,24 @@ pfstest_matcher_t *is_the_char(char c)
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_char_test,
                                the_char(c));
+}
+
+/* is_the_string */
+
+static bool is_the_string_test(pfstest_matcher_t *matcher,
+                               pfstest_value_t *actual)
+{
+    pfstest_value_t *expected =
+        (pfstest_value_t *)pfstest_matcher_data(matcher);
+    char *expected_string = pfstest_value_data(expected);
+    char *actual_string = pfstest_value_data(actual);
+
+    return (0 == strcmp(expected_string, actual_string));
+}
+
+pfstest_matcher_t *is_the_string(char *s)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_string_test,
+                               the_string(s));
 }

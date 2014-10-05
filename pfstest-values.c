@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <string.h>
 
 #include "pfstest-alloc.h"
 
@@ -45,4 +46,21 @@ pfstest_value_t *the_char(char c)
     *data = c;
 
     return pfstest_value_new(the_char_printer, data);
+}
+
+/* the_string */
+
+static void the_string_printer(pfstest_value_t *value)
+{
+    char *data = pfstest_value_data(value);
+
+    printf("the string \"%s\"", data);
+}
+
+pfstest_value_t *the_string(char *s)
+{
+    char *data = pfstest_alloc(strlen(s) + 1);
+    strcpy(data, s);
+
+    return pfstest_value_new(the_string_printer, data);
 }
