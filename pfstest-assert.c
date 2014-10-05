@@ -17,32 +17,16 @@ static void assert_that_printer(const void *data)
 {
     const struct assert_that_args *args = data;
 
-    printf("    Failed assertion: ");
+    printf("    Failed assertion");
     if (args->message != NULL) {
-        printf("%s ", args->message);
+        printf(": %s ", args->message);
     }
-    printf("(%s:%d)\n", args->file, args->line);
-    printf("            Expected: ");
+    printf("\n");
+    printf("    Expected: ");
     pfstest_matcher_print(args->matcher);
     printf("\n");
-    printf("              Actual: ");
+    printf("    Actual: ");
     pfstest_value_print(args->actual);
-}
-
-static void null_value_failure_printer(const void *data)
-{
-    const struct assert_that_args *args = data;
-
-    printf("    assert_that called with NULL value (%s:%d)",
-           args->file, args->line);
-}
-
-static void null_matcher_failure_printer(const void *data)
-{
-    const struct assert_that_args *args = data;
-
-    printf("    assert_that called with NULL matcher (%s:%d)",
-           args->file, args->line);
 }
 
 void _pfstest_assert_that(const char *file,
@@ -59,13 +43,15 @@ void _pfstest_assert_that(const char *file,
     args.matcher = matcher;
 
     if (actual == NULL) {
-        pfstest_fail_with_printer(null_value_failure_printer, &args);
+        pfstest_fail_at_location(file, line,
+                                 "assert_that called with NULL value");
     }
     if (matcher == NULL) {
-        pfstest_fail_with_printer(null_matcher_failure_printer, &args);
+        pfstest_fail_at_location(file, line,
+                                 "assert_that called with NULL matcher");
     }
 
     if (!pfstest_matcher_matches(matcher, actual)) {
-        pfstest_fail_with_printer(assert_that_printer, &args);
+        pfstest_fail_with_printer(file, line, assert_that_printer, &args);
     }
 }

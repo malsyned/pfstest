@@ -31,7 +31,8 @@ static void print_context(pfstest_t *the_test)
     printf("%s:%s ", the_test->file, the_test->name);
 }
 
-void pfstest_fail_with_printer(void (*printer)(const void *),
+void pfstest_fail_with_printer(const char *file, int line,
+                               void (*printer)(const void *),
                                const void *object)
 {
     if (fail_expected && !verbose)
@@ -42,11 +43,11 @@ void pfstest_fail_with_printer(void (*printer)(const void *),
         print_context(current_test);
     }
 
+    printf("FAIL");
     if (fail_expected)
-        printf("FAIL (expected)");
-    else
-        printf("FAIL");
+        printf(" (expected)");
     printf("\n");
+    printf("    Location: %s:%d\n", file, line);
     printer(object);
     printf("\n");
     longjmp(test_jmp_buf, RESULT_FAIL);
@@ -58,9 +59,10 @@ static void message_printer(const void *object)
     printf("    %s", message);
 }
 
-void pfstest_fail(const char *message)
+void pfstest_fail_at_location(const char *file, int line,
+                              const char *message)
 {
-    pfstest_fail_with_printer(message_printer, message);
+    pfstest_fail_with_printer(file, line, message_printer, message);
 }
 
 static void pass(void)

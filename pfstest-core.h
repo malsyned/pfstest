@@ -44,13 +44,17 @@ typedef struct
 #define pfstest_ignore_test(name)                   \
     _pfstest_protos(name, _PFSTEST_FLAG_IGNORED)
 
-void pfstest_fail(const char *message);
-void pfstest_fail_with_printer(void (*printer)(const void *),
+void pfstest_fail_at_location(const char *file, int line,
+                              const char *message);
+void pfstest_fail_with_printer(const char *file, int line,
+                               void (*printer)(const void *),
                                const void *object);
 void pfstest_register_test(pfstest_t *the_test);
 int pfstest_run_tests(int argc, char *argv[]);
 int pfstest_run_all_tests(void);
 int pfstest_run_all_tests_verbose(void);
+#define pfstest_fail(message)                               \
+    pfstest_fail_at_location(__FILE__, __LINE__, message)
 
 typedef struct 
 {
