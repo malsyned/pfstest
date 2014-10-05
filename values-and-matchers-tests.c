@@ -102,3 +102,13 @@ failing_test(should_fail_expecting_longer_memory)
                 the_memory(actual, sizeof(actual) - 1),
                 is_the_memory(expected, sizeof(expected)));
 }
+
+test(should_match_memory_with_pointer)
+{
+    char actual[] = {1, 2, 3, 4, 5};
+    char expected[] = {1, 2, 3, 4, 5};
+
+    assert_that("is_the_memory matches against the_pointer values",
+                the_pointer(actual),
+                is_the_memory(expected, sizeof(expected)));
+}

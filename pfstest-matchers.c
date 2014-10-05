@@ -129,8 +129,25 @@ static bool is_the_memory_test(pfstest_matcher_t *matcher,
     void *actual_memory = pfstest_value_data(actual);
     size_t actual_memory_size = pfstest_value_size(actual);
 
+    /* If someone is comparing two different-sized blocks of memory in
+     * an assertion, that's almost certainly a bug in the tests, not
+     * in the production code. Since we're carrying around the size
+     * for printing purposes anyway, we might as well check for and
+     * catch this mistake. */
     if (expected_memory_size != actual_memory_size)
-        return false;
+    {
+        /* However, if actual_memory_size is 0, someone is comparing a
+         * memory block with a value created with something like
+         * the_pointer(). We allow this, especially because auto-mocks
+         * are dumb and use the_pointer for everything. The trade-off
+         * for this is that the_pointer_printer will print only the
+         * address of the actual value. mock verifiers should never
+         * print argument values for anything anyway, because the data
+         * they'd be printing might be stack data that's gone out of
+         * scope by the time the verifier is run. */
+        if (actual_memory_size != 0)
+            return false;
+    }
 
     return (0 == memcmp(expected_memory,
                         actual_memory,
