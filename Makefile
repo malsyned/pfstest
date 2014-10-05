@@ -7,7 +7,8 @@ all: core-tests tests
 
 .PHONY: test-core
 test-core: core-tests
-	./core-tests -v | diff -u expected-output -
+	@./core-tests -v | diff -u expected-output -
+	@echo PASS
 
 .PHONY: test
 test: tests
