@@ -143,13 +143,14 @@ void pfstest_register_after(pfstest_hook_t *the_hook)
     pfstest_list_append(&after, (pfstest_list_node_t *)the_hook);
 }
 
-static void do_hook_list(pfstest_list_t *list)
+static void do_hook_list(pfstest_list_t *list, const char *file)
 {
     pfstest_list_node_t *hook_node = pfstest_list_head(list);
 
     while (hook_node != NULL) {
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
-        hook->function();
+        if (file == NULL || 0 == strcmp(hook->file, file))
+            hook->function();
         hook_node = hook_node->next;
     }
 }
@@ -165,9 +166,9 @@ static void do_tests_list(const char *test_file,
             && (test_name == NULL || 0 == strcmp(test_name, test->name)))
         {
             current_test = test;
-            do_hook_list(&before);
+            do_hook_list(&before, test->file);
             run_test();
-            do_hook_list(&after);
+            do_hook_list(&after, test->file);
             pfstest_free_all();
         }
         test_node = test_node->next;

@@ -13,5 +13,7 @@ core-tests.c:should_fail_to_fail FAIL
     Location: pfstest-core.c:97
     Test passed when failure expected
 core-tests.c:should_call_befores_and_afters PASS
+core-tests-2.c:should_only_call_before_tests_hooks_in_same_file PASS
+core-tests-2.c:should_only_call_after_tests_hooks_in_same_file PASS
 
-Run complete. 3 passed, 2 failed, 1 ignored
+Run complete. 5 passed, 2 failed, 1 ignored

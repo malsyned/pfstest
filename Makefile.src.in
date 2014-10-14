@@ -6,7 +6,7 @@ PFSTEST_SRC := pfstest-list.c pfstest-alloc.c pfstest-value.c \
 
 TESTS_SRC := assert-that-tests.c values-and-matchers-tests.c
 
-CORE_TESTS_SRC := core-tests.c
+CORE_TESTS_SRC := core-tests.c core-tests-2.c
 
 COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)
 
