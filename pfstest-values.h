@@ -2,12 +2,13 @@
 #define PFSTEST_VALUES_H
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include "pfstest-value.h"
 
-pfstest_value_t *the_int(intmax_t i);
-pfstest_value_t *the_uint(uintmax_t u);
+pfstest_value_t *the_short(short s);
+pfstest_value_t *the_ushort(unsigned short u);
+pfstest_value_t *the_int(int i);
+pfstest_value_t *the_uint(unsigned int u);
 pfstest_value_t *the_char(char c);
 pfstest_value_t *the_string(char *s);
 pfstest_value_t *the_pointer(void *p);

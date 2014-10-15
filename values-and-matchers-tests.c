@@ -1,6 +1,26 @@
-#include <stdint.h>
+#include <limits.h>
 
 #include "pfstest.h"
+
+test(should_match_shorts)
+{
+    assert_that("same shorts pass", the_short(5), is_the_short(5));
+}
+
+failing_test(should_fail_on_different_shorts)
+{
+    assert_that("different shorts fail", the_short(5), is_the_short(6));
+}
+
+test(should_match_ushorts)
+{
+    assert_that("same ushorts pass", the_ushort(5), is_the_ushort(5));
+}
+
+failing_test(should_fail_on_different_ushorts)
+{
+    assert_that("different ushorts fail", the_ushort(5), is_the_ushort(6));
+}
 
 test(should_match_ints)
 {
@@ -15,13 +35,26 @@ failing_test(should_fail_on_different_ints)
 test(should_match_uints)
 {
     assert_that("same uints pass",
-                the_uint(UINTMAX_MAX), is_the_uint(UINTMAX_MAX));
+                the_uint(5), is_the_uint(5));
 }
 
 failing_test(should_fail_on_different_uints)
 {
     assert_that("different uints fail",
-                the_uint(5), is_the_uint(UINTMAX_MAX));
+                the_uint(5), is_the_uint(6));
+}
+
+failing_test(should_detect_data_type_mismatches)
+{
+    char buf[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    
+    /* This test should be valid regardless of endianness, since all
+     * slices of buf should look like USHRT_MAX, so the actual
+     * contents of the data buffer should always match, requiring a
+     * check of the sizes. This test may fail on a platform where
+     * shorts are 64-bit, but I'm not aware of any such platform. */
+    assert_that("different data types fail",
+                the_memory(buf, sizeof(buf)), is_the_ushort(USHRT_MAX));
 }
 
 test(should_match_chars)
@@ -43,6 +76,18 @@ failing_test(should_fail_on_different_strings)
 {
     assert_that("different strings fail",
                 the_string("foo"), is_the_string("bar"));
+}
+
+failing_test(should_fail_on_shorter_actual_string)
+{
+    assert_that("shorter actual string fails",
+                the_string("foo"), is_the_string("foobar"));
+}
+
+failing_test(should_fail_on_shorter_expected_string)
+{
+    assert_that("shorter expected string fails",
+                the_string("foobar"), is_the_string("foo"));
 }
 
 test(should_match_pointers)
@@ -111,4 +156,13 @@ test(should_match_memory_with_pointer)
     assert_that("is_the_memory matches against the_pointer values",
                 the_pointer(actual),
                 is_the_memory(expected, sizeof(expected)));
+}
+
+test(should_match_primitive_with_pointer)
+{
+    int actual = 5;
+    int expected = 5;
+
+    assert_that("is_the_int matches against the_pointer values",
+                the_pointer(&actual), is_the_int(expected));
 }

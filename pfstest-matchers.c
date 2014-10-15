@@ -15,83 +15,92 @@ static void is_the_whatever_printer(pfstest_matcher_t *matcher)
     pfstest_value_print(expected);
 }
 
-/* is_the_int */
-
-static bool is_the_int_test(pfstest_matcher_t *matcher,
-                            pfstest_value_t *actual)
+static bool is_the_whatever_test(pfstest_matcher_t *matcher,
+                                 pfstest_value_t *actual_value)
 {
-    pfstest_value_t *expected =
+    pfstest_value_t *expected_value =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
-    intmax_t expected_int = *(intmax_t *)pfstest_value_data(expected);
-    intmax_t actual_int = *(intmax_t *)pfstest_value_data(actual);
 
-    return (expected_int == actual_int);
+    void *expected = pfstest_value_data(expected_value);
+    size_t expected_size = pfstest_value_size(expected_value);
+
+    void *actual = pfstest_value_data(actual_value);
+    size_t actual_size = pfstest_value_size(actual_value);
+
+    /* If someone is comparing two different-sized blocks of memory in
+     * an assertion, that's almost certainly a bug in the tests, not
+     * in the production code. Since we're carrying around the size
+     * for printing purposes anyway, we might as well check for and
+     * catch this mistake. */
+    if (expected_size != actual_size)
+    {
+        /* However, if actual_size is 0, someone is comparing a memory
+         * block with a value created with something like
+         * the_pointer(). We allow this, especially because auto-mocks
+         * are dumb and use the_pointer for everything. The trade-off
+         * for this is that the_pointer_printer will print only the
+         * address of the actual value. mock verifiers should never
+         * print argument values for anything anyway, because the data
+         * they'd be printing might be stack data that's gone out of
+         * scope by the time the verifier is run. */
+        if (actual_size != 0)
+            return false;
+    }
+
+    return (0 == memcmp(expected, actual, expected_size));
 }
 
-pfstest_matcher_t *is_the_int(intmax_t i)
+/* is_the_short */
+
+pfstest_matcher_t *is_the_short(short s)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_int_test,
+                               is_the_whatever_test,
+                               the_short(s));
+}
+
+/* is_the_ushort */
+
+pfstest_matcher_t *is_the_ushort(unsigned short s)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_whatever_test,
+                               the_ushort(s));
+}
+
+/* is_the_int */
+
+pfstest_matcher_t *is_the_int(int i)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_whatever_test,
                                the_int(i));
 }
 
 /* is_the_uint */
 
-static bool is_the_uint_test(pfstest_matcher_t *matcher,
-                             pfstest_value_t *actual)
-{
-    pfstest_value_t *expected =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
-    uintmax_t expected_uint = *(uintmax_t *)pfstest_value_data(expected);
-    uintmax_t actual_uint = *(uintmax_t *)pfstest_value_data(actual);
-
-    return (expected_uint == actual_uint);
-}
-
-pfstest_matcher_t *is_the_uint(uintmax_t u)
+pfstest_matcher_t *is_the_uint(unsigned int u)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_uint_test,
+                               is_the_whatever_test,
                                the_uint(u));
 }
 
 /* is_the_char */
 
-static bool is_the_char_test(pfstest_matcher_t *matcher,
-                             pfstest_value_t *actual)
-{
-    pfstest_value_t *expected =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
-    char expected_char = *(char *)pfstest_value_data(expected);
-    char actual_char = *(char *)pfstest_value_data(actual);
-
-    return (expected_char == actual_char);
-}
-
 pfstest_matcher_t *is_the_char(char c)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_char_test,
+                               is_the_whatever_test,
                                the_char(c));
 }
 
 /* is_the_string */
 
-static bool is_the_string_test(pfstest_matcher_t *matcher,
-                               pfstest_value_t *actual)
-{
-    pfstest_value_t *expected =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
-    char *expected_string = pfstest_value_data(expected);
-    char *actual_string = pfstest_value_data(actual);
-
-    return (0 == strcmp(expected_string, actual_string));
-}
-
 pfstest_matcher_t *is_the_string(char *s)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_string_test,
+                               is_the_whatever_test,
                                the_string(s));
 }
 
@@ -117,46 +126,9 @@ pfstest_matcher_t *is_the_pointer(void *p)
 
 /* is_the_memory */
 
-static bool is_the_memory_test(pfstest_matcher_t *matcher,
-                               pfstest_value_t *actual)
-{
-    pfstest_value_t *expected =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
-
-    void *expected_memory = pfstest_value_data(expected);
-    size_t expected_memory_size = pfstest_value_size(expected);
-
-    void *actual_memory = pfstest_value_data(actual);
-    size_t actual_memory_size = pfstest_value_size(actual);
-
-    /* If someone is comparing two different-sized blocks of memory in
-     * an assertion, that's almost certainly a bug in the tests, not
-     * in the production code. Since we're carrying around the size
-     * for printing purposes anyway, we might as well check for and
-     * catch this mistake. */
-    if (expected_memory_size != actual_memory_size)
-    {
-        /* However, if actual_memory_size is 0, someone is comparing a
-         * memory block with a value created with something like
-         * the_pointer(). We allow this, especially because auto-mocks
-         * are dumb and use the_pointer for everything. The trade-off
-         * for this is that the_pointer_printer will print only the
-         * address of the actual value. mock verifiers should never
-         * print argument values for anything anyway, because the data
-         * they'd be printing might be stack data that's gone out of
-         * scope by the time the verifier is run. */
-        if (actual_memory_size != 0)
-            return false;
-    }
-
-    return (0 == memcmp(expected_memory,
-                        actual_memory,
-                        expected_memory_size));
-}
-
 pfstest_matcher_t *is_the_memory(void *m, size_t size)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_memory_test,
+                               is_the_whatever_test,
                                the_memory(m, size));
 }
