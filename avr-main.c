@@ -32,6 +32,7 @@ size_t malloc_used(void)
 int main(void)
 {
     stdout = &mystdout;
+    stderr = stdout;
 
     int r = run_all_tests_verbose();
     
