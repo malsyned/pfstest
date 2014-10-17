@@ -10,9 +10,10 @@
 
 typedef struct
 {
-    pfstest_list_node_t list;
+    pfstest_list_node_t list_node;
     const char *name;
     const char *file;
+    int line;
     unsigned int flags;
     void (*function)(void);
 } pfstest_t;
@@ -20,9 +21,9 @@ typedef struct
 #define _pfstest_function_name(name) __pfstest__ ## name
 #define _pfstest_decl(name) static void _pfstest_function_name(name)(void)
 
-#define _pfstest_object(name, flags)            \
-    pfstest_t name[1] =                         \
-    {{ {NULL}, # name, __FILE__, flags,         \
+#define _pfstest_object(name, flags)                \
+    pfstest_t name[1] =                             \
+    {{ {NULL}, # name, __FILE__, __LINE__,flags,    \
        _pfstest_function_name(name) }}
 
 #define _pfstest_init_define(name)              \
@@ -43,12 +44,15 @@ typedef struct
     _pfstest_protos(name, _PFSTEST_FLAG_EXPECT_FAIL)
 #define pfstest_ignore_test(name)                   \
     _pfstest_protos(name, _PFSTEST_FLAG_IGNORED)
+#define pfstest_ignore_failing_test pfstest_ignore_test
 
 void pfstest_fail_at_location(const char *file, int line,
-                              const char *message);
+                              const char *message)
+    __attribute__((__noreturn__));
 void pfstest_fail_with_printer(const char *file, int line,
                                void (*printer)(const void *),
-                               const void *object);
+                               const void *object)
+    __attribute__((__noreturn__));
 void pfstest_register_test(pfstest_t *the_test);
 int pfstest_run_tests(int argc, char *argv[]);
 int pfstest_run_all_tests(void);
@@ -58,7 +62,7 @@ int pfstest_run_all_tests_verbose(void);
 
 typedef struct 
 {
-    pfstest_list_node_t list;
+    pfstest_list_node_t list_node;
     const char *file;
     void (*function)(void);
 } pfstest_hook_t;
@@ -97,6 +101,9 @@ void pfstest_register_after(pfstest_hook_t *the_hook);
 #endif
 #ifndef PFSTEST_NOALIAS_ignore_test
 # define ignore_test pfstest_ignore_test
+#endif
+#ifndef PFSTEST_NOALIAS_ignore_failing_test
+# define ignore_failing_test pfstest_ignore_failing_test
 #endif
 #ifndef PFSTEST_NOALIAS_fail
 # define fail pfstest_fail

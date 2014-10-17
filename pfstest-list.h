@@ -19,5 +19,6 @@ typedef struct
 void pfstest_list_append(pfstest_list_t *list, pfstest_list_node_t *node);
 pfstest_list_node_t *pfstest_list_head(pfstest_list_t *list);
 void pfstest_list_reset(pfstest_list_t *list);
+void pfstest_list_node_init(pfstest_list_node_t *node);
 
 #endif /* !PFSTEST_LIST_H */

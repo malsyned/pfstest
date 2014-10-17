@@ -2,9 +2,11 @@
 
 PFSTEST_SRC := pfstest-list.c pfstest-alloc.c pfstest-value.c \
                pfstest-matcher.c pfstest-values.c pfstest-matchers.c \
-               pfstest-assert.c pfstest-core.c 
+               pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
+               pfstest-arg-handlers.c pfstest-mock.c
 
-TESTS_SRC := assert-that-tests.c values-and-matchers-tests.c
+TESTS_SRC := assert-that-tests.c values-and-matchers-tests.c \
+             mock-dep.c mock-tests.c
 
 CORE_TESTS_SRC := core-tests.c core-tests-2.c
 

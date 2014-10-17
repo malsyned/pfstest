@@ -5,7 +5,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+/* TODO: plugin-ize */
 #include "pfstest-alloc.h"
+#include "pfstest-mock.h"
 
 #define RESULT_PASS 1
 #define RESULT_FAIL 2
@@ -89,12 +91,15 @@ static void run_test(void)
                 ignore();
             }
             current_test->function();
+            pfstest_run_verifiers();
             pass();
             break;
         case RESULT_PASS:
             if (fail_expected) {
                 fail_expected = false;
-                pfstest_fail("Test passed when failure expected");
+                pfstest_fail_at_location(
+                    current_test->file, current_test->line,
+                    "Test passed when failure expected");
             }
 
             passed++;
@@ -166,10 +171,11 @@ static void do_tests_list(const char *test_file,
             && (test_name == NULL || 0 == strcmp(test_name, test->name)))
         {
             current_test = test;
+            pfstest_mock_init(); /* TODO: plugin-ize */
             do_hook_list(&before, test->file);
             run_test();
             do_hook_list(&after, test->file);
-            pfstest_free_all();
+            pfstest_free_all(); /* TODO: plugin-ize */
         }
         test_node = test_node->next;
     }

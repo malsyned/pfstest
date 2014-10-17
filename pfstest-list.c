@@ -23,3 +23,8 @@ void pfstest_list_reset(pfstest_list_t *list)
     list->head = NULL;
     list->tail = NULL;
 }
+
+void pfstest_list_node_init(pfstest_list_node_t *node)
+{
+    node->next = NULL;
+}

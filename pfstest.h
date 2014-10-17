@@ -7,5 +7,8 @@
 
 #include "pfstest-values.h"
 #include "pfstest-matchers.h"
+#include "pfstest-arg-handlers.h"
+
+#include "pfstest-mock.h"
 
 #endif /* !PFSTEST_H */

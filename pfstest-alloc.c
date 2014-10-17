@@ -37,7 +37,7 @@ void *pfstest_alloc(size_t size)
 
     pfstest_list_node_t *node = malloc(node_size + size);
     assert(node != NULL);
-    node->next = NULL;
+    pfstest_list_node_init(node);
 
     pfstest_list_append(&mem, node);
     intptr_t p = (intptr_t)node + node_size;
