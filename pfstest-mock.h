@@ -28,8 +28,16 @@ typedef struct
     pfstest_expectation_t *expectation;
 } pfstest_invocation_t;
 
-typedef struct _pfstest_verifier_t pfstest_verifier_t;
+typedef struct _pfstest_verify_mode_t pfstest_verify_mode_t;
+struct _pfstest_verify_mode_t
+{
+    void (*function)(const char *file, int line,
+                     pfstest_verify_mode_t *mode,
+                     pfstest_expectation_t *expectation);
+    void *data;
+};
 
+typedef struct _pfstest_verifier_t pfstest_verifier_t;
 struct _pfstest_verifier_t
 {
     pfstest_list_node_t node;
@@ -57,6 +65,12 @@ pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);
 void pfstest_verify_at_location(const char *file, int line,
                                 pfstest_expectation_t *e);
 #define pfstest_verify(e) pfstest_verify_at_location(__FILE__, __LINE__, e)
+void pfstest_verify_times_at_location(const char *file, int line,
+                                      pfstest_verify_mode_t *mode,
+                                      pfstest_expectation_t *e);
+#define pfstest_verify_times(m, e)                              \
+    pfstest_verify_times_at_location(__FILE__, __LINE__, m, e)
+pfstest_verify_mode_t *pfstest_exactly(int times);
 
 pfstest_in_order_t *pfstest_in_order_new(void);
 void pfstest_in_order_verify_at_location(const char *file, int line,
@@ -82,6 +96,12 @@ void pfstest_run_verifiers(void);
 #endif
 #ifndef PFSTEST_NOALIAS_verify
 # define verify pfstest_verify
+#endif
+#ifndef PFSTEST_NOALIAS_verify_times
+# define verify_times pfstest_verify_times
+#endif
+#ifndef PFSTEST_NOALIAS_exactly
+# define exactly pfstest_exactly
 #endif
 #ifndef PFSTEST_NOALIAS_in_order_t
 # define in_order_t pfstest_in_order_t

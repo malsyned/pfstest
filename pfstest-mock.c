@@ -229,6 +229,7 @@ struct do_verification_printer_args
 {
     pfstest_expectation_t *expectation;
     int invocation_count;
+    int wanted_count;
 };
 
 static void wrong_call_count_printer(const void *data)
@@ -241,55 +242,88 @@ static void wrong_call_count_printer(const void *data)
     } else if (args->invocation_count != 1) {
         printf("    Wanted ");
         pfstest_expectation_print(args->expectation);
-        printf(" %d time\n", 1);
+        printf(" %d time%s\n",
+               args->wanted_count,
+               args->wanted_count == 1 ? "" : "s");
         printf("    Was called %d time%s",
                args->invocation_count,
                args->invocation_count == 1 ? "" : "s");
     }
 }
 
-struct verify_args
+void pfstest_verify_at_location(const char *file, int line,
+                                pfstest_expectation_t *e)
+{
+    pfstest_verify_times_at_location(file, line, exactly(1), e);
+}
+
+struct verify_with_mode_args
 {
     const char *file;
     int line;
+    pfstest_verify_mode_t *mode;
     pfstest_expectation_t *expectation;
 };
 
-static void do_verification(pfstest_verifier_t *v)
+static void do_verification_with_mode(pfstest_verifier_t *v)
 {
-    struct verify_args *args = v->data;
+    struct verify_with_mode_args *args = v->data;
+
+    args->mode->function(args->file, args->line,
+                         args->mode, args->expectation);
+}
+
+void pfstest_verify_times_at_location(const char *file, int line,
+                                      pfstest_verify_mode_t *mode,
+                                      pfstest_expectation_t *e)
+{
+    struct verify_with_mode_args *args = pfstest_alloc(sizeof(*args));
+    args->file = file;
+    args->line = line;
+    args->mode = mode;
+    args->expectation = e;
+    
+    verifier_add(verifier_new(do_verification_with_mode, args));
+}
+
+static void do_exactly(const char *file, int line,
+                       pfstest_verify_mode_t *mode,
+                       pfstest_expectation_t *expectation)
+{
+    int wanted_count = *(int *)mode->data;
     int invocation_count = 0;
 
     pfstest_list_node_t *invocation_node = pfstest_list_head(&invocations);
     while (invocation_node != NULL) {
         pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
 
-        if (args->expectation == i->expectation) {
+        if (expectation == i->expectation) {
             invocation_count++;
         }
 
         invocation_node = invocation_node->next;
     }
 
-    if (invocation_count != 1) {
+    if (invocation_count != wanted_count) {
         struct do_verification_printer_args printer_args = {
-            args->expectation, invocation_count,
+            expectation, invocation_count, wanted_count,
         };
         
-        pfstest_fail_with_printer(args->file, args->line,
+        pfstest_fail_with_printer(file, line,
                                   wrong_call_count_printer, &printer_args);
     }
 }
 
-void pfstest_verify_at_location(const char *file, int line,
-                                pfstest_expectation_t *e)
+pfstest_verify_mode_t *pfstest_exactly(int times)
 {
-    struct verify_args *args = pfstest_alloc(sizeof(*args));
-    args->expectation = e;
-    args->file = file;
-    args->line = line;
-    
-    verifier_add(verifier_new(do_verification, args));
+    pfstest_verify_mode_t *mode = pfstest_alloc(sizeof(*mode));
+    int *data = pfstest_alloc(sizeof(*data));
+    *data = times;
+
+    mode->function = do_exactly;
+    mode->data = data;
+
+    return mode;
 }
 
 /* in_order verifier */

@@ -215,16 +215,35 @@ test(should_verify_multiple_in_orders)
     dep_func2(2, "foo");
 }
 
-ignore_test(should_verify_exact_invocation_count)
+test(should_verify_exact_invocation_count)
 {
+    verify_times(exactly(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(2);
+    dep_func1(1);
+    dep_func1(1);
 }
 
-ignore_failing_test(should_reject_too_many_invocations)
+failing_test(should_reject_too_many_invocations)
 {
+    verify_times(exactly(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(1);
+    dep_func1(1);
+    dep_func1(1);
 }
 
-ignore_failing_test(should_reject_too_few_invocations)
+failing_test(should_reject_too_few_invocations)
 {
+    verify_times(exactly(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(1);
 }
 
 ignore_test(should_verify_at_most_invocation_count)
