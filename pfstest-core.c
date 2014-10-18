@@ -150,22 +150,27 @@ void pfstest_register_after(pfstest_hook_t *the_hook)
 
 static void do_hook_list(pfstest_list_t *list, const char *file)
 {
-    pfstest_list_node_t *hook_node = pfstest_list_head(list);
+    pfstest_list_node_t *hook_node;
 
-    while (hook_node != NULL) {
+    for (pfstest_list_head(list);
+         hook_node != NULL;
+         hook_node = hook_node->next)
+    {
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
         if (file == NULL || 0 == strcmp(hook->file, file))
             hook->function();
-        hook_node = hook_node->next;
     }
 }
 
 static void do_tests_list(const char *test_file,
                           const char *test_name)
 {
-    pfstest_list_node_t *test_node = pfstest_list_head(&tests);
+    pfstest_list_node_t *test_node;
 
-    while (test_node != NULL) {
+    for (test_node = pfstest_list_head(&tests);
+         test_node != NULL;
+         test_node = test_node->next)
+    {
         pfstest_t *test = (pfstest_t *)test_node;
         if ((test_file == NULL || 0 == strcmp(test_file, test->file))
             && (test_name == NULL || 0 == strcmp(test_name, test->name)))
@@ -177,7 +182,6 @@ static void do_tests_list(const char *test_file,
             do_hook_list(&after, test->file);
             pfstest_free_all(); /* TODO: plugin-ize */
         }
-        test_node = test_node->next;
     }
 }
 

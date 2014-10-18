@@ -158,7 +158,7 @@ pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
                                      pfstest_value_t *default_return_value,
                                      ...)
 {
-    pfstest_list_node_t *expectation_node = pfstest_list_head(&expectations);
+    pfstest_list_node_t *expectation_node;
     int arg_count = pfstest_mock_arg_count(mock);
     pfstest_value_t **args = pfstest_alloc(sizeof(*args) * arg_count);
     pfstest_value_t *return_value = default_return_value;
@@ -171,7 +171,10 @@ pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
     }
     va_end(ap);
 
-    while (expectation_node != NULL) {
+    for (expectation_node = pfstest_list_head(&expectations);
+         expectation_node != NULL;
+         expectation_node = expectation_node->next)
+    {
         pfstest_expectation_t *e = (pfstest_expectation_t *)expectation_node;
 
         if (e->mock == mock
@@ -190,7 +193,6 @@ pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
 
             break;
         }
-        expectation_node = expectation_node->next;
     }
     
     return return_value;
@@ -212,14 +214,15 @@ static pfstest_verifier_t *verifier_new(
 
 void pfstest_run_verifiers(void)
 {
-    pfstest_list_node_t *verifier_node = pfstest_list_head(&verifiers);
+    pfstest_list_node_t *verifier_node;
 
-    while (verifier_node != NULL) {
+    for (verifier_node = pfstest_list_head(&verifiers);
+         verifier_node != NULL;
+         verifier_node = verifier_node->next)
+    {
         pfstest_verifier_t *v = (pfstest_verifier_t *)verifier_node;
 
         v->function(v);
-
-        verifier_node = verifier_node->next;
     }
 }
 
@@ -292,16 +295,17 @@ static void do_exactly(const char *file, int line,
 {
     int wanted_count = *(int *)mode->data;
     int invocation_count = 0;
+    pfstest_list_node_t *invocation_node;
 
-    pfstest_list_node_t *invocation_node = pfstest_list_head(&invocations);
-    while (invocation_node != NULL) {
+    for (invocation_node = pfstest_list_head(&invocations);
+         invocation_node != NULL;
+         invocation_node = invocation_node->next)
+    {
         pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
 
         if (expectation == i->expectation) {
             invocation_count++;
         }
-
-        invocation_node = invocation_node->next;
     }
 
     if (invocation_count != wanted_count) {
@@ -358,13 +362,19 @@ struct in_order_expectation
 static void do_in_order_verification(pfstest_verifier_t *v)
 {
     in_order_t *order = v->data;
-    pfstest_list_node_t *invocation_node = pfstest_list_head(&invocations);
+    pfstest_list_node_t *invocation_node;
     pfstest_list_node_t *in_order_expectation_node =
         pfstest_list_head(&order->expectations);
     pfstest_expectation_t *prev_expectation = NULL;
     struct in_order_expectation *in_order_expectation;
 
-    while (invocation_node != NULL && in_order_expectation_node != NULL) {
+    for (invocation_node = pfstest_list_head(&invocations);
+         invocation_node != NULL;
+         invocation_node = invocation_node->next)
+    {
+        if (in_order_expectation_node == NULL)
+            break;
+
         in_order_expectation =
             (struct in_order_expectation *)in_order_expectation_node;
         pfstest_invocation_t *invocation =
@@ -374,7 +384,6 @@ static void do_in_order_verification(pfstest_verifier_t *v)
             prev_expectation = in_order_expectation->expectation;
             in_order_expectation_node = in_order_expectation_node->next;
         }
-        invocation_node = invocation_node->next;
     }
 
     if (in_order_expectation_node != NULL) {
