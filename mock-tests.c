@@ -246,20 +246,66 @@ failing_test(should_reject_too_few_invocations)
     dep_func1(1);
 }
 
-ignore_test(should_verify_at_most_invocation_count)
+test(should_verify_at_most_invocation_count)
 {
+    verify_times(at_most(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(2);
+    dep_func1(1);
+    dep_func1(1);
 }
 
-ignore_failing_test(at_most_should_reject_too_many_invocations)
+failing_test(at_most_should_reject_too_many_invocations)
 {
+    verify_times(at_most(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(1);
+    dep_func1(1);
+    dep_func1(1);
 }
 
-ignore_test(should_verify_at_least_invocation_count)
+test(at_most_should_allow_fewer_invocations)
 {
+    verify_times(at_most(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(1);
 }
 
-ignore_failing_test(at_least_should_reject_insufficient_invocations)
+test(should_verify_at_least_invocation_count)
 {
+    verify_times(at_least(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(2);
+    dep_func1(1);
+    dep_func1(1);
+}
+
+failing_test(at_least_should_reject_insufficient_invocations)
+{
+    verify_times(at_least(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(1);
+}
+
+test(at_least_should_allow_more_invocations)
+{
+    verify_times(at_least(3),
+                 when(mock_dep_func1, arg_that(is_the_int(1))));
+
+    dep_func1(1);
+    dep_func1(1);
+    dep_func1(1);
+    dep_func1(1);
 }
 
 ignore_test(should_verify_no_more_interactions)

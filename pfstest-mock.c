@@ -232,6 +232,7 @@ struct do_verification_printer_args
 {
     pfstest_expectation_t *expectation;
     int invocation_count;
+    const char *wanted_desc_prefix;
     int wanted_count;
 };
 
@@ -245,7 +246,8 @@ static void wrong_call_count_printer(const void *data)
     } else if (args->invocation_count != 1) {
         printf("    Wanted ");
         pfstest_expectation_print(args->expectation);
-        printf(" %d time%s\n",
+        printf(" %s %d time%s\n",
+               args->wanted_desc_prefix,
                args->wanted_count,
                args->wanted_count == 1 ? "" : "s");
         printf("    Was called %d time%s",
@@ -289,11 +291,8 @@ void pfstest_verify_times_at_location(const char *file, int line,
     verifier_add(verifier_new(do_verification_with_mode, args));
 }
 
-static void do_exactly(const char *file, int line,
-                       pfstest_verify_mode_t *mode,
-                       pfstest_expectation_t *expectation)
+static int count_invocations(pfstest_expectation_t *expectation)
 {
-    int wanted_count = *(int *)mode->data;
     int invocation_count = 0;
     pfstest_list_node_t *invocation_node;
 
@@ -308,26 +307,91 @@ static void do_exactly(const char *file, int line,
         }
     }
 
-    if (invocation_count != wanted_count) {
-        struct do_verification_printer_args printer_args = {
-            expectation, invocation_count, wanted_count,
-        };
+    return invocation_count;
+}
+
+static void fail_wrong_call_count(const char *file, int line,
+                                  pfstest_expectation_t *expectation,
+                                  int invocation_count,
+                                  const char *wanted_desc_prefix,
+                                  int wanted_count)
+{
+    struct do_verification_printer_args printer_args = {
+        expectation, invocation_count, wanted_desc_prefix, wanted_count,
+    };
         
-        pfstest_fail_with_printer(file, line,
-                                  wrong_call_count_printer, &printer_args);
+    pfstest_fail_with_printer(file, line,
+                              wrong_call_count_printer, &printer_args);
+}
+
+static void do_exactly(const char *file, int line,
+                       pfstest_verify_mode_t *mode,
+                       pfstest_expectation_t *expectation)
+{
+    int wanted_count = *(int *)mode->data;
+    int invocation_count = count_invocations(expectation);
+
+    if (invocation_count != wanted_count) {
+        fail_wrong_call_count(file, line, expectation,
+                              invocation_count, "exactly", wanted_count);
     }
 }
 
-pfstest_verify_mode_t *pfstest_exactly(int times)
+static pfstest_verify_mode_t *counting_mode_new(
+    int times,
+    void function(const char *file, int line,
+                  pfstest_verify_mode_t *mode,
+                  pfstest_expectation_t *expectation))
 {
     pfstest_verify_mode_t *mode = pfstest_alloc(sizeof(*mode));
     int *data = pfstest_alloc(sizeof(*data));
     *data = times;
 
-    mode->function = do_exactly;
+    mode->function = function;
     mode->data = data;
 
     return mode;
+}
+
+pfstest_verify_mode_t *pfstest_exactly(int times)
+{
+    return counting_mode_new(times, do_exactly);
+}
+
+static void do_at_most(const char *file, int line,
+                       pfstest_verify_mode_t *mode,
+                       pfstest_expectation_t *expectation)
+{
+    int wanted_count = *(int *)mode->data;
+    int invocation_count = count_invocations(expectation);
+
+    if (invocation_count > wanted_count) {
+        fail_wrong_call_count(file, line, expectation,
+                              invocation_count, "at most", wanted_count);
+    }
+}
+
+pfstest_verify_mode_t *pfstest_at_most(int times)
+{
+    return counting_mode_new(times, do_at_most);
+}
+
+static void do_at_least(const char *file, int line,
+                        pfstest_verify_mode_t *mode,
+                        pfstest_expectation_t *expectation)
+{
+    int wanted_count = *(int *)mode->data;
+    int invocation_count = count_invocations(expectation);
+
+    if (invocation_count < wanted_count) {
+        fail_wrong_call_count(file, line, expectation,
+                              invocation_count, "at least", wanted_count);
+    }
+}
+
+pfstest_verify_mode_t *pfstest_at_least(int times)
+{
+    return counting_mode_new(times, do_at_least);
 }
 
 /* in_order verifier */

@@ -71,6 +71,8 @@ void pfstest_verify_times_at_location(const char *file, int line,
 #define pfstest_verify_times(m, e)                              \
     pfstest_verify_times_at_location(__FILE__, __LINE__, m, e)
 pfstest_verify_mode_t *pfstest_exactly(int times);
+pfstest_verify_mode_t *pfstest_at_most(int times);
+pfstest_verify_mode_t *pfstest_at_least(int times);
 
 pfstest_in_order_t *pfstest_in_order_new(void);
 void pfstest_in_order_verify_at_location(const char *file, int line,
@@ -102,6 +104,12 @@ void pfstest_run_verifiers(void);
 #endif
 #ifndef PFSTEST_NOALIAS_exactly
 # define exactly pfstest_exactly
+#endif
+#ifndef PFSTEST_NOALIAS_at_most
+# define at_most pfstest_at_most
+#endif
+#ifndef PFSTEST_NOALIAS_at_least
+# define at_least pfstest_at_least
 #endif
 #ifndef PFSTEST_NOALIAS_in_order_t
 # define in_order_t pfstest_in_order_t
