@@ -152,7 +152,7 @@ static void do_hook_list(pfstest_list_t *list, const char *file)
 {
     pfstest_list_node_t *hook_node;
 
-    for (pfstest_list_head(list);
+    for (hook_node = pfstest_list_head(list);
          hook_node != NULL;
          hook_node = hook_node->next)
     {
