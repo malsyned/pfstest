@@ -128,7 +128,7 @@ pfstest_value_t *the_pointer(void *p)
 
 static void the_memory_printer(pfstest_value_t *value)
 {
-    char *data = pfstest_value_data(value);
+    unsigned char *data = pfstest_value_data(value);
     size_t size = pfstest_value_size(value);
     size_t i;
 
