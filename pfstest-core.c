@@ -91,7 +91,7 @@ static void run_test(void)
                 ignore();
             }
             current_test->function();
-            pfstest_run_verifiers();
+            pfstest_run_verifiers(); /* TODO: plugin-ize */
             pass();
             break;
         case RESULT_PASS:
