@@ -6,8 +6,7 @@
 
 static const char *const mock_dep_func1_arg_names[] = {"i"};
 
-const pfstest_mock_t mock_dep_func1[1] = {
-    {"dep_func1", mock_dep_func1_arg_names, 1}};
+pfstest_mock_define(mock_dep_func1, "dep_func1", mock_dep_func1_arg_names, 1);
 
 int dep_func1(int i)
 {
@@ -19,8 +18,7 @@ int dep_func1(int i)
 
 static const char *const mock_dep_func2_arg_names[] = {"i", "s"};
 
-const pfstest_mock_t mock_dep_func2[1] = {
-    {"dep_func2", mock_dep_func2_arg_names, 2}};
+pfstest_mock_define(mock_dep_func2, "dep_func2", mock_dep_func2_arg_names, 2);
 
 void dep_func2(int i, char *s)
 {

@@ -22,6 +22,11 @@ typedef struct
     int times;
 } pfstest_expectation_t;
 
+#define pfstest_mock_define(mock_name, func_name, arg_names, arg_count) \
+    const pfstest_mock_t mock_name[1] = {{func_name, arg_names, arg_count}}
+#define pfstest_mock_declare(mock_name)         \
+    extern const pfstest_mock_t mock_name[]
+
 typedef struct
 {
     pfstest_list_node_t node;
