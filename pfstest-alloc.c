@@ -16,7 +16,9 @@ struct alignment_struct
         char c;
         short s;
         long l;
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
         long long ll;
+#endif
         float f;
         double d;
         long double ld;
@@ -29,14 +31,17 @@ struct alignment_struct
 void *pfstest_alloc(size_t size)
 {
     void *mem;
-    size_t header_size = sizeof(pfstest_list_node_t);
+    pfstest_list_node_t *node;
+    size_t header_size;
+
+    header_size = sizeof(pfstest_list_node_t);
     if (header_size % ALIGNMENT) {
         header_size = (header_size + ALIGNMENT) & ALIGN_MASK;
     }
     assert(header_size >= sizeof(pfstest_list_node_t));
     assert(header_size <= sizeof(pfstest_list_node_t) + ALIGNMENT);
 
-    pfstest_list_node_t *node = malloc(header_size + size);
+    node = malloc(header_size + size);
     assert(node != NULL);
     pfstest_list_node_init(node);
 

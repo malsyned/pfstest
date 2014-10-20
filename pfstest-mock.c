@@ -356,9 +356,11 @@ static void fail_wrong_call_count(const char *file, int line,
                                   const char *wanted_desc_prefix,
                                   int wanted_count)
 {
-    struct do_verification_printer_args printer_args = {
-        expectation, invocation_count, wanted_desc_prefix, wanted_count,
-    };
+    struct do_verification_printer_args printer_args;
+    printer_args.expectation = expectation;
+    printer_args.invocation_count = invocation_count;
+    printer_args.wanted_desc_prefix = wanted_desc_prefix;
+    printer_args.wanted_count = wanted_count;
         
     pfstest_fail_with_printer(file, line,
                               wrong_call_count_printer, &printer_args);
@@ -517,13 +519,14 @@ static void do_in_order_verification(pfstest_verifier_t *v)
     struct in_order_expectation *in_order_expectation;
 
     pfstest_list_iter (invocation_node, &invocations) {
+        pfstest_invocation_t *invocation;
+
         if (in_order_expectation_node == NULL)
             break;
 
         in_order_expectation =
             (struct in_order_expectation *)in_order_expectation_node;
-        pfstest_invocation_t *invocation =
-            (pfstest_invocation_t *)invocation_node;
+        invocation = (pfstest_invocation_t *)invocation_node;
 
         if (in_order_expectation->expectation == invocation->expectation) {
             prev_expectation = in_order_expectation->expectation;
@@ -532,11 +535,13 @@ static void do_in_order_verification(pfstest_verifier_t *v)
     }
 
     if (in_order_expectation_node != NULL) {
+        struct in_order_fail_printer_args printer_args;
+
         in_order_expectation =
             (struct in_order_expectation *)in_order_expectation_node;
-        struct in_order_fail_printer_args printer_args = {
-            in_order_expectation->expectation, prev_expectation,
-        };
+
+        printer_args.expectation = in_order_expectation->expectation;
+        printer_args.prev_expectation = prev_expectation;
         
         pfstest_fail_with_printer(in_order_expectation->file,
                                   in_order_expectation->line,

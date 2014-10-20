@@ -46,7 +46,7 @@ failing_test(should_fail_on_different_uints)
 
 failing_test(should_detect_data_type_mismatches)
 {
-    char buf[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    unsigned char buf[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     
     /* This test should be valid regardless of endianness, since all
      * slices of buf should look like USHRT_MAX, so the actual

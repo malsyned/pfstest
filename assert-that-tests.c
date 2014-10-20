@@ -9,9 +9,9 @@ static void some_value_printer(pfstest_value_t *value)
 }
 
 static pfstest_value_t some_value[1] = {{
-    .printer = some_value_printer,
-    .data = NULL,
-}};
+        some_value_printer,
+        NULL,
+    }};
 
 static bool always_return_true(pfstest_matcher_t *matcher,
                                pfstest_value_t *actual)
@@ -20,10 +20,10 @@ static bool always_return_true(pfstest_matcher_t *matcher,
 }
 
 static pfstest_matcher_t matches_anything[1] = {{
-    .printer = NULL,
-    .test = always_return_true,
-    .data = NULL,
-}};
+        NULL,
+        always_return_true,
+        NULL,
+    }};
 
 static bool always_return_false(pfstest_matcher_t *matcher,
                                 pfstest_value_t *actual)
@@ -37,10 +37,10 @@ static void nothing_printer(pfstest_matcher_t *matcher)
 }
 
 static pfstest_matcher_t matches_nothing[1] = {{
-    .printer = nothing_printer,
-    .test = always_return_false,
-    .data = NULL,
-}};
+        nothing_printer,
+        always_return_false,
+        NULL,
+    }};
 
 test(should_pass_assertion)
 {

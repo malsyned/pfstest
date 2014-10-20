@@ -36,7 +36,7 @@ typedef struct
 #define _pfstest_protos(name, flags)            \
     _pfstest_decl(name);                        \
     _pfstest_object(name, flags);               \
-    _pfstest_init_define(name);                 \
+    _pfstest_init_define(name)                  \
     _pfstest_decl(name)
 
 #define pfstest(name) _pfstest_protos(name, 0)
@@ -84,7 +84,7 @@ typedef struct
 #define _pfstest_hook(name, file, phase)        \
     _pfstest_hook_decl(name);                   \
     _pfstest_hook_object(name, file);           \
-    _pfstest_hook_init_define(name, phase);     \
+    _pfstest_hook_init_define(name, phase)      \
     _pfstest_hook_decl(name)
 
 #define pfstest_before_tests(name) _pfstest_hook(name, __FILE__, before)

@@ -1,6 +1,6 @@
 include Makefile.src.in
 
-CFLAGS := -g -O0 -Wall -Werror -MD -MP
+CFLAGS := -g -O0 -Wall -Werror -MD -MP -pedantic -std=c89
 
 .PHONY: all
 all: core-tests tests
