@@ -31,6 +31,7 @@ typedef struct
 {
     pfstest_list_node_t node;
     pfstest_expectation_t *expectation;
+    bool mark;
 } pfstest_invocation_t;
 
 typedef struct _pfstest_verify_mode_t pfstest_verify_mode_t;
@@ -79,6 +80,13 @@ pfstest_verify_mode_t *pfstest_exactly(int times);
 pfstest_verify_mode_t *pfstest_at_most(int times);
 pfstest_verify_mode_t *pfstest_at_least(int times);
 
+void pfstest_verify_no_more_interactions_at_location(
+    const char *file,
+    int line,
+    const pfstest_mock_t *mock);
+#define pfstest_verify_no_more_interactions(m)                          \
+    pfstest_verify_no_more_interactions_at_location(__FILE__, __LINE__, m)
+
 pfstest_in_order_t *pfstest_in_order_new(void);
 void pfstest_in_order_verify_at_location(const char *file, int line,
                                          pfstest_in_order_t *order,
@@ -115,6 +123,9 @@ void pfstest_run_verifiers(void);
 #endif
 #ifndef PFSTEST_NOALIAS_at_least
 # define at_least pfstest_at_least
+#endif
+#ifndef PFSTEST_NOALIAS_pfstest_verify_no_more_interactions
+# define verify_no_more_interactions pfstest_verify_no_more_interactions
 #endif
 #ifndef PFSTEST_NOALIAS_in_order_t
 # define in_order_t pfstest_in_order_t

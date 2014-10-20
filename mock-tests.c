@@ -308,10 +308,36 @@ test(at_least_should_allow_more_invocations)
     dep_func1(1);
 }
 
-ignore_test(should_verify_no_more_interactions)
+test(should_verify_no_more_interactions)
+{
+    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
+    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify_no_more_interactions(mock_dep_func1);
+
+    dep_func1(1);
+    dep_func1(2);
+    dep_func2(5, "foo");
+}
+
+failing_test(verify_no_more_interactions_should_reject_surplus_interactions)
+{
+    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
+    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify_no_more_interactions(mock_dep_func1);
+
+    dep_func1(1);
+    dep_func1(2);
+    dep_func1(3);
+}
+
+ignore_test(in_order_should_mark_interactions)
 {
 }
 
-ignore_failing_test(verify_no_more_interactions_should_reject_surplus_invocations)
+ignore_test(should_verify_no_more_invocations)
+{
+}
+
+ignore_failing_test(verify_no_more_invocations_should_reject_surpluss_invocations)
 {
 }

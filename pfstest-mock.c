@@ -10,12 +10,14 @@
 static pfstest_list_t expectations = PFSTEST_LIST_EMPTY();
 static pfstest_list_t invocations = PFSTEST_LIST_EMPTY();
 static pfstest_list_t verifiers = PFSTEST_LIST_EMPTY();
+static pfstest_list_t default_expectations = PFSTEST_LIST_EMPTY();
 
 void pfstest_mock_init(void)
 {
     pfstest_list_reset(&expectations);
     pfstest_list_reset(&invocations);
     pfstest_list_reset(&verifiers);
+    pfstest_list_reset(&default_expectations);
 }
 
 static void expectation_add(pfstest_expectation_t *expectation)
@@ -31,6 +33,12 @@ static void invocation_add(pfstest_invocation_t *invocation)
 static void verifier_add(pfstest_verifier_t *verifier)
 {
     pfstest_list_append(&verifiers, (pfstest_list_node_t *)verifier);
+}
+
+static void default_expectation_add(pfstest_expectation_t *expectation)
+{
+    pfstest_list_append(&default_expectations,
+                        (pfstest_list_node_t *)expectation);
 }
 
 /* mock */
@@ -125,6 +133,7 @@ static pfstest_invocation_t *invocation_new(pfstest_expectation_t *e)
     pfstest_invocation_t *i = pfstest_alloc(sizeof(*i));
     pfstest_list_node_init((pfstest_list_node_t *)i);
     i->expectation = e;
+    i->mark = false;
 
     return i;
 }
@@ -134,6 +143,12 @@ static bool args_match(int arg_count,
                        pfstest_arg_handler_t **arg_handlers)
 {
     int i;
+
+    /* The default expectation, which should match everything, has
+     * NULL arg_handlers */
+    if (arg_handlers == NULL) {
+        return true;
+    }
 
     for (i = 0; i < arg_count; i++) {
         if (!pfstest_arg_handler_test(arg_handlers[i], args[i]))
@@ -152,6 +167,39 @@ static void args_matched(int arg_count,
     for (i = 0; i < arg_count; i++) {
         pfstest_arg_handler_matched(arg_handlers[i], args[i]);
     }
+}
+
+static pfstest_expectation_t *find_default_expectation(
+    const pfstest_mock_t *mock)
+{
+    pfstest_list_node_t *node;
+
+    for (node = pfstest_list_head(&default_expectations);
+         node != NULL;
+         node = node->next)
+    {
+        pfstest_expectation_t *e = (pfstest_expectation_t *)node;
+
+        if (mock == e->mock) {
+            return e;
+        }
+    }
+
+    return NULL;
+}
+
+static pfstest_expectation_t *get_default_expectation(
+    const pfstest_mock_t *mock)
+{
+    pfstest_expectation_t *e = find_default_expectation(mock);
+
+    if (e == NULL) {
+        /* If arg_handlers is NULL, args_match will always match */
+        e = pfstest_expectation_new(mock, NULL);
+        default_expectation_add(e);
+    }
+
+    return e;
 }
 
 pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
@@ -193,6 +241,9 @@ pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
 
             break;
         }
+    }
+    if (expectation_node == NULL) {
+        invocation_add(invocation_new(get_default_expectation(mock)));
     }
     
     return return_value;
@@ -291,7 +342,7 @@ void pfstest_verify_times_at_location(const char *file, int line,
     verifier_add(verifier_new(do_verification_with_mode, args));
 }
 
-static int count_invocations(pfstest_expectation_t *expectation)
+static int count_and_mark_invocations(pfstest_expectation_t *expectation)
 {
     int invocation_count = 0;
     pfstest_list_node_t *invocation_node;
@@ -303,6 +354,7 @@ static int count_invocations(pfstest_expectation_t *expectation)
         pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
 
         if (expectation == i->expectation) {
+            i->mark = true;
             invocation_count++;
         }
     }
@@ -329,7 +381,7 @@ static void do_exactly(const char *file, int line,
                        pfstest_expectation_t *expectation)
 {
     int wanted_count = *(int *)mode->data;
-    int invocation_count = count_invocations(expectation);
+    int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count != wanted_count) {
         fail_wrong_call_count(file, line, expectation,
@@ -363,7 +415,7 @@ static void do_at_most(const char *file, int line,
                        pfstest_expectation_t *expectation)
 {
     int wanted_count = *(int *)mode->data;
-    int invocation_count = count_invocations(expectation);
+    int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count > wanted_count) {
         fail_wrong_call_count(file, line, expectation,
@@ -381,7 +433,7 @@ static void do_at_least(const char *file, int line,
                         pfstest_expectation_t *expectation)
 {
     int wanted_count = *(int *)mode->data;
-    int invocation_count = count_invocations(expectation);
+    int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count < wanted_count) {
         fail_wrong_call_count(file, line, expectation,
@@ -392,6 +444,53 @@ static void do_at_least(const char *file, int line,
 pfstest_verify_mode_t *pfstest_at_least(int times)
 {
     return counting_mode_new(times, do_at_least);
+}
+
+void no_more_interactions_printer(const void *data)
+{
+    const pfstest_mock_t *mock = data;
+
+    printf("Unexpected interactions with %s", mock->name);
+}
+
+struct no_more_interactions_args
+{
+    const pfstest_mock_t *mock;
+    const char *file;
+    int line;
+};
+
+void do_verify_no_more_interactions(pfstest_verifier_t *v)
+{
+    struct no_more_interactions_args *args = v->data;
+    
+    pfstest_list_node_t *invocation_node;
+
+    for (invocation_node = pfstest_list_head(&invocations);
+         invocation_node != NULL;
+         invocation_node = invocation_node->next)
+    {
+        pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
+
+        if (args->mock == i->expectation->mock && !i->mark) {
+            pfstest_fail_with_printer(args->file, args->line,
+                                      no_more_interactions_printer,
+                                      args->mock);
+        }
+    }
+}
+
+void pfstest_verify_no_more_interactions_at_location(
+    const char *file,
+    int line,
+    const pfstest_mock_t *mock)
+{
+    struct no_more_interactions_args *args = pfstest_alloc(sizeof(*args));
+    args->mock = mock;
+    args->file = file;
+    args->line = line;
+
+    verifier_add(verifier_new(do_verify_no_more_interactions, args));
 }
 
 /* in_order verifier */
