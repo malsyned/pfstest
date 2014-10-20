@@ -72,8 +72,6 @@ static void pfstest_expectation_print(pfstest_expectation_t *e)
     pfstest_printf_nv(pfstest_nv_string("%" PFSTEST_PRINV " with ("),
                       e->mock->name);
     for (i = 0; i < e->mock->arg_count; i++) {
-        pfstest_printf_nv(pfstest_nv_string("%" PFSTEST_PRINV " "),
-                          e->mock->arg_names[i]);
         pfstest_arg_handler_print(e->arg_handlers[i]);
 
         if (i < e->mock->arg_count - 1)

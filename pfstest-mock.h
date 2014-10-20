@@ -10,7 +10,6 @@
 typedef struct 
 {
     const char *name;
-    const char *const *arg_names;
     int arg_count;
 } pfstest_mock_t;
 
@@ -25,12 +24,11 @@ typedef struct
 
 #define _pfstest_mock_func_name_var(name)               \
     _pfstest_econcat(__pfstest_mock_func_name__, name)
-#define pfstest_mock_define(mock_name, func_name, arg_names, arg_count) \
+#define pfstest_mock_define(mock_name, func_name, arg_count)            \
     pfstest_nv_string_decl(_pfstest_mock_func_name_var(mock_name)) =    \
         func_name;                                                      \
     const pfstest_mock_t mock_name[1] = {{                              \
-            _pfstest_mock_func_name_var(mock_name),                     \
-            arg_names, arg_count}}
+            _pfstest_mock_func_name_var(mock_name), arg_count}}
 #define pfstest_mock_declare(mock_name)         \
     extern const pfstest_mock_t mock_name[]
 
