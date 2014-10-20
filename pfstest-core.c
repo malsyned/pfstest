@@ -152,10 +152,7 @@ static void do_hook_list(pfstest_list_t *list, const char *file)
 {
     pfstest_list_node_t *hook_node;
 
-    for (hook_node = pfstest_list_head(list);
-         hook_node != NULL;
-         hook_node = hook_node->next)
-    {
+    pfstest_list_iter (hook_node, list) {
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
         if (file == NULL || 0 == strcmp(hook->file, file))
             hook->function();
@@ -167,10 +164,7 @@ static void do_tests_list(const char *test_file,
 {
     pfstest_list_node_t *test_node;
 
-    for (test_node = pfstest_list_head(&tests);
-         test_node != NULL;
-         test_node = test_node->next)
-    {
+    pfstest_list_iter (test_node, &tests) {
         pfstest_t *test = (pfstest_t *)test_node;
         if ((test_file == NULL || 0 == strcmp(test_file, test->file))
             && (test_name == NULL || 0 == strcmp(test_name, test->name)))

@@ -174,10 +174,7 @@ static pfstest_expectation_t *find_default_expectation(
 {
     pfstest_list_node_t *node;
 
-    for (node = pfstest_list_head(&default_expectations);
-         node != NULL;
-         node = node->next)
-    {
+    pfstest_list_iter (node, &default_expectations) {
         pfstest_expectation_t *e = (pfstest_expectation_t *)node;
 
         if (mock == e->mock) {
@@ -219,10 +216,7 @@ pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
     }
     va_end(ap);
 
-    for (expectation_node = pfstest_list_head(&expectations);
-         expectation_node != NULL;
-         expectation_node = expectation_node->next)
-    {
+    pfstest_list_iter (expectation_node, &expectations) {
         pfstest_expectation_t *e = (pfstest_expectation_t *)expectation_node;
 
         if (e->mock == mock
@@ -267,10 +261,7 @@ void pfstest_run_verifiers(void)
 {
     pfstest_list_node_t *verifier_node;
 
-    for (verifier_node = pfstest_list_head(&verifiers);
-         verifier_node != NULL;
-         verifier_node = verifier_node->next)
-    {
+    pfstest_list_iter (verifier_node, &verifiers) {
         pfstest_verifier_t *v = (pfstest_verifier_t *)verifier_node;
 
         v->function(v);
@@ -347,10 +338,7 @@ static int count_and_mark_invocations(pfstest_expectation_t *expectation)
     int invocation_count = 0;
     pfstest_list_node_t *invocation_node;
 
-    for (invocation_node = pfstest_list_head(&invocations);
-         invocation_node != NULL;
-         invocation_node = invocation_node->next)
-    {
+    pfstest_list_iter (invocation_node, &invocations) {
         pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
 
         if (expectation == i->expectation) {
@@ -466,10 +454,7 @@ void do_verify_no_more_interactions(pfstest_verifier_t *v)
     
     pfstest_list_node_t *invocation_node;
 
-    for (invocation_node = pfstest_list_head(&invocations);
-         invocation_node != NULL;
-         invocation_node = invocation_node->next)
-    {
+    pfstest_list_iter (invocation_node, &invocations) {
         pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
 
         if (args->mock == i->expectation->mock && !i->mark) {
@@ -531,10 +516,7 @@ static void do_in_order_verification(pfstest_verifier_t *v)
     pfstest_expectation_t *prev_expectation = NULL;
     struct in_order_expectation *in_order_expectation;
 
-    for (invocation_node = pfstest_list_head(&invocations);
-         invocation_node != NULL;
-         invocation_node = invocation_node->next)
-    {
+    pfstest_list_iter (invocation_node, &invocations) {
         if (in_order_expectation_node == NULL)
             break;
 
