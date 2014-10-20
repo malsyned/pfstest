@@ -6,7 +6,7 @@
 
 #include "pfstest-list.h"
 
-static pfstest_list_t mem = PFSTEST_LIST_EMPTY();
+static pfstest_list_t allocated = PFSTEST_LIST_EMPTY();
 
 struct alignment_struct 
 {
@@ -28,27 +28,29 @@ struct alignment_struct
 
 void *pfstest_alloc(size_t size)
 {
-    size_t node_size = sizeof(pfstest_list_node_t);
-    if (node_size % ALIGNMENT) {
-        node_size = (node_size + ALIGNMENT) & ALIGN_MASK;
+    void *mem;
+    size_t header_size = sizeof(pfstest_list_node_t);
+    if (header_size % ALIGNMENT) {
+        header_size = (header_size + ALIGNMENT) & ALIGN_MASK;
     }
-    assert(node_size >= sizeof(pfstest_list_node_t));
-    assert(node_size <= sizeof(pfstest_list_node_t) + ALIGNMENT);
+    assert(header_size >= sizeof(pfstest_list_node_t));
+    assert(header_size <= sizeof(pfstest_list_node_t) + ALIGNMENT);
 
-    pfstest_list_node_t *node = malloc(node_size + size);
+    pfstest_list_node_t *node = malloc(header_size + size);
     assert(node != NULL);
     pfstest_list_node_init(node);
 
-    pfstest_list_append(&mem, node);
-    intptr_t p = (intptr_t)node + node_size;
-    assert(p % ALIGNMENT == 0);
+    pfstest_list_append(&allocated, node);
 
-    return (void *)p;
+    mem = (char *)node + header_size;
+    assert((intptr_t)mem % ALIGNMENT == 0);
+
+    return mem;
 }
 
 void pfstest_free_all(void)
 {
-    pfstest_list_node_t *node = pfstest_list_head(&mem);
+    pfstest_list_node_t *node = pfstest_list_head(&allocated);
 
     while (node != NULL) {
         pfstest_list_node_t *next = node->next;
@@ -56,5 +58,5 @@ void pfstest_free_all(void)
         node = next;
     }
 
-    pfstest_list_reset(&mem);
+    pfstest_list_reset(&allocated);
 }
