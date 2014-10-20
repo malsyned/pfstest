@@ -5,7 +5,7 @@
 
 static void some_value_printer(pfstest_value_t *value)
 {
-    printf("some value");
+    pfstest_printf_nv(pfstest_nv_string("some value"));
 }
 
 static pfstest_value_t some_value[1] = {{
@@ -33,7 +33,7 @@ static bool always_return_false(pfstest_matcher_t *matcher,
 
 static void nothing_printer(pfstest_matcher_t *matcher)
 {
-    printf("nothing (guaranteed to fail)");
+    pfstest_printf_nv(pfstest_nv_string("nothing (guaranteed to fail)"));
 }
 
 static pfstest_matcher_t matches_nothing[1] = {{
@@ -52,11 +52,15 @@ failing_test(should_fail_assertion)
     assert_that("always fails", some_value, matches_nothing);
 }
 
+/* Some Harvard Architecture platforms (like AVR) throw a compiler
+ * error on NULL assert_that message strings */
+#ifdef PFSTEST_NV_UNSUPPORTED
 failing_test(should_cope_with_null_string)
 {
     /* This is a failing test so that the output can be visually inspected */
     assert_that(NULL, some_value, matches_nothing);
 }
+#endif
 
 failing_test(should_cope_with_null_value)
 {

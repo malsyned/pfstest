@@ -17,23 +17,24 @@ static void assert_that_printer(const void *data)
 {
     const struct assert_that_args *args = data;
 
-    printf("    Failed assertion");
+    pfstest_printf_nv(pfstest_nv_string("    Failed assertion"));
     if (args->message != NULL) {
-        printf(": %s ", args->message);
+        pfstest_printf_nv(pfstest_nv_string(": %" PFSTEST_PRINV " "),
+                          args->message);
     }
-    printf("\n");
-    printf("    Expected: ");
+    pfstest_printf_nv(pfstest_nv_string("\n"));
+    pfstest_printf_nv(pfstest_nv_string("    Expected: "));
     pfstest_matcher_print(args->matcher);
-    printf("\n");
-    printf("    Actual: ");
+    pfstest_printf_nv(pfstest_nv_string("\n"));
+    pfstest_printf_nv(pfstest_nv_string("    Actual: "));
     pfstest_value_print(args->actual);
 }
 
-void pfstest_assert_that_at_location(const char *file,
-                                     int line,
-                                     const char *message,
-                                     pfstest_value_t *actual,
-                                     pfstest_matcher_t *matcher)
+void _pfstest_assert_that_at_location(const char *file,
+                                      int line,
+                                      const char *message,
+                                      pfstest_value_t *actual,
+                                      pfstest_matcher_t *matcher)
 {
     struct assert_that_args args;
     args.message = message;

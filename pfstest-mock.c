@@ -69,15 +69,17 @@ static void pfstest_expectation_print(pfstest_expectation_t *e)
 {
     int i;
 
-    printf("%s with (", e->mock->name);
+    pfstest_printf_nv(pfstest_nv_string("%" PFSTEST_PRINV " with ("),
+                      e->mock->name);
     for (i = 0; i < e->mock->arg_count; i++) {
-        printf("%s ", e->mock->arg_names[i]);
+        pfstest_printf_nv(pfstest_nv_string("%" PFSTEST_PRINV " "),
+                          e->mock->arg_names[i]);
         pfstest_arg_handler_print(e->arg_handlers[i]);
 
         if (i < e->mock->arg_count - 1)
-            printf(", ");
+            pfstest_printf_nv(pfstest_nv_string(", "));
     }
-    printf(")");
+    pfstest_printf_nv(pfstest_nv_string(")"));
 }
 
 pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
@@ -283,18 +285,25 @@ static void wrong_call_count_printer(const void *data)
     const struct do_verification_printer_args *args = data;
 
     if (args->invocation_count == 0) {
-        printf("    Never called ");
+        pfstest_printf_nv(pfstest_nv_string("    Never called "));
         pfstest_expectation_print(args->expectation);
     } else if (args->invocation_count != 1) {
-        printf("    Wanted ");
+        pfstest_printf_nv(pfstest_nv_string("    Wanted "));
         pfstest_expectation_print(args->expectation);
-        printf(" %s %d time%s\n",
-               args->wanted_desc_prefix,
-               args->wanted_count,
-               args->wanted_count == 1 ? "" : "s");
-        printf("    Was called %d time%s",
-               args->invocation_count,
-               args->invocation_count == 1 ? "" : "s");
+        pfstest_printf_nv(
+            pfstest_nv_string(
+                " %" PFSTEST_PRINV " %d time%" PFSTEST_PRINV "\n"),
+            args->wanted_desc_prefix,
+            args->wanted_count,
+            ((args->wanted_count == 1)
+             ? pfstest_nv_string("")
+             : pfstest_nv_string("s")));
+        pfstest_printf_nv(pfstest_nv_string(
+                              "    Was called %d time%" PFSTEST_PRINV),
+                          args->invocation_count,
+                          ((args->invocation_count == 1)
+                           ? pfstest_nv_string("")
+                           : pfstest_nv_string("s")));
     }
 }
 
@@ -375,7 +384,8 @@ static void do_exactly(const char *file, int line,
 
     if (invocation_count != wanted_count) {
         fail_wrong_call_count(file, line, expectation,
-                              invocation_count, "exactly", wanted_count);
+                              invocation_count,
+                              pfstest_nv_string("exactly"), wanted_count);
     }
 }
 
@@ -409,7 +419,8 @@ static void do_at_most(const char *file, int line,
 
     if (invocation_count > wanted_count) {
         fail_wrong_call_count(file, line, expectation,
-                              invocation_count, "at most", wanted_count);
+                              invocation_count,
+                              pfstest_nv_string("at most"), wanted_count);
     }
 }
 
@@ -427,7 +438,8 @@ static void do_at_least(const char *file, int line,
 
     if (invocation_count < wanted_count) {
         fail_wrong_call_count(file, line, expectation,
-                              invocation_count, "at least", wanted_count);
+                              invocation_count,
+                              pfstest_nv_string("at least"), wanted_count);
     }
 }
 
@@ -440,7 +452,9 @@ void no_more_interactions_printer(const void *data)
 {
     const pfstest_mock_t *mock = data;
 
-    printf("Unexpected interactions with %s", mock->name);
+    pfstest_printf_nv(pfstest_nv_string(
+                          "Unexpected interactions with %" PFSTEST_PRINV),
+                      mock->name);
 }
 
 struct no_more_interactions_args
@@ -492,11 +506,11 @@ static void in_order_fail_printer(const void *data)
 {
     const struct in_order_fail_printer_args *args = data;
 
-    printf("    Not called in order: ");
+    pfstest_printf_nv(pfstest_nv_string("    Not called in order: "));
     pfstest_expectation_print(args->expectation);
     if (args->prev_expectation != NULL) {
-        printf("\n");
-        printf("    Expected after: ");
+        pfstest_printf_nv(pfstest_nv_string("\n"));
+        pfstest_printf_nv(pfstest_nv_string("    Expected after: "));
         pfstest_expectation_print(args->prev_expectation);
     }
 }

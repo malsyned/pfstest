@@ -9,7 +9,7 @@ test(should_pass)
 test(should_fail)
 {
     fail("failure message");
-    printf("!!! BUG !!!\n");
+    pfstest_printf_nv(pfstest_nv_string("!!! BUG !!!\n"));
 }
 
 ignore_test(should_be_ignored)

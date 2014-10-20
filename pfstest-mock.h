@@ -1,6 +1,7 @@
 #ifndef PFSTEST_MOCK_H
 #define PFSTEST_MOCK_H
 
+#include "pfstest-core.h"
 #include "pfstest-list.h"
 #include "pfstest-value.h"
 #include "pfstest-matcher.h"
@@ -22,8 +23,14 @@ typedef struct
     int times;
 } pfstest_expectation_t;
 
+#define _pfstest_mock_func_name_var(name)               \
+    _pfstest_econcat(__pfstest_mock_func_name__, name)
 #define pfstest_mock_define(mock_name, func_name, arg_names, arg_count) \
-    const pfstest_mock_t mock_name[1] = {{func_name, arg_names, arg_count}}
+    pfstest_nv_string_decl(_pfstest_mock_func_name_var(mock_name)) =    \
+        func_name;                                                      \
+    const pfstest_mock_t mock_name[1] = {{                              \
+            _pfstest_mock_func_name_var(mock_name),                     \
+            arg_names, arg_count}}
 #define pfstest_mock_declare(mock_name)         \
     extern const pfstest_mock_t mock_name[]
 
@@ -70,12 +77,14 @@ pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);
 
 void pfstest_verify_at_location(const char *file, int line,
                                 pfstest_expectation_t *e);
-#define pfstest_verify(e) pfstest_verify_at_location(__FILE__, __LINE__, e)
+#define pfstest_verify(e)                                               \
+    pfstest_verify_at_location(pfstest_nv_string(__FILE__), __LINE__, e)
 void pfstest_verify_times_at_location(const char *file, int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e);
-#define pfstest_verify_times(m, e)                              \
-    pfstest_verify_times_at_location(__FILE__, __LINE__, m, e)
+#define pfstest_verify_times(m, e)                                  \
+    pfstest_verify_times_at_location(pfstest_nv_string(__FILE__),   \
+                                     __LINE__, m, e)
 pfstest_verify_mode_t *pfstest_exactly(int times);
 pfstest_verify_mode_t *pfstest_at_most(int times);
 pfstest_verify_mode_t *pfstest_at_least(int times);
@@ -85,14 +94,16 @@ void pfstest_verify_no_more_interactions_at_location(
     int line,
     const pfstest_mock_t *mock);
 #define pfstest_verify_no_more_interactions(m)                          \
-    pfstest_verify_no_more_interactions_at_location(__FILE__, __LINE__, m)
+    pfstest_verify_no_more_interactions_at_location(\
+        pfstest_nv_string(__FILE__), __LINE__, m)
 
 pfstest_in_order_t *pfstest_in_order_new(void);
 void pfstest_in_order_verify_at_location(const char *file, int line,
                                          pfstest_in_order_t *order,
                                          pfstest_expectation_t *expectation);
-#define pfstest_in_order_verify(order, expectation)         \
-    pfstest_in_order_verify_at_location(__FILE__, __LINE__, \
+#define pfstest_in_order_verify(order, expectation)                     \
+    pfstest_in_order_verify_at_location(pfstest_nv_string(__FILE__),    \
+                                        __LINE__,                       \
                                         order, expectation)
 
 void pfstest_run_verifiers(void);

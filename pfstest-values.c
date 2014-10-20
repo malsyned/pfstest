@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-alloc.h"
 
 /* the_short */
@@ -13,7 +14,7 @@ static void the_short_printer(pfstest_value_t *value)
 {
     short s = *(short *)pfstest_value_data(value);
 
-    printf("the short %hd", s);
+    pfstest_printf_nv(pfstest_nv_string("the short %hd"), s);
 }
 
 pfstest_value_t *the_short(short s)
@@ -30,7 +31,7 @@ static void the_ushort_printer(pfstest_value_t *value)
 {
     unsigned short u = *(unsigned short *)pfstest_value_data(value);
 
-    printf("the ushort %hu", u);
+    pfstest_printf_nv(pfstest_nv_string("the ushort %hu"), u);
 }
 
 pfstest_value_t *the_ushort(unsigned short u)
@@ -47,7 +48,7 @@ static void the_int_printer(pfstest_value_t *value)
 {
     int i = *(int *)pfstest_value_data(value);
 
-    printf("the int %d", i);
+    pfstest_printf_nv(pfstest_nv_string("the int %d"), i);
 }
 
 pfstest_value_t *the_int(int i)
@@ -64,7 +65,7 @@ static void the_uint_printer(pfstest_value_t *value)
 {
     unsigned int u = *(unsigned int *)pfstest_value_data(value);
 
-    printf("the uint %u", u);
+    pfstest_printf_nv(pfstest_nv_string("the uint %u"), u);
 }
 
 pfstest_value_t *the_uint(unsigned int u)
@@ -81,7 +82,7 @@ static void the_char_printer(pfstest_value_t *value)
 {
     char c = *(char *)pfstest_value_data(value);
 
-    printf("the char '%c'", c);
+    pfstest_printf_nv(pfstest_nv_string("the char '%c'"), c);
 }
 
 pfstest_value_t *the_char(char c)
@@ -98,7 +99,7 @@ static void the_string_printer(pfstest_value_t *value)
 {
     char *data = pfstest_value_data(value);
 
-    printf("the string \"%s\"", data);
+    pfstest_printf_nv(pfstest_nv_string("the string \"%s\""), data);
 }
 
 pfstest_value_t *the_string(char *s)
@@ -115,7 +116,7 @@ static void the_pointer_printer(pfstest_value_t *value)
 {
     void *data = pfstest_value_data(value);
 
-    printf("the pointer <%p>", data);
+    pfstest_printf_nv(pfstest_nv_string("the pointer <%p>"), data);
 }
 
 pfstest_value_t *the_pointer(void *p)
@@ -131,13 +132,13 @@ static void the_memory_printer(pfstest_value_t *value)
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    printf("the memory {");
+    pfstest_printf_nv(pfstest_nv_string("the memory {"));
     for (i = 0; i < size; i++) {
-        printf("0x%02x", data[i]);
+        pfstest_printf_nv(pfstest_nv_string("0x%02x"), data[i]);
         if (i < size - 1)
-            printf(", ");
+            pfstest_printf_nv(pfstest_nv_string(", "));
     }
-    printf("}");
+    pfstest_printf_nv(pfstest_nv_string("}"));
 }
 
 pfstest_value_t *the_memory(void *m, size_t size)

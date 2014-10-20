@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-values.h"
 
 static void is_the_whatever_printer(pfstest_matcher_t *matcher)
@@ -11,7 +12,7 @@ static void is_the_whatever_printer(pfstest_matcher_t *matcher)
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
 
-    printf("= ");
+    pfstest_printf_nv(pfstest_nv_string("= "));
     pfstest_value_print(expected);
 }
 

@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-list.h"
 
 #define _PFSTEST_FLAG_IGNORED 0x1
@@ -18,19 +19,27 @@ typedef struct
     void (*function)(void);
 } pfstest_t;
 
-#define _pfstest_function_name(name) __pfstest__ ## name
+#define _pfstest_concat(a, b) a ## b
+#define _pfstest_econcat(a, b) _pfstest_concat(a, b)
+#define _pfstest_function_name(name) _pfstest_econcat(__pfstest__, name)
+#define _pfstest_name_var(name) _pfstest_econcat(__pfstest_name__, name)
+#define _pfstest_file_var(name) _pfstest_econcat(__pfstest_file__, name)
 #define _pfstest_decl(name) static void _pfstest_function_name(name)(void)
 
-#define _pfstest_object(name, flags)                \
-    pfstest_t name[1] =                             \
-    {{ {NULL}, # name, __FILE__, __LINE__,flags,    \
+#define _pfstest_object(name, flags)                                    \
+    static pfstest_nv_string_decl(_pfstest_name_var(name)) = # name;    \
+    static pfstest_nv_string_decl(_pfstest_file_var(name)) = __FILE__;  \
+    pfstest_t name[1] =                                                 \
+    {{ {NULL}, _pfstest_name_var(name),                                 \
+       _pfstest_file_var(name),                                         \
+       __LINE__, flags,                                                 \
        _pfstest_function_name(name) }}
 
-#define _pfstest_init_define(name)              \
-    __attribute__((__constructor__))            \
-    static void __pfstest_init__ ## name(void)  \
-    {                                           \
-        pfstest_register_test(name);            \
+#define _pfstest_init_define(name)                              \
+    __attribute__((__constructor__))                            \
+    static void _pfstest_econcat(__pfstest_init__, name)(void)  \
+    {                                                           \
+        pfstest_register_test(name);                            \
     }
 
 #define _pfstest_protos(name, flags)            \
@@ -46,9 +55,11 @@ typedef struct
     _pfstest_protos(name, _PFSTEST_FLAG_IGNORED)
 #define pfstest_ignore_failing_test pfstest_ignore_test
 
-void pfstest_fail_at_location(const char *file, int line,
-                              const char *message)
+void _pfstest_fail_at_location(const char *file, int line,
+                               const char *message)
     __attribute__((__noreturn__));
+#define pfstest_fail_at_location(file, line, message)       \
+    _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
 void pfstest_fail_with_printer(const char *file, int line,
                                void (*printer)(const void *),
                                const void *object)
@@ -57,8 +68,8 @@ void pfstest_register_test(pfstest_t *the_test);
 int pfstest_run_tests(int argc, char *argv[]);
 int pfstest_run_all_tests(void);
 int pfstest_run_all_tests_verbose(void);
-#define pfstest_fail(message)                               \
-    pfstest_fail_at_location(__FILE__, __LINE__, message)
+#define pfstest_fail(message)                                           \
+    pfstest_fail_at_location(pfstest_nv_string(__FILE__), __LINE__, message)
 
 typedef struct 
 {
@@ -67,18 +78,18 @@ typedef struct
     void (*function)(void);
 } pfstest_hook_t;
 
-#define _pfstest_hook_name(name) __pfstest_hook__ ## name
+#define _pfstest_hook_name(name) _pfstest_econcat(__pfstest_hook__, name)
 #define _pfstest_hook_decl(name) static void _pfstest_hook_name(name)(void)
 
 #define _pfstest_hook_object(name, file)            \
     pfstest_hook_t name[1] =                        \
     {{ {NULL}, file, _pfstest_hook_name(name) }}
          
-#define _pfstest_hook_init_define(name, phase)      \
-    __attribute__((__constructor__))                \
-    static void __pfstest_hook_init__ ## name(void) \
-    {                                               \
-        pfstest_register_ ## phase(name);           \
+#define _pfstest_hook_init_define(name, phase)                      \
+    __attribute__((__constructor__))                                \
+    static void _pfstest_econcat(__pfstest_hook_init__, name)(void) \
+    {                                                               \
+        _pfstest_econcat(pfstest_register_, phase)(name);           \
     }
 
 #define _pfstest_hook(name, file, phase)        \

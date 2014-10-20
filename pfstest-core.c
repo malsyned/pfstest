@@ -30,7 +30,9 @@ static pfstest_list_t after = PFSTEST_LIST_EMPTY();
 
 static void print_context(pfstest_t *the_test)
 {
-    printf("%s:%s ", the_test->file, the_test->name);
+    pfstest_printf_nv(
+        pfstest_nv_string("%" PFSTEST_PRINV ":%" PFSTEST_PRINV " "),
+        the_test->file, the_test->name);
 }
 
 void pfstest_fail_with_printer(const char *file, int line,
@@ -41,28 +43,30 @@ void pfstest_fail_with_printer(const char *file, int line,
         longjmp(test_jmp_buf, RESULT_FAIL);
 
     if (!verbose) {
-        printf("\n");
+        pfstest_printf_nv(pfstest_nv_string("\n"));
         print_context(current_test);
     }
 
-    printf("FAIL");
+    pfstest_printf_nv(pfstest_nv_string("FAIL"));
     if (fail_expected)
-        printf(" (expected)");
-    printf("\n");
-    printf("    Location: %s:%d\n", file, line);
+        pfstest_printf_nv(pfstest_nv_string(" (expected)"));
+    pfstest_printf_nv(pfstest_nv_string("\n"));
+    pfstest_printf_nv(
+        pfstest_nv_string("    Location: %" PFSTEST_PRINV ":%d\n"),
+        file, line);
     printer(object);
-    printf("\n");
+    pfstest_printf_nv(pfstest_nv_string("\n"));
     longjmp(test_jmp_buf, RESULT_FAIL);
 }
 
 static void message_printer(const void *object)
 {
     const char *message = object;
-    printf("    %s", message);
+    pfstest_printf_nv(pfstest_nv_string("    %" PFSTEST_PRINV), message);
 }
 
-void pfstest_fail_at_location(const char *file, int line,
-                              const char *message)
+void _pfstest_fail_at_location(const char *file, int line,
+                               const char *message)
 {
     pfstest_fail_with_printer(file, line, message_printer, message);
 }
@@ -104,15 +108,15 @@ static void run_test(void)
 
             passed++;
             if (verbose)
-                printf("PASS\n");
+                pfstest_printf_nv(pfstest_nv_string("PASS\n"));
             else
-                printf("."); fflush(stdout);
+                pfstest_printf_nv(pfstest_nv_string(".")); fflush(stdout);
             break;
         case RESULT_FAIL:
             if (fail_expected) {
                 fail_expected = false;
                 if (verbose)
-                    printf("    ");
+                    pfstest_printf_nv(pfstest_nv_string("    "));
                 pass();
             }
     
@@ -122,12 +126,12 @@ static void run_test(void)
         case RESULT_IGNORE:
             ignored++;
             if (verbose)
-                printf("IGNORED\n");
+                pfstest_printf_nv(pfstest_nv_string("IGNORED\n"));
             else
-                printf("I"); fflush(stdout);
+                pfstest_printf_nv(pfstest_nv_string("I")); fflush(stdout);
             break;
         default:
-            printf("FATAL ERROR\n");
+            pfstest_printf_nv(pfstest_nv_string("FATAL ERROR\n"));
             exit(1);
             break;
     }
@@ -167,7 +171,8 @@ static void do_tests_list(const char *test_file,
     pfstest_list_iter (test_node, &tests) {
         pfstest_t *test = (pfstest_t *)test_node;
         if ((test_file == NULL || 0 == strcmp(test_file, test->file))
-            && (test_name == NULL || 0 == strcmp(test_name, test->name)))
+            && (test_name == NULL || 0 == pfstest_strcmp_nv(test_name,
+                                                            test->name)))
         {
             current_test = test;
             pfstest_mock_init(); /* TODO: plugin-ize */
@@ -181,7 +186,10 @@ static void do_tests_list(const char *test_file,
 
 static void print_usage_and_exit(void)
 {
-    printf("usage: %s [-v] [-f source-file] [-n test-name]\n", program_name);
+    pfstest_printf_nv(
+        pfstest_nv_string(
+            "usage: %s [-v] [-f source-file] [-n test-name]\n"),
+        program_name);
     exit(1);
 }
 
@@ -222,11 +230,13 @@ int pfstest_run_tests(int argc, char *argv[])
     }
 args_done:
 
-    printf("PFSTest 0.1\n");
-    printf("===========\n");
+    pfstest_printf_nv(pfstest_nv_string("PFSTest 0.1\n"));
+    pfstest_printf_nv(pfstest_nv_string("===========\n"));
     do_tests_list(test_file, test_name);
-    printf("\nRun complete. %d passed, %d failed, %d ignored\n",
-           passed, failed, ignored);
+    pfstest_printf_nv(
+        pfstest_nv_string(
+            "\nRun complete. %d passed, %d failed, %d ignored\n"),
+        passed, failed, ignored);
 
     if (failed > 0)
         return 1;

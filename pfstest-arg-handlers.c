@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-alloc.h"
 
 /* arg_that */
@@ -13,7 +14,7 @@ static bool arg_that_test(pfstest_arg_handler_t *arg_handler,
     pfstest_matcher_t *matcher = pfstest_arg_handler_data(arg_handler);
     return pfstest_matcher_matches(matcher, actual);
 }
-    
+
 static void arg_that_matched(pfstest_arg_handler_t *arg_handler,
                              pfstest_value_t *actual)
 {
@@ -61,7 +62,7 @@ static void assign_arg_matched(pfstest_arg_handler_t *arg_handler,
 
 static void assign_arg_printer(pfstest_arg_handler_t *this)
 {
-    printf("is any pointer");
+    pfstest_printf_nv(pfstest_nv_string("is any pointer"));
 }
 
 pfstest_arg_handler_t *pfstest_assign_arg(pfstest_value_t *src)
