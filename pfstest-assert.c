@@ -29,11 +29,11 @@ static void assert_that_printer(const void *data)
     pfstest_value_print(args->actual);
 }
 
-void _pfstest_assert_that(const char *file,
-                          int line,
-                          const char *message,
-                          pfstest_value_t *actual,
-                          pfstest_matcher_t *matcher)
+void pfstest_assert_that_at_location(const char *file,
+                                     int line,
+                                     const char *message,
+                                     pfstest_value_t *actual,
+                                     pfstest_matcher_t *matcher)
 {
     struct assert_that_args args;
     args.message = message;
