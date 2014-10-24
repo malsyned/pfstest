@@ -79,12 +79,18 @@ typedef struct
 } pfstest_hook_t;
 
 #define _pfstest_hook_name(name) _pfstest_econcat(__pfstest_hook__, name)
+#define _pfstest_hook_file_var(name)                \
+    _pfstest_econcat(__pfstest_hook_file__, name)
 #define _pfstest_hook_decl(name) static void _pfstest_hook_name(name)(void)
 
-#define _pfstest_hook_object(name, file)            \
-    pfstest_hook_t name[1] =                        \
-    {{ {NULL}, file, _pfstest_hook_name(name) }}
-         
+#define _pfstest_hook_object(name)                                  \
+    static pfstest_nv_string_decl(_pfstest_hook_file_var(name)) =   \
+        __FILE__;                                                   \
+    pfstest_hook_t name[1] =                                        \
+    {{ {NULL},                                                      \
+       _pfstest_hook_file_var(name),                                \
+       _pfstest_hook_name(name) }}
+
 #define _pfstest_hook_init_define(name, phase)                      \
     __attribute__((__constructor__))                                \
     static void _pfstest_econcat(__pfstest_hook_init__, name)(void) \
@@ -92,14 +98,14 @@ typedef struct
         _pfstest_econcat(pfstest_register_, phase)(name);           \
     }
 
-#define _pfstest_hook(name, file, phase)        \
+#define _pfstest_hook(name, phase)              \
     _pfstest_hook_decl(name);                   \
-    _pfstest_hook_object(name, file);           \
+    _pfstest_hook_object(name);                 \
     _pfstest_hook_init_define(name, phase)      \
     _pfstest_hook_decl(name)
 
-#define pfstest_before_tests(name) _pfstest_hook(name, __FILE__, before)
-#define pfstest_after_tests(name) _pfstest_hook(name, __FILE__, after)
+#define pfstest_before_tests(name) _pfstest_hook(name, before)
+#define pfstest_after_tests(name) _pfstest_hook(name, after)
 
 void pfstest_register_before(pfstest_hook_t *the_hook);
 void pfstest_register_after(pfstest_hook_t *the_hook);

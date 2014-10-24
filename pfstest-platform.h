@@ -10,6 +10,9 @@
 # define PFSTEST_PRINV "S"
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_printf_nv printf_P
+
+int pfstest_strcmp_nvnv(const char *s1, const char *s2);
+
 #else  /* !defined(__GNUC__) || !defined(__AVR__) */
 
 #define PFSTEST_NV_UNSUPPORTED
@@ -18,6 +21,7 @@
 # define pfstest_nv_string(string) string
 # define PFSTEST_PRINV "s"
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
+# define pfstest_strcmp_nvnv strcmp
 # define pfstest_printf_nv printf
 
 #endif
