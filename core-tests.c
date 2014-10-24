@@ -6,7 +6,7 @@ test(should_pass)
 {
 }
 
-test(should_fail)
+test(should_FAIL)
 {
     fail("failure message");
     pfstest_printf_nv(pfstest_nv_string("!!! BUG !!!\n"));
@@ -22,7 +22,7 @@ failing_test(should_expect_failure)
     fail("no surprise");
 }
 
-failing_test(should_fail_to_fail)
+failing_test(should_FAIL_to_fail)
 {
 }
 
