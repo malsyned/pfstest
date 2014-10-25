@@ -52,7 +52,7 @@ static bool is_the_whatever_test(pfstest_matcher_t *matcher,
 
 /* is_the_short */
 
-pfstest_matcher_t *is_the_short(short s)
+pfstest_matcher_t *pfstest_is_the_short(short s)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -61,7 +61,7 @@ pfstest_matcher_t *is_the_short(short s)
 
 /* is_the_ushort */
 
-pfstest_matcher_t *is_the_ushort(unsigned short s)
+pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -70,7 +70,7 @@ pfstest_matcher_t *is_the_ushort(unsigned short s)
 
 /* is_the_int */
 
-pfstest_matcher_t *is_the_int(int i)
+pfstest_matcher_t *pfstest_is_the_int(int i)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -79,7 +79,7 @@ pfstest_matcher_t *is_the_int(int i)
 
 /* is_the_uint */
 
-pfstest_matcher_t *is_the_uint(unsigned int u)
+pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -88,7 +88,7 @@ pfstest_matcher_t *is_the_uint(unsigned int u)
 
 /* is_the_char */
 
-pfstest_matcher_t *is_the_char(char c)
+pfstest_matcher_t *pfstest_is_the_char(char c)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -97,7 +97,7 @@ pfstest_matcher_t *is_the_char(char c)
 
 /* is_the_string */
 
-pfstest_matcher_t *is_the_string(char *s)
+pfstest_matcher_t *pfstest_is_the_string(char *s)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -117,7 +117,7 @@ static bool is_the_pointer_test(pfstest_matcher_t *matcher,
     return (expected_pointer == actual_pointer);
 }
 
-pfstest_matcher_t *is_the_pointer(void *p)
+pfstest_matcher_t *pfstest_is_the_pointer(void *p)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_pointer_test,
@@ -126,7 +126,7 @@ pfstest_matcher_t *is_the_pointer(void *p)
 
 /* is_the_memory */
 
-pfstest_matcher_t *is_the_memory(void *m, size_t size)
+pfstest_matcher_t *pfstest_is_the_memory(void *m, size_t size)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,

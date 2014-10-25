@@ -28,5 +28,4 @@ void pfstest_list_node_init(pfstest_list_node_t *node);
          node != NULL;                          \
          node = node->next)
 
-
 #endif /* !PFSTEST_LIST_H */

@@ -6,6 +6,13 @@
 #include "pfstest-platform.h"
 #include "pfstest-list.h"
 
+/* Basic utilities */
+
+#define _pfstest_concat(a, b) a ## b
+#define _pfstest_econcat(a, b) _pfstest_concat(a, b)
+
+/* Tests */
+
 #define _PFSTEST_FLAG_IGNORED 0x1
 #define _PFSTEST_FLAG_EXPECT_FAIL 0x2
 
@@ -19,8 +26,6 @@ typedef struct
     void (*function)(void);
 } pfstest_t;
 
-#define _pfstest_concat(a, b) a ## b
-#define _pfstest_econcat(a, b) _pfstest_concat(a, b)
 #define _pfstest_function_name(name) _pfstest_econcat(__pfstest__, name)
 #define _pfstest_name_var(name) _pfstest_econcat(__pfstest_name__, name)
 #define _pfstest_file_var(name) _pfstest_econcat(__pfstest_file__, name)
@@ -45,27 +50,18 @@ typedef struct
 # define _pfstest_init_define(name)
 #endif
 
-#define _pfstest_protos(name, flags)            \
+#define _pfstest_define(name, flags)            \
     _pfstest_decl(name);                        \
     _pfstest_object(name, flags);               \
     _pfstest_init_define(name)                  \
     _pfstest_decl(name)
 
-#define pfstest(name) _pfstest_protos(name, 0)
+#define pfstest(name) _pfstest_define(name, 0)
 #define pfstest_failing_test(name)                      \
-    _pfstest_protos(name, _PFSTEST_FLAG_EXPECT_FAIL)
+    _pfstest_define(name, _PFSTEST_FLAG_EXPECT_FAIL)
 #define pfstest_ignore_test(name)                   \
-    _pfstest_protos(name, _PFSTEST_FLAG_IGNORED)
+    _pfstest_define(name, _PFSTEST_FLAG_IGNORED)
 #define pfstest_ignore_failing_test pfstest_ignore_test
-
-PFSTEST_NORETURN void _pfstest_fail_at_location(
-    pfstest_nv_str_ptr(file), int line, pfstest_nv_str_ptr(message));
-#define pfstest_fail_at_location(file, line, message)       \
-    _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
-PFSTEST_NORETURN void pfstest_fail_with_printer(
-    pfstest_nv_str_ptr(file), int line,
-    void (*printer)(const void *),
-    const void *object);
 
 void _pfstest_register_test(pfstest_t *the_test);
 #define pfstest_register_test(the_test) do {    \
@@ -73,11 +69,7 @@ void _pfstest_register_test(pfstest_t *the_test);
         _pfstest_register_test(the_test);       \
     } while (0)
 
-int pfstest_run_tests(int argc, char *argv[]);
-int pfstest_run_all_tests(void);
-int pfstest_run_all_tests_verbose(void);
-#define pfstest_fail(message)                                           \
-    pfstest_fail_at_location(pfstest_nv_string(__FILE__), __LINE__, message)
+/* Hooks (before, after) */
 
 typedef struct 
 {
@@ -124,17 +116,42 @@ typedef struct
 #define pfstest_before_tests(name) _pfstest_hook(name, before)
 #define pfstest_after_tests(name) _pfstest_hook(name, after)
 
+#define _pfstest_register_hook(the_hook, phase) do {            \
+        extern pfstest_hook_t the_hook[];                       \
+        _pfstest_econcat(_pfstest_register_, phase)(the_hook);  \
+    } while (0)
+
 void _pfstest_register_before(pfstest_hook_t *the_hook);
-#define pfstest_register_before(the_hook) do {  \
-        extern pfstest_hook_t the_hook[];       \
-        _pfstest_register_before(the_hook);     \
-    } while (0)
-        
+#define pfstest_register_before(the_hook)       \
+    _pfstest_register_hook(the_hook, before)
+
 void _pfstest_register_after(pfstest_hook_t *the_hook);
-#define pfstest_register_after(the_hook) do {   \
-        extern pfstest_hook_t the_hook[];       \
-        _pfstest_register_after(the_hook);      \
-    } while (0)
+#define pfstest_register_after(the_hook)        \
+    _pfstest_register_hook(the_hook, after)
+
+/* Fail interface */
+
+PFSTEST_NORETURN
+void pfstest_fail_with_printer(
+    pfstest_nv_str_ptr(file), int line,
+    void (*printer)(const void *),
+    const void *object);
+
+PFSTEST_NORETURN
+void _pfstest_fail_at_location(
+    pfstest_nv_str_ptr(file), int line, pfstest_nv_str_ptr(message));
+#define pfstest_fail_at_location(file, line, message)       \
+    _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
+#define pfstest_fail(message)                                           \
+    pfstest_fail_at_location(pfstest_nv_string(__FILE__), __LINE__, message)
+
+/* Framework entry points */
+
+int pfstest_run_tests(int argc, char *argv[]);
+int pfstest_run_all_tests(void);
+int pfstest_run_all_tests_verbose(void);
+
+/* Convenience aliases without the pfstest namespace prefix */
 
 #ifndef PFSTEST_NOALIAS_test
 # define test pfstest

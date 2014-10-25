@@ -7,20 +7,13 @@
 #include "pfstest-matcher.h"
 #include "pfstest-arg-handler.h"
 
+/* Mock */
+
 typedef struct 
 {
     pfstest_nv_str_ptr(name);
     int arg_count;
 } pfstest_mock_t;
-
-typedef struct 
-{
-    pfstest_list_node_t node;
-    const pfstest_mock_t *mock;
-    pfstest_arg_handler_t **arg_handlers;
-    pfstest_value_t *return_value;
-    int times;
-} pfstest_expectation_t;
 
 #define _pfstest_mock_func_name_var(name)               \
     _pfstest_econcat(__pfstest_mock_func_name__, name)
@@ -32,6 +25,29 @@ typedef struct
 #define pfstest_mock_declare(mock_name)         \
     extern const pfstest_mock_t mock_name[]
 
+void pfstest_mock_init(void);
+
+/* Expectation */
+
+typedef struct 
+{
+    pfstest_list_node_t node;
+    const pfstest_mock_t *mock;
+    pfstest_arg_handler_t **arg_handlers;
+    pfstest_value_t *return_value;
+    int times;
+} pfstest_expectation_t;
+
+pfstest_expectation_t *pfstest_when(const pfstest_mock_t *mock, ...);
+
+pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
+                                         pfstest_expectation_t *expectation);
+pfstest_expectation_t *pfstest_do_times(int times,
+                                        pfstest_expectation_t *expectation);
+pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);
+
+/* Invocation */
+
 typedef struct
 {
     pfstest_list_node_t node;
@@ -39,14 +55,11 @@ typedef struct
     bool mark;
 } pfstest_invocation_t;
 
-typedef struct _pfstest_verify_mode_t pfstest_verify_mode_t;
-struct _pfstest_verify_mode_t
-{
-    void (*function)(pfstest_nv_str_ptr(file), int line,
-                     pfstest_verify_mode_t *mode,
-                     pfstest_expectation_t *expectation);
-    void *data;
-};
+pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
+                                     pfstest_value_t *default_return_value,
+                                     ...);
+
+/* Verification */
 
 typedef struct _pfstest_verifier_t pfstest_verifier_t;
 struct _pfstest_verifier_t
@@ -56,22 +69,18 @@ struct _pfstest_verifier_t
     void *data;
 };
 
-typedef struct 
+void pfstest_run_verifiers(void);
+
+/* Verification with mode */
+
+typedef struct _pfstest_verify_mode_t pfstest_verify_mode_t;
+struct _pfstest_verify_mode_t
 {
-    pfstest_list_t expectations;
-} pfstest_in_order_t;
-
-void pfstest_mock_init(void);
-pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
-                                     pfstest_value_t *default_return_value,
-                                     ...);
-pfstest_expectation_t *pfstest_when(const pfstest_mock_t *mock, ...);
-
-pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
-                                         pfstest_expectation_t *expectation);
-pfstest_expectation_t *pfstest_do_times(int times,
-                                        pfstest_expectation_t *expectation);
-pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);
+    void (*function)(pfstest_nv_str_ptr(file), int line,
+                     pfstest_verify_mode_t *mode,
+                     pfstest_expectation_t *expectation);
+    void *data;
+};
 
 void pfstest_verify_at_location(pfstest_nv_str_ptr(file), int line,
                                 pfstest_expectation_t *e);
@@ -87,13 +96,22 @@ pfstest_verify_mode_t *pfstest_exactly(int times);
 pfstest_verify_mode_t *pfstest_at_most(int times);
 pfstest_verify_mode_t *pfstest_at_least(int times);
 
+/* No more interactions verification */
+
 void pfstest_verify_no_more_interactions_at_location(
     pfstest_nv_str_ptr(file),
     int line,
     const pfstest_mock_t *mock);
-#define pfstest_verify_no_more_interactions(m)                          \
-    pfstest_verify_no_more_interactions_at_location(\
+#define pfstest_verify_no_more_interactions(m)          \
+    pfstest_verify_no_more_interactions_at_location(    \
         pfstest_nv_string(__FILE__), __LINE__, m)
+
+/* In order verification */
+
+typedef struct 
+{
+    pfstest_list_t expectations;
+} pfstest_in_order_t;
 
 pfstest_in_order_t *pfstest_in_order_new(void);
 void pfstest_in_order_verify_at_location(pfstest_nv_str_ptr(file), int line,
@@ -104,7 +122,7 @@ void pfstest_in_order_verify_at_location(pfstest_nv_str_ptr(file), int line,
                                         __LINE__,                       \
                                         order, expectation)
 
-void pfstest_run_verifiers(void);
+/* Convenience aliases without the pfstest namespace prefix */
 
 #ifndef PFSTEST_NOALIAS_when
 # define when pfstest_when

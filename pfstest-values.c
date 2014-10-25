@@ -16,7 +16,7 @@ static void the_short_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the short %hd"), s);
 }
 
-pfstest_value_t *the_short(short s)
+pfstest_value_t *pfstest_the_short(short s)
 {
     short *data = pfstest_alloc(sizeof(s));
     *data = s;
@@ -33,7 +33,7 @@ static void the_ushort_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the ushort %hu"), u);
 }
 
-pfstest_value_t *the_ushort(unsigned short u)
+pfstest_value_t *pfstest_the_ushort(unsigned short u)
 {
     unsigned short *data = pfstest_alloc(sizeof(u));
     *data = u;
@@ -50,7 +50,7 @@ static void the_int_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the int %d"), i);
 }
 
-pfstest_value_t *the_int(int i)
+pfstest_value_t *pfstest_the_int(int i)
 {
     int *data = pfstest_alloc(sizeof(i));
     *data = i;
@@ -67,7 +67,7 @@ static void the_uint_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the uint %u"), u);
 }
 
-pfstest_value_t *the_uint(unsigned int u)
+pfstest_value_t *pfstest_the_uint(unsigned int u)
 {
     unsigned int *data = pfstest_alloc(sizeof(u));
     *data = u;
@@ -84,7 +84,7 @@ static void the_char_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the char '%c'"), c);
 }
 
-pfstest_value_t *the_char(char c)
+pfstest_value_t *pfstest_the_char(char c)
 {
     char *data = pfstest_alloc(sizeof(c));
     *data = c;
@@ -101,7 +101,7 @@ static void the_string_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the string \"%s\""), data);
 }
 
-pfstest_value_t *the_string(char *s)
+pfstest_value_t *pfstest_the_string(char *s)
 {
     char *data = pfstest_alloc(strlen(s) + 1);
     strcpy(data, s);
@@ -118,7 +118,7 @@ static void the_pointer_printer(pfstest_value_t *value)
     pfstest_printf_nv(pfstest_nv_string("the pointer <%p>"), data);
 }
 
-pfstest_value_t *the_pointer(void *p)
+pfstest_value_t *pfstest_the_pointer(void *p)
 {
     return pfstest_value_new(the_pointer_printer, p, 0);
 }
@@ -140,7 +140,7 @@ static void the_memory_printer(pfstest_value_t *value)
     pfstest_print_nv_string(pfstest_nv_string("}"));
 }
 
-pfstest_value_t *the_memory(void *m, size_t size)
+pfstest_value_t *pfstest_the_memory(void *m, size_t size)
 {
     void *data = pfstest_alloc(size);
 
