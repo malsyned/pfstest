@@ -9,6 +9,8 @@
 \.lst$
 \.map$
 \.sym$
+\.cof$
 \.orig$
 ^core-tests$
 ^tests$
+(^|/)nbproject/private/
