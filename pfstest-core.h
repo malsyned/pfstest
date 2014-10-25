@@ -83,20 +83,26 @@ typedef struct
 {
     pfstest_list_node_t list_node;
     pfstest_nv_str_ptr(file);
+    pfstest_nv_str_ptr(name);
     void (*function)(void);
 } pfstest_hook_t;
 
 #define _pfstest_hook_name(name) _pfstest_econcat(__pfstest_hook__, name)
 #define _pfstest_hook_file_var(name)                \
     _pfstest_econcat(__pfstest_hook_file__, name)
+#define _pfstest_hook_name_var(name)                \
+    _pfstest_econcat(__pfstest_hook_name__, name)
 #define _pfstest_hook_decl(name) static void _pfstest_hook_name(name)(void)
 
 #define _pfstest_hook_object(name)                                  \
     static pfstest_nv_string_decl(_pfstest_hook_file_var(name)) =   \
         __FILE__;                                                   \
+    static pfstest_nv_string_decl(_pfstest_hook_name_var(name)) =   \
+        #name;                                                      \
     pfstest_hook_t name[1] =                                        \
     {{ {NULL},                                                      \
        _pfstest_hook_file_var(name),                                \
+       _pfstest_hook_name_var(name),                                \
        _pfstest_hook_name(name) }}
 
 #if defined(pfstest_constructor)

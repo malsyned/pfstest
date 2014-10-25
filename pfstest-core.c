@@ -204,11 +204,47 @@ static void do_tests_list(const char *test_file,
     }
 }
 
+static void print_register_hook_commands(pfstest_list_t *list,
+                                         pfstest_nv_str_ptr(list_name))
+{
+    pfstest_list_node_t *hook_node;
+
+    pfstest_list_iter (hook_node, list) {
+        pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
+
+        pfstest_print_nv_string(pfstest_nv_string("    register_"));
+        pfstest_print_nv_string(list_name);
+        pfstest_print_nv_string(pfstest_nv_string("("));
+        pfstest_print_nv_string(hook->name);
+        pfstest_print_nv_string(pfstest_nv_string(");\n"));
+    }
+}
+
+static void print_register_test_commands(void)
+{
+    pfstest_list_node_t *test_node;
+
+    pfstest_list_iter (test_node, &tests) {
+        pfstest_t *test = (pfstest_t *)test_node;
+
+        pfstest_print_nv_string(pfstest_nv_string("    register_test("));
+        pfstest_print_nv_string(test->name);
+        pfstest_print_nv_string(pfstest_nv_string(");\n"));
+    }
+}
+
+static void print_register_commands(void)
+{
+    print_register_hook_commands(&before, pfstest_nv_string("before"));
+    print_register_hook_commands(&after, pfstest_nv_string("after"));
+    print_register_test_commands();
+}
+
 static void print_usage_and_exit(void)
 {
     pfstest_printf_nv(
         pfstest_nv_string(
-            "usage: %s [-v] [-f source-file] [-n test-name]\n"),
+            "usage: %s [-r] [-v] [-f source-file] [-n test-name]\n"),
         program_name);
     exit(1);
 }
@@ -230,6 +266,7 @@ int pfstest_run_tests(int argc, char *argv[])
     const char *test_file = NULL;
     const char *test_name = NULL;
     const char *arg;
+    bool register_print = false;
 
     if (argc == 0 || argv == NULL)
         goto args_done;
@@ -244,11 +281,18 @@ int pfstest_run_tests(int argc, char *argv[])
             verbose = true;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-v"))) {
             verbose = true;
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-r"))) {
+            register_print = true;
         } else {
             print_usage_and_exit();
         }
     }
 args_done:
+
+    if (register_print) {
+        print_register_commands();
+        return 0;
+    }
 
     pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
     pfstest_print_nv_string(pfstest_nv_string("===========\n"));

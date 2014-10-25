@@ -1,0 +1,5 @@
+#include "pfstest.h"
+#include "register-tests.h"
+
+void register_tests(void)
+{
