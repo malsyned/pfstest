@@ -347,6 +347,6 @@ ignore_test(should_verify_no_more_invocations)
 {
 }
 
-ignore_failing_test(verify_no_more_invocations_should_reject_surpluss_invocations)
+ignore_failing_test(verify_no_more_invocations_should_reject_surplus_invocations)
 {
 }
