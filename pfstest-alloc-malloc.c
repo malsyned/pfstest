@@ -1,9 +1,8 @@
 #include "pfstest-alloc.h"
 
 #include <stdlib.h>
-#include <stdint.h>
-#include <assert.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-list.h"
 
 static pfstest_list_t allocated = PFSTEST_LIST_EMPTY();

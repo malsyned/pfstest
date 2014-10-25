@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <inttypes.h>
 #include <string.h>
 
 #include "pfstest-platform.h"
@@ -132,13 +131,13 @@ static void the_memory_printer(pfstest_value_t *value)
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    pfstest_printf_nv(pfstest_nv_string("the memory {"));
+    pfstest_print_nv_string(pfstest_nv_string("the memory {"));
     for (i = 0; i < size; i++) {
         pfstest_printf_nv(pfstest_nv_string("0x%02x"), data[i]);
         if (i < size - 1)
-            pfstest_printf_nv(pfstest_nv_string(", "));
+            pfstest_print_nv_string(pfstest_nv_string(", "));
     }
-    pfstest_printf_nv(pfstest_nv_string("}"));
+    pfstest_print_nv_string(pfstest_nv_string("}"));
 }
 
 pfstest_value_t *the_memory(void *m, size_t size)

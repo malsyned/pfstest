@@ -2,9 +2,9 @@
 
 #include <setjmp.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 
+#include "pfstest-platform.h"
 /* TODO: plugin-ize */
 #include "pfstest-alloc.h"
 #include "pfstest-mock.h"
@@ -15,14 +15,14 @@
 
 static pfstest_t *current_test;
 static jmp_buf test_jmp_buf;
-static bool fail_expected;
+static bool fail_expected = false;
 
 const char *program_name = NULL;
-static bool verbose;
+static bool verbose = false;
 
-static int passed;
-static int failed;
-static int ignored;
+static int passed = 0;
+static int failed = 0;
+static int ignored = 0;
 
 static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
 static pfstest_list_t before = PFSTEST_LIST_EMPTY();
@@ -30,12 +30,13 @@ static pfstest_list_t after = PFSTEST_LIST_EMPTY();
 
 static void print_context(pfstest_t *the_test)
 {
-    pfstest_printf_nv(
-        pfstest_nv_string("%" PFSTEST_PRINV ":%" PFSTEST_PRINV " "),
-        the_test->file, the_test->name);
+    pfstest_print_nv_string(the_test->file);
+    pfstest_print_nv_string(pfstest_nv_string(":"));
+    pfstest_print_nv_string(the_test->name);
+    pfstest_print_nv_string(pfstest_nv_string(" "));
 }
 
-void pfstest_fail_with_printer(const char *file, int line,
+void pfstest_fail_with_printer(pfstest_nv_str_ptr(file), int line,
                                void (*printer)(const void *),
                                const void *object)
 {
@@ -43,32 +44,45 @@ void pfstest_fail_with_printer(const char *file, int line,
         longjmp(test_jmp_buf, RESULT_FAIL);
 
     if (!verbose) {
-        pfstest_printf_nv(pfstest_nv_string("\n"));
+        pfstest_print_nv_string(pfstest_nv_string("\n"));
         print_context(current_test);
     }
 
-    pfstest_printf_nv(pfstest_nv_string("FAIL"));
+    pfstest_print_nv_string(pfstest_nv_string("FAIL"));
     if (fail_expected)
-        pfstest_printf_nv(pfstest_nv_string(" (expected)"));
-    pfstest_printf_nv(pfstest_nv_string("\n"));
-    pfstest_printf_nv(
-        pfstest_nv_string("    Location: %" PFSTEST_PRINV ":%d\n"),
-        file, line);
+        pfstest_print_nv_string(pfstest_nv_string(" (expected)"));
+    pfstest_print_nv_string(pfstest_nv_string("\n"));
+    pfstest_print_nv_string(pfstest_nv_string("    Location: "));
+    pfstest_print_nv_string(file);
+    pfstest_print_nv_string(pfstest_nv_string(":"));
+    pfstest_print_int(line);
+    pfstest_print_nv_string(pfstest_nv_string("\n"));
     printer(object);
-    pfstest_printf_nv(pfstest_nv_string("\n"));
+    pfstest_print_nv_string(pfstest_nv_string("\n"));
     longjmp(test_jmp_buf, RESULT_FAIL);
 }
 
+struct message_printer_args
+{
+    pfstest_nv_str_ptr(message);
+};
+
 static void message_printer(const void *object)
 {
-    const char *message = object;
-    pfstest_printf_nv(pfstest_nv_string("    %" PFSTEST_PRINV), message);
+    const struct message_printer_args *args = object;
+    pfstest_print_nv_string(pfstest_nv_string("    "));
+    pfstest_print_nv_string(args->message);
 }
 
-void _pfstest_fail_at_location(const char *file, int line,
-                               const char *message)
+void _pfstest_fail_at_location(
+    pfstest_nv_str_ptr(file), int line, pfstest_nv_str_ptr(message))
 {
-    pfstest_fail_with_printer(file, line, message_printer, message);
+    struct message_printer_args args;
+
+    args.message = message;
+
+    pfstest_fail_with_printer(file, line, message_printer,
+                              (const void *)&args);
 }
 
 static void pass(void)
@@ -107,16 +121,18 @@ static void run_test(void)
             }
 
             passed++;
-            if (verbose)
-                pfstest_printf_nv(pfstest_nv_string("PASS\n"));
-            else
-                pfstest_printf_nv(pfstest_nv_string(".")); fflush(stdout);
+            if (verbose) {
+                pfstest_print_nv_string(pfstest_nv_string("PASS\n"));
+            } else {
+                pfstest_print_nv_string(pfstest_nv_string("."));
+                fflush(stdout);
+            }
             break;
         case RESULT_FAIL:
             if (fail_expected) {
                 fail_expected = false;
                 if (verbose)
-                    pfstest_printf_nv(pfstest_nv_string("    "));
+                    pfstest_print_nv_string(pfstest_nv_string("    "));
                 pass();
             }
     
@@ -125,34 +141,36 @@ static void run_test(void)
             break;
         case RESULT_IGNORE:
             ignored++;
-            if (verbose)
-                pfstest_printf_nv(pfstest_nv_string("IGNORED\n"));
-            else
-                pfstest_printf_nv(pfstest_nv_string("I")); fflush(stdout);
+            if (verbose) {
+                pfstest_print_nv_string(pfstest_nv_string("IGNORED\n"));
+            } else {
+                pfstest_print_nv_string(pfstest_nv_string("I"));
+                fflush(stdout);
+            }
             break;
         default:
-            pfstest_printf_nv(pfstest_nv_string("FATAL ERROR\n"));
+            pfstest_print_nv_string(pfstest_nv_string("FATAL ERROR\n"));
             exit(1);
             break;
     }
 }
 
-void pfstest_register_test(pfstest_t *the_test)
+void _pfstest_register_test(pfstest_t *the_test)
 {
     pfstest_list_append(&tests, (pfstest_list_node_t *)the_test);
 }
 
-void pfstest_register_before(pfstest_hook_t *the_hook)
+void _pfstest_register_before(pfstest_hook_t *the_hook)
 {
     pfstest_list_append(&before, (pfstest_list_node_t *)the_hook);
 }
 
-void pfstest_register_after(pfstest_hook_t *the_hook)
+void _pfstest_register_after(pfstest_hook_t *the_hook)
 {
     pfstest_list_append(&after, (pfstest_list_node_t *)the_hook);
 }
 
-static void do_hook_list(pfstest_list_t *list, const char *file)
+static void do_hook_list(pfstest_list_t *list, pfstest_nv_str_ptr(file))
 {
     pfstest_list_node_t *hook_node;
 
@@ -195,7 +213,7 @@ static void print_usage_and_exit(void)
     exit(1);
 }
 
-char *next_arg(char **argv[], bool required)
+const char *next_arg(char **argv[], bool required)
 {
     char *r = **argv;
 
@@ -204,14 +222,14 @@ char *next_arg(char **argv[], bool required)
     
     (*argv)++;
 
-    return r;
+    return (const char *)r;
 }
 
 int pfstest_run_tests(int argc, char *argv[])
 {
     const char *test_file = NULL;
     const char *test_name = NULL;
-    char *arg;
+    const char *arg;
 
     if (argc == 0 || argv == NULL)
         goto args_done;
@@ -219,12 +237,12 @@ int pfstest_run_tests(int argc, char *argv[])
     program_name = next_arg(&argv, true);
 
     while (arg = next_arg(&argv, false), arg != NULL) {
-        if (0 == strcmp("-f", arg)) {
+        if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-f"))) {
             test_file = next_arg(&argv, true);
-        } else if (0 == strcmp("-n", arg)) {
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-n"))) {
             test_name = next_arg(&argv, true);
             verbose = true;
-        } else if (0 == strcmp("-v", arg)) {
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-v"))) {
             verbose = true;
         } else {
             print_usage_and_exit();
@@ -232,8 +250,8 @@ int pfstest_run_tests(int argc, char *argv[])
     }
 args_done:
 
-    pfstest_printf_nv(pfstest_nv_string("PFSTest 0.1\n"));
-    pfstest_printf_nv(pfstest_nv_string("===========\n"));
+    pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
+    pfstest_print_nv_string(pfstest_nv_string("===========\n"));
     do_tests_list(test_file, test_name);
     pfstest_printf_nv(
         pfstest_nv_string(
@@ -253,7 +271,16 @@ int pfstest_run_all_tests(void)
 
 int pfstest_run_all_tests_verbose(void)
 {
-    char *argv[] = {"", "-v", NULL};
+    /* mcc18 stores string constants in ROM, which is a separate
+     * memory space, unless you explicitly place them to RAM like
+     * this.  */
+    char argv_0[] = "";
+    char argv_1[] = "-v";
+    char *argv[3];
+
+    argv[0] = argv_0;
+    argv[1] = argv_1;
+    argv[2] = NULL;
 
     return run_tests(2, argv);
 }

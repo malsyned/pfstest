@@ -1,8 +1,7 @@
 #ifndef PFSTEST_MATCHER_H
 #define PFSTEST_MATCHER_H
 
-#include <stdbool.h>
-
+#include "pfstest-platform.h"
 #include "pfstest-value.h"
 
 typedef struct _pfstest_matcher_t pfstest_matcher_t;

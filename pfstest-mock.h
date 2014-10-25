@@ -9,7 +9,7 @@
 
 typedef struct 
 {
-    const char *name;
+    pfstest_nv_str_ptr(name);
     int arg_count;
 } pfstest_mock_t;
 
@@ -42,7 +42,7 @@ typedef struct
 typedef struct _pfstest_verify_mode_t pfstest_verify_mode_t;
 struct _pfstest_verify_mode_t
 {
-    void (*function)(const char *file, int line,
+    void (*function)(pfstest_nv_str_ptr(file), int line,
                      pfstest_verify_mode_t *mode,
                      pfstest_expectation_t *expectation);
     void *data;
@@ -73,11 +73,11 @@ pfstest_expectation_t *pfstest_do_times(int times,
                                         pfstest_expectation_t *expectation);
 pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);
 
-void pfstest_verify_at_location(const char *file, int line,
+void pfstest_verify_at_location(pfstest_nv_str_ptr(file), int line,
                                 pfstest_expectation_t *e);
 #define pfstest_verify(e)                                               \
     pfstest_verify_at_location(pfstest_nv_string(__FILE__), __LINE__, e)
-void pfstest_verify_times_at_location(const char *file, int line,
+void pfstest_verify_times_at_location(pfstest_nv_str_ptr(file), int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e);
 #define pfstest_verify_times(m, e)                                  \
@@ -88,7 +88,7 @@ pfstest_verify_mode_t *pfstest_at_most(int times);
 pfstest_verify_mode_t *pfstest_at_least(int times);
 
 void pfstest_verify_no_more_interactions_at_location(
-    const char *file,
+    pfstest_nv_str_ptr(file),
     int line,
     const pfstest_mock_t *mock);
 #define pfstest_verify_no_more_interactions(m)                          \
@@ -96,7 +96,7 @@ void pfstest_verify_no_more_interactions_at_location(
         pfstest_nv_string(__FILE__), __LINE__, m)
 
 pfstest_in_order_t *pfstest_in_order_new(void);
-void pfstest_in_order_verify_at_location(const char *file, int line,
+void pfstest_in_order_verify_at_location(pfstest_nv_str_ptr(file), int line,
                                          pfstest_in_order_t *order,
                                          pfstest_expectation_t *expectation);
 #define pfstest_in_order_verify(order, expectation)                     \

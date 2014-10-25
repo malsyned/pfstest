@@ -1,6 +1,8 @@
 #ifndef PFSTEST_LIST_H
 #define PFSTEST_LIST_H
 
+#include <stddef.h>
+
 typedef struct _pfstest_list_node pfstest_list_node_t;
 
 struct _pfstest_list_node

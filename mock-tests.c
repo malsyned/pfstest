@@ -80,24 +80,28 @@ test(should_handle_multiple_invocations)
     dep_func1(3);
 }
 
+char foo[] = "foo";
+char bar[] = "bar";
+char one23[] = "123";
+
 test(should_return_through_pointer)
 {
     char buf[] = "foo";
 
     when(mock_dep_func2,
          arg_that(is_the_int(2)),
-         assign_arg(the_string("bar")));
+         assign_arg(the_string(bar)));
 
     dep_func2(2, buf);
 
     assert_that("string returned through pointer",
-                the_string(buf), is_the_string("bar"));
+                the_string(buf), is_the_string(bar));
 }
 
 failing_test(should_print_sensible_explanation_of_assign_arg_in_failures)
 {
     verify(when(mock_dep_func2,
-                arg_that(is_the_int(2)), assign_arg(the_string("foo"))));
+                arg_that(is_the_int(2)), assign_arg(the_string(foo))));
 }
 
 test(should_match_and_return_through_pointer)
@@ -107,25 +111,25 @@ test(should_match_and_return_through_pointer)
 
     when(mock_dep_func2,
          arg_that(is_the_int(2)),
-         assign_arg_that(is_the_string("foo"),
-                         the_string("bar")));
+         assign_arg_that(is_the_string(foo),
+                         the_string(bar)));
 
     dep_func2(2, untouched_buf);
     dep_func2(2, buf);
 
     assert_that("string returned through pointer on match",
-                the_string(buf), is_the_string("bar"));
+                the_string(buf), is_the_string(bar));
 
     assert_that("string untouched when not matched",
-                the_string(untouched_buf), is_the_string("123"));
+                the_string(untouched_buf), is_the_string(one23));
 }
 
 failing_test(should_print_matcher_for_failures_involving_assign_arg_that)
 {
     verify(when(mock_dep_func2,
                 arg_that(is_the_int(2)),
-                assign_arg_that(is_the_string("foo"),
-                                the_string("bar"))));
+                assign_arg_that(is_the_string(foo),
+                                the_string(bar))));
 }
 
 test(should_stub_different_return_values_with_one_time)
@@ -166,14 +170,19 @@ test(should_verify_in_order)
                                 arg_that(is_the_int(2))));
     in_order_verify(order, when(mock_dep_func2,
                                 arg_that(is_the_int(4)),
-                                arg_that(is_the_string("foo"))));
+                                arg_that(is_the_string(foo))));
 
     dep_func1(1);
     dep_func1(2);
     dep_func1(3);
-    dep_func2(4, "bar");
-    dep_func2(4, "foo");
+    dep_func2(4, bar);
+    dep_func2(4, foo);
 }
+
+#ifdef __18CXX
+/* All of the strings in this file overran 256 bytes of idata */
+#pragma idata mock_tests_2
+#endif
 
 failing_test(should_fail_when_out_of_order)
 {
@@ -183,13 +192,13 @@ failing_test(should_fail_when_out_of_order)
                                 arg_that(is_the_int(2))));
     in_order_verify(order, when(mock_dep_func2,
                                 arg_that(is_the_int(4)),
-                                arg_that(is_the_string("foo"))));
+                                arg_that(is_the_string(foo))));
 
     dep_func1(1);
-    dep_func2(4, "foo");
+    dep_func2(4, foo);
     dep_func1(2);
     dep_func1(3);
-    dep_func2(4, "bar");
+    dep_func2(4, bar);
 }
 
 test(should_verify_multiple_in_orders)
@@ -201,18 +210,18 @@ test(should_verify_multiple_in_orders)
                                  arg_that(is_the_int(1))));
     in_order_verify(order1, when(mock_dep_func2,
                                  arg_that(is_the_int(2)),
-                                 arg_that(is_the_string("foo"))));
+                                 arg_that(is_the_string(foo))));
 
     in_order_verify(order2, when(mock_dep_func1,
                                  arg_that(is_the_int(3))));
     in_order_verify(order2, when(mock_dep_func2,
                                  arg_that(is_the_int(4)),
-                                 arg_that(is_the_string("bar"))));
+                                 arg_that(is_the_string(bar))));
 
     dep_func1(1);
     dep_func1(3);
-    dep_func2(4, "bar");
-    dep_func2(2, "foo");
+    dep_func2(4, bar);
+    dep_func2(2, foo);
 }
 
 test(should_verify_exact_invocation_count)
@@ -316,7 +325,7 @@ test(should_verify_no_more_interactions)
 
     dep_func1(1);
     dep_func1(2);
-    dep_func2(5, "foo");
+    dep_func2(5, foo);
 }
 
 failing_test(verify_no_more_interactions_should_reject_surplus_interactions)

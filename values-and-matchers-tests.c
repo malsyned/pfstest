@@ -69,30 +69,49 @@ failing_test(should_fail_on_different_chars)
 
 test(should_match_strings)
 {
-    assert_that("same strings pass", the_string("foo"), is_the_string("foo"));
+    char s1[] = "foo";
+    char s2[] = "foo";
+
+    assert_that("same strings pass", the_string(s1), is_the_string(s2));
 }
 
 failing_test(should_fail_on_different_strings)
 {
+    char s1[] = "foo";
+    char s2[] = "bar";
+
     assert_that("different strings fail",
-                the_string("foo"), is_the_string("bar"));
+                the_string(s1), is_the_string(s2));
 }
 
 failing_test(should_fail_on_shorter_actual_string)
 {
+    char s1[] = "foo";
+    char s2[] = "foobar";
+
     assert_that("shorter actual string fails",
-                the_string("foo"), is_the_string("foobar"));
+                the_string(s1), is_the_string(s2));
 }
 
 failing_test(should_fail_on_shorter_expected_string)
 {
+    char s1[] = "foobar";
+    char s2[] = "foo";
+
     assert_that("shorter expected string fails",
-                the_string("foobar"), is_the_string("foo"));
+                the_string(s1), is_the_string(s2));
 }
+
+#ifdef __18CXX
+/* All of the strings in this file overran 256 bytes of idata */
+#pragma idata values_and_matchers_2
+#endif
 
 test(should_match_pointers)
 {
-    char *p1 = "foo";
+    char s1[] = "foo";
+
+    char *p1 = s1;
     char *p2 = p1;
 
     assert_that("same pointers pass",
@@ -101,8 +120,11 @@ test(should_match_pointers)
 
 failing_test(should_fail_on_different_pointers)
 {
-    char *p1 = "foo";
-    char *p2 = "bar";
+    char s1[] = "foo";
+    char s2[] = "bar";
+
+    char *p1 = s1;
+    char *p2 = s2;
 
     assert_that("different pointers fail",
                 the_pointer(p1), is_the_pointer(p2));

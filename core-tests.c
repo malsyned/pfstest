@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "pfstest.h"
+#include "pfstest-core.h"
 
 test(should_pass)
 {
@@ -9,7 +9,7 @@ test(should_pass)
 test(should_FAIL)
 {
     fail("failure message");
-    pfstest_printf_nv(pfstest_nv_string("!!! BUG !!!\n"));
+    pfstest_print_nv_string(pfstest_nv_string("!!! BUG !!!\n"));
 }
 
 ignore_test(should_be_ignored)

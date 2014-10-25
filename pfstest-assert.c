@@ -6,9 +6,9 @@
 
 struct assert_that_args
 {
-    const char *file;
+    pfstest_nv_str_ptr(file);
     int line;
-    const char *message;
+    pfstest_nv_str_ptr(message);
     pfstest_value_t *actual;
     pfstest_matcher_t *matcher;
 };
@@ -17,22 +17,23 @@ static void assert_that_printer(const void *data)
 {
     const struct assert_that_args *args = data;
 
-    pfstest_printf_nv(pfstest_nv_string("    Failed assertion"));
+    pfstest_print_nv_string(pfstest_nv_string("    Failed assertion"));
     if (args->message != NULL) {
-        pfstest_printf_nv(pfstest_nv_string(": %" PFSTEST_PRINV " "),
-                          args->message);
+        pfstest_print_nv_string(pfstest_nv_string(": "));
+        pfstest_print_nv_string(args->message);
+        pfstest_print_nv_string(pfstest_nv_string(" "));
     }
-    pfstest_printf_nv(pfstest_nv_string("\n"));
-    pfstest_printf_nv(pfstest_nv_string("    Expected: "));
+    pfstest_print_nv_string(pfstest_nv_string("\n"));
+    pfstest_print_nv_string(pfstest_nv_string("    Expected: "));
     pfstest_matcher_print(args->matcher);
-    pfstest_printf_nv(pfstest_nv_string("\n"));
-    pfstest_printf_nv(pfstest_nv_string("    Actual: "));
+    pfstest_print_nv_string(pfstest_nv_string("\n"));
+    pfstest_print_nv_string(pfstest_nv_string("    Actual: "));
     pfstest_value_print(args->actual);
 }
 
-void _pfstest_assert_that_at_location(const char *file,
+void _pfstest_assert_that_at_location(pfstest_nv_str_ptr(file),
                                       int line,
-                                      const char *message,
+                                      pfstest_nv_str_ptr(message),
                                       pfstest_value_t *actual,
                                       pfstest_matcher_t *matcher)
 {
@@ -53,6 +54,7 @@ void _pfstest_assert_that_at_location(const char *file,
     }
 
     if (!pfstest_matcher_matches(matcher, actual)) {
-        pfstest_fail_with_printer(file, line, assert_that_printer, &args);
+        pfstest_fail_with_printer(file, line,
+                                  assert_that_printer, (const void *)&args);
     }
 }
