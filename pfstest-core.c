@@ -13,7 +13,7 @@
 #define RESULT_FAIL 2
 #define RESULT_IGNORE 3
 
-static pfstest_t *current_test;
+static _pfstest_test_nv_t current_test;
 static jmp_buf test_jmp_buf;
 static bool fail_expected = false;
 
@@ -28,15 +28,15 @@ static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
 static pfstest_list_t before = PFSTEST_LIST_EMPTY();
 static pfstest_list_t after = PFSTEST_LIST_EMPTY();
 
-static void print_context(pfstest_t *the_test)
+static void print_context(void)
 {
-    pfstest_print_nv_string(the_test->file);
+    pfstest_print_nv_string(current_test.file);
     pfstest_print_nv_string(pfstest_nv_string(":"));
-    pfstest_print_nv_string(the_test->name);
+    pfstest_print_nv_string(current_test.name);
     pfstest_print_nv_string(pfstest_nv_string(" "));
 }
 
-void pfstest_fail_with_printer(pfstest_nv_str_ptr(file), int line,
+void pfstest_fail_with_printer(const pfstest_nv_ptr char *file, int line,
                                void (*printer)(const void *),
                                const void *object)
 {
@@ -45,7 +45,7 @@ void pfstest_fail_with_printer(pfstest_nv_str_ptr(file), int line,
 
     if (!verbose) {
         pfstest_print_nv_string(pfstest_nv_string("\n"));
-        print_context(current_test);
+        print_context();
     }
 
     pfstest_print_nv_string(pfstest_nv_string("FAIL"));
@@ -64,7 +64,7 @@ void pfstest_fail_with_printer(pfstest_nv_str_ptr(file), int line,
 
 struct message_printer_args
 {
-    pfstest_nv_str_ptr(message);
+    const pfstest_nv_ptr char *message;
 };
 
 static void message_printer(const void *object)
@@ -75,7 +75,8 @@ static void message_printer(const void *object)
 }
 
 void _pfstest_fail_at_location(
-    pfstest_nv_str_ptr(file), int line, pfstest_nv_str_ptr(message))
+    const pfstest_nv_ptr char *file, int line,
+    const pfstest_nv_ptr char *message)
 {
     struct message_printer_args args;
 
@@ -98,17 +99,17 @@ static void ignore(void)
 static void run_test(void)
 {
     if (verbose)
-        print_context(current_test);
+        print_context();
     fflush(stdout);
 
-    fail_expected = (current_test->flags & _PFSTEST_FLAG_EXPECT_FAIL);
+    fail_expected = current_test.flags & _PFSTEST_FLAG_EXPECT_FAIL;
 
     switch (setjmp(test_jmp_buf)) {
         case 0:
-            if (current_test->flags & _PFSTEST_FLAG_IGNORED) {
+            if (current_test.flags & _PFSTEST_FLAG_IGNORED) {
                 ignore();
             }
-            current_test->function();
+            current_test.function();
             pfstest_run_verifiers(); /* TODO: plugin-ize */
             pass();
             break;
@@ -116,7 +117,7 @@ static void run_test(void)
             if (fail_expected) {
                 fail_expected = false;
                 pfstest_fail_at_location(
-                    current_test->file, current_test->line,
+                    current_test.file, current_test.line,
                     "Test passed when failure expected");
             }
 
@@ -170,14 +171,18 @@ void _pfstest_register_after(pfstest_hook_t *the_hook)
     pfstest_list_append(&after, (pfstest_list_node_t *)the_hook);
 }
 
-static void do_hook_list(pfstest_list_t *list, pfstest_nv_str_ptr(file))
+static void do_hook_list(pfstest_list_t *list,
+                         const pfstest_nv_ptr char *file)
 {
     pfstest_list_node_t *hook_node;
+    _pfstest_hook_nv_t nv_data;
 
     pfstest_list_iter (hook_node, list) {
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
-        if (file == NULL || 0 == pfstest_strcmp_nvnv(file, hook->file))
-            hook->function();
+        pfstest_memcpy_nv(&nv_data, hook->nv_data, sizeof(nv_data));
+
+        if (file == NULL || 0 == pfstest_strcmp_nvnv(file, nv_data.file))
+            nv_data.function();
     }
 }
 
@@ -188,34 +193,37 @@ static void do_tests_list(const char *test_file,
 
     pfstest_list_iter (test_node, &tests) {
         pfstest_t *test = (pfstest_t *)test_node;
+        pfstest_memcpy_nv(&current_test, test->nv_data,
+                          sizeof(current_test));
 
-        if ((test_file == NULL || 0 == pfstest_strcmp_nv(test_file,
-                                                         test->file))
-            && (test_name == NULL || 0 == pfstest_strcmp_nv(test_name,
-                                                            test->name)))
+        if ((test_file == NULL
+             || 0 == pfstest_strcmp_nv(test_file, current_test.file))
+            && (test_name == NULL
+                || 0 == pfstest_strcmp_nv(test_name, current_test.name)))
         {
-            current_test = test;
             pfstest_mock_init(); /* TODO: plugin-ize */
-            do_hook_list(&before, test->file);
+            do_hook_list(&before, current_test.file);
             run_test();
-            do_hook_list(&after, test->file);
+            do_hook_list(&after, current_test.file);
             pfstest_free_all(); /* TODO: plugin-ize */
         }
     }
 }
 
-static void print_register_hook_commands(pfstest_list_t *list,
-                                         pfstest_nv_str_ptr(list_name))
+static void print_register_hook_commands(
+    pfstest_list_t *list, const pfstest_nv_ptr char *list_name)
 {
     pfstest_list_node_t *hook_node;
+    _pfstest_hook_nv_t nv_data;
 
     pfstest_list_iter (hook_node, list) {
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
+        pfstest_memcpy_nv(&nv_data, hook->nv_data, sizeof(nv_data));
 
         pfstest_print_nv_string(pfstest_nv_string("    register_"));
         pfstest_print_nv_string(list_name);
         pfstest_print_nv_string(pfstest_nv_string("("));
-        pfstest_print_nv_string(hook->name);
+        pfstest_print_nv_string(nv_data.name);
         pfstest_print_nv_string(pfstest_nv_string(");\n"));
     }
 }
@@ -223,12 +231,14 @@ static void print_register_hook_commands(pfstest_list_t *list,
 static void print_register_test_commands(void)
 {
     pfstest_list_node_t *test_node;
+    _pfstest_test_nv_t nv_data;
 
     pfstest_list_iter (test_node, &tests) {
         pfstest_t *test = (pfstest_t *)test_node;
+        pfstest_memcpy_nv(&nv_data, test->nv_data, sizeof(nv_data));
 
         pfstest_print_nv_string(pfstest_nv_string("    register_test("));
-        pfstest_print_nv_string(test->name);
+        pfstest_print_nv_string(nv_data.name);
         pfstest_print_nv_string(pfstest_nv_string(");\n"));
     }
 }

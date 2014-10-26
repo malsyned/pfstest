@@ -14,26 +14,37 @@ non-volatile memory space.
 A platform port must define:
 ====
 
-pfstest_nv_string_decl(name):
+pfstest_nv:
 
-    Expands to the declaration of a const char[] that resides in the
-    non-volatile memory space.
+    Expands to a keyword or keywords used by the compiler to specify
+    that a data object should reside in the non-volatile memory space.
+    Note that this is only valid when creating data objects. It may
+    not be correct to use this as a general storage-class specifier to
+    describe the location of the target of a pointer (for example, on
+    avr-gcc). See also: pfstest_nv_ptr
+
+pfstest_nv_ptr:
+
+    Expands to a keyword or keywords used by the compiler to specify
+    that a pointer should point to the non-volatile memory space. Note
+    that this is only valid when creating pointers. It may not be
+    correct to use this as a storage-class specifier for data objects
+    themselves (for example, on avr-gcc). See also: pfstest_nv_ptr
 
 pfstest_nv_string(string):
 
     Expands to a string constant which resides in the non-volatile
     memory space.
 
-pfstest_nv_str_ptr(name):
+pfstest_memcpy_nv(ram, nv, size):
 
-    Expands to the declaration of a const char * that points into the
-    non-volatile memory space.
+    A function or macro which is a version of memcpy which copies data
+    from the nonvolatile memory space into RAM.
 
 pfstest_strcmp_nv(ram, nv):
 
     A function or macro which is a version of strcmp which compares a
-    string in the RAM memory space to one in the non-volatile memory
-    space.
+    string in RAM to one in the non-volatile memory space.
 
 pfstest_strcmp_nvnv:
 
@@ -76,9 +87,10 @@ pfstest_constructor(name):
 # include <assert.h>
 # include <avr/pgmspace.h>
 
-# define pfstest_nv_string_decl(name) const char name[] PROGMEM
+# define pfstest_nv PROGMEM
+# define pfstest_nv_ptr
 # define pfstest_nv_string(string) PSTR(string)
-# define pfstest_nv_str_ptr(name) PGM_P name
+# define pfstest_memcpy_nv(ram, nv, size) memcpy_P(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_printf_nv printf_P
 # define pfstest_print_nv_string(string) fputs_P(string, stdout)
@@ -110,9 +122,10 @@ typedef int intptr_t;
         exit(1);                                                        \
     }
 
-# define pfstest_nv_string_decl(name) const far rom char name[]
-# define pfstest_nv_str_ptr(name) const far rom char *name
+# define pfstest_nv far rom
+# define pfstest_nv_ptr pfstest_nv
 # define pfstest_nv_string(string) ((const far rom char *)string)
+# define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcmp_nvnv strcmppgm
 # define pfstest_printf_nv printf
@@ -127,9 +140,10 @@ typedef int intptr_t;
 # include <stdint.h>
 # include <assert.h>
 
-# define pfstest_nv_string_decl(name) const char name[]
+# define pfstest_nv 
+# define pfstest_nv_ptr
 # define pfstest_nv_string(string) string
-# define pfstest_nv_str_ptr(name) const char *name
+# define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_printf_nv printf

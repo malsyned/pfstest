@@ -53,8 +53,8 @@ failing_test(should_fail_assertion)
     assert_that("always fails", some_value, matches_nothing);
 }
 
-/* Some Harvard Architecture platforms (like AVR) throw a compiler
- * error on NULL assert_that message strings */
+/* avr-gcc throws a compiler error on NULL assert_that message
+ * strings */
 #if !(defined(__GNUC__) && defined(__AVR__))
 failing_test(should_cope_with_null_string)
 {

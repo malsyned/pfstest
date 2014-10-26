@@ -4,9 +4,9 @@
 #include "pfstest-value.h"
 #include "pfstest-matcher.h"
 
-void _pfstest_assert_that_at_location(pfstest_nv_str_ptr(file),
+void _pfstest_assert_that_at_location(const pfstest_nv_ptr char *file,
                                       int line,
-                                      pfstest_nv_str_ptr(message),
+                                      const pfstest_nv_ptr char *message,
                                       pfstest_value_t *actual,
                                       pfstest_matcher_t *matcher);
 #define pfstest_assert_that_at_location(file, line, message,            \

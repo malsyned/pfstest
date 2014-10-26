@@ -18,27 +18,36 @@
 
 typedef struct
 {
-    pfstest_list_node_t list_node;
-    pfstest_nv_str_ptr(name);
-    pfstest_nv_str_ptr(file);
+    const pfstest_nv_ptr char *name;
+    const pfstest_nv_ptr char *file;
     int line;
     unsigned int flags;
     void (*function)(void);
+} _pfstest_test_nv_t;
+
+typedef struct
+{
+    pfstest_list_node_t list_node;
+    const pfstest_nv_ptr _pfstest_test_nv_t *nv_data;
 } pfstest_t;
 
 #define _pfstest_function_name(name) _pfstest_econcat(__pfstest__, name)
 #define _pfstest_name_var(name) _pfstest_econcat(__pfstest_name__, name)
 #define _pfstest_file_var(name) _pfstest_econcat(__pfstest_file__, name)
+#define _pfstest_nv_var(name) _pfstest_econcat(__pfstest_nv__, name)
 #define _pfstest_decl(name) static void _pfstest_function_name(name)(void)
 
 #define _pfstest_object(name, flags)                                    \
-    static pfstest_nv_string_decl(_pfstest_name_var(name)) = #name;     \
-    static pfstest_nv_string_decl(_pfstest_file_var(name)) = __FILE__;  \
-    pfstest_t name[1] =                                                 \
-    {{ {NULL}, _pfstest_name_var(name),                                 \
-       _pfstest_file_var(name),                                         \
-       __LINE__, flags,                                                 \
-       _pfstest_function_name(name) }}
+    static const pfstest_nv char _pfstest_name_var(name)[] = #name;     \
+    static const pfstest_nv char _pfstest_file_var(name)[] = __FILE__;  \
+    static const pfstest_nv _pfstest_test_nv_t _pfstest_nv_var(name) =  \
+    {                                                                   \
+        _pfstest_name_var(name),                                        \
+        _pfstest_file_var(name),                                        \
+        __LINE__, flags,                                                \
+        _pfstest_function_name(name),                                   \
+    };                                                                  \
+    pfstest_t name[1] = {{ {NULL}, &_pfstest_nv_var(name)}}
 
 #if defined(pfstest_constructor)
 # define _pfstest_init_define(name)                                 \
@@ -73,13 +82,20 @@ void _pfstest_register_test(pfstest_t *the_test);
 
 typedef struct 
 {
-    pfstest_list_node_t list_node;
-    pfstest_nv_str_ptr(file);
-    pfstest_nv_str_ptr(name);
+    const pfstest_nv_ptr char *file;
+    const pfstest_nv_ptr char *name;
     void (*function)(void);
+} _pfstest_hook_nv_t;
+
+typedef struct 
+{
+    pfstest_list_node_t list_node;
+    const pfstest_nv_ptr _pfstest_hook_nv_t *nv_data;
 } pfstest_hook_t;
 
 #define _pfstest_hook_name(name) _pfstest_econcat(__pfstest_hook__, name)
+#define _pfstest_hook_nv_var(name)              \
+    _pfstest_econcat(__pfstest_hook_nv__, name)
 #define _pfstest_hook_file_var(name)                \
     _pfstest_econcat(__pfstest_hook_file__, name)
 #define _pfstest_hook_name_var(name)                \
@@ -87,15 +103,19 @@ typedef struct
 #define _pfstest_hook_decl(name) static void _pfstest_hook_name(name)(void)
 
 #define _pfstest_hook_object(name)                                  \
-    static pfstest_nv_string_decl(_pfstest_hook_file_var(name)) =   \
+    static const pfstest_nv char _pfstest_hook_file_var(name)[] =   \
         __FILE__;                                                   \
-    static pfstest_nv_string_decl(_pfstest_hook_name_var(name)) =   \
+    static const pfstest_nv char _pfstest_hook_name_var(name)[] =   \
         #name;                                                      \
+    static const pfstest_nv _pfstest_hook_nv_t                      \
+    _pfstest_hook_nv_var(name) =                                    \
+    {                                                               \
+        _pfstest_hook_file_var(name),                               \
+        _pfstest_hook_name_var(name),                               \
+        _pfstest_hook_name(name)                                    \
+    };                                                              \
     pfstest_hook_t name[1] =                                        \
-    {{ {NULL},                                                      \
-       _pfstest_hook_file_var(name),                                \
-       _pfstest_hook_name_var(name),                                \
-       _pfstest_hook_name(name) }}
+    {{ {NULL}, &_pfstest_hook_nv_var(name) }}
 
 #if defined(pfstest_constructor)
 #define _pfstest_hook_init_define(name, phase)                          \
@@ -133,14 +153,15 @@ void _pfstest_register_after(pfstest_hook_t *the_hook);
 
 PFSTEST_NORETURN
 void pfstest_fail_with_printer(
-    pfstest_nv_str_ptr(file), int line,
+    const pfstest_nv_ptr char *file, int line,
     void (*printer)(const void *),
     const void *object);
 
 PFSTEST_NORETURN
 void _pfstest_fail_at_location(
-    pfstest_nv_str_ptr(file), int line, pfstest_nv_str_ptr(message));
-#define pfstest_fail_at_location(file, line, message)       \
+    const pfstest_nv_ptr char *file, int line,
+    const pfstest_nv_ptr char *message);
+#define pfstest_fail_at_location(file, line, message)                   \
     _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
 #define pfstest_fail(message)                                           \
     pfstest_fail_at_location(pfstest_nv_string(__FILE__), __LINE__, message)
