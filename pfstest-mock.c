@@ -43,9 +43,21 @@ static void default_expectation_add(pfstest_expectation_t *expectation)
 
 /* mock */
 
-static int pfstest_mock_arg_count(const pfstest_mock_t *mock)
+static int pfstest_mock_arg_count(const pfstest_nv_ptr pfstest_mock_t *mock)
 {
-    return mock->arg_count;
+    pfstest_mock_t m;
+    pfstest_memcpy_nv(&m, mock, sizeof(m));
+
+    return m.arg_count;
+}
+
+static const pfstest_nv_ptr char *pfstest_mock_name(
+    const pfstest_nv_ptr pfstest_mock_t *mock)
+{
+    pfstest_mock_t m;
+    pfstest_memcpy_nv(&m, mock, sizeof(m));
+
+    return m.name;
 }
 
 /* expectation */
@@ -53,7 +65,8 @@ static int pfstest_mock_arg_count(const pfstest_mock_t *mock)
 #define PFSTEST_EXPECTATION_DO_TIMES_INFINITE -1
 
 static pfstest_expectation_t *pfstest_expectation_new(
-    const pfstest_mock_t *mock, pfstest_arg_handler_t **arg_handlers)
+    const pfstest_nv_ptr pfstest_mock_t *mock,
+    pfstest_arg_handler_t **arg_handlers)
 {
     pfstest_expectation_t *e = pfstest_alloc(sizeof(*e));
     pfstest_list_node_init((pfstest_list_node_t *)e);
@@ -69,13 +82,13 @@ static void pfstest_expectation_print(pfstest_expectation_t *e)
 {
     int i;
 
-    pfstest_print_nv_string(e->mock->name);
+    pfstest_print_nv_string(pfstest_mock_name(e->mock));
     pfstest_print_nv_string(pfstest_nv_string(" with ("));
 
-    for (i = 0; i < e->mock->arg_count; i++) {
+    for (i = 0; i < pfstest_mock_arg_count(e->mock); i++) {
         pfstest_arg_handler_print(e->arg_handlers[i]);
 
-        if (i < e->mock->arg_count - 1)
+        if (i < pfstest_mock_arg_count(e->mock) - 1)
             pfstest_print_nv_string(pfstest_nv_string(", "));
     }
     pfstest_print_nv_string(pfstest_nv_string(")"));
@@ -104,7 +117,8 @@ pfstest_expectation_t *pfstest_do_times(int times,
     return expectation;
 }
 
-pfstest_expectation_t *pfstest_when(const pfstest_mock_t *mock, ...)
+pfstest_expectation_t *pfstest_when(
+    const pfstest_nv_ptr pfstest_mock_t *mock, ...)
 {
     pfstest_arg_handler_t **arg_handlers;
     pfstest_expectation_t *expectation;
@@ -171,7 +185,7 @@ static void args_matched(int arg_count,
 }
 
 static pfstest_expectation_t *find_default_expectation(
-    const pfstest_mock_t *mock)
+    const pfstest_nv_ptr pfstest_mock_t *mock)
 {
     pfstest_list_node_t *node;
 
@@ -187,7 +201,7 @@ static pfstest_expectation_t *find_default_expectation(
 }
 
 static pfstest_expectation_t *get_default_expectation(
-    const pfstest_mock_t *mock)
+    const pfstest_nv_ptr pfstest_mock_t *mock)
 {
     pfstest_expectation_t *e = find_default_expectation(mock);
 
@@ -200,9 +214,10 @@ static pfstest_expectation_t *get_default_expectation(
     return e;
 }
 
-pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
-                                     pfstest_value_t *default_return_value,
-                                     ...)
+pfstest_value_t *pfstest_mock_invoke(
+    const pfstest_nv_ptr pfstest_mock_t *mock,
+    pfstest_value_t *default_return_value,
+    ...)
 {
     pfstest_list_node_t *expectation_node;
     int arg_count = pfstest_mock_arg_count(mock);
@@ -458,18 +473,23 @@ pfstest_verify_mode_t *pfstest_at_least(int times)
     return counting_mode_new(times, do_at_least);
 }
 
+struct no_more_interactions_printer_args
+{
+    const pfstest_nv_ptr pfstest_mock_t *mock;
+};
+
 void no_more_interactions_printer(const void *data)
 {
-    const pfstest_mock_t *mock = data;
+    const struct no_more_interactions_printer_args *args = data;
 
     pfstest_print_nv_string(
         pfstest_nv_string("    Unexpected interactions with "));
-    pfstest_print_nv_string(mock->name);
+    pfstest_print_nv_string(pfstest_mock_name(args->mock));
 }
 
 struct no_more_interactions_args
 {
-    const pfstest_mock_t *mock;
+    const pfstest_nv_ptr pfstest_mock_t *mock;
     const pfstest_nv_ptr char *file;
     int line;
 };
@@ -482,11 +502,13 @@ void do_verify_no_more_interactions(pfstest_verifier_t *v)
 
     pfstest_list_iter (invocation_node, &invocations) {
         pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
+        struct no_more_interactions_printer_args printer_args;
+        printer_args.mock = args->mock;
 
         if (args->mock == i->expectation->mock && !i->mark) {
             pfstest_fail_with_printer(args->file, args->line,
                                       no_more_interactions_printer,
-                                      args->mock);
+                                      (const void *)&printer_args);
         }
     }
 }
@@ -494,7 +516,7 @@ void do_verify_no_more_interactions(pfstest_verifier_t *v)
 void pfstest_verify_no_more_interactions_at_location(
     const pfstest_nv_ptr char *file,
     int line,
-    const pfstest_mock_t *mock)
+    const pfstest_nv_ptr pfstest_mock_t *mock)
 {
     struct no_more_interactions_args *args = pfstest_alloc(sizeof(*args));
     args->mock = mock;

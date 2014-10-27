@@ -21,11 +21,11 @@ typedef struct
 #define pfstest_mock_define(mock_name, func_name, arg_count)    \
     static const pfstest_nv char                                \
     _pfstest_mock_func_name_var(mock_name)[] = func_name;       \
-    const pfstest_mock_t mock_name[1] = {{                      \
+    const pfstest_nv pfstest_mock_t mock_name[1] = {{           \
             _pfstest_mock_func_name_var(mock_name), arg_count}}
 
-#define pfstest_mock_declare(mock_name)         \
-    extern const pfstest_mock_t mock_name[]
+#define pfstest_mock_declare(mock_name)                 \
+    extern const pfstest_nv pfstest_mock_t mock_name[]
 
 void pfstest_mock_init(void);
 
@@ -34,13 +34,14 @@ void pfstest_mock_init(void);
 typedef struct 
 {
     pfstest_list_node_t node;
-    const pfstest_mock_t *mock;
+    const pfstest_nv_ptr pfstest_mock_t *mock;
     pfstest_arg_handler_t **arg_handlers;
     pfstest_value_t *return_value;
     int times;
 } pfstest_expectation_t;
 
-pfstest_expectation_t *pfstest_when(const pfstest_mock_t *mock, ...);
+pfstest_expectation_t *pfstest_when(
+    const pfstest_nv_ptr pfstest_mock_t *mock, ...);
 
 pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
                                          pfstest_expectation_t *expectation);
@@ -57,9 +58,10 @@ typedef struct
     bool mark;
 } pfstest_invocation_t;
 
-pfstest_value_t *pfstest_mock_invoke(const pfstest_mock_t *mock,
-                                     pfstest_value_t *default_return_value,
-                                     ...);
+pfstest_value_t *pfstest_mock_invoke(
+    const pfstest_nv_ptr pfstest_mock_t *mock,
+    pfstest_value_t *default_return_value,
+    ...);
 
 /* Verification */
 
@@ -104,7 +106,7 @@ pfstest_verify_mode_t *pfstest_at_least(int times);
 void pfstest_verify_no_more_interactions_at_location(
     const pfstest_nv_ptr char *file,
     int line,
-    const pfstest_mock_t *mock);
+    const pfstest_nv_ptr pfstest_mock_t *mock);
 #define pfstest_verify_no_more_interactions(m)          \
     pfstest_verify_no_more_interactions_at_location(    \
         pfstest_nv_string(__FILE__), __LINE__, m)

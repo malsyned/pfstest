@@ -102,6 +102,8 @@ int pfstest_strcmp_nvnv(const char *s1, const char *s2);
 
 #elif defined(__18CXX)
 
+#include <string.h>
+
 /* stdbool.h */
 typedef unsigned char bool;
 # define false 0
@@ -139,6 +141,7 @@ typedef int intptr_t;
 # include <stdbool.h>
 # include <stdint.h>
 # include <assert.h>
+# include <string.h>
 
 # define pfstest_nv 
 # define pfstest_nv_ptr
