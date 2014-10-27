@@ -16,7 +16,7 @@ struct _pfstest_arg_handler_t
     void *data;
 };
 
-pfstest_arg_handler_t *arg_handler_new(
+pfstest_arg_handler_t *pfstest_arg_handler_new(
     bool (*test_function)(pfstest_arg_handler_t *arg_handler,
                           pfstest_value_t *actual),
     void (*matched_function)(pfstest_arg_handler_t *arg_handler,

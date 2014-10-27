@@ -478,7 +478,7 @@ struct no_more_interactions_printer_args
     const pfstest_nv_ptr pfstest_mock_t *mock;
 };
 
-void no_more_interactions_printer(const void *data)
+static void no_more_interactions_printer(const void *data)
 {
     const struct no_more_interactions_printer_args *args = data;
 
@@ -494,7 +494,7 @@ struct no_more_interactions_args
     int line;
 };
 
-void do_verify_no_more_interactions(pfstest_verifier_t *v)
+static void do_verify_no_more_interactions(pfstest_verifier_t *v)
 {
     struct no_more_interactions_args *args = v->data;
     
