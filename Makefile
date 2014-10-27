@@ -15,9 +15,9 @@ test-core: core-tests
 test: tests
 	echo ; ./tests $(ARGS)
 
-SRC := $(COMMON_SRC) main.c
+SRC := $(COMMON_SRC) gcc-main.c
 
-CORE_SRC := $(CORE_COMMON_SRC) main.c
+CORE_SRC := $(CORE_COMMON_SRC) gcc-main.c
 
 core-tests: $(CORE_SRC:%.c=%.o)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@

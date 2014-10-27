@@ -1,5 +1,6 @@
 \.d$
 \.o$
+\.obj$
 \.eep$
 \..fuse$
 \.elf$
@@ -10,8 +11,10 @@
 \.map$
 \.sym$
 \.cof$
+\.suo$
 \.orig$
 ^core-tests$
 ^tests$
 (^|/)nbproject/private/
+(^|/)Debug/
 ^register-.*tests.c$
