@@ -259,7 +259,7 @@ static void print_usage_and_exit(void)
     exit(1);
 }
 
-const char *next_arg(char **argv[], bool required)
+static const char *next_arg(char **argv[], bool required)
 {
     char *r = **argv;
 

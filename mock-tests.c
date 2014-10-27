@@ -80,9 +80,9 @@ test(should_handle_multiple_invocations)
     dep_func1(3);
 }
 
-char foo[] = "foo";
-char bar[] = "bar";
-char one23[] = "123";
+static char foo[] = "foo";
+static char bar[] = "bar";
+static char one23[] = "123";
 
 test(should_return_through_pointer)
 {
