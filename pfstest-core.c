@@ -13,16 +13,19 @@
 #define RESULT_FAIL 2
 #define RESULT_IGNORE 3
 
+typedef struct 
+{
+    int passed;
+    int failed;
+    int ignored;
+} results_t;
+
 static _pfstest_test_nv_t current_test;
 static jmp_buf test_jmp_buf;
 static bool fail_expected = false;
 
 const char *program_name = NULL;
 static bool verbose = false;
-
-static int passed = 0;
-static int failed = 0;
-static int ignored = 0;
 
 static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
 static pfstest_list_t before = PFSTEST_LIST_EMPTY();
@@ -96,7 +99,7 @@ static void ignore(void)
     longjmp(test_jmp_buf, RESULT_IGNORE);
 }
 
-static void run_test(void)
+static void run_test(results_t *results)
 {
     if (verbose)
         print_context();
@@ -121,7 +124,7 @@ static void run_test(void)
                     "Test passed when failure expected");
             }
 
-            passed++;
+            results->passed++;
             if (verbose) {
                 pfstest_print_nv_string(pfstest_nv_string("PASS\n"));
             } else {
@@ -137,11 +140,11 @@ static void run_test(void)
                 pass();
             }
     
-            failed++;
+            results->failed++;
             /* Message already printed before the stack unwound */
             break;
         case RESULT_IGNORE:
-            ignored++;
+            results->ignored++;
             if (verbose) {
                 pfstest_print_nv_string(pfstest_nv_string("IGNORED\n"));
             } else {
@@ -187,7 +190,8 @@ static void do_hook_list(pfstest_list_t *list,
 }
 
 static void do_tests_list(const char *test_file,
-                          const char *test_name)
+                          const char *test_name,
+                          results_t *results)
 {
     pfstest_list_node_t *test_node;
 
@@ -203,7 +207,7 @@ static void do_tests_list(const char *test_file,
         {
             pfstest_mock_init(); /* TODO: plugin-ize */
             do_hook_list(&before, current_test.file);
-            run_test();
+            run_test(results);
             do_hook_list(&after, current_test.file);
             pfstest_free_all(); /* TODO: plugin-ize */
         }
@@ -277,6 +281,7 @@ int pfstest_run_tests(int argc, char *argv[])
     const char *test_name = NULL;
     const char *arg;
     bool register_print = false;
+    results_t results;
 
     if (argc == 0 || argv == NULL)
         goto args_done;
@@ -304,15 +309,17 @@ args_done:
         return 0;
     }
 
+    results.passed = results.failed = results.ignored = 0;
+
     pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
     pfstest_print_nv_string(pfstest_nv_string("===========\n"));
-    do_tests_list(test_file, test_name);
+    do_tests_list(test_file, test_name, &results);
     pfstest_printf_nv(
         pfstest_nv_string(
             "\nRun complete. %d passed, %d failed, %d ignored\n"),
-        passed, failed, ignored);
+        results.passed, results.failed, results.ignored);
 
-    if (failed > 0)
+    if (results.failed > 0)
         return 1;
     else
         return 0;
