@@ -38,6 +38,22 @@ test(should_return_on_first_match)
                 the_int(dep_func1(2)), is_the_int(5));
 }
 
+test(stub_should_return_pointer)
+{
+    char s[] = "foo";
+
+    do_return(the_pointer(s), when(mock_dep_func3));
+
+    assert_that("stub returns pointer",
+                the_pointer(dep_func3()), is_the_pointer(s));
+}
+
+test(stub_should_return_null_pointer_by_default)
+{
+    assert_that("stub returns NULL by default",
+                the_pointer(dep_func3()), is_the_pointer(NULL));
+}
+
 test(should_verify_a_call)
 {
     verify(when(mock_dep_func1, arg_that(is_the_int(2))));
