@@ -13,6 +13,7 @@
 \.cof$
 \.suo$
 \.orig$
+^new-core-tests$
 ^core-tests$
 ^tests$
 (^|/)nbproject/private/

@@ -51,6 +51,12 @@ pfstest_strcmp_nvnv:
     A function or macro which is a version of strcmp which compares
     two strings that reside in the non-volatile memory space.
 
+pfstest_strcat_nv(ram, nv):
+
+    A function or macro which is a version of strcat which
+    concatenates a string which resides in the non-volatile memory
+    space onto the end of a string which resides in RAM.
+
 pfstest_printf_nv:
 
     A function or macro which works like printf() but expects the
@@ -92,6 +98,7 @@ pfstest_constructor(name):
 # define pfstest_nv_string(string) PSTR(string)
 # define pfstest_memcpy_nv(ram, nv, size) memcpy_P(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
+# define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
 # define pfstest_printf_nv printf_P
 # define pfstest_print_nv_string(string) fputs_P(string, stdout)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
@@ -130,6 +137,7 @@ typedef int intptr_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcmp_nvnv strcmppgm
+# define pfstest_strcat_nv strcatpgm2ram
 # define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN
@@ -149,6 +157,7 @@ typedef int intptr_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
+# define pfstest_strcat_nv strcat
 # define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
@@ -168,6 +177,7 @@ typedef int intptr_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
+# define pfstest_strcat_nv strcat
 # define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN __declspec(noreturn)
@@ -193,6 +203,7 @@ typedef int intptr_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
+# define pfstest_strcat_nv strcat
 # define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN

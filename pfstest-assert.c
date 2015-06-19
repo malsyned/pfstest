@@ -13,7 +13,7 @@ struct assert_that_args
     pfstest_matcher_t *matcher;
 };
 
-static void assert_that_printer(const void *data)
+static void assert_that_printer(int (*print_char)(int), const void *data)
 {
     const struct assert_that_args *args = data;
 

@@ -8,13 +8,16 @@ CPPFLAGS :=
 LDLIBS :=
 
 .PHONY: all
-all: core-tests tests register-core-tests.c register-tests.c
+all: core-tests new-core-tests tests register-core-tests.c register-tests.c
 
 .PHONY: test-core
 test-core: core-tests
 	@./core-tests -v | diff -u expected-output -
 	@./core-tests -r | diff -u expected-output-register -
 	@echo PASS
+
+test-new-core: new-core-tests
+	echo ; ./new-core-tests $(ARGS)
 
 .PHONY: test
 test: tests
@@ -24,11 +27,16 @@ SRC := $(COMMON_SRC) gcc-main.c
 
 CORE_SRC := $(CORE_COMMON_SRC) gcc-main.c
 
+NEW_CORE_SRC := $(NEW_CORE_COMMON_SRC) gcc-main.c
+
 %.o: %.c $(MAKEFILE_LIST)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 %.i: %.c
 	$(CC) $(CPPFLAGS) -E -o $@ $<
+
+new-core-tests: $(NEW_CORE_SRC:%.c=%.o)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 core-tests: $(CORE_SRC:%.c=%.o)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
