@@ -362,7 +362,7 @@ test(should_catch_failures_in_after_hooks)
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
                       NULL, NULL,
-                      &verbose_formatter);
+                      &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -387,7 +387,7 @@ test(should_catch_multiple_after_hook_failures)
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
                       NULL, NULL,
-                      &verbose_formatter);
+                      &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -411,7 +411,7 @@ test(should_only_count_each_failing_test_once)
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
                       NULL, NULL,
-                      &verbose_formatter);
+                      &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
