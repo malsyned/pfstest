@@ -97,8 +97,23 @@ pfstest_value_t *pfstest_the_char(char c)
 static void the_string_printer(pfstest_value_t *value)
 {
     char *data = pfstest_value_data(value);
+    char *p = data;
 
-    pfstest_printf_nv(pfstest_nv_string("the string \"%s\""), data);
+    pfstest_printf_nv(pfstest_nv_string("the string \""));
+    
+    while (*p) {
+        char c = *p++;
+
+        if (c == '\n') {
+            pfstest_print_nv_string(pfstest_nv_string("\\n"));
+        } else if (c == '\"') {
+            pfstest_print_nv_string(pfstest_nv_string("\\\""));
+        } else {
+            pfstest_printf_nv(pfstest_nv_string("%c"), c);
+        }
+    }
+
+    pfstest_print_nv_string(pfstest_nv_string("\""));
 }
 
 pfstest_value_t *pfstest_the_string(char *s)
