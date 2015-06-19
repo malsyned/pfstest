@@ -464,3 +464,19 @@ void _pfstest_hook_list_register_hook(pfstest_list_t *list,
     pfstest_list_node_init((pfstest_list_node_t *)hook);
     pfstest_list_append(list, (pfstest_list_node_t *)hook);
 }
+
+int run_all_tests_new(void)
+{
+    pfstest_output_formatter_t formatter;
+    int result;
+
+    pfstest_output_formatter_verbose_init(&formatter, stdout_print_char);
+
+    pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
+    pfstest_print_nv_string(pfstest_nv_string("===========\n"));
+
+    result = pfstest_suite_run(&before, &after, &tests, NULL, NULL,
+                               &formatter);
+
+    return result;
+}

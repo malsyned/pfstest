@@ -216,6 +216,8 @@ int pfstest_run_tests(int argc, char *argv[]);
 int pfstest_run_all_tests(void);
 int pfstest_run_all_tests_verbose(void);
 
+int run_all_tests_new(void);
+
 /* Convenience aliases without the pfstest namespace prefix */
 
 #ifndef PFSTEST_NOALIAS_test
