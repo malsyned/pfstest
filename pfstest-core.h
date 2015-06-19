@@ -5,6 +5,7 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-list.h"
+#include "pfstest-output.h"
 
 /* Basic utilities */
 
@@ -87,8 +88,7 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_list_t *suite,
                       const pfstest_nv_ptr char *filter_file,
                       const pfstest_nv_ptr char *filter_name,
-                      int (*print_char)(int),
-                      int flags);
+                      pfstest_output_formatter_t *formatter);
 
 #define _pfstest_define(name, flags)            \
     _pfstest_init_define(name)                  \
@@ -197,7 +197,8 @@ void _pfstest_register_after(pfstest_hook_t *the_hook);
 PFSTEST_NORETURN
 void pfstest_fail_with_printer(
     const pfstest_nv_ptr char *file, int line,
-    void (*printer)(int (*)(int), const void *),
+    void (*printer)(pfstest_output_formatter_t *formatter,
+                    const void *),
     const void *object);
 
 PFSTEST_NORETURN

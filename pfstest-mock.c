@@ -303,7 +303,7 @@ static void print_plural(int count)
     }
 }
 
-static void wrong_call_count_printer(int (*print_char)(int),
+static void wrong_call_count_printer(pfstest_output_formatter_t *formatter,
                                      const void *data)
 {
     const struct do_verification_printer_args *args = data;
@@ -479,8 +479,8 @@ struct no_more_interactions_printer_args
     const pfstest_nv_ptr pfstest_mock_t *mock;
 };
 
-static void no_more_interactions_printer(int (*put_char)(int),
-                                         const void *data)
+static void no_more_interactions_printer(
+    pfstest_output_formatter_t *formatter, const void *data)
 {
     const struct no_more_interactions_printer_args *args = data;
 
@@ -536,7 +536,8 @@ struct in_order_fail_printer_args
     pfstest_expectation_t *prev_expectation;
 };
 
-static void in_order_fail_printer(int (*print_char)(int), const void *data)
+static void in_order_fail_printer(pfstest_output_formatter_t *formatter,
+                                  const void *data)
 {
     const struct in_order_fail_printer_args *args = data;
 

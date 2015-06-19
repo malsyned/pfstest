@@ -3,7 +3,8 @@
 PFSTEST_SRC := pfstest-list.c pfstest-alloc-malloc.c pfstest-value.c \
                pfstest-matcher.c pfstest-values.c pfstest-matchers.c \
                pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
-               pfstest-arg-handlers.c pfstest-mock.c pfstest-platform.c
+               pfstest-arg-handlers.c pfstest-mock.c pfstest-platform.c \
+               pfstest-output.c
 
 TESTS_SRC := assert-that-tests.c values-and-matchers-tests.c \
              mock-dep.c mock-tests.c

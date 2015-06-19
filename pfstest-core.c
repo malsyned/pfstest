@@ -13,13 +13,6 @@
 #define RESULT_FAIL 2
 #define RESULT_IGNORE 3
 
-typedef struct 
-{
-    int passed;
-    int failed;
-    int ignored;
-} results_t;
-
 typedef struct _dynamic_env_t
 {
     /* Stack pointer */
@@ -29,13 +22,8 @@ typedef struct _dynamic_env_t
     jmp_buf test_jmp_buf;
 
     /* IO Control */
-    int (*print_char)(int);
     bool verbose;
-
-    /* File-local context */
-    volatile bool test_failed;
-    const pfstest_nv_ptr char *test_name;
-    const pfstest_nv_ptr char *test_file;
+    pfstest_output_formatter_t *formatter;
 } dynamic_env_t;
 
 static dynamic_env_t *dynamic_env = NULL;
@@ -66,79 +54,23 @@ static int stdout_print_char(int c)
     return r;
 }
 
-void new_pfstest_print_nv_string(int (*print_char)(int),
-                                 const pfstest_nv_ptr char *s)
+void pfstest_fail_with_printer(
+    const pfstest_nv_ptr char *file, int line,
+    void (*printer)(pfstest_output_formatter_t *formatter,
+                    const void *),
+    const void *object)
 {
-    char c;
-
-    while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
-        print_char(c);
-        s++;
-    }
-}
-
-static void new_pfstest_print_int(int (*print_char)(int), int n)
-{
-    int d = 1;
-    int ntemp = n;
-
-    /* FIXME: Doesn't handle INT_MIN properly (neither does Unity) */
-    if (n < 0) {
-        print_char('-');
-        n = -n;
-    }
-
-    while (ntemp > 9) {
-        ntemp /= 10;
-        d *= 10;
-    }
-
-    do {
-        print_char('0' + n / d % 10);
-        d /= 10;
-    } while (d > 0);
-}
-
-static void print_context(int (*print_char)(int))
-{
-    new_pfstest_print_nv_string(print_char, dynamic_env->test_file);
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string(":"));
-    new_pfstest_print_nv_string(print_char, dynamic_env->test_name);
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string(" "));
-}
-
-void pfstest_fail_with_printer(const pfstest_nv_ptr char *file, int line,
-                               void (*printer)(int (*)(int), const void *),
-                               const void *object)
-{
-    int (*print_char)(int) = dynamic_env->print_char;
+    pfstest_output_formatter_t *formatter = dynamic_env->formatter;
 
     if (fail_expected && !dynamic_env->verbose)
         longjmp(dynamic_env->test_jmp_buf, RESULT_FAIL);
 
-    if (!dynamic_env->verbose) {
-        new_pfstest_print_nv_string(print_char, pfstest_nv_string("\n"));
-    }
-    if (!dynamic_env->verbose || dynamic_env->test_failed) {
-        print_context(print_char);
-    }
+    pfstest_output_formatter_test_failed_message_start(
+        formatter, file, line, fail_expected);
 
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string("FAIL"));
-    if (fail_expected) {
-        new_pfstest_print_nv_string(print_char,
-                                    pfstest_nv_string(" (expected)"));
-    }
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string("\n"));
-    new_pfstest_print_nv_string(print_char,
-                                pfstest_nv_string("    Location: "));
-    new_pfstest_print_nv_string(print_char, file);
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string(":"));
-    new_pfstest_print_int(print_char, line);
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string("\n"));
-    printer(print_char, object);
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string("\n"));
+    printer(formatter, object);
 
-    dynamic_env->test_failed = true;
+    pfstest_output_formatter_test_failed_message_complete(formatter);
 
     longjmp(dynamic_env->test_jmp_buf, RESULT_FAIL);
 }
@@ -148,11 +80,11 @@ struct message_printer_args
     const pfstest_nv_ptr char *message;
 };
 
-static void message_printer(int (*print_char)(int), const void *object)
+static void message_printer(pfstest_output_formatter_t *formatter,
+                            const void *object)
 {
     const struct message_printer_args *args = object;
-    new_pfstest_print_nv_string(print_char, pfstest_nv_string("    "));
-    new_pfstest_print_nv_string(print_char, args->message);
+    pfstest_output_formatter_print_nv_string(formatter, args->message);
 }
 
 void _pfstest_fail_at_location(
@@ -177,15 +109,8 @@ static void ignore(void)
     longjmp(dynamic_env->test_jmp_buf, RESULT_IGNORE);
 }
 
-static void run_test(_pfstest_test_nv_t *current_test, results_t *results)
+static void run_test(_pfstest_test_nv_t *current_test)
 {
-    dynamic_env->test_name = current_test->name;
-    dynamic_env->test_file = current_test->file;
-
-    if (dynamic_env->verbose)
-        print_context(dynamic_env->print_char);
-    fflush(stdout);
-
     fail_expected = current_test->flags & _PFSTEST_FLAG_EXPECT_FAIL;
 
     switch (setjmp(dynamic_env->test_jmp_buf)) {
@@ -205,33 +130,20 @@ static void run_test(_pfstest_test_nv_t *current_test, results_t *results)
                     "Test passed when failure expected");
             }
 
-            results->passed++;
-            if (dynamic_env->verbose) {
-                pfstest_print_nv_string(pfstest_nv_string("PASS\n"));
-            } else {
-                pfstest_print_nv_string(pfstest_nv_string("."));
-                fflush(stdout);
-            }
+            pfstest_output_formatter_test_complete(dynamic_env->formatter);
             break;
         case RESULT_FAIL:
             if (fail_expected) {
                 fail_expected = false;
-                if (dynamic_env->verbose)
-                    pfstest_print_nv_string(pfstest_nv_string("    "));
                 pass();
             }
     
-            results->failed++;
+            pfstest_output_formatter_test_complete(dynamic_env->formatter);
             /* Message already printed before the stack unwound */
             break;
         case RESULT_IGNORE:
-            results->ignored++;
-            if (dynamic_env->verbose) {
-                pfstest_print_nv_string(pfstest_nv_string("IGNORED\n"));
-            } else {
-                pfstest_print_nv_string(pfstest_nv_string("I"));
-                fflush(stdout);
-            }
+            pfstest_output_formatter_test_ignored(dynamic_env->formatter);
+            pfstest_output_formatter_test_complete(dynamic_env->formatter);
             break;
         default:
             pfstest_print_nv_string(pfstest_nv_string("FATAL ERROR\n"));
@@ -271,8 +183,7 @@ static void do_hook_list(pfstest_list_t *list,
 }
 
 static void do_tests_list(const char *test_file,
-                          const char *test_name,
-                          results_t *results)
+                          const char *test_name)
 {
     _pfstest_test_nv_t current_test;
     pfstest_list_node_t *test_node;
@@ -282,16 +193,18 @@ static void do_tests_list(const char *test_file,
         pfstest_memcpy_nv(&current_test, test->nv_data,
                           sizeof(current_test));
 
-        dynamic_env->test_failed = false;
-
         if ((test_file == NULL
              || 0 == pfstest_strcmp_nv(test_file, current_test.file))
             && (test_name == NULL
                 || 0 == pfstest_strcmp_nv(test_name, current_test.name)))
         {
+            pfstest_output_formatter_test_started(dynamic_env->formatter,
+                                                  current_test.name,
+                                                  current_test.file);
+
             pfstest_mock_init(); /* TODO: plugin-ize */
             do_hook_list(&before, current_test.file);
-            run_test(&current_test, results);
+            run_test(&current_test);
             do_hook_list(&after, current_test.file);
             pfstest_free_all(); /* TODO: plugin-ize */
         }
@@ -366,11 +279,11 @@ int pfstest_run_tests(int argc, char *argv[])
     const char *test_name = NULL;
     const char *arg;
     bool register_print = false;
-    results_t results;
+    pfstest_output_formatter_t formatter;
+    int result;
 
     dynamic_env_push(&local_dynamic_env);
 
-    dynamic_env->print_char = stdout_print_char;
     dynamic_env->verbose = false;
 
     if (argc == 0 || argv == NULL)
@@ -394,25 +307,33 @@ int pfstest_run_tests(int argc, char *argv[])
     }
 args_done:
 
+    if (dynamic_env->verbose) {
+        pfstest_output_formatter_verbose_init(&formatter,
+                                              stdout_print_char);
+    } else {
+        pfstest_output_formatter_standard_init(&formatter,
+                                               stdout_print_char);
+    }
+    dynamic_env->formatter = &formatter;
+
     if (register_print) {
         print_register_commands();
         dynamic_env_pop();
         return 0;
     }
 
-    results.passed = results.failed = results.ignored = 0;
-
     pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
     pfstest_print_nv_string(pfstest_nv_string("===========\n"));
-    do_tests_list(test_file, test_name, &results);
-    pfstest_printf_nv(
-        pfstest_nv_string(
-            "\nRun complete. %d passed, %d failed, %d ignored\n"),
-        results.passed, results.failed, results.ignored);
+
+    pfstest_output_formatter_run_started(&formatter);
+    do_tests_list(test_file, test_name);
+    pfstest_output_formatter_run_complete(&formatter);
+
+    result = pfstest_output_formatter_return_value(&formatter);
 
     dynamic_env_pop();
 
-    if (results.failed > 0)
+    if (result > 0)
         return 1;
     else
         return 0;
@@ -450,21 +371,21 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_list_t *suite,
                       const pfstest_nv_ptr char *filter_file,
                       const pfstest_nv_ptr char *filter_name,
-                      int (*print_char)(int),
-                      int flags)
+                      pfstest_output_formatter_t *formatter)
 {
     dynamic_env_t local_dynamic_env;
     pfstest_list_node_t *test_node;
     pfstest_list_node_t *hook_node;
     _pfstest_test_nv_t current_test;
     _pfstest_hook_nv_t current_hook;
-    results_t results;
-    results.passed = results.failed = results.ignored = 0;
+    int result;
 
     dynamic_env_push(&local_dynamic_env);
-    dynamic_env->print_char = print_char;
-    dynamic_env->verbose = ((flags & PFSTEST_SUITE_RUN_FLAG_VERBOSE)
-                            ? true : false);
+    /* FIXME: Hack for old core failing_test support */
+    dynamic_env->verbose = false;
+    dynamic_env->formatter = formatter;
+
+    pfstest_output_formatter_run_started(formatter);
 
     pfstest_list_iter (test_node, suite) {
         pfstest_t *the_test = (pfstest_t *)test_node;
@@ -479,25 +400,15 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
             continue;
         }
 
-        dynamic_env->test_name = current_test.name;
-        dynamic_env->test_file = current_test.file;
-        dynamic_env->test_failed = false;
-
-        if (dynamic_env->verbose)
-            print_context(print_char);
+        pfstest_output_formatter_test_started(formatter,
+                                              current_test.name,
+                                              current_test.file);
 
         if (current_test.flags & _PFSTEST_FLAG_IGNORED) {
-            results.ignored++;
-            if (dynamic_env->verbose) {
-                new_pfstest_print_nv_string(print_char,
-                                            pfstest_nv_string("IGNORED\n"));
-            } else {
-                print_char('I');
-            }
+            pfstest_output_formatter_test_ignored(formatter);
             continue;
         }
 
-        /* TODO: Allow filtering by file name */
         /* TODO: Start a pfstest_alloc dynamic frame */
         /* TODO: pfstest_mock_init() in a new dynamic frame */
         
@@ -532,36 +443,19 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
             }
         }
 
-        if (dynamic_env->test_failed) {
-            results.failed++;
-        } else {
-            results.passed++;
-            if (dynamic_env->verbose) {
-                new_pfstest_print_nv_string(print_char,
-                                            pfstest_nv_string("PASS\n"));
-            } else {
-                print_char('.');
-            }
-        }
         /* TODO: pop pfstest_mock frame */
         /* TODO: pop pfstest_alloc frame */
+
+        pfstest_output_formatter_test_complete(formatter);
     }
 
-    new_pfstest_print_nv_string(print_char,
-                                pfstest_nv_string("\nRun complete. "));
-    new_pfstest_print_int(print_char, results.passed);
-    new_pfstest_print_nv_string(print_char,
-                                pfstest_nv_string(" passed, "));
-    new_pfstest_print_int(print_char, results.failed);
-    new_pfstest_print_nv_string(print_char,
-                                pfstest_nv_string(" failed, "));
-    new_pfstest_print_int(print_char, results.ignored);
-    new_pfstest_print_nv_string(print_char,
-                                pfstest_nv_string(" ignored\n"));
+    pfstest_output_formatter_run_complete(formatter);
+
+    result = pfstest_output_formatter_return_value(formatter);
 
     dynamic_env_pop();
 
-    return results.failed;
+    return result;
 }
 
 void _pfstest_hook_list_register_hook(pfstest_list_t *list,
