@@ -120,7 +120,7 @@ test(should_run_tests)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -138,7 +138,7 @@ test(should_run_before_hooks)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -156,7 +156,7 @@ test(should_run_after_hooks)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -173,7 +173,7 @@ test(should_skip_ignored_tests)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -206,7 +206,7 @@ test(should_reset_hooks_and_tests)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -224,7 +224,7 @@ test(should_report_results)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -241,7 +241,7 @@ test(should_report_ignored_tests)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -260,7 +260,7 @@ test(should_report_failed_tests)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -282,7 +282,7 @@ test(should_report_results_including_failed_tests)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -306,7 +306,7 @@ test(should_report_results_verbose)
                       &verbose_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -327,7 +327,7 @@ test(should_catch_failures_in_before_hooks)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -344,7 +344,7 @@ test(should_run_after_hooks_when_test_fails)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -365,7 +365,7 @@ test(should_catch_failures_in_after_hooks)
                       &verbose_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -390,7 +390,7 @@ test(should_catch_multiple_after_hook_failures)
                       &verbose_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -414,7 +414,7 @@ test(should_only_count_each_failing_test_once)
                       &verbose_formatter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
-        fail("Output did not match expected output\n");
+        fail("Output did not match expected output");
     }
 }
 
@@ -431,7 +431,7 @@ test(should_return_0_on_success)
                           &standard_formatter);
 
     if (0 != result) {
-        fail("pfstest_suite_run did not return 0\n");
+        fail("pfstest_suite_run did not return 0");
     }
 }
 
@@ -448,7 +448,7 @@ test(should_return_fail_count_on_failure)
                           &standard_formatter);
 
     if (2 != result) {
-        fail("pfstest_suite_run did not return 2\n");
+        fail("pfstest_suite_run did not return 2");
     }
 }
 
@@ -465,7 +465,7 @@ test(should_only_call_before_hooks_in_same_file)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -483,7 +483,7 @@ test(should_only_call_after_hooks_in_same_file)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -500,7 +500,7 @@ test(should_filter_by_file_name)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
@@ -517,7 +517,7 @@ test(should_filter_by_test_name)
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
-        fail("Log did not match expected log\n");
+        fail("Log did not match expected log");
     }
 }
 
