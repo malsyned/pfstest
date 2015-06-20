@@ -434,10 +434,10 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
             pfstest_memcpy_nv(&current_hook, after_hook->nv_data,
                               sizeof(current_hook));
 
-            if (0 == setjmp(dynamic_env->test_jmp_buf)) {
-                if (0 == pfstest_strcmp_nvnv(current_test.file,
-                                             current_hook.file))
-                {
+            if (0 == pfstest_strcmp_nvnv(current_test.file,
+                                         current_hook.file))
+            {
+                if (0 == setjmp(dynamic_env->test_jmp_buf)) {
                     current_hook.function();
                 }
             }
