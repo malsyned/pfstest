@@ -96,7 +96,20 @@ pfstest_constructor(name):
 # define pfstest_nv PROGMEM
 # define pfstest_nv_ptr
 # define pfstest_nv_string(string) PSTR(string)
-# define pfstest_memcpy_nv(ram, nv, size) memcpy_P(ram, nv, size)
+
+/* This seems to use less ROM than calls to memcpy_P(ram, nv, size) */
+#define pfstest_memcpy_nv(ram, nv, size)        \
+    ({                                          \
+        uint8_t *__p = (uint8_t *)ram;          \
+        const pfstest_nv_ptr uint8_t *__nv =    \
+            (const pfstest_nv_ptr uint8_t *)nv; \
+        int __i;                                \
+        for (__i = 0; __i < size; __i++) {      \
+            *__p++ = pgm_read_byte(__nv++);     \
+        }                                       \
+        ram;                                    \
+    })
+
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
 # define pfstest_printf_nv printf_P
