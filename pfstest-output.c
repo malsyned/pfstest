@@ -69,74 +69,65 @@ static void print_context(pfstest_output_formatter_t *formatter)
     print_nv_string(formatter, pfstest_nv_string(" "));
 }
 
-void pfstest_output_formatter_standard_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int))
-{
-    formatter->print_char = print_char;
-    formatter->fresh_line = true;
-
-    formatter->verbose = false;
-}
-
-void pfstest_output_formatter_verbose_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int))
-{
-    formatter->print_char = print_char;
-    formatter->fresh_line = true;
-
-    formatter->verbose = true;
-}
-
-void pfstest_output_formatter_print_nv_string(
-    pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s)
-{
-    message_print_nv_string(formatter, s);
-}
-
-void pfstest_output_formatter_run_started(
-    pfstest_output_formatter_t *formatter)
+static void run_started(pfstest_output_formatter_t *formatter)
 {
     formatter->results.passed = 0;
     formatter->results.failed = 0;
     formatter->results.ignored = 0;
 }
 
-void pfstest_output_formatter_test_started(
-    pfstest_output_formatter_t *formatter,
-    const pfstest_nv_ptr char *test_name,
-    const pfstest_nv_ptr char *test_file)
+static void test_started_bookkeeping(pfstest_output_formatter_t *formatter,
+                                     const pfstest_nv_ptr char *test_name,
+                                     const pfstest_nv_ptr char *test_file)
 {
     formatter->test_failed = false;
     formatter->test_ignored = false;
     formatter->test_name = test_name;
     formatter->test_file = test_file;
-
-    if (formatter->verbose)
-        print_context(formatter);
 }
 
-void pfstest_output_formatter_test_ignored(
-    pfstest_output_formatter_t *formatter)
+static void test_started_standard(pfstest_output_formatter_t *formatter,
+                                  const pfstest_nv_ptr char *test_name,
+                                  const pfstest_nv_ptr char *test_file)
+{
+    test_started_bookkeeping(formatter, test_name, test_file);
+}
+
+static void test_started_verbose(pfstest_output_formatter_t *formatter,
+                                 const pfstest_nv_ptr char *test_name,
+                                 const pfstest_nv_ptr char *test_file)
+{
+    test_started_bookkeeping(formatter, test_name, test_file);
+    print_context(formatter);
+}
+
+static void test_ignored_bookkeeping(pfstest_output_formatter_t *formatter)
 {
     formatter->test_ignored = true;
     formatter->results.ignored++;
-    if (formatter->verbose) {
-        print_nv_string(formatter, pfstest_nv_string("IGNORED\n"));
-    } else {
-        print_char(formatter, 'I');
-    }
 }
 
-void pfstest_output_formatter_test_failed_message_start(
+static void test_ignored_standard(pfstest_output_formatter_t *formatter)
+{
+    test_ignored_bookkeeping(formatter);
+    print_char(formatter, 'I');
+}
+
+static void test_ignored_verbose(pfstest_output_formatter_t *formatter)
+{
+    test_ignored_bookkeeping(formatter);
+    print_nv_string(formatter, pfstest_nv_string("IGNORED\n"));
+}
+
+static void test_failed_message_start_common(
     pfstest_output_formatter_t *formatter,
     const pfstest_nv_ptr char *file, int line,
     /* FIXME: Hack for old core */
     bool fail_expected)
 {
-    if (!formatter->verbose || formatter->test_failed) {
-        print_context(formatter);
-    }
     if (!fail_expected) {
+        /* FIXME: move into test_failed_message_complete when
+         * fail_expected is removed */
         if (!formatter->test_failed) {
             formatter->results.failed++;
             formatter->test_failed = true;
@@ -154,27 +145,62 @@ void pfstest_output_formatter_test_failed_message_start(
     print_nv_string(formatter, pfstest_nv_string("\n"));
 }
 
-void pfstest_output_formatter_test_failed_message_complete(
+static void test_failed_message_start_standard(
+    pfstest_output_formatter_t *formatter,
+    const pfstest_nv_ptr char *file, int line,
+    /* FIXME: Hack for old core */
+    bool fail_expected)
+{
+    print_context(formatter);
+    test_failed_message_start_common(formatter, file, line, fail_expected);
+}
+
+static void test_failed_message_start_verbose(
+    pfstest_output_formatter_t *formatter,
+    const pfstest_nv_ptr char *file, int line,
+    /* FIXME: Hack for old core */
+    bool fail_expected)
+{
+    if (formatter->test_failed) {
+        print_context(formatter);
+    }
+
+    test_failed_message_start_common(formatter, file, line, fail_expected);
+}
+
+static void test_failed_message_complete(
     pfstest_output_formatter_t *formatter)
 {
     print_nv_string(formatter, pfstest_nv_string("\n"));
 }
 
-void pfstest_output_formatter_test_complete(
-    pfstest_output_formatter_t *formatter)
+static bool test_passed(pfstest_output_formatter_t *formatter)
 {
-    if (!formatter->test_ignored && !formatter->test_failed) {
-        formatter->results.passed++;
-        if (formatter->verbose) {
-            message_print_nv_string(formatter, pfstest_nv_string("PASS\n"));
-        } else {
-            print_char(formatter, '.');
-        }
+    return (!formatter->test_ignored && !formatter->test_failed);
+}
+
+static void test_passed_bookkeeping(pfstest_output_formatter_t *formatter)
+{
+    formatter->results.passed++;
+}
+
+static void test_complete_standard(pfstest_output_formatter_t *formatter)
+{
+    if (test_passed(formatter)) {
+        test_passed_bookkeeping(formatter);
+        print_char(formatter, '.');
     }
 }
 
-void pfstest_output_formatter_run_complete(
-    pfstest_output_formatter_t *formatter)
+static void test_complete_verbose(pfstest_output_formatter_t *formatter)
+{
+    if (test_passed(formatter)) {
+        test_passed_bookkeeping(formatter);
+        message_print_nv_string(formatter, pfstest_nv_string("PASS\n"));
+    }
+}
+
+static void run_complete(pfstest_output_formatter_t *formatter)
 {
     print_nv_string(formatter, pfstest_nv_string("\nRun complete. "));
     print_int(formatter, formatter->results.passed);
@@ -185,8 +211,147 @@ void pfstest_output_formatter_run_complete(
     print_nv_string(formatter, pfstest_nv_string(" ignored\n"));
 }
 
+static int return_value(pfstest_output_formatter_t *formatter)
+{
+    return formatter->results.failed;
+}
+
+static const pfstest_nv pfstest_output_formatter_vtable_t standard_vtable = {
+    run_started,
+    test_started_standard,
+    test_ignored_standard,
+    test_failed_message_start_standard,
+    test_failed_message_complete,
+    test_complete_standard,
+    run_complete,
+    return_value
+};
+
+static const pfstest_nv pfstest_output_formatter_vtable_t verbose_vtable = {
+    run_started,
+    test_started_verbose,
+    test_ignored_verbose,
+    test_failed_message_start_verbose,
+    test_failed_message_complete,
+    test_complete_verbose,
+    run_complete,
+    return_value
+};
+
+static void bookkeeping_init(pfstest_output_formatter_t *formatter,
+                             int (*print_char)(int))
+{
+    formatter->print_char = print_char;
+    formatter->fresh_line = true;
+}
+
+
+void pfstest_output_formatter_standard_init(
+    pfstest_output_formatter_t *formatter, int (*print_char)(int))
+{
+    bookkeeping_init(formatter, print_char);
+    formatter->vtable = &standard_vtable;
+}
+
+void pfstest_output_formatter_verbose_init(
+    pfstest_output_formatter_t *formatter, int (*print_char)(int))
+{
+    bookkeeping_init(formatter, print_char);
+    formatter->vtable = &verbose_vtable;
+}
+
+/* Message Output */
+
+void pfstest_output_formatter_print_nv_string(
+    pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s)
+{
+    message_print_nv_string(formatter, s);
+}
+
+/* VTable Dispatchers */
+
+void pfstest_output_formatter_run_started(
+    pfstest_output_formatter_t *formatter)
+{
+    void (*run_started)(pfstest_output_formatter_t *formatter);
+    pfstest_memcpy_nv(&run_started, &(formatter->vtable->run_started),
+                      sizeof(run_started));
+    run_started(formatter);
+}
+
+void pfstest_output_formatter_test_started(
+    pfstest_output_formatter_t *formatter,
+    const pfstest_nv_ptr char *test_name,
+    const pfstest_nv_ptr char *test_file)
+{
+    void (*test_started)(pfstest_output_formatter_t *formatter,
+                         const pfstest_nv_ptr char *test_name,
+                         const pfstest_nv_ptr char *test_file);
+    pfstest_memcpy_nv(&test_started, &formatter->vtable->test_started,
+                      sizeof(test_started));
+    test_started(formatter, test_name, test_file);
+}
+
+void pfstest_output_formatter_test_ignored(
+    pfstest_output_formatter_t *formatter)
+{
+    void (*test_ignored)(pfstest_output_formatter_t *formatter);
+    pfstest_memcpy_nv(&test_ignored, &formatter->vtable->test_ignored,
+                      sizeof(test_ignored));
+    test_ignored(formatter);
+}
+
+void pfstest_output_formatter_test_failed_message_start(
+    pfstest_output_formatter_t *formatter,
+    const pfstest_nv_ptr char *file, int line,
+    /* FIXME: Hack for old core */
+    bool fail_expected)
+{
+    void (*test_failed_message_start)(pfstest_output_formatter_t *formatter,
+                                      const pfstest_nv_ptr char *file,
+                                      int line,
+                                      /* FIXME: Hack for old core */
+                                      bool fail_expected);
+    pfstest_memcpy_nv(&test_failed_message_start,
+                      &formatter->vtable->test_failed_message_start,
+                      sizeof(test_failed_message_start));
+    test_failed_message_start(formatter, file, line, fail_expected);
+}
+
+void pfstest_output_formatter_test_failed_message_complete(
+    pfstest_output_formatter_t *formatter)
+{
+    void (*test_failed_message_complete)(
+        pfstest_output_formatter_t *formatter);
+    pfstest_memcpy_nv(&test_failed_message_complete,
+                      &formatter->vtable->test_failed_message_complete,
+                      sizeof(test_failed_message_complete));
+    test_failed_message_complete(formatter);
+}
+
+void pfstest_output_formatter_test_complete(
+    pfstest_output_formatter_t *formatter)
+{
+    void (*test_complete)(pfstest_output_formatter_t *formatter);
+    pfstest_memcpy_nv(&test_complete, &formatter->vtable->test_complete,
+                      sizeof(test_complete));
+    test_complete(formatter);
+}
+
+void pfstest_output_formatter_run_complete(
+    pfstest_output_formatter_t *formatter)
+{
+    void (*run_complete)(pfstest_output_formatter_t *formatter);
+    pfstest_memcpy_nv(&run_complete, &formatter->vtable->run_complete,
+                      sizeof(run_complete));
+    run_complete(formatter);
+}
+
 int pfstest_output_formatter_return_value(
     pfstest_output_formatter_t *formatter)
 {
-    return formatter->results.failed;
+    int (*return_value)(pfstest_output_formatter_t *formatter);
+    pfstest_memcpy_nv(&return_value, &formatter->vtable->return_value,
+                      sizeof(return_value));
+    return return_value(formatter);
 }
