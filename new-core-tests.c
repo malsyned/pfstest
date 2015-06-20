@@ -61,6 +61,12 @@ pfstest_case(should_also_fail)
     fail("Another expected failure, should have been caught");
 }
 
+pfstest_case(should_have_multi_line_failure)
+{
+    fail("Expected failure, should have been caught\n"
+         "and formatted correctly\nacross multiple lines");
+}
+
 /* TODO: Remove all instances of "new" from identifiers and file names
  * once all functionality has been moved over to the new
  * implementation */
@@ -301,6 +307,48 @@ test(should_report_results_verbose)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_register_test(&suite, should_be_ignored);
 
+    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+                      NULL, NULL,
+                      &verbose_formatter);
+
+    if (0 != pfstest_strcmp_nv(captured_output, expected)) {
+        fail("Output did not match expected output");
+    }
+}
+
+test(should_indent_multi_line_error_messages)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "new-core-tests.c:should_have_multi_line_failure FAIL\n"
+        "    Location: new-core-tests.c:67\n"
+        "    Expected failure, should have been caught\n"
+        "    and formatted correctly\n"
+        "    across multiple lines\n"
+        "\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+
+    pfstest_suite_register_test(&suite, should_have_multi_line_failure);
+    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+                      NULL, NULL,
+                      &standard_formatter);
+
+    if (0 != pfstest_strcmp_nv(captured_output, expected)) {
+        fail("Output did not match expected output");
+    }
+}
+
+test(should_indent_multi_line_error_messages_verbose)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "new-core-tests.c:should_have_multi_line_failure FAIL\n"
+        "    Location: new-core-tests.c:67\n"
+        "    Expected failure, should have been caught\n"
+        "    and formatted correctly\n"
+        "    across multiple lines\n"
+        "\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+
+    pfstest_suite_register_test(&suite, should_have_multi_line_failure);
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
                       NULL, NULL,
                       &verbose_formatter);
