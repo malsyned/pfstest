@@ -13,6 +13,8 @@ pfstest_matcher_t *pfstest_is_the_char(char c);
 pfstest_matcher_t *pfstest_is_the_string(char *s);
 pfstest_matcher_t *pfstest_is_the_pointer(void *p);
 pfstest_matcher_t *pfstest_is_the_memory(void *m, size_t size);
+pfstest_matcher_t *pfstest_matches_the_nv_string(
+    const pfstest_nv_ptr char *s);
 
 #ifndef PFSTEST_NOALIAS_is_the_short
 # define is_the_short pfstest_is_the_short
@@ -37,6 +39,9 @@ pfstest_matcher_t *pfstest_is_the_memory(void *m, size_t size);
 #endif
 #ifndef PFSTEST_NOALIAS_is_the_memory
 # define is_the_memory pfstest_is_the_memory
+#endif
+#ifndef PFSTEST_NOALIAS_matches_the_nv_string
+# define matches_the_nv_string pfstest_matches_the_nv_string
 #endif
 
 #endif /* !PFSTEST_MATCHERS_H */

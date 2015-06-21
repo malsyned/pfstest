@@ -78,7 +78,8 @@ static pfstest_expectation_t *pfstest_expectation_new(
     return e;
 }
 
-static void pfstest_expectation_print(pfstest_expectation_t *e)
+static void pfstest_expectation_print(pfstest_output_formatter_t *formatter,
+                                      pfstest_expectation_t *e)
 {
     int i;
 
@@ -86,7 +87,7 @@ static void pfstest_expectation_print(pfstest_expectation_t *e)
     pfstest_print_nv_string(pfstest_nv_string(" with ("));
 
     for (i = 0; i < pfstest_mock_arg_count(e->mock); i++) {
-        pfstest_arg_handler_print(e->arg_handlers[i]);
+        pfstest_arg_handler_print(formatter, e->arg_handlers[i]);
 
         if (i < pfstest_mock_arg_count(e->mock) - 1)
             pfstest_print_nv_string(pfstest_nv_string(", "));
@@ -310,10 +311,10 @@ static void wrong_call_count_printer(pfstest_output_formatter_t *formatter,
 
     if (args->invocation_count == 0) {
         pfstest_print_nv_string(pfstest_nv_string("    Never called "));
-        pfstest_expectation_print(args->expectation);
+        pfstest_expectation_print(formatter, args->expectation);
     } else if (args->invocation_count != 1) {
         pfstest_print_nv_string(pfstest_nv_string("    Wanted "));
-        pfstest_expectation_print(args->expectation);
+        pfstest_expectation_print(formatter, args->expectation);
 
         pfstest_print_nv_string(pfstest_nv_string(" "));
         pfstest_print_nv_string(args->wanted_desc_prefix);
@@ -542,11 +543,11 @@ static void in_order_fail_printer(pfstest_output_formatter_t *formatter,
     const struct in_order_fail_printer_args *args = data;
 
     pfstest_print_nv_string(pfstest_nv_string("    Not called in order: "));
-    pfstest_expectation_print(args->expectation);
+    pfstest_expectation_print(formatter, args->expectation);
     if (args->prev_expectation != NULL) {
         pfstest_print_nv_string(pfstest_nv_string("\n"));
         pfstest_print_nv_string(pfstest_nv_string("    Expected after: "));
-        pfstest_expectation_print(args->prev_expectation);
+        pfstest_expectation_print(formatter, args->prev_expectation);
     }
 }
 

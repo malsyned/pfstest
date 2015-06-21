@@ -6,13 +6,15 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-values.h"
+#include "pfstest-alloc.h"
 
-static void is_the_whatever_printer(pfstest_matcher_t *matcher)
+static void is_the_whatever_printer(pfstest_output_formatter_t *formatter,
+                                    pfstest_matcher_t *matcher)
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
 
-    pfstest_value_print(expected);
+    pfstest_value_print(formatter, expected);
 }
 
 static bool is_the_whatever_test(pfstest_matcher_t *matcher,
@@ -131,4 +133,49 @@ pfstest_matcher_t *pfstest_is_the_memory(void *m, size_t size)
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
                                the_memory(m, size));
+}
+
+/* matches_the_nv_string */
+
+static void matches_the_nv_string_printer(
+    pfstest_output_formatter_t *formatter, pfstest_matcher_t *matcher)
+{
+    const pfstest_nv_ptr char **sp =
+        (const pfstest_nv_ptr char **)pfstest_matcher_data(matcher);
+    const pfstest_nv_ptr char *expected = *sp;
+    char c;
+
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the string \""));
+    
+    while (pfstest_memcpy_nv(&c, expected, sizeof(c)), c) {
+        pfstest_output_formatter_message_print_escaped_char(formatter, c);
+        expected++;
+    }
+
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("\""));
+}
+
+static bool matches_the_nv_string_test(pfstest_matcher_t *matcher,
+                                       pfstest_value_t *actual_value)
+{
+    const pfstest_nv_ptr char **sp =
+        (const pfstest_nv_ptr char **)pfstest_matcher_data(matcher);
+    const pfstest_nv_ptr char *expected = *sp;
+
+    const char *actual = (const char *)pfstest_value_data(actual_value);
+
+    return (0 == pfstest_strcmp_nv(actual, expected));
+}
+
+pfstest_matcher_t *pfstest_matches_the_nv_string(
+    const pfstest_nv_ptr char *s)
+{
+    const pfstest_nv_ptr char **sp = pfstest_alloc(sizeof(*sp));
+    *sp = s;
+
+    return pfstest_matcher_new(matches_the_nv_string_printer,
+                               matches_the_nv_string_test,
+                               sp);
 }

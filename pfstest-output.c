@@ -1,9 +1,9 @@
 #include "pfstest-output.h"
 
-static void print_char(pfstest_output_formatter_t *formatter, int c)
+static int print_char(pfstest_output_formatter_t *formatter, int c)
 {
         formatter->fresh_line = (c == '\n');
-        formatter->print_char(c);
+        return formatter->print_char(c);
 }
 
 static void print_nv_string(pfstest_output_formatter_t *formatter,
@@ -24,18 +24,13 @@ static void get_fresh_line(pfstest_output_formatter_t *formatter)
     }
 }
 
-static void message_print_nv_string(pfstest_output_formatter_t *formatter,
-                                    const pfstest_nv_ptr char *s)
+static int message_print_char(pfstest_output_formatter_t *formatter,
+                              int c)
 {
-    char c;
-
-    while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
-        if (formatter->fresh_line && c != '\n') {
-            print_nv_string(formatter, pfstest_nv_string("    "));
-        }
-        print_char(formatter, c);
-        s++;
+    if (formatter->fresh_line && c != '\n') {
+        print_nv_string(formatter, pfstest_nv_string("    "));
     }
+    return print_char(formatter, c);
 }
 
 static void print_int(pfstest_output_formatter_t *formatter, int n)
@@ -196,7 +191,10 @@ static void test_complete_verbose(pfstest_output_formatter_t *formatter)
 {
     if (test_passed(formatter)) {
         test_passed_bookkeeping(formatter);
-        message_print_nv_string(formatter, pfstest_nv_string("PASS\n"));
+        /* FIXME: One failing_test has been removed, this can become a
+         * regular print instead of a message_print */
+        pfstest_output_formatter_message_print_nv_string(
+            formatter, pfstest_nv_string("PASS\n"));
     }
 }
 
@@ -217,6 +215,7 @@ static int return_value(pfstest_output_formatter_t *formatter)
 }
 
 static const pfstest_nv pfstest_output_formatter_vtable_t standard_vtable = {
+    message_print_char,
     run_started,
     test_started_standard,
     test_ignored_standard,
@@ -228,6 +227,7 @@ static const pfstest_nv pfstest_output_formatter_vtable_t standard_vtable = {
 };
 
 static const pfstest_nv pfstest_output_formatter_vtable_t verbose_vtable = {
+    message_print_char,
     run_started,
     test_started_verbose,
     test_ignored_verbose,
@@ -236,6 +236,58 @@ static const pfstest_nv pfstest_output_formatter_vtable_t verbose_vtable = {
     test_complete_verbose,
     run_complete,
     return_value
+};
+
+static void test_failed_message_complete_message_spy(
+    pfstest_output_formatter_t *formatter)
+{
+    formatter->results.failed++;
+}
+
+static void test_started_null(pfstest_output_formatter_t *formatter,
+                              const pfstest_nv_ptr char *test_name,
+                              const pfstest_nv_ptr char *test_file)
+{
+}
+
+static void test_ignored_null(pfstest_output_formatter_t *formatter)
+{
+}
+
+static void test_failed_message_start_null(
+    pfstest_output_formatter_t *formatter,
+    const pfstest_nv_ptr char *file,
+    int line,
+    /* FIXME: Hack for old core */
+    bool fail_expected)
+{
+}
+
+static void test_complete_null(pfstest_output_formatter_t *formatter)
+{
+}
+
+static void run_complete_null(pfstest_output_formatter_t *formatter)
+{
+}
+
+static int message_print_char_message_spy(
+    pfstest_output_formatter_t *formatter, int c)
+{
+    return print_char(formatter, c);
+}
+
+static const
+pfstest_nv pfstest_output_formatter_vtable_t message_spy_vtable = {
+    message_print_char_message_spy,
+    run_started,
+    test_started_null,
+    test_ignored_null,
+    test_failed_message_start_null,
+    test_failed_message_complete_message_spy,
+    test_complete_null,
+    run_complete_null,
+    return_value,
 };
 
 static void bookkeeping_init(pfstest_output_formatter_t *formatter,
@@ -260,15 +312,52 @@ void pfstest_output_formatter_verbose_init(
     formatter->vtable = &verbose_vtable;
 }
 
+void pfstest_output_formatter_message_spy_init(
+    pfstest_output_formatter_t *formatter, int (*print_char)(int))
+{
+    formatter->results.failed = 0;
+    formatter->print_char = print_char;
+    formatter->vtable = &message_spy_vtable;
+}
+
 /* Message Output */
 
-void pfstest_output_formatter_print_nv_string(
+void pfstest_output_formatter_message_print_escaped_char(
+    pfstest_output_formatter_t *formatter, int c)
+{
+    if (c == '\n') {
+        pfstest_output_formatter_message_print_nv_string(
+            formatter, pfstest_nv_string("\\n"));
+    } else if (c == '\"') {
+        pfstest_output_formatter_message_print_nv_string(
+            formatter, pfstest_nv_string("\\\""));
+    } else {
+        pfstest_output_formatter_message_print_char(formatter, c);
+    }
+}
+
+void pfstest_output_formatter_message_print_nv_string(
     pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s)
 {
-    message_print_nv_string(formatter, s);
+    char c;
+
+    while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
+        pfstest_output_formatter_message_print_char(formatter, c);
+        s++;
+    }
 }
 
 /* VTable Dispatchers */
+
+int pfstest_output_formatter_message_print_char(
+    pfstest_output_formatter_t *formatter, int c)
+{
+    int (*message_print_char)(pfstest_output_formatter_t *formatter, int c);
+    pfstest_memcpy_nv(&message_print_char,
+                      &(formatter->vtable->message_print_char),
+                      sizeof(message_print_char));
+    return message_print_char(formatter, c);
+}
 
 void pfstest_output_formatter_run_started(
     pfstest_output_formatter_t *formatter)

@@ -28,6 +28,7 @@ typedef struct
 
 struct _pfstest_output_formatter_vtable_t
 {
+    int (*message_print_char)(pfstest_output_formatter_t *formatter, int c);
     void (*run_started)(pfstest_output_formatter_t *formatter);
     void (*test_started)(pfstest_output_formatter_t *formatter,
                          const pfstest_nv_ptr char *test_name,
@@ -49,8 +50,14 @@ void pfstest_output_formatter_standard_init(
     pfstest_output_formatter_t *formatter, int (*print_char)(int));
 void pfstest_output_formatter_verbose_init(
     pfstest_output_formatter_t *formatter, int (*print_char)(int));
+void pfstest_output_formatter_message_spy_init(
+    pfstest_output_formatter_t *formatter, int (*print_char)(int));
 
-void pfstest_output_formatter_print_nv_string(
+int pfstest_output_formatter_message_print_char(
+    pfstest_output_formatter_t *formatter, int c);
+void pfstest_output_formatter_message_print_escaped_char(
+    pfstest_output_formatter_t *formatter, int c);
+void pfstest_output_formatter_message_print_nv_string(
     pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s);
 
 void pfstest_output_formatter_run_started(

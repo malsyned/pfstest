@@ -84,7 +84,8 @@ static void message_printer(pfstest_output_formatter_t *formatter,
                             const void *object)
 {
     const struct message_printer_args *args = object;
-    pfstest_output_formatter_print_nv_string(formatter, args->message);
+    pfstest_output_formatter_message_print_nv_string(formatter,
+                                                     args->message);
 }
 
 void _pfstest_fail_at_location(
@@ -365,6 +366,22 @@ void _pfstest_suite_register_test(pfstest_list_t *suite,
 {
     pfstest_list_node_init((pfstest_list_node_t *)the_test);
     pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
+}
+
+void pfstest_protect_call(void (*f)(void),
+                          pfstest_output_formatter_t *formatter)
+{
+    dynamic_env_t local_dynamic_env;
+    dynamic_env_push(&local_dynamic_env);
+    
+    dynamic_env->verbose = false;
+    dynamic_env->formatter = formatter;
+
+    if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+        f();
+    }
+
+    dynamic_env_pop();
 }
 
 int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
