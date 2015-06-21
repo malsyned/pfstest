@@ -157,7 +157,7 @@ typedef int intptr_t;
 
 # define fflush
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
 
 # include <stdbool.h>
 # include <stdint.h>
