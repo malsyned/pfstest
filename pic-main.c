@@ -1,8 +1,17 @@
 #include "pfstest.h"
+#include "pfstest-alloc-pic.h"
 #include "register-tests.h"
+
+#define HEAP_SIZE ((int)2048)
+
+#pragma udata heap
+unsigned char heap[HEAP_SIZE];
+#pragma udata
 
 void main(void)
 {
+    pfstest_alloc_pic_init(heap, HEAP_SIZE);
+
     register_tests();
 
     run_all_tests_verbose();

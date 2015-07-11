@@ -1,32 +1,80 @@
-#include "pfstest-alloc.h"
+#include "pfstest-alloc-pic.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include "pfstest-platform.h"
 
-#define HEAP_SIZE ((int)2048)
-
-#pragma udata heap
-unsigned char heap[HEAP_SIZE];
-#pragma udata
-
-static unsigned char *next_free_byte = heap;
-
-void *pfstest_alloc(size_t size)
+typedef struct _dynamic_env_t
 {
-    void *r = NULL;
-    ptrdiff_t used = next_free_byte - heap;
-    int free = HEAP_SIZE - (int)used;
+    struct _dynamic_env_t *next;
+    unsigned char *next_free_byte;
+} dynamic_env_t;
 
-    assert(free >= size);
+unsigned char *heap_end = NULL;
+dynamic_env_t *dynamic_env = NULL;
 
-    r = next_free_byte;
-    next_free_byte += size;
+static void assert_object_fits_in_heap(void *o, size_t size)
+{
+    unsigned char *last_fitting_address = heap_end - (size - 1);
 
+    assert((unsigned char *)o <= last_fitting_address);
+}
+
+static unsigned char *get_frame_start(dynamic_env_t *env)
+{
+    return (unsigned char *)env + sizeof(*env);
+}
+
+static void push_new_env(dynamic_env_t *new_env)
+{
+    new_env->next = dynamic_env;
+    new_env->next_free_byte = get_frame_start(new_env);
+    dynamic_env = new_env;
+}
+
+static void *get_next_object(size_t size)
+{
+    void *r = (void *)dynamic_env->next_free_byte;
+    assert_object_fits_in_heap(r, size);
     return r;
 }
 
-void pfstest_free_all(void)
+void pfstest_alloc_pic_init(unsigned char *heap, size_t size)
 {
-    next_free_byte = heap;
+    heap_end = heap + (size - 1);
+    assert_object_fits_in_heap(heap, sizeof(dynamic_env_t));
+    push_new_env((void *)heap);
+}
+
+void *pfstest_alloc(size_t size)
+{
+    void *r = get_next_object(size);
+    dynamic_env->next_free_byte += size;
+    return r;
+}
+
+void pfstest_alloc_free_frame(void)
+{
+    unsigned char *frame_start = get_frame_start(dynamic_env);
+
+    /* Help uses of freed memory fail early */
+    memset(frame_start, 0xaa, dynamic_env->next_free_byte - frame_start);
+    dynamic_env->next_free_byte = frame_start;
+}
+
+void pfstest_alloc_frame_push(void)
+{
+    push_new_env(get_next_object(sizeof(dynamic_env_t)));
+}
+
+void pfstest_alloc_frame_pop(void)
+{
+    dynamic_env_t *old_frame = dynamic_env;
+    pfstest_alloc_free_frame();
+
+    dynamic_env = old_frame->next;
+
+    /* Help uses of freed memory fail early */
+    memset(old_frame, 0xaa, sizeof(*old_frame));
 }

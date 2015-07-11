@@ -23,11 +23,13 @@ test-new-core: new-core-tests
 test: tests
 	echo ; ./tests $(ARGS)
 
-SRC := $(COMMON_SRC) gcc-main.c
+ALLOC_SRC := pfstest-alloc-malloc.c
 
-CORE_SRC := $(CORE_COMMON_SRC) gcc-main.c
+SRC := $(COMMON_SRC) $(ALLOC_SRC) gcc-main.c
 
-NEW_CORE_SRC := $(NEW_CORE_COMMON_SRC) gcc-main.c
+CORE_SRC := $(CORE_COMMON_SRC) $(ALLOC_SRC) gcc-main.c
+
+NEW_CORE_SRC := $(NEW_CORE_COMMON_SRC) $(ALLOC_SRC) gcc-main.c
 
 %.o: %.c $(MAKEFILE_LIST)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<

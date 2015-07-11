@@ -1,11 +1,10 @@
 #include "pfstest-alloc.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "pfstest-platform.h"
 #include "pfstest-list.h"
-
-static pfstest_list_t allocated = PFSTEST_LIST_EMPTY();
 
 struct alignment_struct 
 {
@@ -27,11 +26,35 @@ struct alignment_struct
 #define ALIGNMENT offsetof(struct alignment_struct, alignment_union)
 #define ALIGN_MASK (~(ALIGNMENT - 1))
 
+typedef struct _dynamic_env_t
+{
+    struct _dynamic_env_t *next;
+    pfstest_list_t allocated;
+} dynamic_env_t;
+
+dynamic_env_t default_dynamic_env = {
+    NULL,
+    PFSTEST_LIST_EMPTY()
+};
+
+dynamic_env_t *dynamic_env = &default_dynamic_env;
+
+/* Help uses of uninitialized memory fail early */
+static void *evil_malloc(size_t size)
+{
+    void *r = malloc(size);
+    memset(r, 0xaa, size);
+    return r;
+}
+
 void *pfstest_alloc(size_t size)
 {
     void *mem;
     pfstest_list_node_t *node;
     size_t header_size;
+
+    if (size == 0)
+        return NULL;
 
     header_size = sizeof(pfstest_list_node_t);
     if (header_size % ALIGNMENT) {
@@ -40,11 +63,11 @@ void *pfstest_alloc(size_t size)
     assert(header_size >= sizeof(pfstest_list_node_t));
     assert(header_size <= sizeof(pfstest_list_node_t) + ALIGNMENT);
 
-    node = malloc(header_size + size);
+    node = evil_malloc(header_size + size);
     assert(node != NULL);
     pfstest_list_node_init(node);
 
-    pfstest_list_append(&allocated, node);
+    pfstest_list_append(&dynamic_env->allocated, node);
 
     mem = (char *)node + header_size;
     assert((intptr_t)mem % ALIGNMENT == 0);
@@ -52,15 +75,39 @@ void *pfstest_alloc(size_t size)
     return mem;
 }
 
-void pfstest_free_all(void)
+void pfstest_alloc_free_frame(void)
 {
-    pfstest_list_node_t *node = pfstest_list_head(&allocated);
+    pfstest_list_node_t *node = pfstest_list_head(&dynamic_env->allocated);
 
     while (node != NULL) {
         pfstest_list_node_t *next = node->next;
+
+        /* Help uses of freed memory fail early */
+        memset(node, 0xaa, sizeof(*node) + 1);
+
         free(node);
         node = next;
     }
 
-    pfstest_list_reset(&allocated);
+    pfstest_list_reset(&dynamic_env->allocated);
+}
+
+void pfstest_alloc_frame_push(void)
+{
+    dynamic_env_t *new_frame = evil_malloc(sizeof(*new_frame));
+    new_frame->next = dynamic_env;
+    dynamic_env = new_frame;
+    pfstest_list_reset(&dynamic_env->allocated);
+}
+
+void pfstest_alloc_frame_pop(void)
+{
+    dynamic_env_t *old_frame = dynamic_env;
+    pfstest_alloc_free_frame();
+    dynamic_env = old_frame->next;
+
+    /* Help uses of freed memory fail early */
+    memset(old_frame, 0xaa, sizeof(*old_frame));
+
+    free(old_frame);
 }

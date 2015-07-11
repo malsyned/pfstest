@@ -203,11 +203,15 @@ static void do_tests_list(const char *test_file,
                                                   current_test.name,
                                                   current_test.file);
 
+            pfstest_alloc_frame_push();
+
             pfstest_mock_init(); /* TODO: plugin-ize */
             do_hook_list(&before, current_test.file);
             run_test(&current_test);
             do_hook_list(&after, current_test.file);
-            pfstest_free_all(); /* TODO: plugin-ize */
+            pfstest_alloc_free_frame();
+
+            pfstest_alloc_frame_pop();
         }
     }
 }
@@ -426,7 +430,8 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
             continue;
         }
 
-        /* TODO: Start a pfstest_alloc dynamic frame */
+        pfstest_alloc_frame_push();
+
         /* TODO: pfstest_mock_init() in a new dynamic frame */
         
         if (0 == setjmp(dynamic_env->test_jmp_buf)) {
@@ -461,9 +466,13 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
         }
 
         /* TODO: pop pfstest_mock frame */
-        /* TODO: pop pfstest_alloc frame */
+
+        pfstest_alloc_free_frame();
+        pfstest_alloc_frame_pop();
 
         pfstest_output_formatter_test_complete(formatter);
+
+
     }
 
     pfstest_output_formatter_run_complete(formatter);

@@ -89,7 +89,7 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(COMMON_SRC) avr-main.c
+SRC = $(COMMON_SRC) pfstest-alloc-malloc.c avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -146,7 +146,7 @@ ADEFS = -DF_CPU=$(F_CPU)
 CPPDEFS = -DF_CPU=$(F_CPU)UL
 #CPPDEFS += -D__STDC_LIMIT_MACROS
 #CPPDEFS += -D__STDC_CONSTANT_MACROS
-
+CPPDEFS += -D__ASSERT_USE_STDERR
 
 
 #---------------- Compiler Options C ----------------
