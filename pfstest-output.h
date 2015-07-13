@@ -59,6 +59,10 @@ void pfstest_output_formatter_message_print_escaped_char(
     pfstest_output_formatter_t *formatter, int c);
 void pfstest_output_formatter_message_print_nv_string(
     pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s);
+void pfstest_output_formatter_message_print_int(
+    pfstest_output_formatter_t *formatter, intmax_t i);
+void pfstest_output_formatter_message_print_uint(
+    pfstest_output_formatter_t *formatter, uintmax_t i, int base, int zpad);
 
 void pfstest_output_formatter_run_started(
     pfstest_output_formatter_t *formatter);

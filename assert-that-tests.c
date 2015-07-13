@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "pfstest.h"
+#include "capture-output.h"
 
 static void some_value_printer(pfstest_output_formatter_t *formatter,
                                pfstest_value_t *value)
@@ -46,33 +47,9 @@ static pfstest_matcher_t matches_nothing[1] = {{
         NULL,
     }};
 
-static char captured_output[300];
-static int captured_output_idx = 0;
-
-void capture_output_init(void)
-{
-    captured_output[0] = '\0';
-    captured_output_idx = 0;
-}
-
-int capture_output_char(int c)
-{
-    if (captured_output_idx < sizeof(captured_output) - 1) {
-        captured_output[captured_output_idx++] = c;
-        captured_output[captured_output_idx] = '\0';
-        return c;
-    }
-
-    return EOF;
-}
-
-static pfstest_output_formatter_t message_spy;
-
-before_tests(set_up)
+before_tests(set_up_assert_that)
 {
     capture_output_init();
-    pfstest_output_formatter_message_spy_init(&message_spy,
-                                              capture_output_char);
 }
 
 test(should_pass_assertion)

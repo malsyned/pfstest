@@ -131,6 +131,8 @@ typedef unsigned char bool;
 
 /* stdint.h */
 typedef int intptr_t;
+typedef long intmax_t;
+typedef unsigned long uintmax_t;
 
 /* stdlib.h */
 #define exit(n) do { while (1) ; } while (0)

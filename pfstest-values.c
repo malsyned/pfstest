@@ -14,7 +14,9 @@ static void the_short_printer(pfstest_output_formatter_t *formatter,
 {
     short s = *(short *)pfstest_value_data(value);
 
-    pfstest_printf_nv(pfstest_nv_string("the short %hd"), s);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the short "));
+    pfstest_output_formatter_message_print_int(formatter, (intmax_t)s);
 }
 
 pfstest_value_t *pfstest_the_short(short s)
@@ -32,7 +34,10 @@ static void the_ushort_printer(pfstest_output_formatter_t *formatter,
 {
     unsigned short u = *(unsigned short *)pfstest_value_data(value);
 
-    pfstest_printf_nv(pfstest_nv_string("the ushort %hu"), u);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the ushort "));
+    pfstest_output_formatter_message_print_uint(
+        formatter, (uintmax_t)u, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_ushort(unsigned short u)
@@ -50,7 +55,9 @@ static void the_int_printer(pfstest_output_formatter_t *formatter,
 {
     int i = *(int *)pfstest_value_data(value);
 
-    pfstest_printf_nv(pfstest_nv_string("the int %d"), i);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the int "));
+    pfstest_output_formatter_message_print_int(formatter, (intmax_t)i);
 }
 
 pfstest_value_t *pfstest_the_int(int i)
@@ -68,7 +75,10 @@ static void the_uint_printer(pfstest_output_formatter_t *formatter,
 {
     unsigned int u = *(unsigned int *)pfstest_value_data(value);
 
-    pfstest_printf_nv(pfstest_nv_string("the uint %u"), u);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the uint "));
+    pfstest_output_formatter_message_print_uint(
+        formatter, (uintmax_t)u, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_uint(unsigned int u)
@@ -86,7 +96,11 @@ static void the_char_printer(pfstest_output_formatter_t *formatter,
 {
     char c = *(char *)pfstest_value_data(value);
 
-    pfstest_printf_nv(pfstest_nv_string("the char '%c'"), c);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the char '"));
+    pfstest_output_formatter_message_print_char(formatter, c);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("'"));
 }
 
 pfstest_value_t *pfstest_the_char(char c)
@@ -105,25 +119,15 @@ static void the_string_printer(pfstest_output_formatter_t *formatter,
     char *data = pfstest_value_data(value);
     char *p = data;
 
-    pfstest_printf_nv(pfstest_nv_string("the string \""));
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the string \""));
     
     while (*p) {
-        char c = *p++;
-
-        /* TODO: Convert over to
-         * pfstest_output_formatter_message_print_char(formatter, c)
-         * once mock expectations are using output formatters*/
-
-        if (c == '\n') {
-            pfstest_print_nv_string(pfstest_nv_string("\\n"));
-        } else if (c == '\"') {
-            pfstest_print_nv_string(pfstest_nv_string("\\\""));
-        } else {
-            pfstest_printf_nv(pfstest_nv_string("%c"), c);
-        }
+        pfstest_output_formatter_message_print_escaped_char(formatter, *p++);
     }
 
-    pfstest_print_nv_string(pfstest_nv_string("\""));
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("\""));
 }
 
 pfstest_value_t *pfstest_the_string(char *s)
@@ -141,7 +145,15 @@ static void the_pointer_printer(pfstest_output_formatter_t *formatter,
 {
     void *data = pfstest_value_data(value);
 
-    pfstest_printf_nv(pfstest_nv_string("the pointer <%p>"), data);
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the pointer <0x"));
+
+    pfstest_output_formatter_message_print_uint(
+        formatter, (uintmax_t)(uintptr_t)data, 16, 0);
+
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string(">"));
+
 }
 
 pfstest_value_t *pfstest_the_pointer(void *p)
@@ -158,13 +170,23 @@ static void the_memory_printer(pfstest_output_formatter_t *formatter,
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    pfstest_print_nv_string(pfstest_nv_string("the memory {"));
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the memory {"));
+
     for (i = 0; i < size; i++) {
-        pfstest_printf_nv(pfstest_nv_string("0x%02x"), data[i]);
-        if (i < size - 1)
-            pfstest_print_nv_string(pfstest_nv_string(", "));
+
+        pfstest_output_formatter_message_print_nv_string(
+            formatter, pfstest_nv_string("0x"));
+        pfstest_output_formatter_message_print_uint(
+            formatter, data[i], 16, 2);
+
+        if (i < size - 1) {
+            pfstest_output_formatter_message_print_nv_string(
+                formatter, pfstest_nv_string(", "));
+        }
     }
-    pfstest_print_nv_string(pfstest_nv_string("}"));
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("}"));
 }
 
 pfstest_value_t *pfstest_the_memory(void *m, size_t size)

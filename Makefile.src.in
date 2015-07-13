@@ -6,7 +6,8 @@ PFSTEST_SRC := pfstest-list.c pfstest-value.c \
                pfstest-arg-handlers.c pfstest-mock.c pfstest-platform.c \
                pfstest-output.c
 
-TESTS_SRC := assert-that-tests.c values-and-matchers-tests.c \
+TESTS_SRC := capture-output.c \
+             assert-that-tests.c values-and-matchers-tests.c \
              mock-dep.c mock-tests.c
 
 CORE_TESTS_SRC := core-tests.c core-tests-2.c

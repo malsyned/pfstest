@@ -33,14 +33,47 @@ static int message_print_char(pfstest_output_formatter_t *formatter,
     return print_char(formatter, c);
 }
 
-static void print_int(pfstest_output_formatter_t *formatter, int n)
+static char digit_char(int digit)
 {
-    int d = 1;
-    int ntemp = n;
+    static const pfstest_nv char digits[] = "0123456789abcdef";
+    char d;
+
+    pfstest_memcpy_nv(&d, &digits[digit], sizeof(d));
+
+    return d;
+}
+
+static void print_uint(pfstest_output_formatter_t *formatter,
+                       uintmax_t n, int base, int zpad)
+{
+    uintmax_t d = 1;
+    uintmax_t ntemp = n;
+    int digits = 1;
+
+    while (ntemp > (base - 1)) {
+        ntemp /= base;
+        d *= base;
+        digits++;
+    }
+
+    while (zpad-- > digits) {
+        message_print_char(formatter, '0');
+    }
+
+    do {
+        message_print_char(formatter, digit_char(n / d % base));
+        d /= base;
+    } while (d > 0);
+}
+
+static void print_int(pfstest_output_formatter_t *formatter, intmax_t n)
+{
+    intmax_t d = 1;
+    intmax_t ntemp = n;
 
     /* FIXME: Doesn't handle INT_MIN properly (neither does Unity) */
     if (n < 0) {
-        print_char(formatter, '-');
+        message_print_char(formatter, '-');
         n = -n;
     }
 
@@ -50,7 +83,7 @@ static void print_int(pfstest_output_formatter_t *formatter, int n)
     }
 
     do {
-        print_char(formatter, '0' + n / d % 10);
+        message_print_char(formatter, digit_char(n / d % 10));
         d /= 10;
     } while (d > 0);
 }
@@ -345,6 +378,18 @@ void pfstest_output_formatter_message_print_nv_string(
         pfstest_output_formatter_message_print_char(formatter, c);
         s++;
     }
+}
+
+void pfstest_output_formatter_message_print_int(
+    pfstest_output_formatter_t *formatter, intmax_t i)
+{
+    print_int(formatter, i);
+}
+
+void pfstest_output_formatter_message_print_uint(
+    pfstest_output_formatter_t *formatter, uintmax_t i, int base, int zpad)
+{
+    print_uint(formatter, i, base, zpad);
 }
 
 /* VTable Dispatchers */
