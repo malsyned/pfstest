@@ -12,6 +12,16 @@ int pfstest_strcmp_nvnv(const char *s1, const char *s2)
     return (unsigned char)c1 - (unsigned char)c2;
 }
 
-#endif  /* defined(__GNUC__) && defined(__AVR__) */
+#elif defined(__18CXX)
+
+int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2)
+{
+    while (*s1 && *s1 == *s2)
+        s1++, s2++;
+
+    return (unsigned char)*s1 - (unsigned char)*s2;
+}
+
+#endif  /* defined(__18CXX) */
 
 enum { work_around_iso_c_empty_translation_unit_prohibition };

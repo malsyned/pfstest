@@ -33,9 +33,10 @@ static int message_print_char(pfstest_output_formatter_t *formatter,
     return print_char(formatter, c);
 }
 
+static const pfstest_nv char digits[] = "0123456789abcdef";
+
 static char digit_char(int digit)
 {
-    static const pfstest_nv char digits[] = "0123456789abcdef";
     char d;
 
     pfstest_memcpy_nv(&d, &digits[digit], sizeof(d));
@@ -390,7 +391,7 @@ void pfstest_output_formatter_message_print_uint(
 int pfstest_output_formatter_message_print_char(
     pfstest_output_formatter_t *formatter, int c)
 {
-    int (*message_print_char)(pfstest_output_formatter_t *formatter, int c);
+    int (*message_print_char)(pfstest_output_formatter_t *, int);
     pfstest_memcpy_nv(&message_print_char,
                       &(formatter->vtable->message_print_char),
                       sizeof(message_print_char));
@@ -400,7 +401,7 @@ int pfstest_output_formatter_message_print_char(
 void pfstest_output_formatter_run_started(
     pfstest_output_formatter_t *formatter)
 {
-    void (*run_started)(pfstest_output_formatter_t *formatter);
+    void (*run_started)(pfstest_output_formatter_t *);
     pfstest_memcpy_nv(&run_started, &(formatter->vtable->run_started),
                       sizeof(run_started));
     run_started(formatter);
@@ -411,9 +412,9 @@ void pfstest_output_formatter_test_started(
     const pfstest_nv_ptr char *test_name,
     const pfstest_nv_ptr char *test_file)
 {
-    void (*test_started)(pfstest_output_formatter_t *formatter,
-                         const pfstest_nv_ptr char *test_name,
-                         const pfstest_nv_ptr char *test_file);
+    void (*test_started)(pfstest_output_formatter_t *,
+                         const pfstest_nv_ptr char *,
+                         const pfstest_nv_ptr char *);
     pfstest_memcpy_nv(&test_started, &formatter->vtable->test_started,
                       sizeof(test_started));
     test_started(formatter, test_name, test_file);
@@ -422,7 +423,7 @@ void pfstest_output_formatter_test_started(
 void pfstest_output_formatter_test_ignored(
     pfstest_output_formatter_t *formatter)
 {
-    void (*test_ignored)(pfstest_output_formatter_t *formatter);
+    void (*test_ignored)(pfstest_output_formatter_t *);
     pfstest_memcpy_nv(&test_ignored, &formatter->vtable->test_ignored,
                       sizeof(test_ignored));
     test_ignored(formatter);
@@ -434,11 +435,11 @@ void pfstest_output_formatter_test_failed_message_start(
     /* FIXME: Hack for old core */
     bool fail_expected)
 {
-    void (*test_failed_message_start)(pfstest_output_formatter_t *formatter,
-                                      const pfstest_nv_ptr char *file,
-                                      int line,
+    void (*test_failed_message_start)(pfstest_output_formatter_t *,
+                                      const pfstest_nv_ptr char *,
+                                      int,
                                       /* FIXME: Hack for old core */
-                                      bool fail_expected);
+                                      bool);
     pfstest_memcpy_nv(&test_failed_message_start,
                       &formatter->vtable->test_failed_message_start,
                       sizeof(test_failed_message_start));
@@ -449,7 +450,7 @@ void pfstest_output_formatter_test_failed_message_complete(
     pfstest_output_formatter_t *formatter)
 {
     void (*test_failed_message_complete)(
-        pfstest_output_formatter_t *formatter);
+        pfstest_output_formatter_t *);
     pfstest_memcpy_nv(&test_failed_message_complete,
                       &formatter->vtable->test_failed_message_complete,
                       sizeof(test_failed_message_complete));
@@ -459,7 +460,7 @@ void pfstest_output_formatter_test_failed_message_complete(
 void pfstest_output_formatter_test_complete(
     pfstest_output_formatter_t *formatter)
 {
-    void (*test_complete)(pfstest_output_formatter_t *formatter);
+    void (*test_complete)(pfstest_output_formatter_t *);
     pfstest_memcpy_nv(&test_complete, &formatter->vtable->test_complete,
                       sizeof(test_complete));
     test_complete(formatter);
@@ -468,7 +469,7 @@ void pfstest_output_formatter_test_complete(
 void pfstest_output_formatter_run_complete(
     pfstest_output_formatter_t *formatter)
 {
-    void (*run_complete)(pfstest_output_formatter_t *formatter);
+    void (*run_complete)(pfstest_output_formatter_t *);
     pfstest_memcpy_nv(&run_complete, &formatter->vtable->run_complete,
                       sizeof(run_complete));
     run_complete(formatter);
@@ -477,7 +478,7 @@ void pfstest_output_formatter_run_complete(
 int pfstest_output_formatter_return_value(
     pfstest_output_formatter_t *formatter)
 {
-    int (*return_value)(pfstest_output_formatter_t *formatter);
+    int (*return_value)(pfstest_output_formatter_t *);
     pfstest_memcpy_nv(&return_value, &formatter->vtable->return_value,
                       sizeof(return_value));
     return return_value(formatter);

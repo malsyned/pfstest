@@ -5,7 +5,7 @@
 char captured_output[300];
 pfstest_output_formatter_t message_spy;
 
-static int captured_output_idx = 0;
+static unsigned int captured_output_idx = 0;
 
 void capture_output_init(void)
 {

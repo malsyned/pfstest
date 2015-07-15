@@ -130,12 +130,15 @@ typedef unsigned char bool;
 # define true 1
 
 /* stdint.h */
+#include <limits.h>
 typedef int intptr_t;
 typedef long intmax_t;
 typedef unsigned long uintmax_t;
+#define UINTMAX_MAX ULONG_MAX
+#define UINTMAX_C(c) c ## UL
 
 /* stdlib.h */
-#define exit(n) do { while (1) ; } while (0)
+#define _exit(n) do { while (1) ; } while (0)
 
 /* assert.h */
 #include <stdio.h>
@@ -143,7 +146,7 @@ typedef unsigned long uintmax_t;
     if (!(test)) {                                                      \
         pfstest_print_nv_string(                                        \
             pfstest_nv_string(__FILE__ ":Assertion failed: " #test));   \
-        exit(1);                                                        \
+        _exit(1);                                                       \
     }
 
 # define pfstest_nv far rom
@@ -151,13 +154,14 @@ typedef unsigned long uintmax_t;
 # define pfstest_nv_string(string) ((const far rom char *)string)
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
-# define pfstest_strcmp_nvnv strcmppgm
 # define pfstest_strcat_nv strcatpgm2ram
 # define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN
 
 # define fflush
+
+int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 
 #elif defined(__GNUC__) || defined(__clang__)
 
