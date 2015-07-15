@@ -47,11 +47,9 @@ static void print_uint(pfstest_output_formatter_t *formatter,
                        uintmax_t n, int base, int zpad)
 {
     uintmax_t d = 1;
-    uintmax_t ntemp = n;
     int digits = 1;
 
-    while (ntemp > (base - 1)) {
-        ntemp /= base;
+    while (n / d > (base - 1)) {
         d *= base;
         digits++;
     }
@@ -68,24 +66,19 @@ static void print_uint(pfstest_output_formatter_t *formatter,
 
 static void print_int(pfstest_output_formatter_t *formatter, intmax_t n)
 {
-    intmax_t d = 1;
-    intmax_t ntemp = n;
+    uintmax_t nabs;
 
-    /* FIXME: Doesn't handle INT_MIN properly (neither does Unity) */
     if (n < 0) {
         message_print_char(formatter, '-');
-        n = -n;
+        /* Casting a negative number to an unsigned type is guaranteed
+         * to result in that number, modulo MAX+1. (C Standard
+         * 6.3.1.3.2) */
+        nabs = UINTMAX_MAX - (uintmax_t)n + 1;
+    } else {
+        nabs = n;
     }
 
-    while (ntemp > 9) {
-        ntemp /= 10;
-        d *= 10;
-    }
-
-    do {
-        message_print_char(formatter, digit_char(n / d % 10));
-        d /= 10;
-    } while (d > 0);
+    print_uint(formatter, nabs, 10, 0);
 }
 
 static void print_context(pfstest_output_formatter_t *formatter)
