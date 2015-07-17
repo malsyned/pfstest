@@ -12,7 +12,7 @@ TESTS_SRC := capture-output.c \
 
 CORE_TESTS_SRC := core-tests.c core-tests-2.c
 
-NEW_CORE_TESTS_SRC := new-core-tests.c new-core-tests-2.c
+NEW_CORE_TESTS_SRC := new-core-tests.c core-test-cases.c core-test-cases-2.c
 
 COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)
 

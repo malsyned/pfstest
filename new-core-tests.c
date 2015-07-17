@@ -4,69 +4,6 @@
 
 char call_log[150];
 
-pfstest_case(should_run)
-{
-    pfstest_strcat_nv(call_log, pfstest_nv_string("should_run "));
-}
-
-pfstest_case(should_also_run)
-{
-    pfstest_strcat_nv(call_log, pfstest_nv_string("should_also_run "));
-}
-
-pfstest_case_ignored(should_be_ignored)
-{
-    pfstest_strcat_nv(call_log, pfstest_nv_string("should_be_ignored "));
-}
-
-pfstest_case(should_fail)
-{
-    fail("Expected failure, should have been caught");
-}
-
-pfstest_hook(should_be_run_before)
-{
-    pfstest_strcat_nv(call_log, pfstest_nv_string("should_be_run_before "));
-}
-
-pfstest_hook(should_also_be_run_before)
-{
-    pfstest_strcat_nv(call_log,
-                      pfstest_nv_string("should_also_be_run_before "));
-}
-
-pfstest_hook(should_be_run_after)
-{
-    pfstest_strcat_nv(call_log, pfstest_nv_string("should_be_run_after "));
-}
-
-pfstest_hook(should_also_be_run_after)
-{
-    pfstest_strcat_nv(call_log,
-                      pfstest_nv_string("should_also_be_run_after "));
-}
-
-pfstest_hook(hook_should_fail)
-{
-    fail("Expected failure, should have been caught");
-}
-
-pfstest_hook(hook_should_also_fail)
-{
-    fail("Another expected failure, should have been caught");
-}
-
-pfstest_case(should_also_fail)
-{
-    fail("Another expected failure, should have been caught");
-}
-
-pfstest_case(should_have_multi_line_failure)
-{
-    fail("Expected failure, should have been caught\n"
-         "and formatted correctly\nacross multiple lines");
-}
-
 /* TODO: Remove all instances of "new" from identifiers and file names
  * once all functionality has been moved over to the new
  * implementation */
@@ -254,8 +191,8 @@ test(should_report_ignored_tests)
 test(should_report_failed_tests)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_fail FAIL\n"
-        "    Location: new-core-tests.c:24\n"
+        "core-test-cases.c:should_fail FAIL\n"
+        "    Location: core-test-cases.c:22\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -274,8 +211,8 @@ test(should_report_results_including_failed_tests)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         ".\n"
-        "new-core-tests.c:should_fail FAIL\n"
-        "    Location: new-core-tests.c:24\n"
+        "core-test-cases.c:should_fail FAIL\n"
+        "    Location: core-test-cases.c:22\n"
         "    Expected failure, should have been caught\n"
         ".\n"
         "Run complete. 2 passed, 1 failed, 0 ignored\n");
@@ -295,11 +232,11 @@ test(should_report_results_including_failed_tests)
 test(should_report_results_verbose)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_run PASS\n"
-        "new-core-tests.c:should_fail FAIL\n"
-        "    Location: new-core-tests.c:24\n"
+        "core-test-cases.c:should_run PASS\n"
+        "core-test-cases.c:should_fail FAIL\n"
+        "    Location: core-test-cases.c:22\n"
         "    Expected failure, should have been caught\n"
-        "new-core-tests.c:should_be_ignored IGNORED\n"
+        "core-test-cases.c:should_be_ignored IGNORED\n"
         "\n"
         "Run complete. 1 passed, 1 failed, 1 ignored\n");
 
@@ -319,8 +256,8 @@ test(should_report_results_verbose)
 test(should_indent_multi_line_error_messages)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_have_multi_line_failure FAIL\n"
-        "    Location: new-core-tests.c:67\n"
+        "core-test-cases.c:should_have_multi_line_failure FAIL\n"
+        "    Location: core-test-cases.c:65\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -340,8 +277,8 @@ test(should_indent_multi_line_error_messages)
 test(should_indent_multi_line_error_messages_verbose)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_have_multi_line_failure FAIL\n"
-        "    Location: new-core-tests.c:67\n"
+        "core-test-cases.c:should_have_multi_line_failure FAIL\n"
+        "    Location: core-test-cases.c:65\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -361,8 +298,8 @@ test(should_indent_multi_line_error_messages_verbose)
 test(should_catch_failures_in_before_hooks)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_run FAIL\n"
-        "    Location: new-core-tests.c:51\n"
+        "core-test-cases.c:should_run FAIL\n"
+        "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -399,8 +336,8 @@ test(should_run_after_hooks_when_test_fails)
 test(should_catch_failures_in_after_hooks)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_run FAIL\n"
-        "    Location: new-core-tests.c:51\n"
+        "core-test-cases.c:should_run FAIL\n"
+        "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -420,11 +357,11 @@ test(should_catch_failures_in_after_hooks)
 test(should_catch_multiple_after_hook_failures)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_run FAIL\n"
-        "    Location: new-core-tests.c:51\n"
+        "core-test-cases.c:should_run FAIL\n"
+        "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
-        "new-core-tests.c:should_run FAIL\n"
-        "    Location: new-core-tests.c:56\n"
+        "core-test-cases.c:should_run FAIL\n"
+        "    Location: core-test-cases.c:54\n"
         "    Another expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -461,11 +398,11 @@ test(should_accept_null_after_hook_list)
 test(should_only_count_each_failing_test_once)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "new-core-tests.c:should_fail FAIL\n"
-        "    Location: new-core-tests.c:24\n"
+        "core-test-cases.c:should_fail FAIL\n"
+        "    Location: core-test-cases.c:22\n"
         "    Expected failure, should have been caught\n"
-        "new-core-tests.c:should_fail FAIL\n"
-        "    Location: new-core-tests.c:51\n"
+        "core-test-cases.c:should_fail FAIL\n"
+        "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -560,7 +497,7 @@ test(should_filter_by_file_name)
     pfstest_suite_register_test(&suite, other_file_test);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      pfstest_nv_string(__FILE__), NULL,
+                      pfstest_nv_string("core-test-cases.c"), NULL,
                       &standard_formatter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
