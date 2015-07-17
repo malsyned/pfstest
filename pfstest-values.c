@@ -89,6 +89,28 @@ pfstest_value_t *pfstest_the_uint(unsigned int u)
     return pfstest_value_new(the_uint_printer, data, sizeof(u));
 }
 
+/* the_bool */
+
+static void the_bool_printer(pfstest_output_formatter_t *formatter,
+                             pfstest_value_t *value)
+{
+    bool b = *(bool *)pfstest_value_data(value);
+
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("the bool "));
+    pfstest_output_formatter_message_print_nv_string(
+        formatter,
+        b ? pfstest_nv_string("<true>") : pfstest_nv_string("<false>"));
+}
+
+pfstest_value_t *pfstest_the_bool(bool b)
+{
+    unsigned int *data = pfstest_alloc(sizeof(b));
+    *data = b;
+
+    return pfstest_value_new(the_bool_printer, data, sizeof(b));
+}
+
 /* the_char */
 
 static void the_char_printer(pfstest_output_formatter_t *formatter,

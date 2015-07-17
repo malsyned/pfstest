@@ -10,6 +10,7 @@ pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s);
 pfstest_matcher_t *pfstest_is_the_int(int i);
 pfstest_matcher_t *pfstest_is_the_uint(unsigned int u);
 pfstest_matcher_t *pfstest_is_the_char(char c);
+pfstest_matcher_t *pfstest_is_the_bool(bool b);
 pfstest_matcher_t *pfstest_is_the_string(char *s);
 pfstest_matcher_t *pfstest_is_the_pointer(void *p);
 pfstest_matcher_t *pfstest_is_the_memory(void *m, size_t size);
@@ -27,6 +28,9 @@ pfstest_matcher_t *pfstest_matches_the_nv_string(
 #endif
 #ifndef PFSTEST_NOALIAS_is_the_uint
 # define is_the_uint pfstest_is_the_uint
+#endif
+#ifndef PFSTEST_NOALIAS_is_the_bool
+# define is_the_bool pfstest_is_the_bool
 #endif
 #ifndef PFSTEST_NOALIAS_is_the_char
 # define is_the_char pfstest_is_the_char

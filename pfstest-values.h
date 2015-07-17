@@ -9,6 +9,7 @@ pfstest_value_t *pfstest_the_short(short s);
 pfstest_value_t *pfstest_the_ushort(unsigned short u);
 pfstest_value_t *pfstest_the_int(int i);
 pfstest_value_t *pfstest_the_uint(unsigned int u);
+pfstest_value_t *pfstest_the_bool(bool b);
 pfstest_value_t *pfstest_the_char(char c);
 pfstest_value_t *pfstest_the_string(char *s);
 pfstest_value_t *pfstest_the_pointer(void *p);
@@ -28,6 +29,9 @@ pfstest_value_t *pfstest_the_memory(void *m, size_t size);
 #endif
 #ifndef PFSTEST_NOALIAS_the_char
 # define the_char pfstest_the_char
+#endif
+#ifndef PFSTEST_NOALIAS_the_bool
+# define the_bool pfstest_the_bool
 #endif
 #ifndef PFSTEST_NOALIAS_the_string
 # define the_string pfstest_the_string

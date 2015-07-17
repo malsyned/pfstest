@@ -105,6 +105,31 @@ test(should_fail_on_different_uints)
                 matches_the_nv_string(expected));
 }
 
+test(should_match_bools)
+{
+    assert_that("same bools pass",
+                the_bool(true), is_the_bool(true));
+}
+
+pfstest_case(assert_different_bools)
+{
+    assert_that("", the_bool(true), is_the_bool(false));
+}
+
+test(should_fail_on_different_bools)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the bool <false>\n"
+        "Actual: the bool <true>");
+    
+    capture_test_results(assert_different_bools);
+
+    assert_that("different bools fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 test(should_match_chars)
 {
     assert_that("same chars pass", the_char('c'), is_the_char('c'));

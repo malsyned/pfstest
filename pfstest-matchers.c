@@ -88,6 +88,15 @@ pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
                                the_uint(u));
 }
 
+/* is_the_bool */
+
+pfstest_matcher_t *pfstest_is_the_bool(bool b)
+{
+    return pfstest_matcher_new(is_the_whatever_printer,
+                               is_the_whatever_test,
+                               the_bool(b));
+}
+
 /* is_the_char */
 
 pfstest_matcher_t *pfstest_is_the_char(char c)
