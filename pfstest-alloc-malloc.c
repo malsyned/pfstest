@@ -32,12 +32,12 @@ typedef struct _dynamic_env_t
     pfstest_list_t allocated;
 } dynamic_env_t;
 
-dynamic_env_t default_dynamic_env = {
+static dynamic_env_t default_dynamic_env = {
     NULL,
     PFSTEST_LIST_EMPTY()
 };
 
-dynamic_env_t *dynamic_env = &default_dynamic_env;
+static dynamic_env_t *dynamic_env = &default_dynamic_env;
 
 /* Help uses of uninitialized memory fail early */
 static void *evil_malloc(size_t size)

@@ -64,7 +64,8 @@ static void assign_arg_matched(pfstest_arg_handler_t *arg_handler,
 static void assign_arg_printer(pfstest_output_formatter_t *formatter,
                                pfstest_arg_handler_t *this)
 {
-    pfstest_print_nv_string(pfstest_nv_string("any pointer"));
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("any pointer"));
 }
 
 pfstest_arg_handler_t *pfstest_assign_arg(pfstest_value_t *src)

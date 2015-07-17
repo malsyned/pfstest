@@ -28,6 +28,7 @@ typedef struct
     extern const pfstest_nv pfstest_mock_t mock_name[]
 
 void pfstest_mock_init(void);
+void pfstest_mock_finish(void);
 
 /* Expectation */
 

@@ -1,6 +1,12 @@
 #include "pfstest.h"
+#include "capture-output.h"
 
 #include "mock-dep.h"
+
+before_tests(set_up_mock_tests)
+{
+    capture_output_init();
+}
 
 test(should_stub)
 {
@@ -61,14 +67,26 @@ test(should_verify_a_call)
     dep_func1(2);
 }
 
-failing_test(should_report_when_verification_fails)
+pfstest_case(fails_a_verification)
 {
     verify(when(mock_dep_func1, arg_that(is_the_int(2))));
 
     dep_func1(3);
 }
 
-failing_test(should_verify_invocation_counts)
+test(should_report_when_verification_fails)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Never called dep_func1 with (the int 2)");
+
+    capture_test_results(fails_a_verification);
+
+    assert_that("Verification failures are reported",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
+pfstest_case(fails_invocation_count)
 {
     verify(when(mock_dep_func1, arg_that(is_the_int(2))));
 
@@ -76,12 +94,37 @@ failing_test(should_verify_invocation_counts)
     dep_func1(2);
 }
 
-failing_test(should_handle_multiple_verifiers)
+test(should_verify_invocation_counts)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Wanted dep_func1 with (the int 2) exactly 1 time\n"
+        "Was called 2 times");
+
+    capture_test_results(fails_invocation_count);
+
+    assert_that("Invocation counts are verified",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
+pfstest_case(fails_to_satisfy_multiple_verifiers)
 {
     verify(when(mock_dep_func1, arg_that(is_the_int(2))));
     verify(when(mock_dep_func1, arg_that(is_the_int(3))));
 
     dep_func1(3);
+}
+
+test(should_handle_multiple_verifiers)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Never called dep_func1 with (the int 2)");
+
+    capture_test_results(fails_to_satisfy_multiple_verifiers);
+
+    assert_that("Multiple verifiers are checked",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(should_handle_multiple_invocations)
@@ -114,10 +157,22 @@ test(should_return_through_pointer)
                 the_string(buf), is_the_string(bar));
 }
 
-failing_test(should_print_sensible_explanation_of_assign_arg_in_failures)
+pfstest_case(fails_to_invoke_assign_arg_expectation)
 {
     verify(when(mock_dep_func2,
                 arg_that(is_the_int(2)), assign_arg(the_string(foo))));
+}
+
+test(should_print_sensible_explanation_of_assign_arg_in_failures)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Never called dep_func2 with (the int 2, any pointer)");
+
+    capture_test_results(fails_to_invoke_assign_arg_expectation);
+
+    assert_that("assign_arg description is sensible",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(should_match_and_return_through_pointer)
@@ -140,12 +195,24 @@ test(should_match_and_return_through_pointer)
                 the_string(untouched_buf), is_the_string(one23));
 }
 
-failing_test(should_print_matcher_for_failures_involving_assign_arg_that)
+pfstest_case(fails_to_invoke_assign_arg_that_expectation)
 {
     verify(when(mock_dep_func2,
                 arg_that(is_the_int(2)),
                 assign_arg_that(is_the_string(foo),
                                 the_string(bar))));
+}
+
+test(should_print_matcher_for_failures_involving_assign_arg_that)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Never called dep_func2 with (the int 2, the string \"foo\")");
+
+    capture_test_results(fails_to_invoke_assign_arg_that_expectation);
+
+    assert_that("assign_arg_that description is sensible",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(should_stub_different_return_values_with_one_time)
@@ -200,7 +267,7 @@ test(should_verify_in_order)
 #pragma idata mock_tests_2
 #endif
 
-failing_test(should_fail_when_out_of_order)
+pfstest_case(fails_to_invoke_in_order)
 {
     in_order_t *order = in_order_new();
 
@@ -215,6 +282,19 @@ failing_test(should_fail_when_out_of_order)
     dep_func1(2);
     dep_func1(3);
     dep_func2(4, bar);
+}
+
+test(should_fail_when_out_of_order)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Not called in order: dep_func2 with (the int 4, the string \"foo\")\n"
+        "Expected after: dep_func1 with (the int 2)");
+
+    capture_test_results(fails_to_invoke_in_order);
+
+    assert_that("in_order invocations are verified",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(should_verify_multiple_in_orders)
@@ -251,7 +331,7 @@ test(should_verify_exact_invocation_count)
     dep_func1(1);
 }
 
-failing_test(should_reject_too_many_invocations)
+pfstest_case(invokes_too_many_times)
 {
     verify_times(exactly(3),
                  when(mock_dep_func1, arg_that(is_the_int(1))));
@@ -262,13 +342,39 @@ failing_test(should_reject_too_many_invocations)
     dep_func1(1);
 }
 
-failing_test(should_reject_too_few_invocations)
+test(should_reject_too_many_invocations)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Wanted dep_func1 with (the int 1) exactly 3 times\n"
+        "Was called 4 times");
+
+    capture_test_results(invokes_too_many_times);
+
+    assert_that("too many invocation counts are verified in exact mode",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
+pfstest_case(invokes_too_few_times)
 {
     verify_times(exactly(3),
                  when(mock_dep_func1, arg_that(is_the_int(1))));
 
     dep_func1(1);
     dep_func1(1);
+}
+
+test(should_reject_too_few_invocations)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Wanted dep_func1 with (the int 1) exactly 3 times\n"
+        "Was called 2 times");
+
+    capture_test_results(invokes_too_few_times);
+
+    assert_that("too few invocation counts are verified in exact mode",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(should_verify_at_most_invocation_count)
@@ -282,7 +388,7 @@ test(should_verify_at_most_invocation_count)
     dep_func1(1);
 }
 
-failing_test(at_most_should_reject_too_many_invocations)
+pfstest_case(inovkes_too_many_times)
 {
     verify_times(at_most(3),
                  when(mock_dep_func1, arg_that(is_the_int(1))));
@@ -291,6 +397,19 @@ failing_test(at_most_should_reject_too_many_invocations)
     dep_func1(1);
     dep_func1(1);
     dep_func1(1);
+}
+
+test(at_most_should_reject_too_many_invocations)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Wanted dep_func1 with (the int 1) at most 3 times\n"
+        "Was called 4 times");
+
+    capture_test_results(inovkes_too_many_times);
+
+    assert_that("too many invocation counts are verified in at_most mode",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(at_most_should_allow_fewer_invocations)
@@ -313,13 +432,26 @@ test(should_verify_at_least_invocation_count)
     dep_func1(1);
 }
 
-failing_test(at_least_should_reject_insufficient_invocations)
+pfstest_case(invokes_too_few_times_in_at_least_mode)
 {
     verify_times(at_least(3),
                  when(mock_dep_func1, arg_that(is_the_int(1))));
 
     dep_func1(1);
     dep_func1(1);
+}
+
+test(at_least_should_reject_insufficient_invocations)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Wanted dep_func1 with (the int 1) at least 3 times\n"
+        "Was called 2 times");
+
+    capture_test_results(invokes_too_few_times_in_at_least_mode);
+
+    assert_that("too few invocation counts are verified in at_least mode",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }
 
 test(at_least_should_allow_more_invocations)
@@ -344,7 +476,7 @@ test(should_verify_no_more_interactions)
     dep_func2(5, foo);
 }
 
-failing_test(verify_no_more_interactions_should_reject_surplus_interactions)
+pfstest_case(fails_to_pass_verify_no_more_interactions)
 {
     verify(when(mock_dep_func1, arg_that(is_the_int(1))));
     verify(when(mock_dep_func1, arg_that(is_the_int(2))));
@@ -355,6 +487,18 @@ failing_test(verify_no_more_interactions_should_reject_surplus_interactions)
     dep_func1(3);
 }
 
+test(verify_no_more_interactions_should_reject_surplus_interactions)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Unexpected interactions with dep_func1");
+
+    capture_test_results(fails_to_pass_verify_no_more_interactions);
+
+    assert_that("verify_no_more_interactions rejects surplus interactions",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 ignore_test(in_order_should_mark_interactions)
 {
 }
@@ -363,6 +507,6 @@ ignore_test(should_verify_no_more_invocations)
 {
 }
 
-ignore_failing_test(verify_no_more_invocations_should_reject_surplus_invocations)
+ignore_test(verify_no_more_invocations_should_reject_surplus_invocations)
 {
 }

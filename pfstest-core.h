@@ -89,6 +89,11 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       const pfstest_nv_ptr char *filter_file,
                       const pfstest_nv_ptr char *filter_name,
                       pfstest_output_formatter_t *formatter);
+void pfstest_run(pfstest_t *the_test,
+                 pfstest_list_t *before, pfstest_list_t *after,
+                 const pfstest_nv_ptr char *filter_file,
+                 const pfstest_nv_ptr char *filter_name,
+                 pfstest_output_formatter_t *formatter);
 
 #define _pfstest_define(name, flags)            \
     _pfstest_init_define(name)                  \

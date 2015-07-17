@@ -442,6 +442,22 @@ test(should_catch_multiple_after_hook_failures)
     }
 }
 
+test(should_accept_null_before_hook_list)
+{
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(NULL, &after_hooks, &suite,
+                      NULL, NULL, &standard_formatter);
+}
+
+test(should_accept_null_after_hook_list)
+{
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&before_hooks, NULL, &suite,
+                      NULL, NULL, &standard_formatter);
+}
+
 test(should_only_count_each_failing_test_once)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(

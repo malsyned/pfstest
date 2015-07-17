@@ -120,7 +120,7 @@ static void run_test(_pfstest_test_nv_t *current_test)
                 ignore();
             }
             current_test->function();
-            pfstest_run_verifiers(); /* TODO: plugin-ize */
+            pfstest_run_verifiers();
             pass();
             break;
         case RESULT_PASS:
@@ -209,8 +209,9 @@ static void do_tests_list(const char *test_file,
             do_hook_list(&before, current_test.file);
             run_test(&current_test);
             do_hook_list(&after, current_test.file);
-            pfstest_alloc_free_frame();
 
+            pfstest_mock_finish(); /* TODO: plugin-ize */
+            pfstest_alloc_free_frame();
             pfstest_alloc_frame_pop();
         }
     }
@@ -388,53 +389,49 @@ void pfstest_protect_call(void (*f)(void),
     dynamic_env_pop();
 }
 
-int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
-                      pfstest_list_t *suite,
-                      const pfstest_nv_ptr char *filter_file,
-                      const pfstest_nv_ptr char *filter_name,
-                      pfstest_output_formatter_t *formatter)
+void pfstest_run(pfstest_t *the_test,
+                 pfstest_list_t *before, pfstest_list_t *after,
+                 const pfstest_nv_ptr char *filter_file,
+                 const pfstest_nv_ptr char *filter_name,
+                 pfstest_output_formatter_t *formatter)
 {
     dynamic_env_t local_dynamic_env;
-    pfstest_list_node_t *test_node;
-    pfstest_list_node_t *hook_node;
     _pfstest_test_nv_t current_test;
+    pfstest_list_node_t *hook_node;
     _pfstest_hook_nv_t current_hook;
-    int result;
 
     dynamic_env_push(&local_dynamic_env);
     /* FIXME: Hack for old core failing_test support */
     dynamic_env->verbose = false;
     dynamic_env->formatter = formatter;
 
-    pfstest_output_formatter_run_started(formatter);
+    pfstest_memcpy_nv(&current_test, the_test->nv_data,
+                      sizeof(current_test));
 
-    pfstest_list_iter (test_node, suite) {
-        pfstest_t *the_test = (pfstest_t *)test_node;
-        pfstest_memcpy_nv(&current_test, the_test->nv_data,
-                          sizeof(current_test));
+    if ((filter_name != NULL
+         && 0 != pfstest_strcmp_nvnv(filter_name, current_test.name))
+        || (filter_file != NULL
+            && 0 != pfstest_strcmp_nvnv(filter_file, current_test.file)))
+    {
+        goto cleanup;
+    }
 
-        if ((filter_name != NULL
-             && 0 != pfstest_strcmp_nvnv(filter_name, current_test.name))
-            || (filter_file != NULL
-                && 0 != pfstest_strcmp_nvnv(filter_file, current_test.file)))
-        {
-            continue;
-        }
+    pfstest_output_formatter_test_started(formatter,
+                                          current_test.name,
+                                          current_test.file);
 
-        pfstest_output_formatter_test_started(formatter,
-                                              current_test.name,
-                                              current_test.file);
+    if (current_test.flags & _PFSTEST_FLAG_IGNORED) {
+        pfstest_output_formatter_test_ignored(formatter);
+        goto finish;
+    }
 
-        if (current_test.flags & _PFSTEST_FLAG_IGNORED) {
-            pfstest_output_formatter_test_ignored(formatter);
-            continue;
-        }
+    pfstest_alloc_frame_push();
 
-        pfstest_alloc_frame_push();
-
-        /* TODO: pfstest_mock_init() in a new dynamic frame */
+    /* TODO: pfstest_mock_init() in a new dynamic frame */
+    pfstest_mock_init();
         
-        if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+    if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+        if (before != NULL) {
             pfstest_list_iter(hook_node, before) {
                 pfstest_hook_t *before_hook =
                     (pfstest_hook_t *)hook_node;
@@ -447,10 +444,15 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                     current_hook.function();
                 }
             }
-
-            current_test.function();
         }
 
+        current_test.function();
+        /* TODO: pop pfstest_mock frame */
+        pfstest_run_verifiers();
+    }
+    pfstest_mock_finish(); /* TODO: plugin-ize */
+
+    if (after != NULL) {
         pfstest_list_iter(hook_node, after) {
             pfstest_hook_t *after_hook = (pfstest_hook_t *)hook_node;
             pfstest_memcpy_nv(&current_hook, after_hook->nv_data,
@@ -464,22 +466,39 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                 }
             }
         }
+    }
 
-        /* TODO: pop pfstest_mock frame */
+    pfstest_alloc_free_frame();
+    pfstest_alloc_frame_pop();
 
-        pfstest_alloc_free_frame();
-        pfstest_alloc_frame_pop();
+finish:
+    pfstest_output_formatter_test_complete(formatter);
 
-        pfstest_output_formatter_test_complete(formatter);
+cleanup:
+    dynamic_env_pop();
+}
 
+int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
+                      pfstest_list_t *suite,
+                      const pfstest_nv_ptr char *filter_file,
+                      const pfstest_nv_ptr char *filter_name,
+                      pfstest_output_formatter_t *formatter)
+{
+    pfstest_list_node_t *test_node;
+    int result;
 
+    pfstest_output_formatter_run_started(formatter);
+
+    pfstest_list_iter (test_node, suite) {
+        pfstest_t *the_test = (pfstest_t *)test_node;
+
+        pfstest_run(the_test, before, after,
+                    filter_file, filter_name, formatter);
     }
 
     pfstest_output_formatter_run_complete(formatter);
 
     result = pfstest_output_formatter_return_value(formatter);
-
-    dynamic_env_pop();
 
     return result;
 }
