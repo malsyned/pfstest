@@ -70,7 +70,7 @@ void *pfstest_alloc(size_t size)
     pfstest_list_append(&dynamic_env->allocated, node);
 
     mem = (char *)node + header_size;
-    assert((intptr_t)mem % ALIGNMENT == 0);
+    assert((uintptr_t)mem % ALIGNMENT == 0);
 
     return mem;
 }

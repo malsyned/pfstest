@@ -131,11 +131,10 @@ typedef unsigned char bool;
 
 /* stdint.h */
 #include <limits.h>
-typedef int intptr_t;
+typedef unsigned int uintptr_t;
 typedef long intmax_t;
 typedef unsigned long uintmax_t;
 #define UINTMAX_MAX ULONG_MAX
-#define UINTMAX_C(c) c ## UL
 
 /* stdlib.h */
 #define _exit(n) do { while (1) ; } while (0)

@@ -149,7 +149,7 @@ static void the_pointer_printer(pfstest_output_formatter_t *formatter,
         formatter, pfstest_nv_string("the pointer <0x"));
 
     pfstest_output_formatter_message_print_uint(
-        formatter, (uintmax_t)(intptr_t)data, 16, 0);
+        formatter, (uintmax_t)(uintptr_t)data, 16, 0);
 
     pfstest_output_formatter_message_print_nv_string(
         formatter, pfstest_nv_string(">"));
