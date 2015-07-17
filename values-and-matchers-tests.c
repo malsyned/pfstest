@@ -13,7 +13,7 @@ test(should_match_shorts)
     assert_that("same shorts pass", the_short(5), is_the_short(5));
 }
 
-static void assert_different_shorts(void)
+pfstest_case(assert_different_shorts)
 {
     assert_that("", the_short(5), is_the_short(6));
 }
@@ -25,7 +25,7 @@ test(should_fail_on_different_shorts)
         "Expected: the short 6\n"
         "Actual: the short 5");
 
-    pfstest_protect_call(assert_different_shorts, &message_spy);
+    capture_test_results(assert_different_shorts);
 
     assert_that("different shorts fail",
                 the_string(captured_output),
@@ -37,7 +37,7 @@ test(should_match_ushorts)
     assert_that("same ushorts pass", the_ushort(5), is_the_ushort(5));
 }
 
-static void assert_different_ushorts(void)
+pfstest_case(assert_different_ushorts)
 {
     assert_that("", the_ushort(5), is_the_ushort(6));
 }
@@ -49,7 +49,7 @@ test(should_fail_on_different_ushorts)
         "Expected: the ushort 6\n"
         "Actual: the ushort 5");
 
-    pfstest_protect_call(assert_different_ushorts, &message_spy);
+    capture_test_results(assert_different_ushorts);
 
     assert_that("different ushorts fail",
                 the_string(captured_output),
@@ -61,7 +61,7 @@ test(should_match_ints)
     assert_that("same ints pass", the_int(5), is_the_int(5));
 }
 
-static void assert_different_ints(void)
+pfstest_case(assert_different_ints)
 {
     assert_that("", the_int(-6), is_the_int(6));
 }
@@ -73,7 +73,7 @@ test(should_fail_on_different_ints)
         "Expected: the int 6\n"
         "Actual: the int -6");
 
-    pfstest_protect_call(assert_different_ints, &message_spy);
+    capture_test_results(assert_different_ints);
 
     assert_that("different ints fail",
                 the_string(captured_output),
@@ -86,7 +86,7 @@ test(should_match_uints)
                 the_uint(5), is_the_uint(5));
 }
 
-static void assert_different_uints(void)
+pfstest_case(assert_different_uints)
 {
     assert_that("", the_uint(5), is_the_uint(6));
 }
@@ -98,7 +98,7 @@ test(should_fail_on_different_uints)
         "Expected: the uint 6\n"
         "Actual: the uint 5");
 
-    pfstest_protect_call(assert_different_uints, &message_spy);
+    capture_test_results(assert_different_uints);
 
     assert_that("different uints fail",
                 the_string(captured_output),
@@ -110,7 +110,7 @@ test(should_match_chars)
     assert_that("same chars pass", the_char('c'), is_the_char('c'));
 }
 
-static void assert_different_chars(void)
+pfstest_case(assert_different_chars)
 {
     assert_that("", the_char('c'), is_the_char('d'));
 }
@@ -122,7 +122,7 @@ test(should_fail_on_different_chars)
         "Expected: the char 'd'\n"
         "Actual: the char 'c'");
 
-    pfstest_protect_call(assert_different_chars, &message_spy);
+    capture_test_results(assert_different_chars);
 
     assert_that("different chars fail",
                 the_string(captured_output),
@@ -137,7 +137,7 @@ test(should_match_strings)
     assert_that("same strings pass", the_string(s1), is_the_string(s2));
 }
 
-static void assert_different_strings(void)
+pfstest_case(assert_different_strings)
 {
     char s1[] = "foo";
     char s2[] = "bar";
@@ -151,14 +151,14 @@ test(should_fail_on_different_strings)
         "Expected: the string \"bar\"\n"
         "Actual: the string \"foo\"");
 
-    pfstest_protect_call(assert_different_strings, &message_spy);
+    capture_test_results(assert_different_strings);
 
     assert_that("different strings fail",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 
-static void assert_shorter_actual_string(void)
+pfstest_case(assert_shorter_actual_string)
 {
     char s1[] = "foo";
     char s2[] = "foobar";
@@ -173,14 +173,14 @@ test(should_fail_on_shorter_actual_string)
         "Expected: the string \"foobar\"\n"
         "Actual: the string \"foo\"");
 
-    pfstest_protect_call(assert_shorter_actual_string, &message_spy);
+    capture_test_results(assert_shorter_actual_string);
 
     assert_that("shorter actual string fails",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 
-static void assert_shorter_expected_string(void)
+pfstest_case(assert_shorter_expected_string)
 {
     char s1[] = "foobar";
     char s2[] = "foo";
@@ -195,7 +195,7 @@ test(should_fail_on_shorter_expected_string)
         "Expected: the string \"foo\"\n"
         "Actual: the string \"foobar\"");
 
-    pfstest_protect_call(assert_shorter_expected_string, &message_spy);
+    capture_test_results(assert_shorter_expected_string);
 
     assert_that("shorter expected string fails",
                 the_string(captured_output),
@@ -215,7 +215,7 @@ test(should_match_pointers)
                 the_pointer((void *)0xbeef), is_the_pointer((void *)0xbeef));
 }
 
-static void assert_different_pointers(void)
+pfstest_case(assert_different_pointers)
 {
     assert_that("",
                 the_pointer((void *)0xdead), is_the_pointer((void *)0xbeef));
@@ -228,7 +228,7 @@ test(should_fail_on_different_pointers)
         "Expected: the pointer <0xbeef>\n"
         "Actual: the pointer <0xdead>");
 
-    pfstest_protect_call(assert_different_pointers, &message_spy);
+    capture_test_results(assert_different_pointers);
 
     assert_that("different pointers fail",
                 the_string(captured_output),
@@ -245,7 +245,7 @@ test(should_match_memory)
                 is_the_memory(expected, sizeof(expected)));
 }
 
-static void assert_different_memory(void)
+pfstest_case(assert_different_memory)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 4, 4, 5};
@@ -262,14 +262,14 @@ test(should_fail_on_different_memory)
         "Expected: the memory {0x01, 0x02, 0x04, 0x04, 0x05}\n"
         "Actual: the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
 
-    pfstest_protect_call(assert_different_memory, &message_spy);
+    capture_test_results(assert_different_memory);
 
     assert_that("different memory fails",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 
-static void assert_longer_memory(void)
+pfstest_case(assert_longer_memory)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
@@ -286,14 +286,14 @@ test(should_fail_on_longer_memory)
         "Expected: the memory {0x01, 0x02, 0x03, 0x04}\n"
         "Actual: the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
 
-    pfstest_protect_call(assert_longer_memory, &message_spy);
+    capture_test_results(assert_longer_memory);
 
     assert_that("longer memory fails",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 
-static void assert_shorter_memory(void)
+pfstest_case(assert_shorter_memory)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
@@ -310,7 +310,7 @@ test(should_fail_on_shorter_memory)
         "Expected: the memory {0x01, 0x02, 0x03, 0x04, 0x05}\n"
         "Actual: the memory {0x01, 0x02, 0x03, 0x04}");
 
-    pfstest_protect_call(assert_shorter_memory, &message_spy);
+    capture_test_results(assert_shorter_memory);
 
     assert_that("shorter memory fails",
                 the_string(captured_output),
@@ -336,7 +336,7 @@ test(should_match_primitive_with_pointer)
                 the_pointer(&actual), is_the_int(expected));
 }
 
-static void assert_different_data_types(void)
+pfstest_case(assert_different_data_types)
 {
     unsigned char buf[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     
@@ -357,7 +357,7 @@ test(should_detect_data_type_mismatches)
         "Actual: the memory {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}"
         );
 
-    pfstest_protect_call(assert_different_data_types, &message_spy);
+    capture_test_results(assert_different_data_types);
 
     assert_that("different data types fail",
                 the_string(captured_output),

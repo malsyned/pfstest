@@ -373,22 +373,6 @@ void _pfstest_suite_register_test(pfstest_list_t *suite,
     pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
 }
 
-void pfstest_protect_call(void (*f)(void),
-                          pfstest_output_formatter_t *formatter)
-{
-    dynamic_env_t local_dynamic_env;
-    dynamic_env_push(&local_dynamic_env);
-    
-    dynamic_env->verbose = false;
-    dynamic_env->formatter = formatter;
-
-    if (0 == setjmp(dynamic_env->test_jmp_buf)) {
-        f();
-    }
-
-    dynamic_env_pop();
-}
-
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
                  const pfstest_nv_ptr char *filter_file,

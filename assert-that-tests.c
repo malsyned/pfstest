@@ -57,14 +57,14 @@ test(should_pass_assertion)
     assert_that("always passes", some_value, matches_anything);
 }
 
-static void assert_always_fail(void)
+pfstest_case(assert_always_fail)
 {
     assert_that("always fails", some_value, matches_nothing);
 }
 
 test(should_fail_on_false_assertion)
 {
-    pfstest_protect_call(assert_always_fail, &message_spy);
+    capture_test_results(assert_always_fail);
 
     assert_that("False assertions fail",
                 the_int(pfstest_output_formatter_return_value(&message_spy)),
@@ -78,7 +78,7 @@ test(should_print_explanation_on_failed_assertion)
         "Expected: nothing (guaranteed to fail)\n"
         "Actual: some value");
 
-    pfstest_protect_call(assert_always_fail, &message_spy);
+    capture_test_results(assert_always_fail);
 
     assert_that("Failing assertions should print an explanatory message",
                 the_string(captured_output),
@@ -88,7 +88,7 @@ test(should_print_explanation_on_failed_assertion)
 /* avr-gcc throws a compiler error on NULL assert_that message
  * strings */
 #if !(defined(__GNUC__) && defined(__AVR__))
-static void assert_null_string(void)
+pfstest_case(assert_null_string)
 {
     /* This is a failing test so that the output can be inspected */
     assert_that(NULL, some_value, matches_nothing);
@@ -101,7 +101,7 @@ test(should_cope_with_null_string)
         "Expected: nothing (guaranteed to fail)\n"
         "Actual: some value");
 
-    pfstest_protect_call(assert_null_string, &message_spy);
+    capture_test_results(assert_null_string);
 
     assert_that("assert_that handles NULL strings",
                 the_string(captured_output),
@@ -109,7 +109,7 @@ test(should_cope_with_null_string)
 }
 #endif
 
-static void assert_empty_string(void)
+pfstest_case(assert_empty_string)
 {
     /* This is a failing test so that the output can be inspected */
     assert_that("", some_value, matches_nothing);
@@ -122,14 +122,14 @@ test(should_cope_with_empty_string)
         "Expected: nothing (guaranteed to fail)\n"
         "Actual: some value");
 
-    pfstest_protect_call(assert_empty_string, &message_spy);
+    capture_test_results(assert_empty_string);
 
     assert_that("assert_that handles empty strings",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 
-static void assert_null_value(void)
+pfstest_case(assert_null_value)
 {
     assert_that("assert_that handles null value", NULL, matches_anything);
 }
@@ -139,14 +139,14 @@ test(should_cope_with_null_value)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "assert_that called with NULL value");
 
-    pfstest_protect_call(assert_null_value, &message_spy);
+    capture_test_results(assert_null_value);
 
     assert_that("assert_that handles NULL value",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 
-static void assert_null_matcher(void)
+pfstest_case(assert_null_matcher)
 {
     assert_that("assert_that handles null matcher", some_value, NULL);
 }
@@ -156,7 +156,7 @@ test(should_cope_with_null_matcher)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "assert_that called with NULL matcher");
 
-    pfstest_protect_call(assert_null_matcher, &message_spy);
+    capture_test_results(assert_null_matcher);
 
     assert_that("assert_that handles NULL matcher",
                 the_string(captured_output),
