@@ -22,13 +22,10 @@ typedef struct _dynamic_env_t
     jmp_buf test_jmp_buf;
 
     /* IO Control */
-    bool verbose;
     pfstest_output_formatter_t *formatter;
 } dynamic_env_t;
 
 static dynamic_env_t *dynamic_env = NULL;
-
-static bool fail_expected = false;
 
 const char *program_name = NULL;
 
@@ -62,11 +59,8 @@ void pfstest_fail_with_printer(
 {
     pfstest_output_formatter_t *formatter = dynamic_env->formatter;
 
-    if (fail_expected && !dynamic_env->verbose)
-        longjmp(dynamic_env->test_jmp_buf, RESULT_FAIL);
-
     pfstest_output_formatter_test_failed_message_start(
-        formatter, file, line, fail_expected);
+        formatter, file, line);
 
     printer(formatter, object);
 
@@ -112,8 +106,6 @@ static void ignore(void)
 
 static void run_test(_pfstest_test_nv_t *current_test)
 {
-    fail_expected = current_test->flags & _PFSTEST_FLAG_EXPECT_FAIL;
-
     switch (setjmp(dynamic_env->test_jmp_buf)) {
         case 0:
             if (current_test->flags & _PFSTEST_FLAG_IGNORED) {
@@ -124,21 +116,9 @@ static void run_test(_pfstest_test_nv_t *current_test)
             pass();
             break;
         case RESULT_PASS:
-            if (fail_expected) {
-                fail_expected = false;
-                pfstest_fail_at_location(
-                    current_test->file, current_test->line,
-                    "Test passed when failure expected");
-            }
-
             pfstest_output_formatter_test_complete(dynamic_env->formatter);
             break;
         case RESULT_FAIL:
-            if (fail_expected) {
-                fail_expected = false;
-                pass();
-            }
-    
             pfstest_output_formatter_test_complete(dynamic_env->formatter);
             /* Message already printed before the stack unwound */
             break;
@@ -287,10 +267,9 @@ int pfstest_run_tests(int argc, char *argv[])
     bool register_print = false;
     pfstest_output_formatter_t formatter;
     int result;
+    bool verbose = false;
 
     dynamic_env_push(&local_dynamic_env);
-
-    dynamic_env->verbose = false;
 
     if (argc == 0 || argv == NULL)
         goto args_done;
@@ -302,9 +281,9 @@ int pfstest_run_tests(int argc, char *argv[])
             test_file = next_arg(&argv, true);
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-n"))) {
             test_name = next_arg(&argv, true);
-            dynamic_env->verbose = true;
+            verbose = true;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-v"))) {
-            dynamic_env->verbose = true;
+            verbose = true;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-r"))) {
             register_print = true;
         } else {
@@ -313,7 +292,7 @@ int pfstest_run_tests(int argc, char *argv[])
     }
 args_done:
 
-    if (dynamic_env->verbose) {
+    if (verbose) {
         pfstest_output_formatter_verbose_init(&formatter,
                                               stdout_print_char);
     } else {
@@ -385,8 +364,6 @@ void pfstest_run(pfstest_t *the_test,
     _pfstest_hook_nv_t current_hook;
 
     dynamic_env_push(&local_dynamic_env);
-    /* FIXME: Hack for old core failing_test support */
-    dynamic_env->verbose = false;
     dynamic_env->formatter = formatter;
 
     pfstest_memcpy_nv(&current_test, the_test->nv_data,

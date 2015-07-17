@@ -36,9 +36,7 @@ struct _pfstest_output_formatter_vtable_t
     void (*test_ignored)(pfstest_output_formatter_t *formatter);
     void (*test_failed_message_start)(pfstest_output_formatter_t *formatter,
                                       const pfstest_nv_ptr char *file,
-                                      int line,
-                                      /* FIXME: Hack for old core */
-                                      bool fail_expected);
+                                      int line);
     void (*test_failed_message_complete)(
         pfstest_output_formatter_t *formatter);
     void (*test_complete)(pfstest_output_formatter_t *formatter);
@@ -74,9 +72,7 @@ void pfstest_output_formatter_test_ignored(
     pfstest_output_formatter_t *formatter);
 void pfstest_output_formatter_test_failed_message_start(
     pfstest_output_formatter_t *formatter,
-    const pfstest_nv_ptr char *file, int line,
-    /* FIXME: Hack for old core */
-    bool fail_expected);
+    const pfstest_nv_ptr char *file, int line);
 void pfstest_output_formatter_test_failed_message_complete(
     pfstest_output_formatter_t *formatter);
 void pfstest_output_formatter_test_complete(

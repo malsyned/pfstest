@@ -5,15 +5,8 @@ core-tests.c:should_FAIL FAIL
     Location: core-tests.c:11
     failure message
 core-tests.c:should_be_ignored IGNORED
-core-tests.c:should_expect_failure FAIL (expected)
-    Location: core-tests.c:22
-    no surprise
-    PASS
-core-tests.c:should_FAIL_to_fail FAIL
-    Location: core-tests.c:25
-    Test passed when failure expected
 core-tests.c:should_call_befores_and_afters PASS
 core-tests-2.c:should_only_call_before_tests_hooks_in_same_file PASS
 core-tests-2.c:should_only_call_after_tests_hooks_in_same_file PASS
 
-Run complete. 5 passed, 2 failed, 1 ignored
+Run complete. 4 passed, 1 failed, 1 ignored

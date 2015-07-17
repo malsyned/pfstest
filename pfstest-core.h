@@ -15,7 +15,6 @@
 /* Tests */
 
 #define _PFSTEST_FLAG_IGNORED 0x1
-#define _PFSTEST_FLAG_EXPECT_FAIL 0x2
 
 typedef struct
 {
@@ -100,11 +99,8 @@ void pfstest_run(pfstest_t *the_test,
     _pfstest_case_define(name, flags)
 
 #define pfstest(name) _pfstest_define(name, 0)
-#define pfstest_failing_test(name)                      \
-    _pfstest_define(name, _PFSTEST_FLAG_EXPECT_FAIL)
 #define pfstest_ignore_test(name)                   \
     _pfstest_define(name, _PFSTEST_FLAG_IGNORED)
-#define pfstest_ignore_failing_test pfstest_ignore_test
 
 void _pfstest_register_test(pfstest_t *the_test);
 #define pfstest_register_test(the_test) do {    \
@@ -228,14 +224,8 @@ int run_all_tests_new(void);
 #ifndef PFSTEST_NOALIAS_test
 # define test pfstest
 #endif
-#ifndef PFSTEST_NOALIAS_failing_test
-# define failing_test pfstest_failing_test
-#endif
 #ifndef PFSTEST_NOALIAS_ignore_test
 # define ignore_test pfstest_ignore_test
-#endif
-#ifndef PFSTEST_NOALIAS_ignore_failing_test
-# define ignore_failing_test pfstest_ignore_failing_test
 #endif
 #ifndef PFSTEST_NOALIAS_fail
 # define fail pfstest_fail
