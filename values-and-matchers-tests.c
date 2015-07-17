@@ -235,6 +235,25 @@ test(should_fail_on_different_pointers)
                 matches_the_nv_string(expected));
 }
 
+pfstest_case(assert_pointer_against_null)
+{
+    assert_that("", the_pointer((void *)0xdead), is_the_pointer(NULL));
+}
+
+test(should_print_null_pointers_specially)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the pointer <NULL>\n"
+        "Actual: the pointer <0xdead>");
+
+    capture_test_results(assert_pointer_against_null);
+
+    assert_that("NULL pointers are printed specially",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 test(should_match_memory)
 {
     char actual[] = {1, 2, 3, 4, 5};

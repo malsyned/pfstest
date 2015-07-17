@@ -146,10 +146,17 @@ static void the_pointer_printer(pfstest_output_formatter_t *formatter,
     void *data = pfstest_value_data(value);
 
     pfstest_output_formatter_message_print_nv_string(
-        formatter, pfstest_nv_string("the pointer <0x"));
+        formatter, pfstest_nv_string("the pointer <"));
 
-    pfstest_output_formatter_message_print_uint(
-        formatter, (uintmax_t)(uintptr_t)data, 16, 0);
+    if (data == NULL) {
+        pfstest_output_formatter_message_print_nv_string(
+            formatter, pfstest_nv_string("NULL"));
+    } else {
+    pfstest_output_formatter_message_print_nv_string(
+        formatter, pfstest_nv_string("0x"));
+        pfstest_output_formatter_message_print_uint(
+            formatter, (uintmax_t)(uintptr_t)data, 16, 0);
+    }
 
     pfstest_output_formatter_message_print_nv_string(
         formatter, pfstest_nv_string(">"));
