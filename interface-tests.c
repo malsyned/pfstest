@@ -8,6 +8,7 @@ static pfstest_arguments_t args;
 
 before_tests(set_up_interface_tests)
 {
+    capture_output_init();
     memset(&args, 0xa5, sizeof(args));
 }
 
@@ -255,6 +256,19 @@ test(should_print_register_commands)
                                     &before_hooks, &after_hooks, &suite);
 
     assert_that("Test registrations are printed",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
+test(should_print_usage)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "usage: program_name [-r] [-v] [-f source-file] [-n test-name]\n");
+    
+    char program_name[] = "program_name";
+    pfstest_print_usage(capture_output_char, program_name);
+
+    assert_that("Usage message is printed",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }

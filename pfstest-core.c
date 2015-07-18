@@ -206,6 +206,13 @@ static void print_nv_string(int (*print_char)(int),
     }
 }
 
+static void print_string(int (*print_char)(int), const char *s)
+{
+    while (*s) {
+        print_char(*s++);
+    }
+}
+
 static void print_register_hook_commands(
     int (*print_char)(int), pfstest_list_t *list,
     const pfstest_nv_ptr char *list_name)
@@ -253,13 +260,12 @@ void pfstest_print_register_commands(int (*print_char)(int),
     print_register_test_commands(print_char, suite);
 }
 
-static void print_usage_and_exit(char *program_name)
+void pfstest_print_usage(int (*print_char)(int), char *program_name)
 {
-    pfstest_printf_nv(
-        pfstest_nv_string(
-            "usage: %s [-r] [-v] [-f source-file] [-n test-name]\n"),
-        program_name);
-    exit(1);
+    print_nv_string(print_char, "usage: ");
+    print_string(print_char, program_name);
+    print_nv_string(print_char,
+                    " [-r] [-v] [-f source-file] [-n test-name]\n");
 }
 
 int pfstest_run_tests(int argc, char *argv[])
@@ -275,7 +281,8 @@ int pfstest_run_tests(int argc, char *argv[])
     args_parse_good = pfstest_arguments_parse(&args, argc, argv);
 
     if (!args_parse_good) {
-        print_usage_and_exit(args.program_name);
+        pfstest_print_usage(stdout_print_char, args.program_name);
+        exit(1);
     }
 
     if (args.verbose) {
@@ -544,8 +551,7 @@ int pfstest_main(int argc, char *argv[])
     if (pfstest_arguments_parse(&args, argc, argv)) {
         return pfstest_start(stdout_print_char, &args);
     } else {
-        /* TODO: Use capturing, non-exiting version */
-        print_usage_and_exit(args.program_name);
+        pfstest_print_usage(stdout_print_char, args.program_name);
         return 1;
     }
 }

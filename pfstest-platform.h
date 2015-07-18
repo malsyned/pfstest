@@ -57,11 +57,6 @@ pfstest_strcat_nv(ram, nv):
     concatenates a string which resides in the non-volatile memory
     space onto the end of a string which resides in RAM.
 
-pfstest_printf_nv:
-
-    A function or macro which works like printf() but expects the
-    format string to reside in the non-volatile memory space.
-
 pfstest_print_nv_string:
 
     A function or macro which prints a string that resides in the
@@ -112,7 +107,6 @@ pfstest_constructor(name):
 
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
-# define pfstest_printf_nv printf_P
 # define pfstest_print_nv_string(string) fputs_P(string, stdout)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
 # define pfstest_constructor(name)                          \
@@ -154,7 +148,6 @@ typedef unsigned long uintmax_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcat_nv strcatpgm2ram
-# define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN
 
@@ -176,7 +169,6 @@ int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
-# define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
 # define pfstest_constructor(name)                          \
@@ -196,7 +188,6 @@ int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
-# define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN __declspec(noreturn)
 
@@ -222,13 +213,9 @@ int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
-# define pfstest_printf_nv printf
 # define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN
 
-#endif
-
-# define pfstest_print_int(i)                                   \
-    pfstest_printf_nv(pfstest_nv_string("%d"), i)
+#endif  /* Unrecognized platform */
 
 #endif /* !PFSTEST_PLATFORM_H */
