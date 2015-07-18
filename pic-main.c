@@ -2,19 +2,29 @@
 #include "pfstest-alloc-pic.h"
 #include "register-tests.h"
 
+#include <stdio.h>
+
 #define HEAP_SIZE ((int)2048)
 
 #pragma udata heap
 unsigned char heap[HEAP_SIZE];
 #pragma udata
 
+static int print_char(int c)
+{
+    return putchar(c);
+}
+
 void main(void)
 {
+    pfstest_arguments_t args = {};
+    args.verbose = true;
+
     pfstest_alloc_pic_init(heap, HEAP_SIZE);
 
     register_tests();
 
-    run_all_tests_verbose();
+    pfstest_start(print_char, &args);
 
     /* The mcc18 runtime restarts the program if main()
      * returns. mcc18's standard library doesn't define exit() though,

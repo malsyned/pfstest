@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    int r = run_tests(argc, argv);
+    int r = pfstest_main(argc, argv);
 
     struct mallinfo mi = mallinfo();
 

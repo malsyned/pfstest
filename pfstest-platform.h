@@ -57,11 +57,6 @@ pfstest_strcat_nv(ram, nv):
     concatenates a string which resides in the non-volatile memory
     space onto the end of a string which resides in RAM.
 
-pfstest_print_nv_string:
-
-    A function or macro which prints a string that resides in the
-    non-volatile memory space.
-
 PFSTEST_NORETURN:
 
     Expands to a function decoration which tells the compiler that the
@@ -107,7 +102,6 @@ pfstest_constructor(name):
 
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
-# define pfstest_print_nv_string(string) fputs_P(string, stdout)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
 # define pfstest_constructor(name)                          \
     __attribute__((__constructor__)) static void name(void)
@@ -137,8 +131,8 @@ typedef unsigned long uintmax_t;
 #include <stdio.h>
 #define assert(test)                                                    \
     if (!(test)) {                                                      \
-        pfstest_print_nv_string(                                        \
-            pfstest_nv_string(__FILE__ ":Assertion failed: " #test));   \
+        fputs(pfstest_nv_string(__FILE__ ":Assertion failed: " #test),  \
+              stdout);                                                  \
         _exit(1);                                                       \
     }
 
@@ -148,7 +142,6 @@ typedef unsigned long uintmax_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcat_nv strcatpgm2ram
-# define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN
 
 # define fflush
@@ -169,7 +162,6 @@ int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
-# define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
 # define pfstest_constructor(name)                          \
     __attribute__((__constructor__)) static void name(void)
@@ -188,7 +180,6 @@ int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
-# define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN __declspec(noreturn)
 
 # pragma section(".CRT$XCU",read)
@@ -213,7 +204,6 @@ int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
-# define pfstest_print_nv_string(string) fputs(string, stdout)
 # define PFSTEST_NORETURN
 
 #endif  /* Unrecognized platform */

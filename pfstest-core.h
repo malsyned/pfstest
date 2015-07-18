@@ -232,12 +232,6 @@ void pfstest_print_usage(int (*print_char)(int), char *program_name);
 int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args);
 int pfstest_main(int argc, char *argv[]);
 
-int pfstest_run_tests(int argc, char *argv[]);
-int pfstest_run_all_tests(void);
-int pfstest_run_all_tests_verbose(void);
-
-int run_all_tests_new(void);
-
 /* Convenience aliases without the pfstest namespace prefix */
 
 #ifndef PFSTEST_NOALIAS_test

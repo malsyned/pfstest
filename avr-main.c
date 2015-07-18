@@ -28,12 +28,20 @@ size_t malloc_used(void)
         return (size_t)(__brkval - __malloc_heap_start);
 }
 
+static int print_char(int c)
+{
+    return putchar(c);
+}
+
 int main(void)
 {
+    pfstest_arguments_t args = {};
+    args.verbose = true;
+
     stdout = &mystdout;
     stderr = stdout;
 
-    int r = run_all_tests_verbose();
+    int r = pfstest_start(print_char, &args);
     
     assert(malloc_used() == 0);
 

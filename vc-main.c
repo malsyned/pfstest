@@ -2,5 +2,5 @@
 
 int main(int argc, char *argv[])
 {
-    return run_tests(argc, argv);
+    return pfstest_main(argc, argv);
 }

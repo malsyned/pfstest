@@ -92,45 +92,6 @@ void _pfstest_fail_at_location(
                               (const void *)&args);
 }
 
-static void pass(void)
-{
-    longjmp(dynamic_env->test_jmp_buf, RESULT_PASS);
-}
-
-static void ignore(void)
-{
-    longjmp(dynamic_env->test_jmp_buf, RESULT_IGNORE);
-}
-
-static void run_test(_pfstest_test_nv_t *current_test)
-{
-    switch (setjmp(dynamic_env->test_jmp_buf)) {
-        case 0:
-            if (current_test->flags & _PFSTEST_FLAG_IGNORED) {
-                ignore();
-            }
-            current_test->function();
-            pfstest_run_verifiers();
-            pass();
-            break;
-        case RESULT_PASS:
-            pfstest_output_formatter_test_complete(dynamic_env->formatter);
-            break;
-        case RESULT_FAIL:
-            pfstest_output_formatter_test_complete(dynamic_env->formatter);
-            /* Message already printed before the stack unwound */
-            break;
-        case RESULT_IGNORE:
-            pfstest_output_formatter_test_ignored(dynamic_env->formatter);
-            pfstest_output_formatter_test_complete(dynamic_env->formatter);
-            break;
-        default:
-            pfstest_print_nv_string(pfstest_nv_string("FATAL ERROR\n"));
-            exit(1);
-            break;
-    }
-}
-
 void _pfstest_register_test(pfstest_t *the_test)
 {
     _pfstest_suite_register_test(&tests, the_test);
@@ -144,55 +105,6 @@ void _pfstest_register_before(pfstest_hook_t *the_hook)
 void _pfstest_register_after(pfstest_hook_t *the_hook)
 {
     _pfstest_hook_list_register_hook(&after, the_hook);
-}
-
-static void do_hook_list(pfstest_list_t *list,
-                         const pfstest_nv_ptr char *file)
-{
-    pfstest_list_node_t *hook_node;
-    _pfstest_hook_nv_t nv_data;
-
-    pfstest_list_iter (hook_node, list) {
-        pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
-        pfstest_memcpy_nv(&nv_data, hook->nv_data, sizeof(nv_data));
-
-        if (file == NULL || 0 == pfstest_strcmp_nvnv(file, nv_data.file))
-            nv_data.function();
-    }
-}
-
-static void do_tests_list(const char *test_file,
-                          const char *test_name)
-{
-    _pfstest_test_nv_t current_test;
-    pfstest_list_node_t *test_node;
-
-    pfstest_list_iter (test_node, &tests) {
-        pfstest_t *test = (pfstest_t *)test_node;
-        pfstest_memcpy_nv(&current_test, test->nv_data,
-                          sizeof(current_test));
-
-        if ((test_file == NULL
-             || 0 == pfstest_strcmp_nv(test_file, current_test.file))
-            && (test_name == NULL
-                || 0 == pfstest_strcmp_nv(test_name, current_test.name)))
-        {
-            pfstest_output_formatter_test_started(dynamic_env->formatter,
-                                                  current_test.name,
-                                                  current_test.file);
-
-            pfstest_alloc_frame_push();
-
-            pfstest_mock_init(); /* TODO: plugin-ize */
-            do_hook_list(&before, current_test.file);
-            run_test(&current_test);
-            do_hook_list(&after, current_test.file);
-
-            pfstest_mock_finish(); /* TODO: plugin-ize */
-            pfstest_alloc_free_frame();
-            pfstest_alloc_frame_pop();
-        }
-    }
 }
 
 static void print_nv_string(int (*print_char)(int),
@@ -262,78 +174,11 @@ void pfstest_print_register_commands(int (*print_char)(int),
 
 void pfstest_print_usage(int (*print_char)(int), char *program_name)
 {
-    print_nv_string(print_char, "usage: ");
+    print_nv_string(print_char, pfstest_nv_string("usage: "));
     print_string(print_char, program_name);
-    print_nv_string(print_char,
-                    " [-r] [-v] [-f source-file] [-n test-name]\n");
-}
-
-int pfstest_run_tests(int argc, char *argv[])
-{
-    dynamic_env_t local_dynamic_env;
-    pfstest_arguments_t args;
-    bool args_parse_good;
-    pfstest_output_formatter_t formatter;
-    int result;
-
-    dynamic_env_push(&local_dynamic_env);
-
-    args_parse_good = pfstest_arguments_parse(&args, argc, argv);
-
-    if (!args_parse_good) {
-        pfstest_print_usage(stdout_print_char, args.program_name);
-        exit(1);
-    }
-
-    if (args.verbose) {
-        pfstest_output_formatter_verbose_init(&formatter,
-                                              stdout_print_char);
-    } else {
-        pfstest_output_formatter_standard_init(&formatter,
-                                               stdout_print_char);
-    }
-    dynamic_env->formatter = &formatter;
-
-    if (args.print_register_commands) {
-        pfstest_print_register_commands(stdout_print_char,
-                                        &before, &after, &tests);
-        dynamic_env_pop();
-        return 0;
-    }
-
-    pfstest_output_formatter_run_started(&formatter);
-    do_tests_list(args.filter_file, args.filter_name);
-    pfstest_output_formatter_run_complete(&formatter);
-
-    result = pfstest_output_formatter_return_value(&formatter);
-
-    dynamic_env_pop();
-
-    if (result > 0)
-        return 1;
-    else
-        return 0;
-}
-
-int pfstest_run_all_tests(void)
-{
-    return run_tests(0, NULL);
-}
-
-int pfstest_run_all_tests_verbose(void)
-{
-    /* mcc18 stores string constants in ROM, which is a separate
-     * memory space, unless you explicitly place them to RAM like
-     * this.  */
-    char argv_0[] = "";
-    char argv_1[] = "-v";
-    char *argv[3];
-
-    argv[0] = argv_0;
-    argv[1] = argv_1;
-    argv[2] = NULL;
-
-    return run_tests(2, argv);
+    print_nv_string(
+        print_char,
+        pfstest_nv_string(" [-r] [-v] [-f source-file] [-n test-name]\n"));
 }
 
 void _pfstest_suite_register_test(pfstest_list_t *suite,
@@ -509,19 +354,6 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
     }
 
     return true;
-}
-
-int run_all_tests_new(void)
-{
-    pfstest_output_formatter_t formatter;
-    int result;
-
-    pfstest_output_formatter_verbose_init(&formatter, stdout_print_char);
-
-    result = pfstest_suite_run(&before, &after, &tests, NULL, NULL,
-                               &formatter);
-
-    return result;
 }
 
 int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
