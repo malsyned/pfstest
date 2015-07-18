@@ -224,7 +224,6 @@ void pfstest_run(pfstest_t *the_test,
 
     pfstest_alloc_frame_push();
 
-    /* TODO: pfstest_mock_init() in a new dynamic frame */
     pfstest_mock_init();
         
     if (0 == setjmp(dynamic_env->test_jmp_buf)) {
@@ -244,8 +243,7 @@ void pfstest_run(pfstest_t *the_test,
         }
 
         current_test.function();
-        /* TODO: pop pfstest_mock frame */
-        pfstest_run_verifiers();
+        pfstest_run_verifiers(); /* TODO: plugin-ize */
     }
     pfstest_mock_finish(); /* TODO: plugin-ize */
 
