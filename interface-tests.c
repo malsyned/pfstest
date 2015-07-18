@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include "capture-output.h"
+
 static pfstest_arguments_t args;
 
 before_tests(set_up_interface_tests)
@@ -219,4 +221,40 @@ test(should_parse_multiple_arguments)
                 the_bool(args.verbose), is_the_bool(true));
     assert_that("-f flag is parsed",
                 the_pointer(args.filter_file), is_the_pointer(argv[3]));
+}
+
+pfstest_case(test1) {}
+pfstest_case(test2) {}
+pfstest_hook(before1) {}
+pfstest_hook(before2) {}
+pfstest_hook(after1) {}
+pfstest_hook(after2) {}
+
+test(should_print_register_commands)
+{
+    pfstest_list_t suite = PFSTEST_LIST_EMPTY();
+    pfstest_list_t before_hooks = PFSTEST_LIST_EMPTY();
+    pfstest_list_t after_hooks = PFSTEST_LIST_EMPTY();
+
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "    register_before(before1);\n"
+        "    register_before(before2);\n"
+        "    register_after(after1);\n"
+        "    register_after(after2);\n"
+        "    register_test(test1);\n"
+        "    register_test(test2);\n");
+
+    pfstest_suite_register_test(&suite, test1);
+    pfstest_suite_register_test(&suite, test2);
+    pfstest_hook_list_register_hook(&before_hooks, before1);
+    pfstest_hook_list_register_hook(&before_hooks, before2);
+    pfstest_hook_list_register_hook(&after_hooks, after1);
+    pfstest_hook_list_register_hook(&after_hooks, after2);
+
+    pfstest_print_register_commands(capture_output_char,
+                                    &before_hooks, &after_hooks, &suite);
+
+    assert_that("Test registrations are printed",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }

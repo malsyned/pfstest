@@ -224,6 +224,12 @@ typedef struct
 
 bool pfstest_arguments_parse(pfstest_arguments_t *args,
                              int argc, char *argv[]);
+void pfstest_print_register_commands(int (*print_char)(int),
+                                     pfstest_list_t *before,
+                                     pfstest_list_t *after,
+                                     pfstest_list_t *suite);
+int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args);
+int pfstest_main(int argc, char *argv[]);
 
 int pfstest_run_tests(int argc, char *argv[]);
 int pfstest_run_all_tests(void);

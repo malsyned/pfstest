@@ -8,7 +8,7 @@ char call_log[150];
  * once all functionality has been moved over to the new
  * implementation */
 
-static char captured_output[300];
+static char captured_output[310];
 static int captured_output_idx = 0;
 
 void capture_output_init(void)
@@ -153,9 +153,13 @@ test(should_reset_hooks_and_tests)
     }
 }
 
+#define VERSION "0.1"
+#define HEADER "PFSTest " VERSION "\n" "===========\n"
+
 test(should_report_results)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "..\n"
         "Run complete. 2 passed, 0 failed, 0 ignored\n");
 
@@ -174,6 +178,7 @@ test(should_report_results)
 test(should_report_ignored_tests)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "I\n"
         "Run complete. 0 passed, 0 failed, 1 ignored\n");
 
@@ -191,6 +196,7 @@ test(should_report_ignored_tests)
 test(should_report_failed_tests)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_fail FAIL\n"
         "    Location: core-test-cases.c:22\n"
         "    Expected failure, should have been caught\n"
@@ -210,6 +216,7 @@ test(should_report_failed_tests)
 test(should_report_results_including_failed_tests)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         ".\n"
         "core-test-cases.c:should_fail FAIL\n"
         "    Location: core-test-cases.c:22\n"
@@ -232,6 +239,7 @@ test(should_report_results_including_failed_tests)
 test(should_report_results_verbose)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_run PASS\n"
         "core-test-cases.c:should_fail FAIL\n"
         "    Location: core-test-cases.c:22\n"
@@ -256,6 +264,7 @@ test(should_report_results_verbose)
 test(should_indent_multi_line_error_messages)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
         "    Location: core-test-cases.c:65\n"
         "    Expected failure, should have been caught\n"
@@ -277,6 +286,7 @@ test(should_indent_multi_line_error_messages)
 test(should_indent_multi_line_error_messages_verbose)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
         "    Location: core-test-cases.c:65\n"
         "    Expected failure, should have been caught\n"
@@ -298,6 +308,7 @@ test(should_indent_multi_line_error_messages_verbose)
 test(should_catch_failures_in_before_hooks)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
@@ -336,6 +347,7 @@ test(should_run_after_hooks_when_test_fails)
 test(should_catch_failures_in_after_hooks)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
@@ -357,6 +369,7 @@ test(should_catch_failures_in_after_hooks)
 test(should_catch_multiple_after_hook_failures)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:49\n"
         "    Expected failure, should have been caught\n"
@@ -398,6 +411,7 @@ test(should_accept_null_after_hook_list)
 test(should_only_count_each_failing_test_once)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "core-test-cases.c:should_fail FAIL\n"
         "    Location: core-test-cases.c:22\n"
         "    Expected failure, should have been caught\n"

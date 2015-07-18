@@ -195,8 +195,20 @@ static void do_tests_list(const char *test_file,
     }
 }
 
+static void print_nv_string(int (*print_char)(int),
+                            const pfstest_nv_ptr char *s)
+{
+    char c;
+
+    while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
+        print_char(c);
+        s++;
+    }
+}
+
 static void print_register_hook_commands(
-    pfstest_list_t *list, const pfstest_nv_ptr char *list_name)
+    int (*print_char)(int), pfstest_list_t *list,
+    const pfstest_nv_ptr char *list_name)
 {
     pfstest_list_node_t *hook_node;
     _pfstest_hook_nv_t nv_data;
@@ -205,34 +217,40 @@ static void print_register_hook_commands(
         pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
         pfstest_memcpy_nv(&nv_data, hook->nv_data, sizeof(nv_data));
 
-        pfstest_print_nv_string(pfstest_nv_string("    register_"));
-        pfstest_print_nv_string(list_name);
-        pfstest_print_nv_string(pfstest_nv_string("("));
-        pfstest_print_nv_string(nv_data.name);
-        pfstest_print_nv_string(pfstest_nv_string(");\n"));
+        print_nv_string(print_char, pfstest_nv_string("    register_"));
+        print_nv_string(print_char, list_name);
+        print_nv_string(print_char, pfstest_nv_string("("));
+        print_nv_string(print_char, nv_data.name);
+        print_nv_string(print_char, pfstest_nv_string(");\n"));
     }
 }
 
-static void print_register_test_commands(void)
+static void print_register_test_commands(int (*print_char)(int),
+                                         pfstest_list_t *tests)
 {
     pfstest_list_node_t *test_node;
     _pfstest_test_nv_t nv_data;
 
-    pfstest_list_iter (test_node, &tests) {
+    pfstest_list_iter (test_node, tests) {
         pfstest_t *test = (pfstest_t *)test_node;
         pfstest_memcpy_nv(&nv_data, test->nv_data, sizeof(nv_data));
 
-        pfstest_print_nv_string(pfstest_nv_string("    register_test("));
-        pfstest_print_nv_string(nv_data.name);
-        pfstest_print_nv_string(pfstest_nv_string(");\n"));
+        print_nv_string(print_char, pfstest_nv_string("    register_test("));
+        print_nv_string(print_char, nv_data.name);
+        print_nv_string(print_char, pfstest_nv_string(");\n"));
     }
 }
 
-static void print_register_commands(void)
+void pfstest_print_register_commands(int (*print_char)(int),
+                                     pfstest_list_t *before,
+                                     pfstest_list_t *after,
+                                     pfstest_list_t *suite)
 {
-    print_register_hook_commands(&before, pfstest_nv_string("before"));
-    print_register_hook_commands(&after, pfstest_nv_string("after"));
-    print_register_test_commands();
+    print_register_hook_commands(print_char, before,
+                                 pfstest_nv_string("before"));
+    print_register_hook_commands(print_char, after,
+                                 pfstest_nv_string("after"));
+    print_register_test_commands(print_char, suite);
 }
 
 static void print_usage_and_exit(char *program_name)
@@ -270,13 +288,11 @@ int pfstest_run_tests(int argc, char *argv[])
     dynamic_env->formatter = &formatter;
 
     if (args.print_register_commands) {
-        print_register_commands();
+        pfstest_print_register_commands(stdout_print_char,
+                                        &before, &after, &tests);
         dynamic_env_pop();
         return 0;
     }
-
-    pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
-    pfstest_print_nv_string(pfstest_nv_string("===========\n"));
 
     pfstest_output_formatter_run_started(&formatter);
     do_tests_list(args.filter_file, args.filter_name);
@@ -495,11 +511,41 @@ int run_all_tests_new(void)
 
     pfstest_output_formatter_verbose_init(&formatter, stdout_print_char);
 
-    pfstest_print_nv_string(pfstest_nv_string("PFSTest 0.1\n"));
-    pfstest_print_nv_string(pfstest_nv_string("===========\n"));
-
     result = pfstest_suite_run(&before, &after, &tests, NULL, NULL,
                                &formatter);
 
     return result;
+}
+
+int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
+{
+    pfstest_output_formatter_t formatter;
+
+    if (args->print_register_commands) {
+        pfstest_print_register_commands(print_char, &before, &after, &tests);
+        return 0;
+    } else {
+        if (args->verbose) {
+            pfstest_output_formatter_verbose_init(&formatter, print_char);
+        } else {
+            pfstest_output_formatter_standard_init(&formatter, print_char);
+        }
+
+        return pfstest_suite_run(&before, &after, &tests,
+                                 args->filter_file, args->filter_name,
+                                 &formatter);
+    }
+}
+
+int pfstest_main(int argc, char *argv[])
+{
+    pfstest_arguments_t args;
+
+    if (pfstest_arguments_parse(&args, argc, argv)) {
+        return pfstest_start(stdout_print_char, &args);
+    } else {
+        /* TODO: Use capturing, non-exiting version */
+        print_usage_and_exit(args.program_name);
+        return 1;
+    }
 }

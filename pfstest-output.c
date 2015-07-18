@@ -91,11 +91,18 @@ static void print_context(pfstest_output_formatter_t *formatter)
     print_nv_string(formatter, pfstest_nv_string(" "));
 }
 
-static void run_started(pfstest_output_formatter_t *formatter)
+static void run_started_bookkeeping(pfstest_output_formatter_t *formatter)
 {
     formatter->results.passed = 0;
     formatter->results.failed = 0;
     formatter->results.ignored = 0;
+}
+
+static void run_started(pfstest_output_formatter_t *formatter)
+{
+    run_started_bookkeeping(formatter);
+    print_nv_string(formatter, pfstest_nv_string("PFSTest 0.1\n"));
+    print_nv_string(formatter, pfstest_nv_string("===========\n"));
 }
 
 static void test_started_bookkeeping(pfstest_output_formatter_t *formatter,
@@ -289,7 +296,7 @@ static int message_print_char_message_spy(
 static const
 pfstest_nv pfstest_output_formatter_vtable_t message_spy_vtable = {
     message_print_char_message_spy,
-    run_started,
+    run_started_bookkeeping,
     test_started_null,
     test_ignored_null,
     test_failed_message_start_null,
