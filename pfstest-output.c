@@ -101,7 +101,7 @@ static void run_started_bookkeeping(pfstest_output_formatter_t *formatter)
 static void run_started(pfstest_output_formatter_t *formatter)
 {
     run_started_bookkeeping(formatter);
-    print_nv_string(formatter, pfstest_nv_string("PFSTest 0.1\n"));
+    print_nv_string(formatter, pfstest_nv_string("PFSTest 0.2\n"));
     print_nv_string(formatter, pfstest_nv_string("===========\n"));
 }
 

@@ -4,6 +4,9 @@
 
 #include <stdio.h>
 
+#define VERSION "0.2"
+#define HEADER "PFSTest " VERSION "\n" "===========\n"
+
 char call_log[150];
 
 static pfstest_output_formatter_t standard_formatter;
@@ -130,9 +133,6 @@ test(should_reset_hooks_and_tests)
         fail("Log did not match expected log");
     }
 }
-
-#define VERSION "0.1"
-#define HEADER "PFSTest " VERSION "\n" "===========\n"
 
 test(should_report_results)
 {
