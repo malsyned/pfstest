@@ -370,6 +370,32 @@ test(should_catch_multiple_after_hook_failures)
     }
 }
 
+test(should_output_multiple_after_hook_failures_correctly_verbose)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
+        "core-test-cases.c:should_run FAIL\n"
+        "    Location: core-test-cases.c:49\n"
+        "    Expected failure, should have been caught\n"
+        "core-test-cases.c:should_run FAIL\n"
+        "    Location: core-test-cases.c:54\n"
+        "    Another expected failure, should have been caught\n"
+        "\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+
+    pfstest_suite_register_test(&suite, should_run);
+    pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
+    pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
+    
+    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+                      NULL, NULL,
+                      &verbose_formatter);
+
+    if (0 != pfstest_strcmp_nv(captured_output, expected)) {
+        fail("Output did not match expected output");
+    }
+}
+
 test(should_accept_null_before_hook_list)
 {
     pfstest_suite_register_test(&suite, should_run);
