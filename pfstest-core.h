@@ -213,6 +213,18 @@ void _pfstest_fail_at_location(
 
 /* Framework entry points */
 
+typedef struct 
+{
+    char *program_name;
+    char *filter_file;
+    char *filter_name;
+    bool verbose;
+    bool print_register_commands;
+} pfstest_arguments_t;
+
+bool pfstest_arguments_parse(pfstest_arguments_t *args,
+                             int argc, char *argv[]);
+
 int pfstest_run_tests(int argc, char *argv[]);
 int pfstest_run_all_tests(void);
 int pfstest_run_all_tests_verbose(void);

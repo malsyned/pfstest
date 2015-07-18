@@ -246,53 +246,25 @@ static void print_usage_and_exit(void)
     exit(1);
 }
 
-static const char *next_arg(char **argv[], bool required)
-{
-    char *r = **argv;
-
-    if (r == NULL && required)
-        print_usage_and_exit();
-    
-    (*argv)++;
-
-    return (const char *)r;
-}
-
 int pfstest_run_tests(int argc, char *argv[])
 {
     dynamic_env_t local_dynamic_env;
-    const char *test_file = NULL;
-    const char *test_name = NULL;
-    const char *arg;
-    bool register_print = false;
+    pfstest_arguments_t args;
+    bool args_parse_good;
     pfstest_output_formatter_t formatter;
     int result;
-    bool verbose = false;
 
     dynamic_env_push(&local_dynamic_env);
 
-    if (argc == 0 || argv == NULL)
-        goto args_done;
+    args_parse_good = pfstest_arguments_parse(&args, argc, argv);
 
-    program_name = next_arg(&argv, true);
+    program_name = args.program_name;
 
-    while (arg = next_arg(&argv, false), arg != NULL) {
-        if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-f"))) {
-            test_file = next_arg(&argv, true);
-        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-n"))) {
-            test_name = next_arg(&argv, true);
-            verbose = true;
-        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-v"))) {
-            verbose = true;
-        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-r"))) {
-            register_print = true;
-        } else {
-            print_usage_and_exit();
-        }
+    if (!args_parse_good) {
+        print_usage_and_exit();
     }
-args_done:
 
-    if (verbose) {
+    if (args.verbose) {
         pfstest_output_formatter_verbose_init(&formatter,
                                               stdout_print_char);
     } else {
@@ -301,7 +273,7 @@ args_done:
     }
     dynamic_env->formatter = &formatter;
 
-    if (register_print) {
+    if (args.print_register_commands) {
         print_register_commands();
         dynamic_env_pop();
         return 0;
@@ -311,7 +283,7 @@ args_done:
     pfstest_print_nv_string(pfstest_nv_string("===========\n"));
 
     pfstest_output_formatter_run_started(&formatter);
-    do_tests_list(test_file, test_name);
+    do_tests_list(args.filter_file, args.filter_name);
     pfstest_output_formatter_run_complete(&formatter);
 
     result = pfstest_output_formatter_return_value(&formatter);
@@ -469,6 +441,55 @@ void _pfstest_hook_list_register_hook(pfstest_list_t *list,
 {
     pfstest_list_node_init((pfstest_list_node_t *)hook);
     pfstest_list_append(list, (pfstest_list_node_t *)hook);
+}
+
+static char *next_arg(char **argv[])
+{
+    char *r = **argv;
+    (*argv)++;
+
+    return r;
+}
+
+bool pfstest_arguments_parse(pfstest_arguments_t *args,
+                             int argc, char *argv[])
+{
+    char *arg;
+    char *filter_file;
+    char *filter_name;
+
+    args->verbose = false;
+    args->print_register_commands = false;
+    args->filter_file = NULL;
+    args->filter_name = NULL;
+
+    if (argc < 1 || argv[0] == NULL) {
+        args->program_name = NULL;
+        return false;
+    }
+
+    args->program_name = next_arg(&argv);
+
+    while (arg = next_arg(&argv), arg != NULL) {
+        if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-v"))) {
+            args->verbose = true;
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-r"))) {
+            args->print_register_commands = true;
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-f"))) {
+            filter_file = next_arg(&argv);
+            if (filter_file == NULL) return false;
+            args->filter_file = filter_file;
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-n"))) {
+            filter_name = next_arg(&argv);
+            if (filter_name == NULL) return false;
+            args->filter_name = filter_name;
+            args->verbose = true;
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 int run_all_tests_new(void)
