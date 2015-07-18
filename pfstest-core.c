@@ -27,8 +27,6 @@ typedef struct _dynamic_env_t
 
 static dynamic_env_t *dynamic_env = NULL;
 
-const char *program_name = NULL;
-
 static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
 static pfstest_list_t before = PFSTEST_LIST_EMPTY();
 static pfstest_list_t after = PFSTEST_LIST_EMPTY();
@@ -237,7 +235,7 @@ static void print_register_commands(void)
     print_register_test_commands();
 }
 
-static void print_usage_and_exit(void)
+static void print_usage_and_exit(char *program_name)
 {
     pfstest_printf_nv(
         pfstest_nv_string(
@@ -258,10 +256,8 @@ int pfstest_run_tests(int argc, char *argv[])
 
     args_parse_good = pfstest_arguments_parse(&args, argc, argv);
 
-    program_name = args.program_name;
-
     if (!args_parse_good) {
-        print_usage_and_exit();
+        print_usage_and_exit(args.program_name);
     }
 
     if (args.verbose) {
