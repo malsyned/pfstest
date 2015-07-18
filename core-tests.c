@@ -1,32 +1,10 @@
 #include "pfstest.h"
 
+#include "capture-output.h"
+
 #include <stdio.h>
 
 char call_log[150];
-
-/* TODO: Remove all instances of "new" from identifiers and file names
- * once all functionality has been moved over to the new
- * implementation */
-
-static char captured_output[310];
-static int captured_output_idx = 0;
-
-void capture_output_init(void)
-{
-    captured_output[0] = '\0';
-    captured_output_idx = 0;
-}
-
-int capture_output_char(int c)
-{
-    if (captured_output_idx < sizeof(captured_output) - 1) {
-        captured_output[captured_output_idx++] = c;
-        captured_output[captured_output_idx] = '\0';
-        return c;
-    }
-
-    return EOF;
-}
 
 static pfstest_output_formatter_t standard_formatter;
 static pfstest_output_formatter_t verbose_formatter;
@@ -534,8 +512,4 @@ test(should_filter_by_test_name)
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
     }
-}
-
-ignore_test(should_print_test_registrations)
-{
 }

@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-char captured_output[300];
+char captured_output[310];
 pfstest_output_formatter_t message_spy;
 
 static unsigned int captured_output_idx = 0;

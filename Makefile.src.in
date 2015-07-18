@@ -6,12 +6,9 @@ PFSTEST_SRC := pfstest-list.c pfstest-value.c \
                pfstest-arg-handlers.c pfstest-mock.c pfstest-platform.c \
                pfstest-output.c
 
-TESTS_SRC := capture-output.c interface-tests.c \
+TESTS_SRC := capture-output.c core-tests.c core-test-cases.c \
+             core-test-cases-2.c interface-tests.c \
              assert-that-tests.c values-and-matchers-tests.c \
              mock-dep.c mock-tests.c
 
-CORE_TESTS_SRC := core-tests.c core-test-cases.c core-test-cases-2.c
-
 COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)
-
-CORE_COMMON_SRC := $(PFSTEST_SRC) $(CORE_TESTS_SRC)
