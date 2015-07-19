@@ -1,5 +1,7 @@
 #include "pfstest-output.h"
 
+#include "pfstest-alloc.h"
+
 static int print_char(pfstest_output_formatter_t *formatter, int c)
 {
         formatter->fresh_line = (c == '\n');
@@ -314,26 +316,41 @@ static void bookkeeping_init(pfstest_output_formatter_t *formatter,
 }
 
 
-void pfstest_output_formatter_standard_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int))
+pfstest_output_formatter_t *pfstest_output_formatter_standard_new(
+    int (*print_char)(int))
 {
+    pfstest_output_formatter_t *formatter =
+        pfstest_alloc(sizeof(*formatter));
+
     bookkeeping_init(formatter, print_char);
     formatter->vtable = &standard_vtable;
+
+    return formatter;
 }
 
-void pfstest_output_formatter_verbose_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int))
+pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
+    int (*print_char)(int))
 {
+    pfstest_output_formatter_t *formatter =
+        pfstest_alloc(sizeof(*formatter));
+
     bookkeeping_init(formatter, print_char);
     formatter->vtable = &verbose_vtable;
+
+    return formatter;
 }
 
-void pfstest_output_formatter_message_spy_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int))
+pfstest_output_formatter_t *pfstest_output_formatter_message_spy_new(
+    int (*print_char)(int))
 {
+    pfstest_output_formatter_t *formatter =
+        pfstest_alloc(sizeof(*formatter));
+
     formatter->results.failed = 0;
     formatter->print_char = print_char;
     formatter->vtable = &message_spy_vtable;
+
+    return formatter;
 }
 
 /* Message Output */

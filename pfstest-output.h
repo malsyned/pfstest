@@ -44,12 +44,12 @@ struct _pfstest_output_formatter_vtable_t
     int (*return_value)(pfstest_output_formatter_t *formatter);
 };
 
-void pfstest_output_formatter_standard_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int));
-void pfstest_output_formatter_verbose_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int));
-void pfstest_output_formatter_message_spy_init(
-    pfstest_output_formatter_t *formatter, int (*print_char)(int));
+pfstest_output_formatter_t *pfstest_output_formatter_standard_new(
+    int (*print_char)(int));
+pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
+    int (*print_char)(int));
+pfstest_output_formatter_t *pfstest_output_formatter_message_spy_new(
+    int (*print_char)(int));
 
 int pfstest_output_formatter_message_print_char(
     pfstest_output_formatter_t *formatter, int c);

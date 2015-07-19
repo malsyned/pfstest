@@ -67,7 +67,7 @@ test(should_fail_on_false_assertion)
     capture_test_results(assert_always_fail);
 
     assert_that("False assertions fail",
-                the_int(pfstest_output_formatter_return_value(&message_spy)),
+                the_int(pfstest_output_formatter_return_value(message_spy)),
                 is_the_int(1));
 }
 

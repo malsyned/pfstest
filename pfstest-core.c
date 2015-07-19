@@ -356,21 +356,24 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
 
 int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
 {
-    pfstest_output_formatter_t formatter;
+    pfstest_output_formatter_t *formatter;
+    int r;
 
     if (args->print_register_commands) {
         pfstest_print_register_commands(print_char, &before, &after, &tests);
         return 0;
     } else {
         if (args->verbose) {
-            pfstest_output_formatter_verbose_init(&formatter, print_char);
+            formatter = pfstest_output_formatter_verbose_new(print_char);
         } else {
-            pfstest_output_formatter_standard_init(&formatter, print_char);
+            formatter = pfstest_output_formatter_standard_new(print_char);
         }
 
-        return pfstest_suite_run(&before, &after, &tests,
-                                 args->filter_file, args->filter_name,
-                                 &formatter);
+        r = pfstest_suite_run(&before, &after, &tests,
+                              args->filter_file, args->filter_name,
+                              formatter);
+        pfstest_alloc_free_frame();
+        return r;
     }
 }
 
