@@ -17,7 +17,8 @@ static int print_char(int c)
 
 void main(void)
 {
-    pfstest_arguments_t args = {};
+    pfstest_arguments_t args;
+    memset(&args, 0, sizeof(args));
     args.verbose = true;
 
     pfstest_alloc_pic_init(heap, HEAP_SIZE);
