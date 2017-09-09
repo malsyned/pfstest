@@ -3,13 +3,6 @@
 
 #include "pfstest-platform.h"
 
-typedef struct 
-{
-    int passed;
-    int failed;
-    int ignored;
-} _pfstest_results_t;
-
 typedef
 struct _pfstest_output_formatter_vtable_t
 pfstest_output_formatter_vtable_t;
@@ -17,13 +10,7 @@ pfstest_output_formatter_vtable_t;
 typedef struct 
 {
     const pfstest_nv_ptr pfstest_output_formatter_vtable_t *vtable;
-    _pfstest_results_t results;
     int (*print_char)(int);
-    volatile bool test_failed;
-    bool test_ignored;
-    bool fresh_line;
-    const pfstest_nv_ptr char *test_name;
-    const pfstest_nv_ptr char *test_file;
 } pfstest_output_formatter_t;
 
 struct _pfstest_output_formatter_vtable_t
@@ -47,8 +34,6 @@ struct _pfstest_output_formatter_vtable_t
 pfstest_output_formatter_t *pfstest_output_formatter_standard_new(
     int (*print_char)(int));
 pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
-    int (*print_char)(int));
-pfstest_output_formatter_t *pfstest_output_formatter_message_spy_new(
     int (*print_char)(int));
 
 int pfstest_output_formatter_message_print_char(

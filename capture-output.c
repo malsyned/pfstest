@@ -1,5 +1,7 @@
 #include "capture-output.h"
 
+#include "pfstest-output-formatter-message-spy.h"
+
 #include <stdio.h>
 
 char captured_output[310];
