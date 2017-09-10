@@ -18,11 +18,6 @@ typedef struct _dynamic_env_t
 
 static dynamic_env_t *dynamic_env = NULL;
 
-static pfstest_list_t expectations = PFSTEST_LIST_EMPTY();
-static pfstest_list_t invocations = PFSTEST_LIST_EMPTY();
-static pfstest_list_t verifiers = PFSTEST_LIST_EMPTY();
-static pfstest_list_t default_expectations = PFSTEST_LIST_EMPTY();
-
 void pfstest_mock_init(void)
 {
     dynamic_env_t *new_frame = pfstest_alloc(sizeof(*new_frame));
@@ -33,11 +28,6 @@ void pfstest_mock_init(void)
     pfstest_list_reset(&dynamic_env->invocations);
     pfstest_list_reset(&dynamic_env->verifiers);
     pfstest_list_reset(&dynamic_env->default_expectations);
-
-    pfstest_list_reset(&expectations);
-    pfstest_list_reset(&invocations);
-    pfstest_list_reset(&verifiers);
-    pfstest_list_reset(&default_expectations);
 }
 
 void pfstest_mock_finish(void)
