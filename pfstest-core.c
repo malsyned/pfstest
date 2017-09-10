@@ -76,8 +76,7 @@ static void message_printer(pfstest_output_formatter_t *formatter,
                             const void *object)
 {
     const struct message_printer_args *args = object;
-    pfstest_output_formatter_message_print_nv_string(formatter,
-                                                     args->message);
+    pfstest_output_formatter_print_nv_string(formatter, args->message);
 }
 
 void _pfstest_fail_at_location(

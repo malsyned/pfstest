@@ -14,9 +14,9 @@ static void the_short_printer(pfstest_output_formatter_t *formatter,
 {
     short s = *(short *)pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the short "));
-    pfstest_output_formatter_message_print_int(formatter, (intmax_t)s);
+    pfstest_output_formatter_print_int(formatter, (intmax_t)s);
 }
 
 pfstest_value_t *pfstest_the_short(short s)
@@ -34,9 +34,9 @@ static void the_ushort_printer(pfstest_output_formatter_t *formatter,
 {
     unsigned short u = *(unsigned short *)pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the ushort "));
-    pfstest_output_formatter_message_print_uint(
+    pfstest_output_formatter_print_uint(
         formatter, (uintmax_t)u, 10, 0);
 }
 
@@ -55,9 +55,9 @@ static void the_int_printer(pfstest_output_formatter_t *formatter,
 {
     int i = *(int *)pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the int "));
-    pfstest_output_formatter_message_print_int(formatter, (intmax_t)i);
+    pfstest_output_formatter_print_int(formatter, (intmax_t)i);
 }
 
 pfstest_value_t *pfstest_the_int(int i)
@@ -75,9 +75,9 @@ static void the_uint_printer(pfstest_output_formatter_t *formatter,
 {
     unsigned int u = *(unsigned int *)pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the uint "));
-    pfstest_output_formatter_message_print_uint(
+    pfstest_output_formatter_print_uint(
         formatter, (uintmax_t)u, 10, 0);
 }
 
@@ -96,9 +96,9 @@ static void the_bool_printer(pfstest_output_formatter_t *formatter,
 {
     bool b = *(bool *)pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the bool "));
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter,
         b ? pfstest_nv_string("<true>") : pfstest_nv_string("<false>"));
 }
@@ -118,10 +118,10 @@ static void the_char_printer(pfstest_output_formatter_t *formatter,
 {
     char c = *(char *)pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the char '"));
-    pfstest_output_formatter_message_print_char(formatter, c);
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_char(formatter, c);
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("'"));
 }
 
@@ -141,14 +141,14 @@ static void the_string_printer(pfstest_output_formatter_t *formatter,
     char *data = pfstest_value_data(value);
     char *p = data;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the string \""));
     
     while (*p) {
-        pfstest_output_formatter_message_print_escaped_char(formatter, *p++);
+        pfstest_output_formatter_print_escaped_char(formatter, *p++);
     }
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("\""));
 }
 
@@ -167,20 +167,20 @@ static void the_pointer_printer(pfstest_output_formatter_t *formatter,
 {
     void *data = pfstest_value_data(value);
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the pointer <"));
 
     if (data == NULL) {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("NULL"));
     } else {
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("0x"));
-        pfstest_output_formatter_message_print_uint(
+        pfstest_output_formatter_print_uint(
             formatter, (uintmax_t)(uintptr_t)data, 16, 0);
     }
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string(">"));
 
 }
@@ -199,22 +199,22 @@ static void the_memory_printer(pfstest_output_formatter_t *formatter,
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the memory {"));
 
     for (i = 0; i < size; i++) {
 
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("0x"));
-        pfstest_output_formatter_message_print_uint(
+        pfstest_output_formatter_print_uint(
             formatter, data[i], 16, 2);
 
         if (i < size - 1) {
-            pfstest_output_formatter_message_print_nv_string(
+            pfstest_output_formatter_print_nv_string(
                 formatter, pfstest_nv_string(", "));
         }
     }
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("}"));
 }
 

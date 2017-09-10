@@ -110,19 +110,19 @@ static void pfstest_expectation_print(pfstest_output_formatter_t *formatter,
 {
     int i;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_mock_name(e->mock));
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string(" with ("));
 
     for (i = 0; i < pfstest_mock_arg_count(e->mock); i++) {
         pfstest_arg_handler_print(formatter, e->arg_handlers[i]);
 
         if (i < pfstest_mock_arg_count(e->mock) - 1)
-            pfstest_output_formatter_message_print_nv_string(
+            pfstest_output_formatter_print_nv_string(
                 formatter, pfstest_nv_string(", "));
     }
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string(")"));
 }
 
@@ -329,7 +329,7 @@ struct do_verification_printer_args
 static void print_plural(pfstest_output_formatter_t *formatter, int count)
 {
     if (count != 1) {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("s"));
     }
 }
@@ -340,33 +340,33 @@ static void wrong_call_count_printer(pfstest_output_formatter_t *formatter,
     const struct do_verification_printer_args *args = data;
 
     if (args->invocation_count == 0) {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("Never called "));
         pfstest_expectation_print(formatter, args->expectation);
     } else if (args->invocation_count != 1) {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("Wanted "));
         pfstest_expectation_print(formatter, args->expectation);
 
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string(" "));
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, args->wanted_desc_prefix);
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string(" "));
-        pfstest_output_formatter_message_print_int(
+        pfstest_output_formatter_print_int(
             formatter, args->wanted_count);
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string(" time"));
         print_plural(formatter, args->wanted_count);
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("\n"));
 
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("Was called "));
-        pfstest_output_formatter_message_print_int(
+        pfstest_output_formatter_print_int(
             formatter, args->invocation_count);
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string(" time"));
         print_plural(formatter, args->invocation_count);
     }
@@ -526,9 +526,9 @@ static void no_more_interactions_printer(
 {
     const struct no_more_interactions_printer_args *args = data;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("Unexpected interactions with "));
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_mock_name(args->mock));
 }
 
@@ -584,13 +584,13 @@ static void in_order_fail_printer(pfstest_output_formatter_t *formatter,
 {
     const struct in_order_fail_printer_args *args = data;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("Not called in order: "));
     pfstest_expectation_print(formatter, args->expectation);
     if (args->prev_expectation != NULL) {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("\n"));
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("Expected after: "));
         pfstest_expectation_print(formatter, args->prev_expectation);
     }

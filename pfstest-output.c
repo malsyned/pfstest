@@ -16,25 +16,33 @@ typedef struct
     volatile bool test_failed;
     bool test_ignored;
     bool fresh_line;
+    bool indent;
     const pfstest_nv_ptr char *test_name;
     const pfstest_nv_ptr char *test_file;
 } builtin_formatter_t;
 
 static int print_char(builtin_formatter_t *formatter, int c)
 {
-        formatter->fresh_line = (c == '\n');
-        return ((pfstest_output_formatter_t *)formatter)->print_char(c);
+    pfstest_output_formatter_t *as_output_formatter =
+        (pfstest_output_formatter_t *)formatter;
+    int i, r;
+
+    if (formatter->indent && formatter->fresh_line && c != '\n') {
+        for (i = 0; i < 4; i++) {
+            r = as_output_formatter->char_writer(' ');
+            if (r != ' ')
+                return r;
+        }
+    }
+    formatter->fresh_line = (c == '\n');
+    return as_output_formatter->char_writer(c);
 }
 
 static void print_nv_string(builtin_formatter_t *formatter,
                             const pfstest_nv_ptr char *s)
 {
-    char c;
-
-    while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
-        print_char(formatter, c);
-        s++;
-    }
+    pfstest_output_formatter_print_nv_string(
+        (pfstest_output_formatter_t *)formatter, s);
 }
 
 static void get_fresh_line(builtin_formatter_t *formatter)
@@ -44,66 +52,16 @@ static void get_fresh_line(builtin_formatter_t *formatter)
     }
 }
 
-static int message_print_char(pfstest_output_formatter_t *formatter,
+static int builtin_print_char(pfstest_output_formatter_t *formatter,
                               int c)
 {
-    builtin_formatter_t *as_builtin_formatter =
-        (builtin_formatter_t *)formatter;
-
-    if (as_builtin_formatter->fresh_line && c != '\n') {
-        print_nv_string(as_builtin_formatter, pfstest_nv_string("    "));
-    }
-    return print_char(as_builtin_formatter, c);
+    return print_char((builtin_formatter_t *)formatter, c);
 }
 
-static const pfstest_nv char digits[] = "0123456789abcdef";
-
-static char digit_char(int digit)
+static void print_int(builtin_formatter_t *formatter, intmax_t n)
 {
-    char d;
-
-    pfstest_memcpy_nv(&d, &digits[digit], sizeof(d));
-
-    return d;
-}
-
-static void print_uint(pfstest_output_formatter_t *formatter,
-                       uintmax_t n, int base, int zpad)
-{
-    uintmax_t d = 1;
-    int digits = 1;
-
-    while (n / d > (base - 1)) {
-        d *= base;
-        digits++;
-    }
-
-    while (zpad-- > digits) {
-        pfstest_output_formatter_message_print_char(formatter, '0');
-    }
-
-    do {
-        pfstest_output_formatter_message_print_char(
-            formatter, digit_char(n / d % base));
-        d /= base;
-    } while (d > 0);
-}
-
-static void print_int(pfstest_output_formatter_t *formatter, intmax_t n)
-{
-    uintmax_t nabs;
-
-    if (n < 0) {
-        pfstest_output_formatter_message_print_char(formatter, '-');
-        /* Casting a negative number to an unsigned type is guaranteed
-         * to result in that number, modulo MAX+1. (C Standard
-         * 6.3.1.3.2) */
-        nabs = UINTMAX_MAX - (uintmax_t)n + 1;
-    } else {
-        nabs = n;
-    }
-
-    print_uint(formatter, nabs, 10, 0);
+    pfstest_output_formatter_print_int(
+        (pfstest_output_formatter_t *)formatter, n);
 }
 
 static void print_context(builtin_formatter_t *formatter)
@@ -193,16 +151,15 @@ static void test_failed_message_start_common(
     builtin_formatter_t *formatter,
     const pfstest_nv_ptr char *file, int line)
 {
-    pfstest_output_formatter_t *as_output_formatter =
-        (pfstest_output_formatter_t *)formatter;
-
     print_nv_string(formatter, pfstest_nv_string("FAIL"));
     print_nv_string(formatter, pfstest_nv_string("\n"));
     print_nv_string(formatter, pfstest_nv_string("    Location: "));
     print_nv_string(formatter, file);
     print_nv_string(formatter, pfstest_nv_string(":"));
-    print_int(as_output_formatter, line);
+    print_int(formatter, line);
     print_nv_string(formatter, pfstest_nv_string("\n"));
+
+    formatter->indent = true;
 }
 
 static void test_failed_message_start_standard(
@@ -241,6 +198,7 @@ static void test_failed_message_complete(
         as_builtin_formatter->test_failed = true;
     }
     print_nv_string(as_builtin_formatter, pfstest_nv_string("\n"));
+    as_builtin_formatter->indent = false;
 }
 
 static bool test_passed(builtin_formatter_t *formatter)
@@ -282,11 +240,11 @@ static void run_complete(pfstest_output_formatter_t *formatter)
 
     print_nv_string(as_builtin_formatter,
                     pfstest_nv_string("\nRun complete. "));
-    print_int(formatter, as_builtin_formatter->results.passed);
+    print_int(as_builtin_formatter, as_builtin_formatter->results.passed);
     print_nv_string(as_builtin_formatter, pfstest_nv_string(" passed, "));
-    print_int(formatter, as_builtin_formatter->results.failed);
+    print_int(as_builtin_formatter, as_builtin_formatter->results.failed);
     print_nv_string(as_builtin_formatter, pfstest_nv_string(" failed, "));
-    print_int(formatter, as_builtin_formatter->results.ignored);
+    print_int(as_builtin_formatter, as_builtin_formatter->results.ignored);
     print_nv_string(as_builtin_formatter, pfstest_nv_string(" ignored\n"));
 }
 
@@ -299,7 +257,7 @@ static int return_value(pfstest_output_formatter_t *formatter)
 }
 
 static const pfstest_nv pfstest_output_formatter_vtable_t standard_vtable = {
-    message_print_char,
+    builtin_print_char,
     run_started,
     test_started_standard,
     test_ignored_standard,
@@ -311,7 +269,7 @@ static const pfstest_nv pfstest_output_formatter_vtable_t standard_vtable = {
 };
 
 static const pfstest_nv pfstest_output_formatter_vtable_t verbose_vtable = {
-    message_print_char,
+    builtin_print_char,
     run_started,
     test_started_verbose,
     test_ignored_verbose,
@@ -325,30 +283,31 @@ static const pfstest_nv pfstest_output_formatter_vtable_t verbose_vtable = {
 static void bookkeeping_init(builtin_formatter_t *formatter)
 {
     formatter->fresh_line = true;
+    formatter->indent = false;
 }
 
 
 pfstest_output_formatter_t *pfstest_output_formatter_standard_new(
-    int (*print_char)(int))
+    int (*char_writer)(int))
 {
     builtin_formatter_t *formatter =
         pfstest_alloc(sizeof(*formatter));
 
     formatter->parent.vtable = &standard_vtable;
-    formatter->parent.print_char = print_char;
+    formatter->parent.char_writer = char_writer;
     bookkeeping_init(formatter);
 
     return (pfstest_output_formatter_t *)formatter;
 }
 
 pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
-    int (*print_char)(int))
+    int (*char_writer)(int))
 {
     builtin_formatter_t *formatter =
         pfstest_alloc(sizeof(*formatter));
 
     formatter->parent.vtable = &verbose_vtable;
-    formatter->parent.print_char = print_char;
+    formatter->parent.char_writer = char_writer;
     bookkeeping_init(formatter);
 
     return (pfstest_output_formatter_t *)formatter;
@@ -356,53 +315,91 @@ pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
 
 /* Message Output */
 
-void pfstest_output_formatter_message_print_escaped_char(
+void pfstest_output_formatter_print_escaped_char(
     pfstest_output_formatter_t *formatter, int c)
 {
     if (c == '\n') {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("\\n"));
     } else if (c == '\"') {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string("\\\""));
     } else {
-        pfstest_output_formatter_message_print_char(formatter, c);
+        pfstest_output_formatter_print_char(formatter, c);
     }
 }
 
-void pfstest_output_formatter_message_print_nv_string(
+void pfstest_output_formatter_print_nv_string(
     pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s)
 {
     char c;
 
     while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
-        pfstest_output_formatter_message_print_char(formatter, c);
+        pfstest_output_formatter_print_char(formatter, c);
         s++;
     }
 }
 
-void pfstest_output_formatter_message_print_int(
-    pfstest_output_formatter_t *formatter, intmax_t i)
+void pfstest_output_formatter_print_int(
+    pfstest_output_formatter_t *formatter, intmax_t n)
 {
-    print_int(formatter, i);
+    uintmax_t nabs;
+
+    if (n < 0) {
+        pfstest_output_formatter_print_char(formatter, '-');
+        /* Casting a negative number to an unsigned type is guaranteed
+         * to result in that number, modulo MAX+1. (C Standard
+         * 6.3.1.3.2) */
+        nabs = UINTMAX_MAX - (uintmax_t)n + 1;
+    } else {
+        nabs = n;
+    }
+
+    pfstest_output_formatter_print_uint(formatter, nabs, 10, 0);
 }
 
-void pfstest_output_formatter_message_print_uint(
-    pfstest_output_formatter_t *formatter, uintmax_t i, int base, int zpad)
+static const pfstest_nv char digits[] = "0123456789abcdef";
+
+static char digit_char(int digit)
 {
-    print_uint(formatter, i, base, zpad);
+    char d;
+
+    pfstest_memcpy_nv(&d, &digits[digit], sizeof(d));
+
+    return d;
+}
+
+void pfstest_output_formatter_print_uint(
+    pfstest_output_formatter_t *formatter, uintmax_t n, int base, int zpad)
+{
+    uintmax_t d = 1;
+    int digits = 1;
+
+    while (n / d > (base - 1)) {
+        d *= base;
+        digits++;
+    }
+
+    while (zpad-- > digits) {
+        pfstest_output_formatter_print_char(formatter, '0');
+    }
+
+    do {
+        pfstest_output_formatter_print_char(
+            formatter, digit_char(n / d % base));
+        d /= base;
+    } while (d > 0);
 }
 
 /* VTable Dispatchers */
 
-int pfstest_output_formatter_message_print_char(
+int pfstest_output_formatter_print_char(
     pfstest_output_formatter_t *formatter, int c)
 {
-    int (*message_print_char)(pfstest_output_formatter_t *, int);
-    pfstest_memcpy_nv(&message_print_char,
-                      &(formatter->vtable->message_print_char),
-                      sizeof(message_print_char));
-    return message_print_char(formatter, c);
+    int (*print_char)(pfstest_output_formatter_t *, int);
+    pfstest_memcpy_nv(&print_char, &(formatter->vtable->print_char),
+                      sizeof(print_char));
+    return print_char(formatter, c);
 }
 
 void pfstest_output_formatter_run_started(

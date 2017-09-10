@@ -44,10 +44,10 @@ static void run_complete(pfstest_output_formatter_t *formatter)
 {
 }
 
-static int message_print_char(
+static int print_char(
     pfstest_output_formatter_t *formatter, int c)
 {
-    return formatter->print_char(c);
+    return formatter->char_writer(c);
 }
 
 static int return_value(pfstest_output_formatter_t *formatter)
@@ -57,7 +57,7 @@ static int return_value(pfstest_output_formatter_t *formatter)
 
 static const
 pfstest_nv pfstest_output_formatter_vtable_t message_spy_vtable = {
-    message_print_char,
+    print_char,
     run_started,
     test_started,
     test_ignored,
@@ -69,13 +69,13 @@ pfstest_nv pfstest_output_formatter_vtable_t message_spy_vtable = {
 };
 
 pfstest_output_formatter_t *pfstest_output_formatter_message_spy_new(
-    int (*print_char)(int))
+    int (*char_writer)(int))
 {
     message_spy_formatter_t *formatter =
         pfstest_alloc(sizeof(*formatter));
 
     formatter->failed = 0;
-    formatter->parent.print_char = print_char;
+    formatter->parent.char_writer = char_writer;
     formatter->parent.vtable = &message_spy_vtable;
 
     return (pfstest_output_formatter_t *)formatter;

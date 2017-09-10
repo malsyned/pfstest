@@ -7,7 +7,7 @@
 static void some_value_printer(pfstest_output_formatter_t *formatter,
                                pfstest_value_t *value)
 {
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("some value"));
 }
 
@@ -37,7 +37,7 @@ static bool always_return_false(pfstest_matcher_t *matcher,
 static void nothing_printer(pfstest_output_formatter_t *formatter,
                             pfstest_matcher_t *matcher)
 {
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("nothing (guaranteed to fail)"));
 }
 

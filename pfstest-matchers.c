@@ -154,15 +154,15 @@ static void matches_the_nv_string_printer(
     const pfstest_nv_ptr char *expected = *sp;
     char c;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the string \""));
     
     while (pfstest_memcpy_nv(&c, expected, sizeof(c)), c) {
-        pfstest_output_formatter_message_print_escaped_char(formatter, c);
+        pfstest_output_formatter_print_escaped_char(formatter, c);
         expected++;
     }
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("\""));
 }
 

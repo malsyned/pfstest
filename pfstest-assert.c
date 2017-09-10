@@ -18,24 +18,23 @@ static void assert_that_printer(pfstest_output_formatter_t *formatter,
 {
     const struct assert_that_args *args = data;
 
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("Failed assertion"));
     if ((args->message != NULL)
         && (0 != pfstest_strcmp_nvnv(args->message, pfstest_nv_string(""))))
     {
-        pfstest_output_formatter_message_print_nv_string(
+        pfstest_output_formatter_print_nv_string(
             formatter, pfstest_nv_string(": "));
-        pfstest_output_formatter_message_print_nv_string(
-            formatter, args->message);
+        pfstest_output_formatter_print_nv_string(formatter, args->message);
     }
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("\n"));
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("Expected: "));
     pfstest_matcher_print(formatter, args->matcher);
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("\n"));
-    pfstest_output_formatter_message_print_nv_string(
+    pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("Actual: "));
     pfstest_value_print(formatter, args->actual);
 }
