@@ -1,0 +1,122 @@
+Dennis Lambe
+Notes on pfstest-core rewrite using Test Driven Development By Example
+Last modified: <2015-06-20 15:11:07>
+
+
+
+Things done at start-up by constructors:
+
+pfstest_register_test
+pfstest_register_before  # rename to setup?
+pfstest_register_after   # rename to teardown?
+
+Things done to run a test:
+
+pfstest_mock is inited (this doesn't alloc) # global setup plugin function?
+The before hooks are searched for same-file before functions, which are run
+The test is announced, if verbose
+A setjmp context is established
+The test function is called
+pfstest-mock verifiers are run # additional assertions plugin?
+if pass:
+    "PASS" or "." is printed
+    passed is incremented
+if fail:
+    failure will be printed by the failing assertion, verifier, or fail()
+    failed is incremented
+if ignore: # Note that this is the wrong place to do this, since the setup and teardown are not affected
+    "IGNORED" or "I" is printed
+    ignored is incremented
+The after hooks are searched for same-file after functions, which are run
+pfstest_free_all is called # This has to be overrideable for test nesting
+
+Data needed by those things (for deciding what the arguments need to be):
+
+Test functions:
+    before_hooks
+    test object (dynamic name and filename for fail_with_printer)
+    after_hooks
+
+Plugin functions:
+    pfstest_mock_init     # plugin init
+    pfstest_run_verifiers # plugin additional assertions
+    pfstest_free_all      # plugin finalize (maybe not - see Thoughts below)
+
+Calling environment:
+    putchar (dynamic for fail_with_printer)
+    verbose (dynamic for fail_with_printer)
+
+Assertion environment:
+    jmpbuf (dynamic)
+
+Additional global stuff in pfstest:
+
+pfstest-alloc-malloc.c:static pfstest_list_t allocated
+pfstest-alloc-pic.c:unsigned char heap[HEAP_SIZE] // which should be static
+pfstest-mock.c:pfstest_list_t expectations
+pfstest-mock.c:pfstest_list_t invocations
+pfstest-mock.c:pfstest_list_t verifiers
+pfstest-mock.c:pfstest_list_t default_expectations
+
+Core tests:
+
+Create the ability to invoke a test
+    Hand-test this using print statements
+Create the ability to fail
+    Hand-test this using print statements
+
+Thoughts:
+
+I think that pfstest_free_all should not be considered a test runner's job. Calling it should be the job of the Test Suite runner, which has to be abstracted out separately to allow tests to run tests within them. But "test runner" isn't necessarily an API that I want to maintain separately. I may just want "Test Suite" to be the API. So I'm not sure what to do there. I think I'm back to having to pass in either a function or a flag.
+
+I can have "slab checkpoints" in the memory allocator, permitting freeing only back to the previous slab checkpoint. This allows nesting of test environments, including the allocations involved.
+
+If I break up the dynamic context variables in the right way, it might be possible to create an assertion evaluation context without having to create a test suite. Particularly irksome will be factoring out something like TEST_PROTECT the right way so that it makes sense to use it from the caller. I have been playing with various ideas for this in try-catch-test.c
+
+I think I would like to have pfstest_register_test and pfstest_register_hook sort the lists as it registers them, for predictability and to allow things like __0 for internal use. I think it would be advisable to have after hooks run in reverse alphabetical order as well.
+
+I think I would like to have a new module, pfstest-dynamic, which handles dynamic variables. Something like what is in dynamic-notes.txt.
+
+Output formatter design:
+
+All output has to go through an output formatter.
+Output formatters have a pluggable print_char, so that the output can be redirected, regardless of what formatter is in charge.
+Signals needed by the standard formatter:
+    run_started
+    test_started
+    test_ignored
+    test_passed
+    test_failed_message_start
+    test_failed_message_complete
+    test_complete
+    run_complete
+Signals needed by the verbose formatter:
+    run_started
+    test_started
+    test_ignored
+    test_passed
+    test_failed_message_start
+    test_failed_message_complete
+    run_complete
+
+Questions:
+
+pfstest-mock has some global data that gets inited, and this has the same problem that pfstest_free_all had: it's going to get inited before the test runs, and then again before the subtest runs. And it's going to get cleared out after the test runs and again after the subtest runs. In general I think I want to support this. Is there a "dynamic variable" style solution to this problem as well?
+
+How does Unity ensure that the teardown function is always run?
+    #define TEST_PROTECT() (setjmp(Unity.AbortFrame) == 0)
+
+    if (TEST_PROTECT())
+    {
+        setUp();
+        Func();
+    }
+    if (TEST_PROTECT() && !(Unity.CurrentTestIgnored))
+    {
+        tearDown();
+    }
+
+What does Unity do if there is an assertion failure in the teardown function?
+    A failure message is printed from the frame that later invokes longjmp
+What does Unity do if both the test function and the teardown function fail?
+    It looks like two failure messages are printed for the same file

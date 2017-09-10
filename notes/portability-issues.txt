@@ -1,0 +1,11 @@
+memory alignment in pfstest-alloc.c
+================
+A hack of questionable bullet-proofiness is used to guess the platform's alignment. If will fail if some of the types used aren't available, and may not be reliable on all platforms (I haven't checked the standard). It should be at least possible to override it with instructions from a qualified operator.
+
+AVR-LibC PRIdMAX
+================
+AVR-LibC doesn't define PRIdMAX. This is because the correct format string would be "%lld", but AVR-LibC's printf isn't capable of printing long longs.
+
+This problem should go away when I switch away from printf and to my own formatting routines.
+
+For now, I am hacking around this in pfstest-values.c.

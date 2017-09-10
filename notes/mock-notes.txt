@@ -1,0 +1,27 @@
+Mockito has two verification modes:
+
+verify
+inOrder.verify
+
+Each of them has a collection of verification modes:
+verify:
+    atLeast(n)
+        Flags all matching invocations, fails if < n found
+    times(n)*
+        Flags all matching invocations, fails if != n found
+    atMost(n)
+        Flags all matching invocations, fails if > n found
+    noMoreInteractions()
+    only() [shorthand for times(1), noMoreInteractions]
+
+inOrder.verify:
+! There is a piece of logic I haven't found yet which handles the ordering part of inOrder verification.
+    atLeast(n)
+    times(n)*
+    atMost(n)
+    calls(n)
+    noMoreInteractions()
+
+Every invocation contains a 'verified' flag, and only not-verified invocations are checked by verifiers.
+
+In addition, each inOrder maintains an inOrder context which flags invocations only for that inOrder instance. This could be mainained as a "seen" linked list attached to the inOrder. inOrder verification modes set both the global flag and the inOrder context flag, but they only check the "seen" list when deciding whether an instance has been verified already or not.

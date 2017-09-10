@@ -1,0 +1,121 @@
+Before any improvements:
+
+    Program:   19916 bytes (15.2% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       4985 bytes (121.7% Full)
+    (.data + .bss + .noinit)
+
+After putting test name in ROM:
+
+    Program:   19968 bytes (15.2% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       2985 bytes (72.9% Full)
+    (.data + .bss + .noinit)
+
+After putting test file names in ROM:
+(Note that this is worse on ROM and no better on RAM. I think it's because the file names are still stored in ROM from the various _at_location functions in pfstest-mock.c)
+
+    Program:   21128 bytes (16.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       2985 bytes (72.9% Full)
+    (.data + .bss + .noinit)
+
+After putting file names from _at_location calls in ROM:
+(Note that this is not much better. I think this is because file names are still stored in after hooks, but I'm not sure)
+
+    Program:   22424 bytes (17.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       2925 bytes (71.4% Full)
+    (.data + .bss + .noinit)
+
+After putting printf format strings in ROM:
+
+    Program:   22472 bytes (17.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       2327 bytes (56.8% Full)
+    (.data + .bss + .noinit)
+
+After switching fail() message into an implicit ROM string:
+
+    Program:   22472 bytes (17.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       2221 bytes (54.2% Full)
+    (.data + .bss + .noinit)
+
+After switching assert_that message into an implicit ROM string:
+
+    Program:   22480 bytes (17.2% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       1085 bytes (26.5% Full)
+    (.data + .bss + .noinit)
+
+After moving wrong_call_count prefixes and plural suffix "s"es into ROM:
+
+    Program:   22412 bytes (17.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       1047 bytes (25.6% Full)
+    (.data + .bss + .noinit)
+
+After moving mock->name into ROM:
+
+    Program:   22412 bytes (17.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       1027 bytes (25.1% Full)
+    (.data + .bss + .noinit)
+
+After moving mock->arg_names strings into ROM:
+
+    Program:   22414 bytes (17.1% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       1023 bytes (25.0% Full)
+    (.data + .bss + .noinit)
+
+After some additional changes made while porting to PIC:
+
+    Program:   23318 bytes (17.8% Full)
+    (.text + .data + .bootloader)
+    
+    Data:       1003 bytes (24.5% Full)
+    (.data + .bss + .noinit)
+
+After moving test objects into ROM:
+
+    Program:   23474 bytes (17.9% Full)
+    (.text + .data + .bootloader)
+    
+    Data:        539 bytes (13.2% Full)
+    (.data + .bss + .noinit)
+
+Don't track tail pointers in linked lists:
+
+    Program:   23576 bytes (18.0% Full)
+    (.text + .data + .bootloader)
+    
+    Data:        523 bytes (12.8% Full)
+    (.data + .bss + .noinit)
+
+Remove __ASSERT_USE_STDERR from avr-main.c:
+
+    Program:   23284 bytes (17.8% Full)
+    (.text + .data + .bootloader)
+    
+    Data:        389 bytes (9.5% Full)
+    (.data + .bss + .noinit)
+
+After moving mock metadata into ROM:
+
+    Program:   23446 bytes (17.9% Full)
+    (.text + .data + .bootloader)
+    
+    Data:        381 bytes (9.3% Full)
+    (.data + .bss + .noinit)

@@ -1,0 +1,23 @@
+Dennis Lambe
+Notes on how to make output_formatters extensible
+Last modified: <2017-09-09 11:51:22>
+
+I think my current objective is move the three current pfstest_output_formatters into separate files.
+
+How do the uncommitted changes in this repo support that?
+
+Looks like I was working to divorce the message_spy formatter from dependencies on shared operations in pfstest-output in some ways.
+
+I haven't been fully regular (yet?) with my abstraction work. It looks like I was taking it one step at a time, and the first step was to split output_formatter into message_spy, which is an output_formatter with a special vtable, and both standard and verbose, which are both a builtin_formatter with a special vtable.
+
+I don't know what my original objective was, nor what course I was on to get there. I think I can come up with a new one that is just as good, though, since I understand OO under C.
+
+I do know that my eventual objective is to make it possible to create new subclasses of output_formatter through a sensible API, and then use it to create an XML output formatter as a proof of concept.
+
+Move data items which are not common to all output formatters into the child classes that need them.
+
+When it's done I will probably want separate tests for the output formatters.
+
+====
+
+output_formatter should probably be renamed to test_reporter or something, since it does more than just format output - it tracks statistics and can provide some of them as a return value.

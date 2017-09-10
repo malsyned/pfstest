@@ -1,0 +1,59 @@
+/* -*- c -*- */
+
+/* pfstest-dynamic.h */
+
+#define PFSTEST_DYNAMIC_ROOT_NODE() {NULL}
+
+typedef {
+    pfstest_dynamic_t *next;
+} pfstest_dynamic_t;
+
+/* pfstest-dynamic.c */
+
+void pfstest_dynamic_push(void *const variable, void *const frame)
+{
+    pfstest_dynamic_t **const v = variable;
+    pfstest_dynamic_t *const f = frame;
+
+    f->next = *v;
+    *v = f;
+}
+
+void pfstest_dynamic_pop(void *const variable)
+{
+    pfstest_dynamic_t **const v = variable;
+
+    assert((*v)->next != NULL)
+    *v = (*v)->next;
+}
+
+/* client.h */
+
+typedef {
+    pfstest_dynamic_t pfstest_dynamic;
+    void (*print_character)(int c);
+} pfstest_dynamic_print_character_t;
+
+pfstest_dynamic_print_character_t *print_character;
+
+/* client.c */
+
+pfstest_dynamic_print_character_t global_print_character = {
+    PFSTEST_DYNAMIC_ROOT_NODE(),
+    stdio_print_character,
+};
+
+pfstest_dynamic_print_character_t *print_character = &global_print_character;
+
+/* user.c */
+
+void foo(void)
+{
+    pfstest_dynamic_print_character_t local_print_character;
+    local_print_character.print_character = capture_buffer_print_character;
+    pfstest_dynamic_push(&print_character, &local_print_character);
+
+    /* ... */
+
+    pfstest_dynamic_pop(&print_character);
+}
