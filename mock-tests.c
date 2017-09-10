@@ -130,8 +130,6 @@ test(should_handle_multiple_verifiers)
 test(should_handle_multiple_invocations)
 {
     verify(when(mock_dep_func1, arg_that(is_the_int(2))));
-    /* Ensure an invocation is added. Default invocations don't get
-     * chained onto the invocation list (yet?). */
     do_return(the_int(5),
               when(mock_dep_func1, arg_that(is_the_int(3))));
 
