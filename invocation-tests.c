@@ -75,6 +75,8 @@ test(should_set_default_args_from_simplest_arg_list)
 
     assert_that("verbose flag defaults to false",
                 the_bool(args.verbose), is_the_bool(false));
+    assert_that("xml flag defaults to false",
+                the_bool(args.xml), is_the_bool(false));
     assert_that("print_register_commands flag defaults to false",
                 the_bool(args.print_register_commands), is_the_bool(false));
     assert_that("filter_file defaults to false",
@@ -97,6 +99,62 @@ test(should_parse_v_flag)
 
     assert_that("-v flag is parsed",
                 the_bool(args.verbose), is_the_bool(true));
+}
+
+test(should_parse_x_flag)
+{
+    char *argv[3];
+    int argc = sizeof(argv)/sizeof(argv[0]);
+    char argv_0[] = "progname";
+    char argv_1[] = "-x";
+    argv[0] = argv_0;
+    argv[1] = argv_1;
+    argv[2] = NULL;
+
+    pfstest_arguments_parse(&args, argc, argv);
+
+    assert_that("-x flag is parsed",
+                the_bool(args.xml), is_the_bool(true));
+}
+
+test(x_flag_should_reset_v_flag)
+{
+    char *argv[4];
+    int argc = sizeof(argv)/sizeof(argv[0]);
+    char argv_0[] = "progname";
+    char argv_1[] = "-v";
+    char argv_2[] = "-x";
+    argv[0] = argv_0;
+    argv[1] = argv_1;
+    argv[2] = argv_2;
+    argv[3] = NULL;
+
+    pfstest_arguments_parse(&args, argc, argv);
+
+    assert_that("-x flag is parsed",
+                the_bool(args.xml), is_the_bool(true));
+    assert_that("-v flag has ben reset",
+                the_bool(args.verbose), is_the_bool(false));
+}
+
+test(v_flag_should_reset_x_flag)
+{
+    char *argv[4];
+    int argc = sizeof(argv)/sizeof(argv[0]);
+    char argv_0[] = "progname";
+    char argv_1[] = "-x";
+    char argv_2[] = "-v";
+    argv[0] = argv_0;
+    argv[1] = argv_1;
+    argv[2] = argv_2;
+    argv[3] = NULL;
+
+    pfstest_arguments_parse(&args, argc, argv);
+
+    assert_that("-v flag is parsed",
+                the_bool(args.verbose), is_the_bool(true));
+    assert_that("-x flag has ben reset",
+                the_bool(args.xml), is_the_bool(false));
 }
 
 test(should_parse_r_flag)

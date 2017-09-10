@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "pfstest-platform.h"
+#include "pfstest-output-formatter-xml.h"
 /* TODO: plugin-ize */
 #include "pfstest-alloc.h"
 #include "pfstest-mock.h"
@@ -320,6 +321,7 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
     char *filter_name;
 
     args->verbose = false;
+    args->xml = false;
     args->print_register_commands = false;
     args->filter_file = NULL;
     args->filter_name = NULL;
@@ -334,6 +336,10 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
     while (arg = next_arg(&argv), arg != NULL) {
         if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-v"))) {
             args->verbose = true;
+            args->xml = false;
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-x"))) {
+            args->xml = true;
+            args->verbose = false;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-r"))) {
             args->print_register_commands = true;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-f"))) {
@@ -364,6 +370,8 @@ int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
     } else {
         if (args->verbose) {
             formatter = pfstest_output_formatter_verbose_new(print_char);
+        } else if (args->xml) {
+            formatter = pfstest_output_formatter_xml_new(print_char);
         } else {
             formatter = pfstest_output_formatter_standard_new(print_char);
         }

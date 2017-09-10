@@ -218,6 +218,7 @@ typedef struct
     char *program_name;
     char *filter_file;
     char *filter_name;
+    bool xml;
     bool verbose;
     bool print_register_commands;
 } pfstest_arguments_t;

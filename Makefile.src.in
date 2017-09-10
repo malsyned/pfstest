@@ -7,9 +7,10 @@ PFSTEST_SRC := pfstest-list.c pfstest-value.c \
                pfstest-output.c
 
 TESTS_SRC := pfstest-output-formatter-message-spy.c \
+             pfstest-output-formatter-xml.c \
              capture-output.c core-tests.c core-test-cases.c \
              core-test-cases-2.c invocation-tests.c \
              assert-that-tests.c values-and-matchers-tests.c \
-             mock-dep.c mock-tests.c
+             mock-dep.c mock-tests.c xml-tests.c
 
 COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)
