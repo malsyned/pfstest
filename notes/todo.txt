@@ -1,2 +1,12 @@
 * Nothing verifies the correct return values of print_char, print_nv_string
 * No return value comes from the other primitive formatters
+* Add test suites for output formatters?
+* Matchers and values for stdint.h types
+* Determine what issues const might play in values, matchers, and mocks
+* Auto-mocking
+* Better Makefile modeled after my Unity/CMock one
+    Make it faster by allowing some test binaries to share object files?
+* Attempt to port some test suites for real projects from Unity/CMock to pfstest
+* Decide on whether to rename output_formatters to something with "reporter" in the name, since they also manage the return value for the program
+* Actually, should they be managing the return value for the program?
+* Is the number of failures a poor choice for the return value to begin with? What does Unity return on failure?
