@@ -112,6 +112,14 @@ void pfstest_verify_no_more_interactions_at_location(
     pfstest_verify_no_more_interactions_at_location(    \
         pfstest_nv_string(__FILE__), __LINE__, m)
 
+/* No more invocations verification */
+
+void pfstest_verify_no_more_invocations_at_location(
+    const pfstest_nv_ptr char *file, int line);
+#define pfstest_verify_no_more_invocations()        \
+    pfstest_verify_no_more_invocations_at_location( \
+        pfstest_nv_string(__FILE__), __LINE__)
+
 /* In order verification */
 
 typedef struct 
@@ -160,6 +168,9 @@ void pfstest_in_order_verify_at_location(const pfstest_nv_ptr char *file,
 #endif
 #ifndef PFSTEST_NOALIAS_verify_no_more_interactions
 # define verify_no_more_interactions pfstest_verify_no_more_interactions
+#endif
+#ifndef PFSETEST_NOALIAS_verify_no_more_invocations
+#define verify_no_more_invocations pfstest_verify_no_more_invocations
 #endif
 #ifndef PFSTEST_NOALIAS_in_order_t
 # define in_order_t pfstest_in_order_t

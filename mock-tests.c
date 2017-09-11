@@ -508,10 +508,39 @@ test(in_order_should_mark_interactions)
     dep_func1(2);
 }
 
-ignore_test(should_verify_no_more_invocations)
+test(should_verify_no_more_invocations)
 {
+    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
+    verify(when(mock_dep_func2,
+                arg_that(is_the_int(5)),
+                arg_that(is_the_string(foo))));
+    verify_no_more_invocations();
+
+    dep_func1(1);
+    dep_func2(5, foo);
 }
 
-ignore_test(verify_no_more_invocations_should_reject_surplus_invocations)
+pfstest_case(fails_to_pass_verify_no_more_invocations)
 {
+    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
+    verify(when(mock_dep_func2,
+                arg_that(is_the_int(5)),
+                arg_that(is_the_string(foo))));
+    verify_no_more_invocations();
+
+    dep_func1(1);
+    dep_func2(5, foo);
+    dep_func1(3);
+}
+
+test(verify_no_more_invocations_should_reject_surplus_invocations)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Unexpected mock invocations");
+
+    capture_test_results(fails_to_pass_verify_no_more_invocations);
+
+    assert_that("verify_no_more_invocations rejects surplus invocations",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
 }

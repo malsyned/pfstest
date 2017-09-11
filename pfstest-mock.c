@@ -561,6 +561,39 @@ void pfstest_verify_no_more_interactions_at_location(
     verifier_add(verifier_new(do_verify_no_more_interactions, args));
 }
 
+/* No more invocations verification */
+
+struct no_more_invocations_args
+{
+    const pfstest_nv_ptr char *file;
+    int line;
+};
+
+static void do_verify_no_more_invocations(pfstest_verifier_t *v)
+{
+    struct no_more_invocations_args *args = v->data;
+    pfstest_list_node_t *invocation_node;
+
+    pfstest_list_iter (invocation_node, &dynamic_env->invocations) {
+        pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
+
+        if (!i->mark) {
+            pfstest_fail_at_location(args->file, args->line,
+                                     "Unexpected mock invocations");
+        }
+    }
+}
+
+void pfstest_verify_no_more_invocations_at_location(
+    const pfstest_nv_ptr char *file, int line)
+{
+    struct no_more_invocations_args *args = pfstest_alloc(sizeof(*args));
+    args->file = file;
+    args->line = line;
+
+    verifier_add(verifier_new(do_verify_no_more_invocations, args));
+}
+
 /* in_order verifier */
 
 struct in_order_fail_printer_args
