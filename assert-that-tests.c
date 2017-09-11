@@ -76,7 +76,7 @@ test(should_print_explanation_on_failed_assertion)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion: always fails\n"
         "Expected: nothing (guaranteed to fail)\n"
-        "Actual: some value");
+        "Actual:   some value");
 
     capture_test_results(assert_always_fail);
 
@@ -99,7 +99,7 @@ test(should_cope_with_null_string)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
-        "Actual: some value");
+        "Actual:   some value");
 
     capture_test_results(assert_null_string);
 
@@ -120,7 +120,7 @@ test(should_cope_with_empty_string)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
-        "Actual: some value");
+        "Actual:   some value");
 
     capture_test_results(assert_empty_string);
 

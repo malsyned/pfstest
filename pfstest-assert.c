@@ -35,7 +35,7 @@ static void assert_that_printer(pfstest_output_formatter_t *formatter,
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("\n"));
     pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("Actual: "));
+        formatter, pfstest_nv_string("Actual:   "));
     pfstest_value_print(formatter, args->actual);
 }
 

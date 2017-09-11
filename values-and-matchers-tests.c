@@ -23,7 +23,7 @@ test(should_fail_on_different_shorts)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the short 6\n"
-        "Actual: the short 5");
+        "Actual:   the short 5");
 
     capture_test_results(assert_different_shorts);
 
@@ -47,7 +47,7 @@ test(should_fail_on_different_ushorts)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the ushort 6\n"
-        "Actual: the ushort 5");
+        "Actual:   the ushort 5");
 
     capture_test_results(assert_different_ushorts);
 
@@ -71,7 +71,7 @@ test(should_fail_on_different_ints)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the int 6\n"
-        "Actual: the int -6");
+        "Actual:   the int -6");
 
     capture_test_results(assert_different_ints);
 
@@ -96,7 +96,7 @@ test(should_fail_on_different_uints)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the uint 6\n"
-        "Actual: the uint 5");
+        "Actual:   the uint 5");
 
     capture_test_results(assert_different_uints);
 
@@ -121,7 +121,7 @@ test(should_fail_on_different_bools)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the bool <false>\n"
-        "Actual: the bool <true>");
+        "Actual:   the bool <true>");
     
     capture_test_results(assert_different_bools);
 
@@ -145,7 +145,7 @@ test(should_fail_on_different_chars)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the char 'd'\n"
-        "Actual: the char 'c'");
+        "Actual:   the char 'c'");
 
     capture_test_results(assert_different_chars);
 
@@ -174,7 +174,7 @@ test(should_fail_on_different_strings)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the string \"bar\"\n"
-        "Actual: the string \"foo\"");
+        "Actual:   the string \"foo\"");
 
     capture_test_results(assert_different_strings);
 
@@ -196,7 +196,7 @@ test(should_fail_on_shorter_actual_string)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the string \"foobar\"\n"
-        "Actual: the string \"foo\"");
+        "Actual:   the string \"foo\"");
 
     capture_test_results(assert_shorter_actual_string);
 
@@ -218,7 +218,7 @@ test(should_fail_on_shorter_expected_string)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the string \"foo\"\n"
-        "Actual: the string \"foobar\"");
+        "Actual:   the string \"foobar\"");
 
     capture_test_results(assert_shorter_expected_string);
 
@@ -251,7 +251,7 @@ test(should_fail_on_different_pointers)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the pointer <0xbeef>\n"
-        "Actual: the pointer <0xdead>");
+        "Actual:   the pointer <0xdead>");
 
     capture_test_results(assert_different_pointers);
 
@@ -270,7 +270,7 @@ test(should_print_null_pointers_specially)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the pointer <NULL>\n"
-        "Actual: the pointer <0xdead>");
+        "Actual:   the pointer <0xdead>");
 
     capture_test_results(assert_pointer_against_null);
 
@@ -304,7 +304,7 @@ test(should_fail_on_different_memory)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the memory {0x01, 0x02, 0x04, 0x04, 0x05}\n"
-        "Actual: the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
+        "Actual:   the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
 
     capture_test_results(assert_different_memory);
 
@@ -328,7 +328,7 @@ test(should_fail_on_longer_memory)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the memory {0x01, 0x02, 0x03, 0x04}\n"
-        "Actual: the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
+        "Actual:   the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
 
     capture_test_results(assert_longer_memory);
 
@@ -352,7 +352,7 @@ test(should_fail_on_shorter_memory)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the memory {0x01, 0x02, 0x03, 0x04, 0x05}\n"
-        "Actual: the memory {0x01, 0x02, 0x03, 0x04}");
+        "Actual:   the memory {0x01, 0x02, 0x03, 0x04}");
 
     capture_test_results(assert_shorter_memory);
 
@@ -398,7 +398,7 @@ test(should_detect_data_type_mismatches)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: the ushort 65535\n"
-        "Actual: the memory {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}"
+        "Actual:   the memory {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}"
         );
 
     capture_test_results(assert_different_data_types);
