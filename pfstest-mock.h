@@ -158,7 +158,7 @@ void pfstest_in_order_verify_at_location(const pfstest_nv_ptr char *file,
 #ifndef PFSTEST_NOALIAS_at_least
 # define at_least pfstest_at_least
 #endif
-#ifndef PFSTEST_NOALIAS_pfstest_verify_no_more_interactions
+#ifndef PFSTEST_NOALIAS_verify_no_more_interactions
 # define verify_no_more_interactions pfstest_verify_no_more_interactions
 #endif
 #ifndef PFSTEST_NOALIAS_in_order_t
