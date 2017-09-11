@@ -179,15 +179,6 @@ test(should_write_multiple_results)
                 matches_the_nv_string(expected));
 }
 
-/* TODO: Handle XML escaping properly in file names and message
- * text. <, >, &, and " in attribute values, <, >, and & in element
- * text.
- *
- * < &lt;
- * > &gt;
- * & &amp;
- * " &quot;
- */
 test(should_escape_in_file_name)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
