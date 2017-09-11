@@ -10,3 +10,6 @@
 * Decide on whether to rename output_formatters to something with "reporter" in the name, since they also manage the return value for the program
 * Actually, should they be managing the return value for the program?
 * Is the number of failures a poor choice for the return value to begin with? What does Unity return on failure?
+* Move platforms into separate headers
+* Provide some mechanism for pluggable platform headers
+* Is my use of uintptr_t, intmax_t, uintmax_t and ULONG_MAX incompatible with my assertion that I support C89?
