@@ -89,7 +89,7 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(COMMON_SRC) pfstest-alloc-malloc.c avr-main.c
+SRC = $(COMMON_SRC) pfstest-platform-avr8.c pfstest-alloc-malloc.c avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

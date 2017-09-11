@@ -107,133 +107,23 @@ fflush
 
 #if defined(__GNUC__) && defined(__AVR__)
 
-# include <stdbool.h>
-# include <stdint.h>
-# include <assert.h>
-# include <avr/pgmspace.h>
-
-# define pfstest_nv PROGMEM
-# define pfstest_nv_ptr
-# define pfstest_nv_string(string) PSTR(string)
-
-/* This seems to use less ROM than calls to memcpy_P(ram, nv, size) */
-#define pfstest_memcpy_nv(ram, nv, size)        \
-    ({                                          \
-        uint8_t *__p = (uint8_t *)ram;          \
-        const pfstest_nv_ptr uint8_t *__nv =    \
-            (const pfstest_nv_ptr uint8_t *)nv; \
-        int __i;                                \
-        for (__i = 0; __i < size; __i++) {      \
-            *__p++ = pgm_read_byte(__nv++);     \
-        }                                       \
-        ram;                                    \
-    })
-
-# define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
-# define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
-# define PFSTEST_NORETURN __attribute__((__noreturn__))
-# define pfstest_constructor(name)                          \
-    __attribute__((__constructor__)) static void name(void)
-
-int pfstest_strcmp_nvnv(const char *s1, const char *s2);
+#include "pfstest-platform-avr8.h"
 
 #elif defined(__18CXX)
 
-#include <string.h>
-
-/* stdbool.h */
-typedef unsigned char bool;
-# define false 0
-# define true 1
-
-/* stdint.h */
-#include <limits.h>
-typedef unsigned int uintptr_t;
-typedef long intmax_t;
-typedef unsigned long uintmax_t;
-#define UINTMAX_MAX ULONG_MAX
-
-/* stdlib.h */
-#define _exit(n) do { while (1) ; } while (0)
-
-/* assert.h */
-#include <stdio.h>
-#define assert(test)                                                    \
-    if (!(test)) {                                                      \
-        fputs(pfstest_nv_string(__FILE__ ":Assertion failed: " #test),  \
-              stdout);                                                  \
-        _exit(1);                                                       \
-    }
-
-# define pfstest_nv far rom
-# define pfstest_nv_ptr pfstest_nv
-# define pfstest_nv_string(string) ((const far rom char *)string)
-# define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
-# define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
-# define pfstest_strcat_nv strcatpgm2ram
-# define PFSTEST_NORETURN
-
-# define fflush(stream) (0)
-
-int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
+#include "pfstest-platform-mcc18.h"
 
 #elif defined(__GNUC__) || defined(__clang__)
 
-# include <stdbool.h>
-# include <stdint.h>
-# include <assert.h>
-# include <string.h>
-
-# define pfstest_nv 
-# define pfstest_nv_ptr
-# define pfstest_nv_string(string) string
-# define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
-# define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
-# define pfstest_strcmp_nvnv strcmp
-# define pfstest_strcat_nv strcat
-# define PFSTEST_NORETURN __attribute__((__noreturn__))
-# define pfstest_constructor(name)                          \
-    __attribute__((__constructor__)) static void name(void)
+#include "pfstest-platform-gcc.h"
 
 #elif defined(_MSC_VER)
 
-# include <stdbool.h>
-# include <stdint.h>
-# include <assert.h>
-# include <string.h>
-
-# define pfstest_nv 
-# define pfstest_nv_ptr
-# define pfstest_nv_string(string) string
-# define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
-# define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
-# define pfstest_strcmp_nvnv strcmp
-# define pfstest_strcat_nv strcat
-# define PFSTEST_NORETURN __declspec(noreturn)
-
-# pragma section(".CRT$XCU",read)
-# define pfstest_constructor(name)                                  \
-    static void name(void);                                         \
-    static __declspec(allocate(".CRT$XCU"))                         \
-    void (* _pfstest_econcat(__pfstest_ctor__, name))(void) = name; \
-    static void name(void)
-
+#include "pfstest-platform-vcxx.h"
 
 #else  /* Unrecognized platform, fall back to ANSI C89 */
 
-# include <stdbool.h>
-# include <stdint.h>
-# include <assert.h>
-# include <string.h>
-
-# define pfstest_nv 
-# define pfstest_nv_ptr
-# define pfstest_nv_string(string) string
-# define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
-# define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
-# define pfstest_strcmp_nvnv strcmp
-# define pfstest_strcat_nv strcat
-# define PFSTEST_NORETURN
+#include "pfstest-platform-c89.h"
 
 #endif  /* Unrecognized platform */
 
