@@ -1,0 +1,2 @@
+* Nothing verifies the correct return values of print_char, print_nv_string
+* No return value comes from the other primitive formatters
