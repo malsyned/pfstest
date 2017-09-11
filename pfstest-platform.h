@@ -173,7 +173,7 @@ typedef unsigned long uintmax_t;
 # define pfstest_strcat_nv strcatpgm2ram
 # define PFSTEST_NORETURN
 
-# define fflush
+# define fflush(stream) (0)
 
 int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 
