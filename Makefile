@@ -2,7 +2,7 @@ include Makefile.src.in
 
 CC = cc
 
-CFLAGS := -g -O0 -Wall -Werror -MD -MP -pedantic -std=c89
+CFLAGS := -g -Og -Wall -Werror -MD -MP -pedantic -std=c89
 LDFLAGS :=
 CPPFLAGS :=
 LDLIBS :=

@@ -17,7 +17,7 @@ static int print_nv_string_raw(
     pfstest_output_formatter_t *formatter, const pfstest_nv_ptr char *s)
 {
     char c;
-    int r;
+    int r = 0;
 
     while (pfstest_memcpy_nv(&c, s, sizeof(c)), c) {
         r = formatter->char_writer(c);
