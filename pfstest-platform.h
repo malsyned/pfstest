@@ -74,6 +74,35 @@ pfstest_constructor(name):
     register_test, register_before, and register_after will need to be
     called to set up the test environment before invoking pfstest.
 
+A platform port must define or include headers that define:
+====
+
+    Ideally, your platform has enough C99 support to provide
+    stdbool.h, stdint.h, assert.h, and stdio.h. If that is the case,
+    then a platform port should simply include those. Otherwise, it
+    must define the following macros, typedefs, and functions itself:
+
+bool
+false
+true
+
+    Compatible with C99 stdbool.h
+
+uintptr_t
+intmax_t
+uintmax_t
+UINTMAX_MAX
+
+    Compatible with C99 stdint.h
+
+assert
+
+    Compatible with C89 assert.h
+
+fflush
+
+    Compatible with C89 stdio.h
+
  */
 
 #if defined(__GNUC__) && defined(__AVR__)
