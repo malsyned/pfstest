@@ -12,7 +12,12 @@ all: tests register-tests.c
 
 .PHONY: test
 test: tests
-	echo ; ./tests $(ARGS)
+	@echo ./tests $(ARGS); echo; \
+	./tests $(ARGS); \
+	retval=$$?; \
+	if [ $$retval -eq 0 ]; then color=42; else color=41; fi; \
+	echo "\033[$${color}m\n\033[00m"; \
+	return $$retval
 
 ALLOC_SRC := pfstest-alloc-malloc.c
 
