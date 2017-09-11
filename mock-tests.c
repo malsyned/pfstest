@@ -497,8 +497,15 @@ test(verify_no_more_interactions_should_reject_surplus_interactions)
                 matches_the_nv_string(expected));
 }
 
-ignore_test(in_order_should_mark_interactions)
+test(in_order_should_mark_interactions)
 {
+    in_order_t *order = in_order_new();
+
+    in_order_verify(order, when(mock_dep_func1,
+                                arg_that(is_the_int(2))));
+    verify_no_more_interactions(mock_dep_func1);
+
+    dep_func1(2);
 }
 
 ignore_test(should_verify_no_more_invocations)

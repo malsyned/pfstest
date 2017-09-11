@@ -614,6 +614,7 @@ static void do_in_order_verification(pfstest_verifier_t *v)
         invocation = (pfstest_invocation_t *)invocation_node;
 
         if (in_order_expectation->expectation == invocation->expectation) {
+            invocation->mark = true;
             prev_expectation = in_order_expectation->expectation;
             in_order_expectation_node = in_order_expectation_node->next;
         }
