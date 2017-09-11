@@ -1,0 +1,7 @@
+Dennis Lambe
+Notes on issues and possibilities for implementing auto-mocking in PFSTest
+Last modified: <2017-09-11 18:10:20>
+
+1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
+2) Identify the return type and types of all arguments
+3) Generate a C file which stubs out each of those functions with a call to the invocation logger
