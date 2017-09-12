@@ -1,7 +1,25 @@
 Dennis Lambe
 Notes on issues and possibilities for implementing auto-mocking in PFSTest
-Last modified: <2017-09-11 18:10:20>
+Last modified: <2017-09-12 17:16:36>
 
 1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
 2) Identify the return type and types of all arguments
 3) Generate a C file which stubs out each of those functions with a call to the invocation logger
+
+Going over my old design of mock-dep.c, I see that I have arranged for the code generator to need to know hardly anything at all about the argument types or return types. Based on the very simple test that I did in notes/automock-test.c, I find that this is the data that I need in order to produce a mock function for a given function:
+
+* The function name as a string
+* The full function prototype, as a string
+* The full return type, as a string, for declaring variables of the same type
+* Whether the return type is: void, pointer, struct, or primitive
+* The number of arguments
+* The name of each argument as a string
+* Whether each argument is a pointer or not
+
+====
+
+C Preprocessors seem to universally produce file-and-line-tracking output like this:
+
+# <line> "<file-name>" <other-crap...>
+
+I think I can rely on that.
