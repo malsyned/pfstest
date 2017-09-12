@@ -12,3 +12,4 @@
 * Is the number of failures a poor choice for the return value to begin with? What does Unity return on failure?
 * Move platforms into separate headers
 * Is my use of uintptr_t, intmax_t, uintmax_t and ULONG_MAX incompatible with my assertion that I support C89?
+* Colored output mode
