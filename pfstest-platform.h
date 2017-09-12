@@ -11,7 +11,7 @@ memory spaces, and much of the platform-specific configuration in this
 module is designed to provide a common API for accessing the
 non-volatile memory space.
 
-A platform port must define:
+A platform port header must define:
 ====
 
 pfstest_nv:
@@ -63,7 +63,7 @@ PFSTEST_NORETURN:
     function should not be expected to return. Define to nothing if
     your compiler does not support this.
     
-A platform port may additionally define:
+A platform port header may additionally define:
 ====
 
 pfstest_constructor(name):
@@ -74,13 +74,14 @@ pfstest_constructor(name):
     register_test, register_before, and register_after will need to be
     called to set up the test environment before invoking pfstest.
 
-A platform port must define or include headers that define:
+A platform port header must define or include headers that define:
 ====
 
     Ideally, your platform has enough C99 support to provide
     stdbool.h, stdint.h, assert.h, and stdio.h. If that is the case,
-    then a platform port should simply include those. Otherwise, it
-    must define the following macros, typedefs, and functions itself:
+    then a platform port header should simply include those.
+    Otherwise, it must define the following macros, typedefs, and
+    functions itself:
 
 bool
 false
@@ -105,26 +106,78 @@ fflush
 
  */
 
-#if defined(__GNUC__) && defined(__AVR__)
 
-#include "pfstest-platform-avr8.h"
+/* Platforms with built-in support are guessed using compiler-specific
+ * macro definitions. This auto-detection can be overridden in one of
+ * two ways:
+ *
+ * 1) To force one of the built-in platforms, define PFSTEST_PLATFORM
+ *    to one of the macros below.
+ *
+ * 2) To use a user-defined platform, create a platform port header
+ *    that meets the above requirements and define
+ *    PFSTEST_PLATFORM_HEADER to a string suitable for an #include
+ *    directive.
+ *
+ *    Getting the quoting right when manually setting
+ *    PFSTEST_PLATFORM_HEADER from the command line can be
+ *    tricky. Here is the proper syntax for defining it in various
+ *    environments: for double- and single-quoted CPPFLAGS under POSIX
+ *    sh, and for defining a variable :
+ *
+ *     On a POSIX sh make command line, value in double-quotes:
+ *     make CPPFLAGS="-DPFSTEST_PLATFORM_HEADER=\\\"pfstest-platform-user.h\\\""
+ *
+ *     On a POSIX sh make command line, value in single-quotes:
+ *     make CPPFLAGS='-DPFSTEST_PLATFORM_HEADER=\"pfstest-platform-user.h\"'
+ *
+ *     In a Makefile:
+ *     CPPFLAGS := -DPFSTEST_PLATFORM_HEADER=\"pfstest-platform-gcc.h\"
+ */
 
-#elif defined(__18CXX)
+#define PFSTEST_PLATFORM_C89   1
+#define PFSTEST_PLATFORM_GCC   2
+#define PFSTEST_PLATFORM_VCXX  3
+#define PFSTEST_PLATFORM_AVR8  4
+#define PFSTEST_PLATFORM_MCC18 5
 
-#include "pfstest-platform-mcc18.h"
 
-#elif defined(__GNUC__) || defined(__clang__)
+#if !defined(PFSTEST_PLATFORM) && !defined(PFSTEST_PLATFORM_NOAUTO)
 
-#include "pfstest-platform-gcc.h"
+# if defined(__GNUC__) && defined(__AVR__)
+#  define PFSTEST_PLATFORM PFSTEST_PLATFORM_AVR8
+# elif defined(__18CXX)
+#  define PFSTEST_PLATFORM PFSTEST_PLATFORM_MCC18
+# elif defined(__GNUC__) || defined(__clang__)
+#  define PFSTEST_PLATFORM PFSTEST_PLATFORM_GCC
+# elif defined(_MSC_VER)
+#  define PFSTEST_PLATFORM PFSTEST_PLATFORM_VCXX
+# else  /* Unrecognized platform, fall back to ANSI C89 */
+#  define PFSTEST_PLATFORM PFSTEST_PLATFORM_C89
+# endif
 
-#elif defined(_MSC_VER)
+#endif /* !defined(PFSTEST_PLATFORM) && !defined(PFSTEST_PLATFORM_NOAUTO) */
 
-#include "pfstest-platform-vcxx.h"
 
-#else  /* Unrecognized platform, fall back to ANSI C89 */
+#if !defined(PFSTEST_PLATFORM_HEADER)
 
-#include "pfstest-platform-c89.h"
+# if PFSTEST_PLATFORM == PFSTEST_PLATFORM_AVR8
+#  define PFSTEST_PLATFORM_HEADER "pfstest-platform-avr8.h"
+# elif PFSTEST_PLATFORM == PFSTEST_PLATFORM_MCC18
+#  define PFSTEST_PLATFORM_HEADER "pfstest-platform-mcc18.h"
+# elif PFSTEST_PLATFORM == PFSTEST_PLATFORM_GCC
+#  define PFSTEST_PLATFORM_HEADER "pfstest-platform-gcc.h"
+# elif PFSTEST_PLATFORM == PFSTEST_PLATFORM_VCXX
+#  define PFSTEST_PLATFORM_HEADER "pfstest-platform-vcxx.h"
+# elif PFSTEST_PLATFORM == PFSTEST_PLATFORM_C89
+#  define PFSTEST_PLATFORM_HEADER "pfstest-platform-c89.h"
+# else
+#  error Platform not detected. Define PFSTEST_PLATFORM or PFSTEST_PLATFORM_HEADER
+# endif
 
-#endif  /* Unrecognized platform */
+#endif  /* !defined(PFSTEST_PLATFORM_HEADER) */
+
+
+#include PFSTEST_PLATFORM_HEADER
 
 #endif /* !PFSTEST_PLATFORM_H */
