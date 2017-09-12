@@ -13,3 +13,4 @@
 * Move platforms into separate headers
 * Is my use of uintptr_t, intmax_t, uintmax_t and ULONG_MAX incompatible with my assertion that I support C89?
 * Colored output mode
+* the_char printer doesn't escape special characters
