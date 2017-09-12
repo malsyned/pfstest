@@ -1,6 +1,6 @@
 Dennis Lambe
 Notes on issues and possibilities for implementing auto-mocking in PFSTest
-Last modified: <2017-09-12 17:16:36>
+Last modified: <2017-09-12 17:37:05>
 
 1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
 2) Identify the return type and types of all arguments
@@ -23,3 +23,10 @@ C Preprocessors seem to universally produce file-and-line-tracking output like t
 # <line> "<file-name>" <other-crap...>
 
 I think I can rely on that.
+
+====
+
+My next step was to check out pycparser/pycparserext to see if they offer the level of C parsing support and flexibility that I need.
+
+https://github.com/eliben/pycparser
+https://github.com/inducer/pycparserext
