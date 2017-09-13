@@ -1,16 +1,19 @@
 #include "capture-output.h"
 
+#include "pfstest-alloc.h"
 #include "pfstest-output-formatter-message-spy.h"
 
 #include <stdio.h>
 
-char captured_output[320];
+#define CAPTURED_OUTPUT_SIZE 320
+char *captured_output;
 pfstest_output_formatter_t *message_spy;
 
 static unsigned int captured_output_idx = 0;
 
 void capture_output_init(void)
 {
+    captured_output = pfstest_alloc(CAPTURED_OUTPUT_SIZE);
     captured_output[0] = '\0';
     captured_output_idx = 0;
     message_spy =
@@ -19,7 +22,7 @@ void capture_output_init(void)
 
 int capture_output_char(int c)
 {
-    if (captured_output_idx < sizeof(captured_output) - 1) {
+    if (captured_output_idx < CAPTURED_OUTPUT_SIZE - 1) {
         captured_output[captured_output_idx++] = c;
         captured_output[captured_output_idx] = '\0';
         return c;

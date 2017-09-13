@@ -3,7 +3,7 @@
 
 #include "pfstest-core.h"
 
-extern char captured_output[];
+extern char *captured_output;
 extern pfstest_output_formatter_t *message_spy;
 
 void capture_output_init(void);
