@@ -1,4 +1,4 @@
-f#ifndef PFSTEST_PLATFORM_MCC18_H
+#ifndef PFSTEST_PLATFORM_MCC18_H
 #define PFSTEST_PLATFORM_MCC18_H
 
 #include <string.h>
