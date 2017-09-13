@@ -371,7 +371,8 @@ static char digit_char(int digit)
 }
 
 void pfstest_output_formatter_print_uint(
-    pfstest_output_formatter_t *formatter, uintmax_t n, int base, int zpad)
+    pfstest_output_formatter_t *formatter, uintmax_t n,
+    unsigned int base, int zpad)
 {
     uintmax_t d = 1;
     int digits = 1;

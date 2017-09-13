@@ -19,6 +19,8 @@ static void arg_that_matched(pfstest_arg_handler_t *arg_handler,
                              pfstest_value_t *actual)
 {
     /* Do nothing */
+    (void)arg_handler;
+    (void)actual;
 }
 
 static void arg_that_printer(pfstest_output_formatter_t *formatter,
@@ -41,6 +43,8 @@ pfstest_arg_handler_t *pfstest_arg_that(pfstest_matcher_t *matcher)
 static bool assign_arg_test(pfstest_arg_handler_t *arg_handler,
                             pfstest_value_t *actual)
 {
+    (void)arg_handler;
+    (void)actual;
     return true;
 }
 
@@ -64,6 +68,7 @@ static void assign_arg_matched(pfstest_arg_handler_t *arg_handler,
 static void assign_arg_printer(pfstest_output_formatter_t *formatter,
                                pfstest_arg_handler_t *this)
 {
+    (void)this;
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("any pointer"));
 }

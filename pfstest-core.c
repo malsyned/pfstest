@@ -189,6 +189,13 @@ void _pfstest_suite_register_test(pfstest_list_t *suite,
     pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
 }
 
+static void call_protected(void (*function)(void))
+{
+    if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+        function();
+    }
+}
+
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
                  const pfstest_nv_ptr char *filter_file,
@@ -258,9 +265,11 @@ void pfstest_run(pfstest_t *the_test,
             if (0 == pfstest_strcmp_nvnv(current_test.file,
                                          current_hook.file))
             {
-                if (0 == setjmp(dynamic_env->test_jmp_buf)) {
-                    current_hook.function();
-                }
+                /* Calling setjmp directly here was causing -Wclobber
+                 * to issue a warning about after_hook. I think the
+                 * warning was spurious, but I want to make the
+                 * compiler happy. */
+                call_protected(current_hook.function);
             }
         }
     }

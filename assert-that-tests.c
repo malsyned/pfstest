@@ -7,6 +7,7 @@
 static void some_value_printer(pfstest_output_formatter_t *formatter,
                                pfstest_value_t *value)
 {
+    (void)value;
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("some value"));
 }
@@ -14,11 +15,14 @@ static void some_value_printer(pfstest_output_formatter_t *formatter,
 static pfstest_value_t some_value[1] = {{
         some_value_printer,
         NULL,
+        0,
     }};
 
 static bool always_return_true(pfstest_matcher_t *matcher,
                                pfstest_value_t *actual)
 {
+    (void)matcher;
+    (void)actual;
     return true;
 }
 
@@ -31,12 +35,15 @@ static pfstest_matcher_t matches_anything[1] = {{
 static bool always_return_false(pfstest_matcher_t *matcher,
                                 pfstest_value_t *actual)
 {
+    (void)matcher;
+    (void)actual;
     return false;
 }
 
 static void nothing_printer(pfstest_output_formatter_t *formatter,
                             pfstest_matcher_t *matcher)
 {
+    (void)matcher;
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("nothing (guaranteed to fail)"));
 }

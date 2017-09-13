@@ -45,7 +45,8 @@ void pfstest_output_formatter_print_nv_string(
 void pfstest_output_formatter_print_int(
     pfstest_output_formatter_t *formatter, intmax_t i);
 void pfstest_output_formatter_print_uint(
-    pfstest_output_formatter_t *formatter, uintmax_t i, int base, int zpad);
+    pfstest_output_formatter_t *formatter, uintmax_t i,
+    unsigned int base, int zpad);
 
 void pfstest_output_formatter_run_started(
     pfstest_output_formatter_t *formatter);

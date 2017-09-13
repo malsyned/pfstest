@@ -23,10 +23,14 @@ static void test_started(pfstest_output_formatter_t *formatter,
                          const pfstest_nv_ptr char *test_name,
                          const pfstest_nv_ptr char *test_file)
 {
+    (void)formatter;
+    (void)test_name;
+    (void)test_file;
 }
 
 static void test_ignored(pfstest_output_formatter_t *formatter)
 {
+    (void)formatter;
 }
 
 static void test_failed_message_start(
@@ -34,14 +38,19 @@ static void test_failed_message_start(
     const pfstest_nv_ptr char *file,
     int line)
 {
+    (void)formatter;
+    (void)file;
+    (void)line;
 }
 
 static void test_complete(pfstest_output_formatter_t *formatter)
 {
+    (void)formatter;
 }
 
 static void run_complete(pfstest_output_formatter_t *formatter)
 {
+    (void)formatter;
 }
 
 static int print_char(
