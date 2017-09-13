@@ -1,6 +1,6 @@
 Dennis Lambe
 Notes on issues and possibilities for implementing auto-mocking in PFSTest
-Last modified: <2017-09-12 17:37:05>
+Last modified: <2017-09-12 21:21:46>
 
 1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
 2) Identify the return type and types of all arguments
@@ -30,3 +30,60 @@ My next step was to check out pycparser/pycparserext to see if they offer the le
 
 https://github.com/eliben/pycparser
 https://github.com/inducer/pycparserext
+
+====
+
+CMock has useful headers for test cases in the following locations:
+
+test/system/test_compilation
+examples/src
+
+====
+
+I want to be able to support at least the following sorts of extensions to the C language:
+
+* Pragmas
+
+* storage-class-specifiers other than auto, register, static, extern
+
+    For example, static on function arguments, overlay in mcc18
+    http://ww1.microchip.com/downloads/en/DeviceDoc/MPLAB_C18_Users_Guide_51288d.pdf
+
+* type-qualifiers other than const, volatile
+
+    For example, __flash on AVR, far, near, ram, rom on mcc18
+    https://gcc.gnu.org/onlinedocs/gcc-5.4.0/gcc/Named-Address-Spaces.html
+
+* __attribute__(()) and __extension__
+
+    It looks like as long as these are attached to the declaration, they can be stripped from the function definition, but I haven't found a reference for this. I'm not sure if this also applies to attributes attached to parameters. Some attributes, like __packed__, act like type qualifiers in that they create incompatible types.
+
+* calling conventions like __stdcall, __cdecl
+
+    As long as these are attached to the function declaration, they can be left out of the definition.
+   https://docs.microsoft.com/en-us/cpp/cpp/calling-conventions
+    https://docs.microsoft.com/en-us/cpp/cpp/calling-example-function-prototype-and-call
+
+    __cdecl, __clrcall, __stdcall, __fastcall, __thiscall, __vectorcall, (obsolete: __pascal, __fortran, __syscall, __far)
+
+* Microsoft keywords for variables and pointers
+
+    __based, __restrict, __w64, __unaligned, __sptr, __uptr, tile_static
+    https://docs.microsoft.com/en-us/cpp/cpp/based-grammar
+    https://docs.microsoft.com/en-us/cpp/cpp/extension-restrict
+    https://docs.microsoft.com/en-us/cpp/cpp/w64
+    https://docs.microsoft.com/en-us/cpp/cpp/sptr-uptr
+    https://docs.microsoft.com/en-us/cpp/cpp/tile-static-keyword
+
+* Microsoft __declspecs
+
+    As long as they are attached to the function declaration, they can be left out of the definition. I wonder if this is also true of declspecs attached to parameters of functions.
+    https://docs.microsoft.com/en-us/cpp/cpp/declspec
+
+* Binary numeric constants prefixed by 0b
+
+    Support mostly for not barfing on them
+
+* Anonymous structures
+
+    Support mostly for not barfing on them
