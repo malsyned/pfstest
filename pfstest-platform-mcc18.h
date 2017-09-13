@@ -17,6 +17,7 @@ typedef unsigned long uintmax_t;
 
 /* stdlib.h */
 #define _exit(n) do { while (1) ; } while (0)
+#define exit _exit
 
 /* assert.h */
 #include <stdio.h>
@@ -33,7 +34,9 @@ typedef unsigned long uintmax_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcat_nv strcatpgm2ram
-# define pfstest_strchr_nv strchrpgm
+/* mcc18's string.h erroneously leaves the const qualifier off of
+ * strchrpgm's return type */
+# define pfstest_strchr_nv(nv, c) ((const pfstest_nv char *)strchrpgm(nv, c))
 # define PFSTEST_NORETURN
 
 # define fflush(stream) (0)

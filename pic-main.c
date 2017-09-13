@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 
+#pragma config WDT = OFF
+
 #define HEAP_SIZE ((int)2048)
 
 #pragma udata heap
@@ -12,7 +14,7 @@ unsigned char heap[HEAP_SIZE];
 
 static int print_char(int c)
 {
-    return putchar(c);
+    return putc(c, stdout);
 }
 
 void main(void)

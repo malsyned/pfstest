@@ -22,3 +22,5 @@ register-*tests.c
 *.opensdf
 *.sdf
 *.user
+*.mcw
+*.err

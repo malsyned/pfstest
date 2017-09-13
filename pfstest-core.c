@@ -46,7 +46,7 @@ static void dynamic_env_pop(void)
 
 static int stdout_print_char(int c)
 {
-    int r = fputc(c, stdout);
+    int r = putc(c, stdout);
     fflush(stdout);
     return r;
 }
