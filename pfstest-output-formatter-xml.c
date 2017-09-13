@@ -60,7 +60,7 @@ static int print_escaped_char(
     int c)
 {
     struct char_reference row;
-    int i;
+    size_t i;
 
     for (i = 0; i < table_length; i++) {
         pfstest_memcpy_nv(&row, &ref_table[i], sizeof(row));
