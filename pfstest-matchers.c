@@ -184,7 +184,12 @@ pfstest_matcher_t *pfstest_matches_the_nv_string(
     const pfstest_nv_ptr char **sp = pfstest_alloc(sizeof(*sp));
     *sp = s;
 
+    /* The cast to (void *) in the third argument is to work around a
+     * compiler bug in VC++:
+
+     * https://connect.microsoft.com/VisualStudio/feedback/details/3111046/c-compiler-incorrectly-emits-c4090-warning
+     */
     return pfstest_matcher_new(matches_the_nv_string_printer,
                                matches_the_nv_string_test,
-                               sp);
+                               (void *)sp);
 }
