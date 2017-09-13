@@ -1,0 +1,49 @@
+Core:
+
+any(type)
+equalTo(o)
+is(value)
+isOneOf(items...) /* seems like a shortcut for anyOf */
+
+Combinators:
+
+allOf(matchers...)
+anyOf(matchers...)
+both(matcher, matcher)
+describedAs(description, matcher) /* just overrides the description */
+either(matcher, matcher)
+not(matcher)
+
+Numeric functions:
+
+closeTo(number, error)
+greaterThan(value)
+greaterThanOrEqualTo(value)
+lessThan(value)
+lessThanOrEqualTo(value)
+
+String functions:
+containsString(substring)
+endsWith(suffix_string)
+equalToIgnoringCase(string)
+equalToIgnoringWhitespace(string)
+isEmptyOrNullString()
+isEmptyString()
+startsWith(prefix_string)
+stringContainsInOrder(substrings...)
+
+Arrays:
+
+array(matchers...)
+arrayContaining(items...)
+arrayContainingInAnyOrder(items...)
+arrayWithSize(size)
+everyItem(matcher)
+hasItemInArray(matcher)
+hasItems(matchers...)
+
+Pointer functions:
+
+theInstance(target)
+notNullValue()
+nullValue()

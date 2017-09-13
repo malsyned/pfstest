@@ -1,0 +1,17 @@
+Basic types:
+signed/unsigned char, short int, int, long int, long long int
+float, double, long double
+
+Derived types:
+
+array
+function
+pointer
+structure
+union
+
+Type qualifiers:
+
+const
+volatile
+

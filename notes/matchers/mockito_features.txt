@@ -1,0 +1,80 @@
+Return a value when args match Matchers
+    do_return(the_int(5), when_dep_func(any_int()))
+        when_...: 
+            Create a mock_call_t*
+            make it the head of a linked list associated with dep_func
+            return it.
+        do_return:
+            Replace a non-null value_t* with the argument
+            If null, return 0 or 0.0 or NULL or {}.
+            Otherwise pull the value out of the value_t* and return it
+Stub consecutive calls with same args, different return values
+    do_times(2, do_return(the_int(1), when_dep_func(any_int())));
+    one_time(do_return(...));
+        Uses a counter on expectations
+Return a default value if nothing matches
+    If nothing in the linked list of mock_call_t*s matches, return the 0 value for that type
+Verify that a function was called with particular arguments
+    verify(when_dep_func(the_int(6)))
+    verify_times(exactly(3), when_dep_func(any_int()))
+        (exactly, atLeast, atMost, never)
+    (Requires a call to a "verify" function at the end of the test)
+Verify that certain calls were called in order
+Verify that no additional calls were made
+Attach a callback to an expectation
+    call(callback, do_return(the_int(5), when_dep_func(any_int())));
+Spy on real function calls
+Capture arguments for further assertions
+Mock only some functions in a module while using production implementations of others.
+
+
+
+
+
+when_<mocked_func>(...) functions:
+    Create an expectation_t
+    add it to the list of expectations for <mocked_func>
+    Return the expectation_t
+Combinators modify expectations and return them.
+    Examples are do_return, do_return_once.
+Verifiers create a verification_t and add it to the list of verifications
+    Examples are verify, verify_times, and inorder_new
+In-order verifiers modify the in_order object
+    add an expectation_t to its expectation list
+<mocked_func>(...)
+    Iterates over the list of expectations
+    Runs the matchers on each expectation looking for a positive match
+    Returns the result stored in the first matcher if found
+    Removes the expectation if it has the do_once flag (do_times counter?)
+    Adds an invocation_t to the list of invocations
+        Contains a link to the matches expectation_t or NULL of 
+Verifications
+    look over the list of invocations
+    Returns 'true' or 'false' depending on verification criteria
+
+do_verifications()
+    Arranged to be called automatically like slab_free()
+    Iterates over the list of saved verfications
+    runs them on the list of invocations
+
+
+Problems with ret_str and friends:
+    1. Doesn't allow a test of the input value before overwriting
+    2. Doesn't permit mockito-style flexible verification because as soon as the matcher runs, the value is modified and future matchers might be confused by the mutation
+
+Idea:
+    Wrap matcher_t with arg_handler_t
+    when_<mocked_func>() takes arg_handler_t args
+    arg_handler_t has a match() and an expectation_matched()
+    Known arg_handlers are:
+        arg_matches(is_the_int(5))
+        arg_assign(the_string("bar"))
+        arg_matches_assign(is_the_string("foo"), the_string("bar"))
+
+
+Some function has to be called to re-initialize each function's expectation list to NULL.
+
+Error messages:
+
+When a mock fails to verify, find the first invocation that wasn't matched by a verifier and report it as what was called instead.
+I don't think this will work for me, though. I don't capture arguments or save invocations for unexpected stub calls.
