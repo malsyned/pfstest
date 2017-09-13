@@ -33,6 +33,7 @@ typedef unsigned long uintmax_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcat_nv strcatpgm2ram
+# define pfstest_strchr_nv strchrpgm
 # define PFSTEST_NORETURN
 
 # define fflush(stream) (0)

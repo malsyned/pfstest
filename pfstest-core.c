@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "pfstest-platform.h"
+#include "pfstest-basename.h"
 #include "pfstest-output-formatter-xml.h"
 /* TODO: plugin-ize */
 #include "pfstest-alloc.h"
@@ -208,7 +209,8 @@ void pfstest_run(pfstest_t *the_test,
     if ((filter_name != NULL
          && 0 != pfstest_strcmp_nvnv(filter_name, current_test.name))
         || (filter_file != NULL
-            && 0 != pfstest_strcmp_nvnv(filter_file, current_test.file)))
+            && 0 != pfstest_strcmp_nvnv(
+                filter_file, pfstest_basename(current_test.file))))
     {
         goto cleanup;
     }

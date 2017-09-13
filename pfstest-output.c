@@ -1,6 +1,7 @@
 #include "pfstest-output.h"
 
 #include "pfstest-alloc.h"
+#include "pfstest-basename.h"
 
 typedef struct
 {
@@ -67,7 +68,7 @@ static void print_int(builtin_formatter_t *formatter, intmax_t n)
 static void print_context(builtin_formatter_t *formatter)
 {
     get_fresh_line(formatter);
-    print_nv_string(formatter, formatter->test_file);
+    print_nv_string(formatter, pfstest_basename(formatter->test_file));
     print_nv_string(formatter, pfstest_nv_string(":"));
     print_nv_string(formatter, formatter->test_name);
     print_nv_string(formatter, pfstest_nv_string(" "));
@@ -154,7 +155,7 @@ static void test_failed_message_start_common(
     print_nv_string(formatter, pfstest_nv_string("FAIL"));
     print_nv_string(formatter, pfstest_nv_string("\n"));
     print_nv_string(formatter, pfstest_nv_string("    Location: "));
-    print_nv_string(formatter, file);
+    print_nv_string(formatter, pfstest_basename(file));
     print_nv_string(formatter, pfstest_nv_string(":"));
     print_int(formatter, line);
     print_nv_string(formatter, pfstest_nv_string("\n"));

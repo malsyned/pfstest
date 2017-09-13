@@ -57,6 +57,12 @@ pfstest_strcat_nv(ram, nv):
     concatenates a string which resides in the non-volatile memory
     space onto the end of a string which resides in RAM.
 
+pfstest_strchr_nv(nv, int):
+
+    A function or macro which is a version of strchr which
+    searches a string which resides in the non-volatile memory
+    space for the specified character.
+
 PFSTEST_NORETURN:
 
     Expands to a function decoration which tells the compiler that the

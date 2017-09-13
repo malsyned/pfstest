@@ -13,6 +13,7 @@
 # define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
 # define pfstest_strcmp_nvnv strcmp
 # define pfstest_strcat_nv strcat
+# define pfstest_strchr_nv strchr
 # define PFSTEST_NORETURN
 
 #endif /* !PFSTEST_PLATFORM_C89_H */

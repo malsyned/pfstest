@@ -25,6 +25,7 @@
 
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
+# define pfstest_strchr_nv(nv, c) strchr_P(nv, c)
 # define PFSTEST_NORETURN __attribute__((__noreturn__))
 # define pfstest_constructor(name)                          \
     __attribute__((__constructor__)) static void name(void)
