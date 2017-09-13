@@ -105,7 +105,7 @@ static void the_bool_printer(pfstest_output_formatter_t *formatter,
 
 pfstest_value_t *pfstest_the_bool(bool b)
 {
-    unsigned int *data = pfstest_alloc(sizeof(b));
+    bool *data = pfstest_alloc(sizeof(b));
     *data = b;
 
     return pfstest_value_new(the_bool_printer, data, sizeof(b));
