@@ -2,8 +2,6 @@
 
 #include "capture-output.h"
 
-#include <stdio.h>
-
 #define VERSION "0.2"
 #define HEADER "PFSTest " VERSION "\n" "===========\n"
 
