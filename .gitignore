@@ -17,5 +17,8 @@ new-core-tests
 core-tests
 tests
 nbproject/private/*
-Debug/*
+pfstest-vcxx/Debug/*
 register-*tests.c
+*.opensdf
+*.sdf
+*.user

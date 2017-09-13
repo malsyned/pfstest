@@ -66,6 +66,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\assert-that-tests.c" />
+    <ClCompile Include="..\capture-output.c" />
+    <ClCompile Include="..\core-test-cases-2.c" />
+    <ClCompile Include="..\core-test-cases.c" />
+    <ClCompile Include="..\core-tests.c" />
+    <ClCompile Include="..\invocation-tests.c" />
     <ClCompile Include="..\mock-dep.c" />
     <ClCompile Include="..\mock-tests.c" />
     <ClCompile Include="..\pfstest-alloc-malloc.c" />
@@ -77,10 +82,14 @@
     <ClCompile Include="..\pfstest-matcher.c" />
     <ClCompile Include="..\pfstest-matchers.c" />
     <ClCompile Include="..\pfstest-mock.c" />
+    <ClCompile Include="..\pfstest-output-formatter-message-spy.c" />
+    <ClCompile Include="..\pfstest-output-formatter-xml.c" />
+    <ClCompile Include="..\pfstest-output.c" />
     <ClCompile Include="..\pfstest-value.c" />
     <ClCompile Include="..\pfstest-values.c" />
     <ClCompile Include="..\values-and-matchers-tests.c" />
     <ClCompile Include="..\vc-main.c" />
+    <ClCompile Include="..\xml-tests.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

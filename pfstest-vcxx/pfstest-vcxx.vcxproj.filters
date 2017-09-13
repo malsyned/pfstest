@@ -63,5 +63,32 @@
     <ClCompile Include="..\vc-main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\capture-output.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core-test-cases.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core-test-cases-2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\invocation-tests.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pfstest-output.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pfstest-output-formatter-message-spy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pfstest-output-formatter-xml.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xml-tests.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core-tests.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
