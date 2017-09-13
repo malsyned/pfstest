@@ -95,6 +95,7 @@ void pfstest_alloc_free_frame(void)
 void pfstest_alloc_frame_push(void)
 {
     dynamic_env_t *new_frame = evil_malloc(sizeof(*new_frame));
+    assert(new_frame != NULL);
     new_frame->next = dynamic_env;
     dynamic_env = new_frame;
     pfstest_list_reset(&dynamic_env->allocated);
