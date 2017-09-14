@@ -23,7 +23,7 @@ void capture_output_init(void)
 int capture_output_char(int c)
 {
     if (captured_output_idx < CAPTURED_OUTPUT_SIZE - 1) {
-        captured_output[captured_output_idx++] = c;
+        captured_output[captured_output_idx++] = (char)c;
         captured_output[captured_output_idx] = '\0';
         return c;
     }

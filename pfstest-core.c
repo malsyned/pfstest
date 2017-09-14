@@ -11,9 +11,7 @@
 #include "pfstest-alloc.h"
 #include "pfstest-mock.h"
 
-#define RESULT_PASS 1
-#define RESULT_FAIL 2
-#define RESULT_IGNORE 3
+#define RESULT_FAIL 1
 
 typedef struct _dynamic_env_t
 {

@@ -1,0 +1,179 @@
+(Go back and check on the things with = in them)
+
+. default
+* Wall
++ Wextra
+~ pedantic
+/ Decided against it
+! Decided for it
+? Think about for later, don't use it now
+
+!-pedantic-errors
+*-Wchar-subscripts
+/-Wchkp
+.-Wno-coverage-mismatch
+/-Wdouble-promotion (C, C++, Objective-C and Objective-C++ only)
+*-Wduplicate-decl-specifier (C and Objective-C only)
+*-Wformat
+*-Wformat=n
+*-Wnonnull
+*-Wnonnull-compare
+/-Wnull-dereference
+*-Winit-self (C, C++, Objective-C and Objective-C++ only)
+*-Wimplicit-int (C and Objective-C only)
+*-Wimplicit-function-declaration (C and Objective-C only)
+*-Wimplicit (C and Objective-C only)
++-Wimplicit-fallthrough
++-Wimplicit-fallthrough=n
+.-Wif-not-aligned (C, C++, Objective-C and Objective-C++ only)
++-Wignored-qualifiers (C and C++ only)
+.-Wignored-attributes (C and C++ only)
+*-Wmain
+*-Wmisleading-indentation (C and C++ only)
+*-Wmissing-braces
+!-Wmissing-include-dirs (C, C++, Objective-C and Objective-C++ only)
+*-Wmultistatement-macros
+*-Wparentheses
+*-Wsequence-point
+*-Wreturn-type
+.-Wshift-count-negative
+.-Wshift-count-overflow
+/-Wshift-negative-value
+!-Wshift-overflow
+!-Wshift-overflow=n
+*-Wswitch
+!-Wswitch-default
+/-Wswitch-enum
+.-Wswitch-bool
+.-Wswitch-unreachable
+/-Wsync-nand (C and C++ only)
++-Wunused-but-set-parameter
+*-Wunused-but-set-variable
+*-Wunused-function
+*-Wunused-label
+*-Wunused-local-typedefs (C, Objective-C, C++ and Objective-C++ only)
++-Wunused-parameter
+*-Wunused-variable
+/-Wunused-const-variable
+/-Wunused-const-variable=n
+*-Wunused-value
+/-Wunused
+*-Wuninitialized
+.-Winvalid-memory-model
+*-Wmaybe-uninitialized
+*-Wunknown-pragmas
+*-Wstrict-aliasing
+*-Wstrict-aliasing=n
+*-Wstrict-overflow
+*-Wstrict-overflow=n
+.-Wstringop-overflow
+.-Wstringop-overflow=type
+!-Wsuggest-attribute=[pure|const|!noreturn|format]
+?-Walloc-zero
+?-Walloc-size-larger-than=n
+/-Walloca
+/-Walloca-larger-than=n
+*-Warray-bounds
+*-Warray-bounds=n
+*-Wbool-compare
+*-Wbool-operation
+/-Wduplicated-branches
+/-Wduplicated-cond
+/-Wframe-address
+/-Wsystem-headers
+*-Wtautological-compare
+/-Wtrampolines
+!-Wfloat-equal
+/-Wtraditional (C and Objective-C only)
+/-Wtraditional-conversion (C and Objective-C only)
+/-Wdeclaration-after-statement (C and Objective-C only)
+?-Wshadow
+?-Wshadow=global
+/-Wshadow=local
+/-Wshadow=compatible-local
+/-Wlarger-than=len
+?-Wframe-larger-than=len [enable for avr8?]
+?-Wstack-usage=len [enable for avr8?]
+/-Wunsafe-loop-optimizations
+*-Waligned-new
+.-Wplacement-new
+.-Wplacement-new=n
+!-Wpointer-arith
+.-Wpointer-compare
++-Wtype-limits
+*-Wcomment
+*-Wtrigraphs
+!-Wundef
++-Wexpansion-to-defined
+!-Wunused-macros
+!-Wbad-function-cast (C and Objective-C only)
+/-Wc90-c99-compat (C and Objective-C only)
+/-Wc99-c11-compat (C and Objective-C only)
+/-Wc++-compat (C and Objective-C only)
+!-Wcast-qual
+!-Wcast-align
+!-Wwrite-strings
+*-Wcatch-value
++-Wclobbered
+!-Wconversion [with -Wno-sign-conversion for now]
+/-Wdangling-else
+/-Wdate-time
++-Wempty-body
+*-Wenum-compare
+!-Wjump-misses-init (C, Objective-C only)
++-Wsign-compare
+?-Wsign-conversion
+/-Wfloat-conversion
+*-Wsizeof-pointer-div
+*-Wsizeof-pointer-memaccess
+.-Wsizeof-array-argument
+*-Wmemset-elt-size
+*-Wmemset-transposed-args
+*-Waddress
+!-Wlogical-op
+*-Wlogical-not-parentheses
+/-Waggregate-return
+.-Wno-builtin-declaration-mismatch
+.-Wno-builtin-macro-redefined
+!-Wstrict-prototypes (C and Objective-C only)
++-Wold-style-declaration (C and Objective-C only)
+!-Wold-style-definition (C and Objective-C only)
++-Wmissing-parameter-type (C and Objective-C only)
+!-Wmissing-prototypes (C and Objective-C only)
+!-Wmissing-declarations
++-Wmissing-field-initializers
+/-Wnormalized=[none|id|nfc|nfkc]
+.-Wno-odr
+*-Wopenmp-simd
++-Woverride-init (C and Objective-C only)
+.-Woverride-init-side-effects (C and Objective-C only)
+.-Wpacked
+.-Wpacked-bitfield-compat
+*-Wpacked-not-aligned (C, C++, Objective-C and Objective-C++ only)
+/-Wpadded
+?-Wredundant-decls [I get a lot of these -- is it intentional?]
+/-Wrestrict
+?-Wnested-externs (C and Objective-C only) [I get a lot of these???]
+/-Winline
+*-Wint-in-bool-context
+/-Winvalid-pch
+~-Wlong-long
+!-Wvariadic-macros
+.-Wvarargs
+/-Wvector-operation-performance
+~-Wvla
+~-Wvla-larger-than=n
+*-Wvolatile-register-var
+/-Wdisabled-optimization
+*-Wpointer-sign (C and Objective-C only)
+/-Wstack-protector
+/-Woverlength-strings
+!-Wunsuffixed-float-constants (C and Objective-C only)
+/-Whsa
+*-Wnarrowing
+*-Wreorder
+
+Other things of interest:
+
+-fstack-usage
+-fstack-protector

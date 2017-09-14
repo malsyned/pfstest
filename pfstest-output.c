@@ -361,9 +361,11 @@ void pfstest_output_formatter_print_int(
 
 static const pfstest_nv char digits[] = "0123456789abcdef";
 
-static char digit_char(int digit)
+static char digit_char(unsigned int digit)
 {
     char d;
+
+    assert(digit <= 0xf);
 
     pfstest_memcpy_nv(&d, &digits[digit], sizeof(d));
 
@@ -388,7 +390,7 @@ void pfstest_output_formatter_print_uint(
 
     do {
         pfstest_output_formatter_print_char(
-            formatter, digit_char(n / d % base));
+            formatter, digit_char((unsigned int)(n / d % base)));
         d /= base;
     } while (d > 0);
 }
