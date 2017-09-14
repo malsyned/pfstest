@@ -151,9 +151,9 @@
 .-Wpacked-bitfield-compat
 *-Wpacked-not-aligned (C, C++, Objective-C and Objective-C++ only)
 /-Wpadded
-?-Wredundant-decls [I get a lot of these -- is it intentional?]
+/-Wredundant-decls [I get a lot of these by design]
 /-Wrestrict
-?-Wnested-externs (C and Objective-C only) [I get a lot of these???]
+/-Wnested-externs (C and Objective-C only) [I get a lot of these by design]
 /-Winline
 *-Wint-in-bool-context
 /-Winvalid-pch
