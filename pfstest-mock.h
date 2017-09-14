@@ -12,7 +12,7 @@
 typedef struct 
 {
     const pfstest_nv_ptr char *name;
-    int arg_count;
+    unsigned int arg_count;
 } pfstest_mock_t;
 
 #define _pfstest_mock_func_name_var(name)               \

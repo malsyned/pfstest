@@ -7,10 +7,9 @@ WARN := -Wall -Wextra -Werror -Wwrite-strings \
         -Wsuggest-attribute=noreturn -Wmissing-include-dirs \
         -Wswitch-default -Wfloat-equal -Wpointer-arith -Wundef \
         -Wunused-macros -Wbad-function-cast -Wcast-qual -Wcast-align \
-        -Wjump-misses-init -Wconversion -Wno-sign-conversion \
-        -Wlogical-op -Wstrict-prototypes -Wold-style-definition \
-        -Wmissing-prototypes -Wmissing-declarations -Wvariadic-macros \
-        -Wunsuffixed-float-constants \
+        -Wjump-misses-init -Wconversion -Wlogical-op -Wstrict-prototypes \
+        -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations \
+        -Wvariadic-macros -Wunsuffixed-float-constants \
         -pedantic -pedantic-errors
 CFLAGS := -g -O$(OPT) $(WARN) -MD -MP -std=c89
 LDFLAGS :=

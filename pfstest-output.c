@@ -353,7 +353,7 @@ void pfstest_output_formatter_print_int(
          * 6.3.1.3.2) */
         nabs = UINTMAX_MAX - (uintmax_t)n + 1;
     } else {
-        nabs = n;
+        nabs = (uintmax_t)n;
     }
 
     pfstest_output_formatter_print_uint(formatter, nabs, 10, 0);

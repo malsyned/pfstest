@@ -60,7 +60,8 @@ static void default_expectation_add(pfstest_expectation_t *expectation)
 
 /* mock */
 
-static int pfstest_mock_arg_count(const pfstest_nv_ptr pfstest_mock_t *mock)
+static unsigned int  pfstest_mock_arg_count(
+    const pfstest_nv_ptr pfstest_mock_t *mock)
 {
     pfstest_mock_t m;
     pfstest_memcpy_nv(&m, mock, sizeof(m));
@@ -98,7 +99,7 @@ static pfstest_expectation_t *pfstest_expectation_new(
 static void pfstest_expectation_print(pfstest_output_formatter_t *formatter,
                                       pfstest_expectation_t *e)
 {
-    int i;
+    unsigned int i;
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_mock_name(e->mock));
@@ -144,9 +145,9 @@ pfstest_expectation_t *pfstest_when(
 {
     pfstest_arg_handler_t **arg_handlers;
     pfstest_expectation_t *expectation;
-    int arg_count;
+    unsigned int arg_count;
     va_list ap;
-    int i;
+    unsigned int i;
 
     arg_count = pfstest_mock_arg_count(mock);
     arg_handlers = pfstest_alloc(sizeof(*arg_handlers) * arg_count);
@@ -175,11 +176,11 @@ static pfstest_invocation_t *invocation_new(pfstest_expectation_t *e)
     return i;
 }
 
-static bool args_match(int arg_count,
+static bool args_match(unsigned int arg_count,
                        pfstest_value_t **args,
                        pfstest_arg_handler_t **arg_handlers)
 {
-    int i;
+    unsigned int i;
 
     /* The default expectation, which should match everything, has
      * NULL arg_handlers */
@@ -195,11 +196,11 @@ static bool args_match(int arg_count,
     return true;
 }
 
-static void args_matched(int arg_count,
+static void args_matched(unsigned int arg_count,
                          pfstest_value_t **args,
                          pfstest_arg_handler_t **arg_handlers)
 {
-    int i;
+    unsigned int i;
 
     for (i = 0; i < arg_count; i++) {
         pfstest_arg_handler_matched(arg_handlers[i], args[i]);
@@ -242,11 +243,11 @@ pfstest_value_t *pfstest_mock_invoke(
     ...)
 {
     pfstest_list_node_t *expectation_node;
-    int arg_count = pfstest_mock_arg_count(mock);
+    unsigned int arg_count = pfstest_mock_arg_count(mock);
     pfstest_value_t **args = pfstest_alloc(sizeof(*args) * arg_count);
     pfstest_value_t *return_value = default_return_value;
     va_list ap;
-    int i;
+    unsigned int i;
 
     va_start(ap, default_return_value);
     for(i = 0; i < arg_count; i++) {
