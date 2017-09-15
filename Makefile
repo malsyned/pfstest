@@ -24,8 +24,12 @@ test: tests
 	@echo ./tests $(ARGS); echo; \
 	MALLOC_CHECK_=1 ./tests $(ARGS); \
 	retval=$$?; \
-	if [ $$retval -eq 0 ]; then color=42; else color=41; fi; \
-	echo "\033[$${color}m\n\033[00m"; \
+	if [ $$retval -eq 0 ]; then \
+		color=42; text=PASS; \
+	else \
+		color=41; text=FAIL; \
+	fi; \
+	echo "\033[30;2;$${color}m$${text}\033[00m"; \
 	return $$retval
 
 ALLOC_SRC := pfstest-alloc-malloc.c
