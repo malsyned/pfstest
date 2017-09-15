@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include <assert.h>
+#include <string.h>
 
 #include "pfstest.h"
 
@@ -11,6 +12,7 @@
 
 static int dbg_putchar(char c, FILE *stream)
 {
+    (void)stream;
     special_output_port = c;
     return 0;
 }
@@ -20,7 +22,7 @@ static FILE mystdout = FDEV_SETUP_STREAM(dbg_putchar, NULL, _FDEV_SETUP_WRITE);
 extern char *__brkval;
 extern char *__malloc_heap_start;
 
-size_t malloc_used(void)
+static size_t malloc_used(void)
 {
     if (__brkval == 0)          /* Uninitialized case */
         return 0;
@@ -35,11 +37,13 @@ static int print_char(int c)
 
 int main(void)
 {
-    pfstest_arguments_t args = {};
+    pfstest_arguments_t args;
+    memset(&args, 0, sizeof(args));
     args.verbose = true;
 
     stdout = &mystdout;
     stderr = stdout;
+
 
     int r = pfstest_start(print_char, &args);
     

@@ -12,11 +12,11 @@
 
 /* This seems to use less ROM than calls to memcpy_P(ram, nv, size) */
 #define pfstest_memcpy_nv(ram, nv, size)        \
-    ({                                          \
+    __extension__ ({                            \
         uint8_t *__p = (uint8_t *)ram;          \
         const pfstest_nv_ptr uint8_t *__nv =    \
             (const pfstest_nv_ptr uint8_t *)nv; \
-        int __i;                                \
+        size_t __i;                             \
         for (__i = 0; __i < size; __i++) {      \
             *__p++ = pgm_read_byte(__nv++);     \
         }                                       \
