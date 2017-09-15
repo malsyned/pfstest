@@ -136,6 +136,9 @@ CSTANDARD = -std=gnu99
 
 # Place -D or -U options here for C sources
 CDEFS = -DF_CPU=$(F_CPU)UL
+ifdef NAMED_ADDR_SPACES
+CDEFS += -DPFSTEST_AVR8_NAMED_ADDR_SPACES
+endif
 
 
 # Place -D or -U options here for ASM sources
@@ -146,6 +149,9 @@ ADEFS = -DF_CPU=$(F_CPU)
 CPPDEFS = -DF_CPU=$(F_CPU)UL
 #CPPDEFS += -D__STDC_LIMIT_MACROS
 #CPPDEFS += -D__STDC_CONSTANT_MACROS
+ifdef NAMED_ADDR_SPACES
+CPPDEFS += -DPFSTEST_AVR8_NAMED_ADDR_SPACES
+endif
 CPPDEFS += -D__ASSERT_USE_STDERR
 
 
