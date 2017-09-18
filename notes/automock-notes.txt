@@ -1,6 +1,6 @@
 Dennis Lambe
 Notes on issues and possibilities for implementing auto-mocking in PFSTest
-Last modified: <2017-09-13 13:39:48>
+Last modified: <2017-09-17 10:57:50>
 
 1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
 2) Identify the return type and types of all arguments
@@ -14,6 +14,7 @@ Going over my old design of mock-dep.c, I see that I have arranged for the code 
 * Whether the return type is: void, pointer, struct, or primitive
 * The number of arguments
 * The name of each argument as a string
+    WELL ACTUALLY they might not have names, so I should be prepared to substitute my own
 * Whether each argument is a pointer or not
 
 ====
@@ -25,6 +26,8 @@ C Preprocessors seem to universally produce file-and-line-tracking output like t
 I think I can rely on that.
 
 Except I can't. mcc18 emits #line <line> "<file-name>". I guess it really depends on whether pycparser can handle that, if I decide to go with pycyparser.
+
+pycparser can handle this.
 
 ====
 
