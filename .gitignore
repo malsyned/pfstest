@@ -14,9 +14,7 @@
 *.cof
 *.suo
 *.orig
-new-core-tests
-core-tests
-tests
+testrunner
 nbproject/private/*
 pfstest-vcxx/Debug/*
 register-*tests.c
