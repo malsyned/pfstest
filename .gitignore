@@ -25,3 +25,4 @@ register-*tests.c
 *.user
 *.mcw
 *.err
+*.pyc
