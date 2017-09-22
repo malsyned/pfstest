@@ -21,30 +21,41 @@ class MockImplementationWriter:
         self.mockgen = mockgen
 
     def write_implementation(self, ostream):
+        self.write_header_include(ostream)
+        self.write_boilerplate_includes(ostream)
+        for mock in self.mockgen.mocks:
+            self.write_mock(ostream, mock)
+
+    def write_header_include(self, ostream):
         ostream.write('#include "%s"\n\n' % self.mockgen.mockheadername)
+
+    def write_boilerplate_includes(self, ostream):
         ostream.write('#include <stddef.h>\n\n')
         ostream.write('#include "pfstest-platform.h"\n')
         ostream.write('#include "pfstest-values.h"\n\n')
-        for mock in self.mockgen.mocks:
-            if (mock.return_hint == ReturnHint.VOID):
-                return_type_writer = ReturnTypeVoidWriter()
-            else:
-                return_type_writer = (
-                    ReturnTypePrimitiveWriter(mock.return_text))
 
-            ostream.write('pfstest_mock_define(%s, "%s", %s);\n' %
-                           (mock.mockname, mock.funcname,
-                            len(mock.args_info)))
-            ostream.write('%s\n' % mock.prototype)
-            ostream.write('{\n')
-            return_type_writer.declare_default_return(ostream)
-            ostream.write('    pfstest_value_t *__pfstest_return_value =\n')
-            ostream.write('        pfstest_mock_invoke(%s,\n' % mock.mockname)
-            ostream.write('                            ');
-            return_type_writer.create_default_return_argument(ostream)
-            ostream.write(');\n\n')
-            return_type_writer.return_result(ostream)
-            ostream.write('}\n\n')
+    def write_mock(self, ostream, mock):
+        return_type_writer = return_type_writer_factory(
+            mock.return_hint, mock.return_text)
+        ostream.write('pfstest_mock_define(%s, "%s", %s);\n' %
+                      (mock.mockname, mock.funcname,
+                       len(mock.args_info)))
+        ostream.write('%s\n' % mock.prototype)
+        ostream.write('{\n')
+        return_type_writer.declare_default_return(ostream)
+        ostream.write('    pfstest_value_t *__pfstest_return_value =\n')
+        ostream.write('        pfstest_mock_invoke(%s,\n' % mock.mockname)
+        ostream.write('                            ');
+        return_type_writer.create_default_return_argument(ostream)
+        ostream.write(');\n\n')
+        return_type_writer.return_result(ostream)
+        ostream.write('}\n\n')
+
+def return_type_writer_factory(return_type_hint, return_type_text):
+    if (return_type_hint == ReturnHint.VOID):
+        return ReturnTypeVoidWriter()
+    else:
+        return ReturnTypePrimitiveWriter(return_type_text)
 
 class ReturnTypeVoidWriter():
     def declare_default_return(self, ostream):
