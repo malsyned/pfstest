@@ -26,18 +26,50 @@ class MockImplementationWriter:
         ostream.write('#include "pfstest-platform.h"\n')
         ostream.write('#include "pfstest-values.h"\n\n')
         for mock in self.mockgen.mocks:
+            if (mock.return_hint == ReturnHint.VOID):
+                return_type_writer = ReturnTypeVoidWriter()
+            else:
+                return_type_writer = (
+                    ReturnTypePrimitiveWriter(mock.return_text))
+
             ostream.write('pfstest_mock_define(%s, "%s", %s);\n' %
                            (mock.mockname, mock.funcname,
                             len(mock.args_info)))
             ostream.write('%s\n' % mock.prototype)
             ostream.write('{\n')
+            return_type_writer.declare_default_return(ostream)
             ostream.write('    pfstest_value_t *__pfstest_return_value =\n')
             ostream.write('        pfstest_mock_invoke(%s,\n' % mock.mockname)
             ostream.write('                            ');
-            ostream.write('NULL')
+            return_type_writer.create_default_return_argument(ostream)
             ostream.write(');\n\n')
-            ostream.write('    (void)__pfstest_return_value;\n')
+            return_type_writer.return_result(ostream)
             ostream.write('}\n\n')
+
+class ReturnTypeVoidWriter():
+    def declare_default_return(self, ostream):
+        pass
+
+    def create_default_return_argument(self, ostream):
+        ostream.write('NULL')
+
+    def return_result(self, ostream):
+        ostream.write('    (void)__pfstest_return_value;\n')
+
+class ReturnTypePrimitiveWriter():
+    def __init__(self, return_type_text):
+        self.return_type_text = return_type_text
+
+    def declare_default_return(self, ostream):
+        ostream.write('    %s __pfstest_default_return = 0;\n\n'
+                      % self.return_type_text)
+
+    def create_default_return_argument(self, ostream):
+        ostream.write('the_pointer(&__pfstest_default_return)')
+
+    def return_result(self, ostream):
+        ostream.write('    return *(%s *)__pfstest_return_value;\n'
+                      % self.return_type_text)
 
 class MockGenerator:
     def __init__(self, cgen, headername, ast):
@@ -45,20 +77,25 @@ class MockGenerator:
         self.headername = headername
         self.mockheadername = "mock-" + headername
         self.guardmacro = self.make_guardname(headername)
-        self.mocks = []
-        if (ast.ext):
-            decl = ast.ext[0]
-            self.mocks.append(self.make_mock(decl))
+        self.mocks = [self.make_mock(decl) for decl in ast.ext]
 
     def make_guardname(self, filename):
         return "_PFSTEST_MOCK_" + re.sub('\.', '_', filename.upper())
 
     def make_mock(self, decl):
+        funcdecl = decl.type
+        returntype = funcdecl.type
+        idtype = returntype.type
+        isvoid = idtype.names == ['void']
+        if (isvoid):
+            return_hint = ReturnHint.VOID
+        else:
+            return_hint = ReturnHint.PRIMITIVE
         return MockInfo(mockname = "mock_" + decl.name,
                          funcname = decl.name,
                          prototype = self.cgen.visit(decl),
                          return_text = decl.type.type.type.names[0],
-                         return_hint = ReturnHint.VOID,
+                         return_hint = return_hint,
                          args_info = [])
 
 class ReturnHint:

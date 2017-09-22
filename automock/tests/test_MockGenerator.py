@@ -53,3 +53,43 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.VOID,
                                    args_info = [])
                          ])
+
+    def test_shouldGenerateMultipleMocks(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("void func1(void);" +
+                                           "void func2(void);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "void func1(void)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = []),
+                          MockInfo(mockname = "mock_func2",
+                                   funcname = "func2",
+                                   prototype = "void func2(void)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [])
+                         ])
+
+
+    def test_shouldHandleSimplePrimitiveReturnType(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("int func1(void);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "int func1(void)",
+                                   return_text = "int",
+                                   return_hint = ReturnHint.PRIMITIVE,
+                                   args_info = [])
+                         ])
