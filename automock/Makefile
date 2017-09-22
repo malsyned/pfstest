@@ -4,4 +4,4 @@ PYTHON := python3
 
 test:
 	@echo
-	$(PYTHON) -m unittest discover -s tests $(ARGS)
+	PYTHONPATH=pycparser $(PYTHON) -m unittest discover -s tests $(ARGS)

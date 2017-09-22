@@ -1,3 +1,5 @@
+import re
+
 class MockHeaderWriter:
     def __init__(self, mockgen):
         self.mockgen = mockgen
@@ -38,12 +40,26 @@ class MockImplementationWriter:
             ostream.write('}\n\n')
 
 class MockGenerator:
-    # Known fields based on unit tests so far:
-    # guardmacro
-    # headername: The original header file the mock was generated from
-    # mockheadername: The name of the generated header for the mock
-    # mocks: Metadata about the functions to be mocked in MockInfo objects
-    pass
+    def __init__(self, cgen, headername, ast):
+        self.cgen = cgen
+        self.headername = headername
+        self.mockheadername = "mock-" + headername
+        self.guardmacro = self.make_guardname(headername)
+        self.mocks = []
+        if (ast.ext):
+            decl = ast.ext[0]
+            self.mocks.append(self.make_mock(decl))
+
+    def make_guardname(self, filename):
+        return "_PFSTEST_MOCK_" + re.sub('\.', '_', filename.upper())
+
+    def make_mock(self, decl):
+        return MockInfo(mockname = "mock_" + decl.name,
+                         funcname = decl.name,
+                         prototype = self.cgen.visit(decl),
+                         return_text = decl.type.type.type.names[0],
+                         return_hint = ReturnHint.VOID,
+                         args_info = [])
 
 class ReturnHint:
     VOID = 1
@@ -55,17 +71,10 @@ class ArgHint:
     POINTER = 1
     BLOB = 2
 
-class MockInfo:
-    def __init__(self, mockname, funcname, prototype, return_text,
-                 return_hint, args_info):
-        self.mockname = mockname
-        self.funcname = funcname
-        self.prototype = prototype
-        self.return_text = return_text
-        self.return_hint = return_hint
-        self.args_info = args_info
+from collections import namedtuple
 
-class ArgInfo:
-    def __init__(self, name, hint):
-        self.name = name
-        self.hint = hint
+MockInfo = namedtuple('MockInfo',
+                      'mockname funcname prototype return_text return_hint '
+                      + 'args_info')
+
+ArgInfo = namedtuple('ArgInfo', 'name hint')

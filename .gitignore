@@ -24,3 +24,5 @@ register-*tests.c
 *.mcw
 *.err
 *.pyc
+lextab.py
+yacctab.py
