@@ -86,8 +86,8 @@ class ReturnTypePrimitiveWriter():
 class MockGenerator:
     def __init__(self, cgen, headername, ast):
         self.cgen = cgen
-        self.headername = headername
-        self.mockheadername = "mock-" + headername
+        self.headername = path.basename(headername)
+        self.mockheadername = "mock-" + self.headername
         self.guardmacro = self.make_guardname(headername)
         self.mocks = [self.make_mock(decl) for decl in ast.ext]
 

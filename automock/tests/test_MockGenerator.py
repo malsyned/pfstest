@@ -24,6 +24,15 @@ class MockGeneratorTests(TestCase):
         # Then
         self.assertEqual(hname, "mockable.h")
 
+    def test_shouldRemoveDirectoryFromHeaderName(self):
+        # Given
+        headername = path.join("..", "foo", "theheader.h")
+        mgen = MockGenerator(cgen, headername, emptyast)
+        # When
+        hname = mgen.headername
+        # Then
+        self.assertEqual(hname, "theheader.h")
+
     def test_shouldCreateGuardMacro(self):
         # Given
         mgen = MockGenerator(cgen, "mockable.h", emptyast)
@@ -58,6 +67,15 @@ class MockGeneratorTests(TestCase):
         mockh = mgen.mockheadername
         # Then
         self.assertEqual(mockh, "mock-mockable.h")
+
+    def test_shouldRemoveDirectoryFromMockHeaderName(self):
+        # Given
+        headername = path.join("..", "foo", "theheader.h")
+        mgen = MockGenerator(cgen, headername, emptyast)
+        # When
+        mockh = mgen.mockheadername
+        # Then
+        self.assertEqual(mockh, "mock-theheader.h")
 
     def test_shouldGenerateMockFromOtherwiseEmptyHeader(self):
         # Given
