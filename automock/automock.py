@@ -126,3 +126,21 @@ MockInfo = namedtuple('MockInfo',
                       + 'args_info')
 
 ArgInfo = namedtuple('ArgInfo', 'name hint')
+
+if __name__ == "__main__":
+    import sys
+    from sys import stdout
+    sys.path.append('pycparser')
+    import pycparser
+    from pycparser.c_generator import CGenerator
+
+    header = sys.argv[1]
+    ast = pycparser.parse_file(header, use_cpp=True)
+    mg = MockGenerator(CGenerator(), header, ast)
+    hwriter = MockHeaderWriter(mg)
+    cwriter = MockImplementationWriter(mg)
+
+    stdout.write('H File:\n======\n\n')
+    hwriter.write_header(stdout)
+    stdout.write('\n\nC File:\n======\n\n')
+    cwriter.write_implementation(stdout)
