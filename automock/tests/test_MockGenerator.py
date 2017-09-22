@@ -7,6 +7,8 @@ from automock import MockGenerator
 from automock import MockInfo, ReturnHint
 from automock import ArgInfo, ArgHint
 
+# CParser() takes about a second to run on my machine, so create it
+# only once instead of in setUp() for every test
 cparser = CParser()
 cgen = CGenerator()
 emptyast = cparser.parse('')
