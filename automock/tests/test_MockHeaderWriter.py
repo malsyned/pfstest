@@ -1,11 +1,9 @@
 from unittest import TestCase
-from unittest.mock import MagicMock
+
+from compat import StringIO
+from compat import MagicMock
 
 from automock import MockHeaderWriter, MockInfo
-
-import sys
-if (sys.version_info[0] >= 3): from io import StringIO
-else:                          from StringIO import StringIO
 
 class MockHeaderWriterTests(TestCase):
     def setUp(self):

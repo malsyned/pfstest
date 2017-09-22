@@ -1,9 +1,7 @@
 from unittest import TestCase
-from unittest.mock import MagicMock
 
-import sys
-if (sys.version_info[0] >= 3): from io import StringIO
-else:                          from StringIO import StringIO
+from compat import StringIO
+from compat import MagicMock
 
 from automock import MockImplementationWriter
 from automock import MockInfo, ReturnHint
