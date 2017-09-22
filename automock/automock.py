@@ -1,3 +1,4 @@
+from os import path
 import re
 
 class MockHeaderWriter:
@@ -91,7 +92,8 @@ class MockGenerator:
         self.mocks = [self.make_mock(decl) for decl in ast.ext]
 
     def make_guardname(self, filename):
-        return "_PFSTEST_MOCK_" + re.sub('\.', '_', filename.upper())
+        return "_PFSTEST_MOCK_" + re.sub('[^A-Za-z_]', '_',
+                                         path.basename(filename).upper())
 
     def make_mock(self, decl):
         funcdecl = decl.type
