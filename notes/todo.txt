@@ -15,3 +15,5 @@
 * Colored output mode
 * the_char printer doesn't escape special characters
 * Stack checking for AVR, both for end users and for my education
+* Bring all identifiers in line with https://www.gnu.org/software/libc/manual/html_node/Reserved-Names.html
+* Buffer overrun checking in pfstest-alloc
