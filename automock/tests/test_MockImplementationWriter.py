@@ -218,3 +218,116 @@ struct foo func1(void)
 
 """
         )
+
+    def test_shouldWriteBlobParameter(self):
+        # Given
+        mockgen = MagicMock()
+        mockgen.mockheadername = "mock-mockable.h"
+        mockgen.mocks = [
+            MockInfo(mockname = "mock_func1",
+                     funcname = "func1",
+                     prototype = "void func1(int __pfstest_arg_0)",
+                     return_text = "void",
+                     return_hint = ReturnHint.VOID,
+                     args_info = [ArgInfo('__pfstest_arg_0', ArgHint.BLOB)]
+            )]
+        mock_c_writer = MockImplementationWriter(mockgen)
+
+        # When
+        mock_c_writer.write_implementation(self.cBuffer)
+
+        # Then
+        self.assertEqual(
+            self.cBuffer.getvalue(),
+            '#include "mock-mockable.h"\n'
+            + boilerplate_includes
+            + """pfstest_mock_define(mock_func1, "func1", 1);
+void func1(int __pfstest_arg_0)
+{
+    pfstest_value_t *__pfstest_return_value =
+        pfstest_mock_invoke(mock_func1,
+                            NULL,
+                            the_pointer(&__pfstest_arg_0));
+
+    (void)__pfstest_return_value;
+}
+
+"""
+        )
+
+    def test_shouldWritePointerParameter(self):
+        # Given
+        mockgen = MagicMock()
+        mockgen.mockheadername = "mock-mockable.h"
+        mockgen.mocks = [
+            MockInfo(mockname = "mock_func1",
+                     funcname = "func1",
+                     prototype = "void func1(char *__pfstest_arg_0)",
+                     return_text = "void",
+                     return_hint = ReturnHint.VOID,
+                     args_info = [ArgInfo('__pfstest_arg_0',
+                                          ArgHint.POINTER)]
+            )]
+        mock_c_writer = MockImplementationWriter(mockgen)
+
+        # When
+        mock_c_writer.write_implementation(self.cBuffer)
+
+        # Then
+        self.assertEqual(
+            self.cBuffer.getvalue(),
+            '#include "mock-mockable.h"\n'
+            + boilerplate_includes
+            + """pfstest_mock_define(mock_func1, "func1", 1);
+void func1(char *__pfstest_arg_0)
+{
+    pfstest_value_t *__pfstest_return_value =
+        pfstest_mock_invoke(mock_func1,
+                            NULL,
+                            the_pointer(__pfstest_arg_0));
+
+    (void)__pfstest_return_value;
+}
+
+"""
+        )
+
+    def test_shouldWriteMultipleParameters(self):
+        # Given
+        mockgen = MagicMock()
+        mockgen.mockheadername = "mock-mockable.h"
+        mockgen.mocks = [
+            MockInfo(mockname = "mock_func1",
+                     funcname = "func1",
+                     prototype = "void func1(int __pfstest_arg_0, "
+                     + "char *__pfstest_arg_1)",
+                     return_text = "void",
+                     return_hint = ReturnHint.VOID,
+                     args_info = [ArgInfo('__pfstest_arg_0', ArgHint.BLOB),
+                                  ArgInfo('__pfstest_arg_1',
+                                          ArgHint.POINTER)]
+            )]
+        mock_c_writer = MockImplementationWriter(mockgen)
+
+        # When
+        mock_c_writer.write_implementation(self.cBuffer)
+
+        # Then
+        self.assertEqual(
+            self.cBuffer.getvalue(),
+            '#include "mock-mockable.h"\n'
+            + boilerplate_includes
+            + """pfstest_mock_define(mock_func1, "func1", 2);
+void func1(int __pfstest_arg_0, char *__pfstest_arg_1)
+{
+    pfstest_value_t *__pfstest_return_value =
+        pfstest_mock_invoke(mock_func1,
+                            NULL,
+                            the_pointer(&__pfstest_arg_0),
+                            the_pointer(__pfstest_arg_1));
+
+    (void)__pfstest_return_value;
+}
+
+"""
+        )

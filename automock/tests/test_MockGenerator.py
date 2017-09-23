@@ -181,3 +181,78 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.BLOB,
                                    args_info = [])
                          ])
+
+    def test_shouldHandlePrimitiveParam(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("void func1(int);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(int __pfstest_arg_0)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.BLOB)])
+                         ])
+
+    def test_shouldHandlePointerParam(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("void func1(char *);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(char *__pfstest_arg_0)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.POINTER)])
+                         ])
+
+    def test_shouldHandleStructParam(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("void func1(struct foo bar);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(struct foo __pfstest_arg_0)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.BLOB)])
+                         ])
+
+    def test_shouldHandleMultipleParams(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("void func1(int, char);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(int __pfstest_arg_0, " \
+                                   + "char __pfstest_arg_1)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.BLOB),
+                                                ArgInfo("__pfstest_arg_1",
+                                                        ArgHint.BLOB)])
+                         ])

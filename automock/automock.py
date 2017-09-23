@@ -54,6 +54,10 @@ class MockImplementationWriter:
         ostream.write('        pfstest_mock_invoke(%s,\n' % mock.mockname)
         ostream.write('                            ');
         return_type_writer.create_default_return_argument(ostream)
+        for arg_info in mock.args_info:
+            ostream.write(',\n                            ')
+            arg_type_writer = arg_type_writer_factory(arg_info.hint)
+            arg_type_writer(ostream, arg_info.name)
         ostream.write(');\n\n')
         return_type_writer.return_result(ostream)
         ostream.write('}\n\n')
@@ -125,6 +129,18 @@ class ReturnTypePointerWriter():
         ostream.write('    return (%s)__pfstest_return_value;\n'
                       % self.return_type_text)
 
+def arg_type_writer_factory(arg_type_hint):
+    if arg_type_hint == ArgHint.POINTER:
+        return arg_type_writer_pointer
+    else:
+        return arg_type_writer_blob
+
+def arg_type_writer_pointer(ostream, arg_name):
+    ostream.write('the_pointer(%s)' % arg_name)
+
+def arg_type_writer_blob(ostream, arg_name):
+    ostream.write('the_pointer(&%s)' % arg_name)
+
 class MockGenerator:
     def __init__(self, cgen, headername, ast):
         self.cgen = cgen
@@ -137,6 +153,12 @@ class MockGenerator:
         return "_PFSTEST_MOCK_" + re.sub('[^A-Za-z_]', '_',
                                          path.basename(filename).upper())
 
+    def set_declname(self, node, name):
+        n = node
+        while not isinstance(n, TypeDecl):
+            n = n.type
+        n.declname = name
+
     # CGenerator won't correctly print a type-name if passed a
     # modifier like PtrDecl or ArrayDecl, unless it is wrapped in a
     # Typename or certain other kinds of nodes.
@@ -144,10 +166,7 @@ class MockGenerator:
         returntextnode = Typename(name=None,
                                   quals=[],
                                   type=copy.deepcopy(returntype))
-        n = returntextnode
-        while not isinstance(n, TypeDecl):
-            n = n.type
-        n.declname = None
+        self.set_declname(returntextnode, None)
         return returntextnode
 
     def select_return_hint(self, returntype):
@@ -166,18 +185,60 @@ class MockGenerator:
                 # FIXME: Thow a more specific exception
                 raise Exception("Couldn't match return type to hint")
 
+    def select_arg_hint(self, param):
+            paramtype = param.type
+            if isinstance(paramtype, TypeDecl):
+                basetype = paramtype.type
+                if isinstance(basetype, IdentifierType):
+                    if basetype.names == ['void']:
+                        return None
+                    else:
+                        return ArgHint.BLOB
+                elif isinstance(basetype, Struct):
+                    return ArgHint.BLOB
+                else:
+                    # FIXME: Thow a more specific exception
+                    raise Exception("Couldn't match param type to hint")
+            elif isinstance(paramtype, PtrDecl):
+                return ArgHint.POINTER
+
+    def arg_hints(self, params):
+        return [self.select_arg_hint(param) for param in params]
+
+    def set_param_names(self, params, names, hints):
+        for (param, name, hint) in zip(params, names, hints):
+            if hint != None:    # Don't set a name for (void)
+                self.set_declname(param, name)
+
+    def arg_names(self, params):
+        return ['__pfstest_arg_%s' % i for i in range(len(params))]
+
+    def make_args_info(self, names, hints):
+        return [ArgInfo(name, hint)
+                for (name, hint) in zip(names, hints)
+                if hint != None] # Don't make ArgInfo for (void)
+
     def make_mock(self, decl):
+        # Make a copy so I can modify it with self.set_param_names()
+        decl = copy.deepcopy(decl)
         funcdecl = decl.type
+
         returntype = funcdecl.type
         return_hint = self.select_return_hint(returntype)
         returntextnode = self.make_return_text_node(returntype)
+
+        params = funcdecl.args.params
+        arg_names = self.arg_names(params)
+        arg_hints = self.arg_hints(params)
+        self.set_param_names(params, arg_names, arg_hints)
+        args_info = self.make_args_info(arg_names, arg_hints)
 
         return MockInfo(mockname = "mock_" + decl.name,
                          funcname = decl.name,
                          prototype = self.cgen.visit(decl),
                          return_text = self.cgen.visit(returntextnode),
                          return_hint = return_hint,
-                         args_info = [])
+                         args_info = args_info)
 
 class ReturnHint:
     VOID = 1
