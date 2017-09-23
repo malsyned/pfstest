@@ -43,7 +43,7 @@ class MockImplementationWriter:
         ostream.write('#include "pfstest-values.h"\n\n')
 
     def write_mock(self, ostream, mock):
-        return_type_writer = return_type_writer_factory(
+        return_type_writer = self.return_type_writer_factory(
             mock.return_hint, mock.return_text)
         ostream.write('pfstest_mock_define(%s, "%s", %s);\n' %
                       (mock.mockname, mock.funcname,
@@ -57,93 +57,93 @@ class MockImplementationWriter:
         return_type_writer.create_default_return_argument(ostream)
         for arg_info in mock.args_info:
             ostream.write(',\n                            ')
-            arg_type_writer = arg_type_writer_factory(arg_info.hint)
+            arg_type_writer = self.arg_type_writer_factory(arg_info.hint)
             arg_type_writer(ostream, arg_info.name)
         ostream.write(');\n\n')
         return_type_writer.return_result(ostream)
         ostream.write('}\n\n')
 
-def return_type_writer_factory(return_type_hint, return_type_text):
-    if return_type_hint == ReturnHint.VOID:
-        return ReturnTypeVoidWriter()
-    elif return_type_hint == ReturnHint.POINTER:
-        return ReturnTypePointerWriter(return_type_text)
-    elif return_type_hint == ReturnHint.BLOB:
-        return ReturnTypeBlobWriter(return_type_text)
-    else:
-        return ReturnTypePrimitiveWriter(return_type_text)
+    def return_type_writer_factory(self, return_type_hint, return_type_text):
+        if return_type_hint == ReturnHint.VOID:
+            return self.ReturnTypeVoidWriter()
+        elif return_type_hint == ReturnHint.POINTER:
+            return self.ReturnTypePointerWriter(return_type_text)
+        elif return_type_hint == ReturnHint.BLOB:
+            return self.ReturnTypeBlobWriter(return_type_text)
+        else:
+            return self.ReturnTypePrimitiveWriter(return_type_text)
 
-class ReturnTypeVoidWriter():
-    def declare_default_return(self, ostream):
-        pass
+    class ReturnTypeVoidWriter():
+        def declare_default_return(self, ostream):
+            pass
 
-    def create_default_return_argument(self, ostream):
-        ostream.write('NULL')
+        def create_default_return_argument(self, ostream):
+            ostream.write('NULL')
 
-    def return_result(self, ostream):
-        ostream.write('    (void)__pfstest_return_value;\n')
+        def return_result(self, ostream):
+            ostream.write('    (void)__pfstest_return_value;\n')
 
-class ReturnTypePrimitiveWriter():
-    def __init__(self, return_type_text):
-        self.return_type_text = return_type_text
+    class ReturnTypePointerWriter():
+        def __init__(self, return_type_text):
+            self.return_type_text = return_type_text
 
-    def declare_default_return(self, ostream):
-        ostream.write('    %s __pfstest_default_return = 0;\n\n'
-                      % self.return_type_text)
+        def declare_default_return(self, ostream):
+            ostream.write('    %s __pfstest_default_return = NULL;\n\n'
+                          % self.return_type_text)
 
-    def create_default_return_argument(self, ostream):
-        ostream.write('the_pointer(&__pfstest_default_return)')
+        def create_default_return_argument(self, ostream):
+            ostream.write('the_pointer(__pfstest_default_return)')
 
-    def return_result(self, ostream):
-        ostream.write(('    return *(%s *)pfstest_value_data('
-                       + '__pfstest_return_value);\n')
-                      % self.return_type_text)
+        def return_result(self, ostream):
+            ostream.write(('    return (%s)pfstest_value_data('
+                           + '__pfstest_return_value);\n')
+                          % self.return_type_text)
 
-class ReturnTypeBlobWriter():
-    def __init__(self, return_type_text):
-        self.return_type_text = return_type_text
+    class ReturnTypeBlobWriter():
+        def __init__(self, return_type_text):
+            self.return_type_text = return_type_text
 
-    def declare_default_return(self, ostream):
-        ostream.write('    %s __pfstest_default_return;\n'
-                      % self.return_type_text)
-        ostream.write('    memset(&__pfstest_default_return, 0, '
-                      + 'sizeof(__pfstest_default_return));\n\n')
+        def declare_default_return(self, ostream):
+            ostream.write('    %s __pfstest_default_return;\n'
+                          % self.return_type_text)
+            ostream.write('    memset(&__pfstest_default_return, 0, '
+                          + 'sizeof(__pfstest_default_return));\n\n')
 
-    def create_default_return_argument(self, ostream):
-        ostream.write('the_pointer(&__pfstest_default_return)')
+        def create_default_return_argument(self, ostream):
+            ostream.write('the_pointer(&__pfstest_default_return)')
 
-    def return_result(self, ostream):
-        ostream.write(('    return *(%s *)pfstest_value_data('
-                       + '__pfstest_return_value);\n')
-                      % self.return_type_text)
+        def return_result(self, ostream):
+            ostream.write(('    return *(%s *)pfstest_value_data('
+                           + '__pfstest_return_value);\n')
+                          % self.return_type_text)
 
-class ReturnTypePointerWriter():
-    def __init__(self, return_type_text):
-        self.return_type_text = return_type_text
+    class ReturnTypePrimitiveWriter():
+        def __init__(self, return_type_text):
+            self.return_type_text = return_type_text
 
-    def declare_default_return(self, ostream):
-        ostream.write('    %s __pfstest_default_return = NULL;\n\n'
-                      % self.return_type_text)
+        def declare_default_return(self, ostream):
+            ostream.write('    %s __pfstest_default_return = 0;\n\n'
+                          % self.return_type_text)
 
-    def create_default_return_argument(self, ostream):
-        ostream.write('the_pointer(__pfstest_default_return)')
+        def create_default_return_argument(self, ostream):
+            ostream.write('the_pointer(&__pfstest_default_return)')
 
-    def return_result(self, ostream):
-        ostream.write(('    return (%s)pfstest_value_data('
-                       + '__pfstest_return_value);\n')
-                      % self.return_type_text)
+        def return_result(self, ostream):
+            ostream.write(('    return *(%s *)pfstest_value_data('
+                           + '__pfstest_return_value);\n')
+                          % self.return_type_text)
 
-def arg_type_writer_factory(arg_type_hint):
-    if arg_type_hint == ArgHint.POINTER:
-        return arg_type_writer_pointer
-    else:
-        return arg_type_writer_blob
+    def arg_type_writer_factory(self, arg_type_hint):
+        if arg_type_hint == ArgHint.POINTER:
+            return self.arg_type_writer_pointer
+        else:
+            return self.arg_type_writer_blob
 
-def arg_type_writer_pointer(ostream, arg_name):
-    ostream.write('the_pointer(%s)' % arg_name)
+    def arg_type_writer_pointer(self, ostream, arg_name):
+        ostream.write('the_pointer(%s)' % arg_name)
 
-def arg_type_writer_blob(ostream, arg_name):
-    ostream.write('the_pointer(&%s)' % arg_name)
+    def arg_type_writer_blob(self, ostream, arg_name):
+        ostream.write('the_pointer(&%s)' % arg_name)
 
 class MockGenerator:
     def __init__(self, cgen, headerpath, ast):
@@ -174,85 +174,15 @@ class MockGenerator:
     def ext_is_typedef(self, extdecl):
         return isinstance(extdecl, Typedef)
 
-    def ext_declares_function(self, extdecl):
-        return (isinstance(extdecl, Decl)
-                and isinstance(extdecl.type, FuncDecl))
-
-    def set_declname(self, node, name):
-        typedecl = self.extract_typedecl(node)
-        typedecl.declname = name
-
     def extract_typedecl(self, node):
         if isinstance(node, TypeDecl):
             return node
         else:
             return self.extract_typedecl(node.type)
 
-    # CGenerator won't correctly print a type-name if passed a
-    # modifier like PtrDecl or ArrayDecl, unless it is wrapped in a
-    # Typename or certain other kinds of nodes.
-    def make_return_text_node(self, returntype):
-        returntextnode = Typename(name=None,
-                                  quals=[],
-                                  type=copy.deepcopy(returntype))
-        self.set_declname(returntextnode, None)
-        return returntextnode
-
-    def select_return_hint(self, returntype):
-        if isinstance(returntype, PtrDecl):
-            return ReturnHint.POINTER
-        elif isinstance(returntype, TypeDecl):
-            basetype = returntype.type
-            if isinstance(basetype, Struct):
-                return ReturnHint.BLOB
-            elif isinstance(basetype, IdentifierType):
-                if basetype.names == ['void']:
-                    return ReturnHint.VOID
-                else:
-                    return ReturnHint.PRIMITIVE
-            else:
-                # FIXME: Thow a more specific exception
-                raise Exception("Couldn't match return type to hint")
-
-    def select_arg_hint(self, paramtype):
-            if isinstance(paramtype, TypeDecl):
-                basetype = paramtype.type
-                if isinstance(basetype, IdentifierType):
-                    if basetype.names == ['void']:
-                        return None
-                    else:
-                        return ArgHint.BLOB
-                elif isinstance(basetype, Struct):
-                    return ArgHint.BLOB
-                else:
-                    # FIXME: Thow a more specific exception
-                    raise Exception("Couldn't match param type to hint")
-            elif isinstance(paramtype, PtrDecl):
-                return ArgHint.POINTER
-
-    def arg_hints(self, typedefs, params):
-        hints = []
-        for param in params:
-            paramtype = param.type
-            typedef = self.find_typedef(typedefs, paramtype)
-            if typedef:
-                hints.append(self.select_arg_hint(typedef))
-            else:
-                hints.append(self.select_arg_hint(paramtype))
-        return hints
-
-    def set_param_names(self, params, names, hints):
-        for (param, name, hint) in zip(params, names, hints):
-            if hint != None:    # Don't set a name for (void)
-                self.set_declname(param, name)
-
-    def arg_names(self, params):
-        return ['__pfstest_arg_%s' % i for i in range(len(params))]
-
-    def make_args_info(self, names, hints):
-        return [ArgInfo(name, hint)
-                for (name, hint) in zip(names, hints)
-                if hint != None] # Don't make ArgInfo for (void)
+    def ext_declares_function(self, extdecl):
+        return (isinstance(extdecl, Decl)
+                and isinstance(extdecl.type, FuncDecl))
 
     def make_mock(self, typedefs, funcdecl):
         # Make a copy so I can modify it with self.set_param_names()
@@ -289,6 +219,76 @@ class MockGenerator:
                     return typedefs[typename]
         return None
 
+    def select_return_hint(self, returntype):
+        if isinstance(returntype, PtrDecl):
+            return ReturnHint.POINTER
+        elif isinstance(returntype, TypeDecl):
+            basetype = returntype.type
+            if isinstance(basetype, Struct):
+                return ReturnHint.BLOB
+            elif isinstance(basetype, IdentifierType):
+                if basetype.names == ['void']:
+                    return ReturnHint.VOID
+                else:
+                    return ReturnHint.PRIMITIVE
+            else:
+                # FIXME: Thow a more specific exception
+                raise Exception("Couldn't match return type to hint")
+
+    # CGenerator won't correctly print a type-name if passed a
+    # modifier like PtrDecl or ArrayDecl, unless it is wrapped in a
+    # Typename or certain other kinds of nodes.
+    def make_return_text_node(self, returntype):
+        returntextnode = Typename(name=None,
+                                  quals=[],
+                                  type=copy.deepcopy(returntype))
+        self.set_declname(returntextnode, None)
+        return returntextnode
+
+    def set_declname(self, node, name):
+        typedecl = self.extract_typedecl(node)
+        typedecl.declname = name
+
+    def arg_names(self, params):
+        return ['__pfstest_arg_%s' % i for i in range(len(params))]
+
+    def arg_hints(self, typedefs, params):
+        hints = []
+        for param in params:
+            paramtype = param.type
+            typedef = self.find_typedef(typedefs, paramtype)
+            if typedef:
+                hints.append(self.select_arg_hint(typedef))
+            else:
+                hints.append(self.select_arg_hint(paramtype))
+        return hints
+
+    def select_arg_hint(self, paramtype):
+            if isinstance(paramtype, TypeDecl):
+                basetype = paramtype.type
+                if isinstance(basetype, IdentifierType):
+                    if basetype.names == ['void']:
+                        return None
+                    else:
+                        return ArgHint.BLOB
+                elif isinstance(basetype, Struct):
+                    return ArgHint.BLOB
+                else:
+                    # FIXME: Thow a more specific exception
+                    raise Exception("Couldn't match param type to hint")
+            elif isinstance(paramtype, PtrDecl):
+                return ArgHint.POINTER
+
+    def set_param_names(self, params, names, hints):
+        for (param, name, hint) in zip(params, names, hints):
+            if hint != None:    # Don't set a name for (void)
+                self.set_declname(param, name)
+
+    def make_args_info(self, names, hints):
+        return [ArgInfo(name, hint)
+                for (name, hint) in zip(names, hints)
+                if hint != None] # Don't make ArgInfo for (void)
+
 def enum(name, fields):
     class EnumValue:
         def __init__(self, clsname, name):
@@ -297,18 +297,17 @@ def enum(name, fields):
         def __repr__(self):
             return self.repr
 
-    d = dict((field, EnumValue(name, field)) for field in fields.split(' '))
-    return type(name, (), d)
-
-ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
-
-ArgHint = enum('ArgHint', 'POINTER BLOB')
+    dict_ = dict((field, EnumValue(name, field))
+                 for field in fields.split(' '))
+    return type(name, (), dict_)
 
 MockInfo = namedtuple('MockInfo',
                       'mockname funcname prototype return_text return_hint '
                       + 'args_info')
+ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
 
 ArgInfo = namedtuple('ArgInfo', 'name hint')
+ArgHint = enum('ArgHint', 'POINTER BLOB')
 
 if __name__ == "__main__":
     from sys import stdout
