@@ -1,10 +1,9 @@
 import sys
-sys.path.append('pycparser')
-
 from os import path
 import re
 import copy
 from collections import namedtuple
+sys.path.append(path.join(path.dirname(__file__), 'pycparser'))
 from pycparser.c_ast import *
 
 class MockHeaderWriter:
