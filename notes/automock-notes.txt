@@ -1,6 +1,6 @@
 Dennis Lambe
 Notes on issues and possibilities for implementing auto-mocking in PFSTest
-Last modified: <2017-09-22 19:39:40>
+Last modified: <2017-09-23 16:41:51>
 
 1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
 2) Identify the return type and types of all arguments
@@ -59,6 +59,10 @@ I want to be able to support at least the following sorts of extensions to the C
     For example, __flash on AVR, far, near, ram, rom on mcc18
     https://gcc.gnu.org/onlinedocs/gcc-5.4.0/gcc/Named-Address-Spaces.html
 
+* Simple type-specifiers other than void, char, short, int, long, float, double, signed, unsigned
+
+    For example, __builtin_va_list on GCC
+
 * function-specifiers other than inline
 
     For example, _Noreturn from C11
@@ -66,7 +70,7 @@ I want to be able to support at least the following sorts of extensions to the C
 
     If it's legal to declare a function with these and then define them without, then I can just define these both to empty strings in the preprocessor as well.
 
-* __attribute__(()) and __extension__
+* __attribute__(()), __extension__, __asm__()
 
     It looks like as long as these are attached to the declaration, they can be stripped from the function definition, but I haven't found a reference for this. I'm not sure if this also applies to attributes attached to parameters. Some attributes, like __packed__, act like type qualifiers in that they create incompatible types.
 
