@@ -1,5 +1,5 @@
-#ifndef MOCK_DEP_H
-#define MOCK_DEP_H
+#ifndef _PFSTEST_MOCK_DEP_H
+#define _PFSTEST_MOCK_DEP_H
 
 #include "dep.h"
 
@@ -9,4 +9,4 @@ pfstest_mock_declare(mock_dep_func1);
 pfstest_mock_declare(mock_dep_func2);
 pfstest_mock_declare(mock_dep_func3);
 
-#endif /* !MOCK_DEP_H */
+#endif /* !defined(_PFSTEST_MOCK_DEP_H) */
