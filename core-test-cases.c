@@ -61,6 +61,5 @@ pfstest_case(should_also_fail)
 
 pfstest_case(should_have_multi_line_failure)
 {
-    fail("Expected failure, should have been caught\n"
-         "and formatted correctly\nacross multiple lines");
+    fail("Expected failure, should have been caught\nand formatted correctly\nacross multiple lines");
 }

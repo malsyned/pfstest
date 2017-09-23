@@ -236,13 +236,13 @@ test(should_report_results_verbose)
         fail("Output did not match expected output");
     }
 }
-
+#include <stdio.h>
 test(should_indent_multi_line_error_messages)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
-        "    Location: core-test-cases.c:65\n"
+        "    Location: core-test-cases.c:64\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -264,7 +264,7 @@ test(should_indent_multi_line_error_messages_verbose)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
-        "    Location: core-test-cases.c:65\n"
+        "    Location: core-test-cases.c:64\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
