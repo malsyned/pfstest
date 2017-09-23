@@ -1,6 +1,6 @@
 Dennis Lambe
 Notes on issues and possibilities for implementing auto-mocking in PFSTest
-Last modified: <2017-09-17 10:57:50>
+Last modified: <2017-09-22 19:39:40>
 
 1) Identify all things in a header file which are functions. (if pre-processing, restrict to all functions which are actually textually defined in that .h file, not included from other files)
 2) Identify the return type and types of all arguments
@@ -58,6 +58,13 @@ I want to be able to support at least the following sorts of extensions to the C
 
     For example, __flash on AVR, far, near, ram, rom on mcc18
     https://gcc.gnu.org/onlinedocs/gcc-5.4.0/gcc/Named-Address-Spaces.html
+
+* function-specifiers other than inline
+
+    For example, _Noreturn from C11
+    http://en.cppreference.com/w/c/language/function_specifiers
+
+    If it's legal to declare a function with these and then define them without, then I can just define these both to empty strings in the preprocessor as well.
 
 * __attribute__(()) and __extension__
 
