@@ -36,7 +36,8 @@ class MockImplementationWriter:
         ostream.write('#include "%s"\n\n' % self.mockgen.mockheadername)
 
     def write_boilerplate_includes(self, ostream):
-        ostream.write('#include <stddef.h>\n\n')
+        ostream.write('#include <stddef.h>\n')
+        ostream.write('#include <string.h>\n\n')
         ostream.write('#include "pfstest-platform.h"\n')
         ostream.write('#include "pfstest-values.h"\n\n')
 
@@ -62,6 +63,8 @@ def return_type_writer_factory(return_type_hint, return_type_text):
         return ReturnTypeVoidWriter()
     elif return_type_hint == ReturnHint.POINTER:
         return ReturnTypePointerWriter(return_type_text)
+    elif return_type_hint == ReturnHint.BLOB:
+        return ReturnTypeBlobWriter(return_type_text)
     else:
         return ReturnTypePrimitiveWriter(return_type_text)
 
@@ -82,6 +85,23 @@ class ReturnTypePrimitiveWriter():
     def declare_default_return(self, ostream):
         ostream.write('    %s __pfstest_default_return = 0;\n\n'
                       % self.return_type_text)
+
+    def create_default_return_argument(self, ostream):
+        ostream.write('the_pointer(&__pfstest_default_return)')
+
+    def return_result(self, ostream):
+        ostream.write('    return *(%s *)__pfstest_return_value;\n'
+                      % self.return_type_text)
+
+class ReturnTypeBlobWriter():
+    def __init__(self, return_type_text):
+        self.return_type_text = return_type_text
+
+    def declare_default_return(self, ostream):
+        ostream.write('    %s __pfstest_default_return;\n'
+                      % self.return_type_text)
+        ostream.write('    memset(&__pfstest_default_return, 0, '
+                      + 'sizeof(__pfstest_default_return));\n\n')
 
     def create_default_return_argument(self, ostream):
         ostream.write('the_pointer(&__pfstest_default_return)')
@@ -134,11 +154,17 @@ class MockGenerator:
         if isinstance(returntype, PtrDecl):
             return ReturnHint.POINTER
         elif isinstance(returntype, TypeDecl):
-            idtype = returntype.type
-            if idtype.names == ['void']:
-                return ReturnHint.VOID
+            basetype = returntype.type
+            if isinstance(basetype, Struct):
+                return ReturnHint.BLOB
+            elif isinstance(basetype, IdentifierType):
+                if basetype.names == ['void']:
+                    return ReturnHint.VOID
+                else:
+                    return ReturnHint.PRIMITIVE
             else:
-                return ReturnHint.PRIMITIVE
+                # FIXME: Thow a more specific exception
+                raise Exception("Couldn't match return type to hint")
 
     def make_mock(self, decl):
         funcdecl = decl.type

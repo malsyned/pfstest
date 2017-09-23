@@ -166,3 +166,20 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.POINTER,
                                    args_info = [])
                          ])
+
+    def test_shouldHandleStructReturnType(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("struct foo func1(void);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "struct foo func1(void)",
+                                   return_text = "struct foo",
+                                   return_hint = ReturnHint.BLOB,
+                                   args_info = [])
+                         ])

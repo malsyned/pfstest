@@ -9,6 +9,7 @@ from automock import ArgInfo, ArgHint
 
 boilerplate_includes = """
 #include <stddef.h>
+#include <string.h>
 
 #include "pfstest-platform.h"
 #include "pfstest-values.h"
@@ -175,6 +176,44 @@ char *func1(void)
                             the_pointer(__pfstest_default_return));
 
     return (char *)__pfstest_return_value;
+}
+
+"""
+        )
+
+    def test_shouldHandleStructReturnTypes(self):
+        # Given
+        mockgen = MagicMock()
+        mockgen.mockheadername = "mock-mockable.h"
+        mockgen.mocks = [
+            MockInfo(mockname = "mock_func1",
+                     funcname = "func1",
+                     prototype = "struct foo func1(void)",
+                     return_text = "struct foo",
+                     return_hint = ReturnHint.BLOB,
+                     args_info = [])
+        ]
+        mock_c_writer = MockImplementationWriter(mockgen)
+
+        # When
+        mock_c_writer.write_implementation(self.cBuffer)
+
+        # Then
+        self.assertEqual(
+            self.cBuffer.getvalue(),
+            '#include "mock-mockable.h"\n'
+            + boilerplate_includes
+            + """pfstest_mock_define(mock_func1, "func1", 0);
+struct foo func1(void)
+{
+    struct foo __pfstest_default_return;
+    memset(&__pfstest_default_return, 0, sizeof(__pfstest_default_return));
+
+    pfstest_value_t *__pfstest_return_value =
+        pfstest_mock_invoke(mock_func1,
+                            the_pointer(&__pfstest_default_return));
+
+    return *(struct foo *)__pfstest_return_value;
 }
 
 """
