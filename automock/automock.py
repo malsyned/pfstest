@@ -151,17 +151,30 @@ class MockGenerator:
         self.headername = path.basename(headername)
         self.mockheadername = "mock-" + self.headername
         self.guardmacro = self.make_guardname(headername)
-        self.mocks = [self.make_mock(decl) for decl in ast.ext]
+        self.mocks = self.make_mocks(ast.ext)
 
     def make_guardname(self, filename):
         return "_PFSTEST_MOCK_" + re.sub('[^A-Za-z_]', '_',
                                          path.basename(filename).upper())
 
+    def make_mocks(self, ext):
+        return [self.make_mock(extdecl.type)
+                for extdecl in ext
+                if self.ext_declares_function(extdecl)]
+
+    def ext_declares_function(self, extdecl):
+        return (isinstance(extdecl, Decl)
+                and isinstance(extdecl.type, FuncDecl))
+
     def set_declname(self, node, name):
-        n = node
-        while not isinstance(n, TypeDecl):
-            n = n.type
-        n.declname = name
+        typedecl = self.extract_typedecl(node)
+        typedecl.declname = name
+
+    def extract_typedecl(self, node):
+        if isinstance(node, TypeDecl):
+            return node
+        else:
+            return self.extract_typedecl(node.type)
 
     # CGenerator won't correctly print a type-name if passed a
     # modifier like PtrDecl or ArrayDecl, unless it is wrapped in a
@@ -222,10 +235,10 @@ class MockGenerator:
                 for (name, hint) in zip(names, hints)
                 if hint != None] # Don't make ArgInfo for (void)
 
-    def make_mock(self, decl):
+    def make_mock(self, funcdecl):
         # Make a copy so I can modify it with self.set_param_names()
-        decl = copy.deepcopy(decl)
-        funcdecl = decl.type
+        funcdecl = copy.deepcopy(funcdecl)
+        funcname = self.extract_typedecl(funcdecl).declname
 
         returntype = funcdecl.type
         return_hint = self.select_return_hint(returntype)
@@ -237,9 +250,9 @@ class MockGenerator:
         self.set_param_names(params, arg_names, arg_hints)
         args_info = self.make_args_info(arg_names, arg_hints)
 
-        return MockInfo(mockname = "mock_" + decl.name,
-                         funcname = decl.name,
-                         prototype = self.cgen.visit(decl),
+        return MockInfo(mockname = "mock_" + funcname,
+                         funcname = funcname,
+                         prototype = self.cgen.visit(funcdecl),
                          return_text = self.cgen.visit(returntextnode),
                          return_hint = return_hint,
                          args_info = args_info)

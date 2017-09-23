@@ -256,3 +256,27 @@ class MockGeneratorTests(TestCase):
                                                 ArgInfo("__pfstest_arg_1",
                                                         ArgHint.BLOB)])
                          ])
+
+    def test_shouldIgnoreNonFunctionDeclarations(self):
+        # Given
+        source = """
+            extern int i;
+            struct foo {int a; int b;};
+            enum bar {A, B};
+            union baz {int A; char B;};
+            inline int ifunc(void) { return 0; }
+            void func1(void);
+        """
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse(source))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "void func1(void)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [])
+                         ])
