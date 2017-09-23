@@ -316,7 +316,14 @@ if __name__ == "__main__":
     from pycparser.c_generator import CGenerator
 
     header = sys.argv[1]
-    ast = pycparser.parse_file(header, use_cpp=True)
+    ast = pycparser.parse_file(
+        header, use_cpp=True,
+        cpp_args=['-D__attribute__(x)=',
+                  '-D__restrict=restrict',
+                  '-D__asm__(x)=',
+                  '-D__inline=inline',
+                  '-D__extension__=',
+                  '-D__builtin_va_list=void *'])
     mg = MockGenerator(CGenerator(), header, ast)
     hwriter = MockHeaderWriter(mg)
     cwriter = MockImplementationWriter(mg)
