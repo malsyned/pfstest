@@ -160,8 +160,7 @@ class MockGeneratorTests(TestCase):
         self.assertEqual(mocks,
                          [MockInfo(mockname = "mock_func1",
                                    funcname = "func1",
-                                   prototype = \
-                                   "char *func1(void)",
+                                   prototype = "char *func1(void)",
                                    return_text = "char *",
                                    return_hint = ReturnHint.POINTER,
                                    args_info = [])
@@ -177,8 +176,7 @@ class MockGeneratorTests(TestCase):
         self.assertEqual(mocks,
                          [MockInfo(mockname = "mock_func1",
                                    funcname = "func1",
-                                   prototype = \
-                                   "struct foo func1(void)",
+                                   prototype = "struct foo func1(void)",
                                    return_text = "struct foo",
                                    return_hint = ReturnHint.BLOB,
                                    args_info = [])
