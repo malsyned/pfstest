@@ -1,5 +1,10 @@
 from os import path
 import re
+import sys
+import copy
+
+sys.path.append('pycparser')
+from pycparser.c_ast import *
 
 class MockHeaderWriter:
     def __init__(self, mockgen):
@@ -53,8 +58,10 @@ class MockImplementationWriter:
         ostream.write('}\n\n')
 
 def return_type_writer_factory(return_type_hint, return_type_text):
-    if (return_type_hint == ReturnHint.VOID):
+    if return_type_hint == ReturnHint.VOID:
         return ReturnTypeVoidWriter()
+    elif return_type_hint == ReturnHint.POINTER:
+        return ReturnTypePointerWriter(return_type_text)
     else:
         return ReturnTypePrimitiveWriter(return_type_text)
 
@@ -83,6 +90,21 @@ class ReturnTypePrimitiveWriter():
         ostream.write('    return *(%s *)__pfstest_return_value;\n'
                       % self.return_type_text)
 
+class ReturnTypePointerWriter():
+    def __init__(self, return_type_text):
+        self.return_type_text = return_type_text
+
+    def declare_default_return(self, ostream):
+        ostream.write('    %s __pfstest_default_return = NULL;\n\n'
+                      % self.return_type_text)
+
+    def create_default_return_argument(self, ostream):
+        ostream.write('the_pointer(__pfstest_default_return)')
+
+    def return_result(self, ostream):
+        ostream.write('    return (%s)__pfstest_return_value;\n'
+                      % self.return_type_text)
+
 class MockGenerator:
     def __init__(self, cgen, headername, ast):
         self.cgen = cgen
@@ -95,19 +117,39 @@ class MockGenerator:
         return "_PFSTEST_MOCK_" + re.sub('[^A-Za-z_]', '_',
                                          path.basename(filename).upper())
 
+    # CGenerator won't correctly print a type-name if passed a
+    # modifier like PtrDecl or ArrayDecl, unless it is wrapped in a
+    # Typename or certain other kinds of nodes.
+    def make_return_text_node(self, returntype):
+        returntextnode = Typename(name=None,
+                                  quals=[],
+                                  type=copy.deepcopy(returntype))
+        n = returntextnode
+        while not isinstance(n, TypeDecl):
+            n = n.type
+        n.declname = None
+        return returntextnode
+
+    def select_return_hint(self, returntype):
+        if isinstance(returntype, PtrDecl):
+            return ReturnHint.POINTER
+        elif isinstance(returntype, TypeDecl):
+            idtype = returntype.type
+            if idtype.names == ['void']:
+                return ReturnHint.VOID
+            else:
+                return ReturnHint.PRIMITIVE
+
     def make_mock(self, decl):
         funcdecl = decl.type
         returntype = funcdecl.type
-        idtype = returntype.type
-        isvoid = idtype.names == ['void']
-        if (isvoid):
-            return_hint = ReturnHint.VOID
-        else:
-            return_hint = ReturnHint.PRIMITIVE
+        return_hint = self.select_return_hint(returntype)
+        returntextnode = self.make_return_text_node(returntype)
+
         return MockInfo(mockname = "mock_" + decl.name,
                          funcname = decl.name,
                          prototype = self.cgen.visit(decl),
-                         return_text = decl.type.type.type.names[0],
+                         return_text = self.cgen.visit(returntextnode),
                          return_hint = return_hint,
                          args_info = [])
 
@@ -130,9 +172,7 @@ MockInfo = namedtuple('MockInfo',
 ArgInfo = namedtuple('ArgInfo', 'name hint')
 
 if __name__ == "__main__":
-    import sys
     from sys import stdout
-    sys.path.append('pycparser')
     import pycparser
     from pycparser.c_generator import CGenerator
 

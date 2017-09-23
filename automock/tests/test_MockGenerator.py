@@ -132,3 +132,37 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.PRIMITIVE,
                                    args_info = [])
                          ])
+
+    def test_shouldHandleCompoundTypeSpecifierInReturnType(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("unsigned long int func1(void);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "unsigned long int func1(void)",
+                                   return_text = "unsigned long int",
+                                   return_hint = ReturnHint.PRIMITIVE,
+                                   args_info = [])
+                         ])
+
+    def test_shouldHandlePointerReturnType(self):
+        # Given
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse("char *func1(void);"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "char *func1(void)",
+                                   return_text = "char *",
+                                   return_hint = ReturnHint.POINTER,
+                                   args_info = [])
+                         ])

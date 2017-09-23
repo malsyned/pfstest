@@ -142,3 +142,40 @@ int func1(void)
 
 """
         )
+
+    def test_shouldHandlePointerReturnTypes(self):
+        # Given
+        mockgen = MagicMock()
+        mockgen.mockheadername = "mock-mockable.h"
+        mockgen.mocks = [
+            MockInfo(mockname = "mock_func1",
+                     funcname = "func1",
+                     prototype = "char *func1(void)",
+                     return_text = "char *",
+                     return_hint = ReturnHint.POINTER,
+                     args_info = [])
+        ]
+        mock_c_writer = MockImplementationWriter(mockgen)
+
+        # When
+        mock_c_writer.write_implementation(self.cBuffer)
+
+        # Then
+        self.assertEqual(
+            self.cBuffer.getvalue(),
+            '#include "mock-mockable.h"\n'
+            + boilerplate_includes
+            + """pfstest_mock_define(mock_func1, "func1", 0);
+char *func1(void)
+{
+    char * __pfstest_default_return = NULL;
+
+    pfstest_value_t *__pfstest_return_value =
+        pfstest_mock_invoke(mock_func1,
+                            the_pointer(__pfstest_default_return));
+
+    return (char *)__pfstest_return_value;
+}
+
+"""
+        )
