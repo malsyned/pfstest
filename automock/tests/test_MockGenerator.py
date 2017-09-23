@@ -13,6 +13,7 @@ from os import path
 # only once instead of in setUp() for every test
 cparser = CParser()
 cgen = CGenerator()
+defaulthname = "mockable.h"
 emptyast = cparser.parse('')
 
 class MockGeneratorTests(TestCase):
@@ -82,8 +83,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldGenerateMockFromOtherwiseEmptyHeader(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("void func1(void);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("void func1(void);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -98,9 +100,10 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldGenerateMultipleMocks(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
+        mgen = MockGenerator(cgen, defaulthname,
                              cparser.parse("void func1(void);" +
-                                           "void func2(void);"))
+                                           "void func2(void);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -122,8 +125,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleSimplePrimitiveReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("int func1(void);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("int func1(void);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -138,8 +142,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleCompoundTypeSpecifierInReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("unsigned long int func1(void);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("unsigned long int func1(void);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -155,8 +160,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandlePointerReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("char *func1(void);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("char *func1(void);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -171,8 +177,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleStructReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("struct foo func1(void);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("struct foo func1(void);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -187,8 +194,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandlePrimitiveParam(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("void func1(int);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("void func1(int);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -205,8 +213,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandlePointerParam(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("void func1(char *);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("void func1(char *);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -223,8 +232,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleStructParam(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("void func1(struct foo bar);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("void func1(struct foo bar);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -241,8 +251,9 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleMultipleParams(self):
         # Given
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse("void func1(int, char);"))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse("void func1(int, char);",
+                                           defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -270,8 +281,8 @@ class MockGeneratorTests(TestCase):
             inline int ifunc(void) { return 0; }
             void func1(void);
         """
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse(source))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -290,8 +301,8 @@ class MockGeneratorTests(TestCase):
             typedef char *charp;
             charp func1(void);
         """
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse(source))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -310,8 +321,8 @@ class MockGeneratorTests(TestCase):
             typedef char *charp;
             void func1(charp cp);
         """
-        mgen = MockGenerator(cgen, "mockable.h",
-                             cparser.parse(source))
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -324,4 +335,26 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.VOID,
                                    args_info = [ArgInfo("__pfstest_arg_0",
                                                         ArgHint.POINTER)])
+                         ])
+
+    def test_shouldIgnoreFuncDeclsFromIncludedFiles(self):
+        # Given
+        source = """
+            # 1 "another-header.h"
+            int func2(int);
+            # 1 "../mockable.h"
+            void func1(void);
+        """
+        mgen = MockGenerator(cgen, "../mockable.h",
+                             cparser.parse(source, "../mockable.h"))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "void func1(void)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [])
                          ])

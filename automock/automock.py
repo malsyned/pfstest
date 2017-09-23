@@ -146,11 +146,12 @@ def arg_type_writer_blob(ostream, arg_name):
     ostream.write('the_pointer(&%s)' % arg_name)
 
 class MockGenerator:
-    def __init__(self, cgen, headername, ast):
+    def __init__(self, cgen, headerpath, ast):
         self.cgen = cgen
-        self.headername = path.basename(headername)
+        self.headerpath = headerpath
+        self.headername = path.basename(headerpath)
         self.mockheadername = "mock-" + self.headername
-        self.guardmacro = self.make_guardname(headername)
+        self.guardmacro = self.make_guardname(headerpath)
         self.mocks = self.make_mocks(ast.ext)
 
     def make_guardname(self, filename):
@@ -165,7 +166,9 @@ class MockGenerator:
                 typedef_name = self.extract_typedecl(extdecl).declname
                 typedefs[typedef_name] = extdecl.type
             elif self.ext_declares_function(extdecl):
-                mocks.append(self.make_mock(typedefs, extdecl.type))
+                funcdecl = extdecl.type
+                if funcdecl.coord.file == self.headerpath:
+                    mocks.append(self.make_mock(typedefs, funcdecl))
         return mocks
 
     def ext_is_typedef(self, extdecl):
