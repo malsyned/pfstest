@@ -168,8 +168,11 @@ class MockGenerator:
                 typedefs[typedef_name] = extdecl.type
             elif self.ext_declares_function(extdecl):
                 funcdecl = extdecl.type
-                if funcdecl.coord.file == self.headerpath:
-                    mocks.append(self.make_mock(typedefs, funcdecl))
+                if not self.function_in_file(funcdecl, self.headerpath):
+                    continue
+                if self.function_is_variadic(funcdecl):
+                    continue
+                mocks.append(self.make_mock(typedefs, funcdecl))
         return mocks
 
     def ext_is_typedef(self, extdecl):
@@ -184,6 +187,13 @@ class MockGenerator:
     def ext_declares_function(self, extdecl):
         return (isinstance(extdecl, Decl)
                 and isinstance(extdecl.type, FuncDecl))
+
+    def function_in_file(self, funcdecl, path):
+        return funcdecl.coord.file == self.headerpath
+
+    def function_is_variadic(self, funcdecl):
+        return any(isinstance(param, EllipsisParam)
+                   for param in funcdecl.args.params)
 
     def make_mock(self, typedefs, funcdecl):
         # Make a copy so I can modify it with self.set_param_names()

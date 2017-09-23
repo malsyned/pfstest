@@ -358,3 +358,13 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.VOID,
                                    args_info = [])
                          ])
+
+    def test_shouldSkipVariadicFunctions(self):
+        # Given
+        mgen = MockGenerator(cgen, defaulthname,
+                             cparser.parse('void foo(int, ...);',
+                                           defaulthname))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks, [])
