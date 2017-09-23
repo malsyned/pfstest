@@ -94,7 +94,8 @@ class ReturnTypePrimitiveWriter():
         ostream.write('the_pointer(&__pfstest_default_return)')
 
     def return_result(self, ostream):
-        ostream.write('    return *(%s *)__pfstest_return_value;\n'
+        ostream.write(('    return *(%s *)pfstest_value_data('
+                       + '__pfstest_return_value);\n')
                       % self.return_type_text)
 
 class ReturnTypeBlobWriter():
@@ -111,7 +112,8 @@ class ReturnTypeBlobWriter():
         ostream.write('the_pointer(&__pfstest_default_return)')
 
     def return_result(self, ostream):
-        ostream.write('    return *(%s *)__pfstest_return_value;\n'
+        ostream.write(('    return *(%s *)pfstest_value_data('
+                       + '__pfstest_return_value);\n')
                       % self.return_type_text)
 
 class ReturnTypePointerWriter():
@@ -126,7 +128,8 @@ class ReturnTypePointerWriter():
         ostream.write('the_pointer(__pfstest_default_return)')
 
     def return_result(self, ostream):
-        ostream.write('    return (%s)__pfstest_return_value;\n'
+        ostream.write(('    return (%s)pfstest_value_data('
+                       + '__pfstest_return_value);\n')
                       % self.return_type_text)
 
 def arg_type_writer_factory(arg_type_hint):

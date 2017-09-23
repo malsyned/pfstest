@@ -138,7 +138,7 @@ int func1(void)
         pfstest_mock_invoke(mock_func1,
                             the_pointer(&__pfstest_default_return));
 
-    return *(int *)__pfstest_return_value;
+    return *(int *)pfstest_value_data(__pfstest_return_value);
 }
 
 """
@@ -175,7 +175,7 @@ char *func1(void)
         pfstest_mock_invoke(mock_func1,
                             the_pointer(__pfstest_default_return));
 
-    return (char *)__pfstest_return_value;
+    return (char *)pfstest_value_data(__pfstest_return_value);
 }
 
 """
@@ -213,7 +213,7 @@ struct foo func1(void)
         pfstest_mock_invoke(mock_func1,
                             the_pointer(&__pfstest_default_return));
 
-    return *(struct foo *)__pfstest_return_value;
+    return *(struct foo *)pfstest_value_data(__pfstest_return_value);
 }
 
 """
