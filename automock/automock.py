@@ -1,9 +1,10 @@
+import sys
+sys.path.append('pycparser')
+
 from os import path
 import re
-import sys
 import copy
-
-sys.path.append('pycparser')
+from collections import namedtuple
 from pycparser.c_ast import *
 
 class MockHeaderWriter:
@@ -257,8 +258,6 @@ def enum(name, fields):
 ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
 
 ArgHint = enum('ArgHint', 'POINTER BLOB')
-
-from collections import namedtuple
 
 MockInfo = namedtuple('MockInfo',
                       'mockname funcname prototype return_text return_hint '
