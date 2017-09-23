@@ -243,15 +243,20 @@ class MockGenerator:
                          return_hint = return_hint,
                          args_info = args_info)
 
-class ReturnHint:
-    VOID = 1
-    PRIMITIVE = 2
-    POINTER = 3
-    BLOB = 4
+def enum(name, fields):
+    class EnumValue:
+        def __init__(self, clsname, name):
+            self.repr = '%s.%s' % (clsname, name)
 
-class ArgHint:
-    POINTER = 1
-    BLOB = 2
+        def __repr__(self):
+            return self.repr
+
+    d = dict((field, EnumValue(name, field)) for field in fields.split(' '))
+    return type(name, (), d)
+
+ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
+
+ArgHint = enum('ArgHint', 'POINTER BLOB')
 
 from collections import namedtuple
 
