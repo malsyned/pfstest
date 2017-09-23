@@ -280,3 +280,23 @@ class MockGeneratorTests(TestCase):
                                    return_hint = ReturnHint.VOID,
                                    args_info = [])
                          ])
+
+    def test_shouldUseTypedefsForReturnHints(self):
+        # Given
+        source = """
+            typedef char *charp;
+            charp func1(void);
+        """
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse(source))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "charp func1(void)",
+                                   return_text = "charp",
+                                   return_hint = ReturnHint.POINTER,
+                                   args_info = [])
+                         ])

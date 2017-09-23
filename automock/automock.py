@@ -158,9 +158,18 @@ class MockGenerator:
                                          path.basename(filename).upper())
 
     def make_mocks(self, ext):
-        return [self.make_mock(extdecl.type)
-                for extdecl in ext
-                if self.ext_declares_function(extdecl)]
+        typedefs = {}
+        mocks = []
+        for extdecl in ext:
+            if self.ext_is_typedef(extdecl):
+                typedef_name = self.extract_typedecl(extdecl).declname
+                typedefs[typedef_name] = extdecl.type
+            elif self.ext_declares_function(extdecl):
+                mocks.append(self.make_mock(typedefs, extdecl.type))
+        return mocks
+
+    def ext_is_typedef(self, extdecl):
+        return isinstance(extdecl, Typedef)
 
     def ext_declares_function(self, extdecl):
         return (isinstance(extdecl, Decl)
@@ -235,13 +244,17 @@ class MockGenerator:
                 for (name, hint) in zip(names, hints)
                 if hint != None] # Don't make ArgInfo for (void)
 
-    def make_mock(self, funcdecl):
+    def make_mock(self, typedefs, funcdecl):
         # Make a copy so I can modify it with self.set_param_names()
         funcdecl = copy.deepcopy(funcdecl)
         funcname = self.extract_typedecl(funcdecl).declname
 
         returntype = funcdecl.type
-        return_hint = self.select_return_hint(returntype)
+        typedef = self.find_typedef(typedefs, returntype)
+        if typedef:
+            return_hint = self.select_return_hint(typedef)
+        else:
+            return_hint = self.select_return_hint(returntype)
         returntextnode = self.make_return_text_node(returntype)
 
         params = funcdecl.args.params
@@ -256,6 +269,15 @@ class MockGenerator:
                          return_text = self.cgen.visit(returntextnode),
                          return_hint = return_hint,
                          args_info = args_info)
+
+    def find_typedef(self, typedefs, type):
+        if isinstance(type, TypeDecl):
+            basetype = type.type
+            if isinstance(basetype, IdentifierType):
+                typename = ' '.join(basetype.names)
+                if typename in typedefs:
+                    return typedefs[typename]
+        return None
 
 def enum(name, fields):
     class EnumValue:
