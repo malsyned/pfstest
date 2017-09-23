@@ -211,8 +211,7 @@ class MockGenerator:
                 # FIXME: Thow a more specific exception
                 raise Exception("Couldn't match return type to hint")
 
-    def select_arg_hint(self, param):
-            paramtype = param.type
+    def select_arg_hint(self, paramtype):
             if isinstance(paramtype, TypeDecl):
                 basetype = paramtype.type
                 if isinstance(basetype, IdentifierType):
@@ -228,8 +227,16 @@ class MockGenerator:
             elif isinstance(paramtype, PtrDecl):
                 return ArgHint.POINTER
 
-    def arg_hints(self, params):
-        return [self.select_arg_hint(param) for param in params]
+    def arg_hints(self, typedefs, params):
+        hints = []
+        for param in params:
+            paramtype = param.type
+            typedef = self.find_typedef(typedefs, paramtype)
+            if typedef:
+                hints.append(self.select_arg_hint(typedef))
+            else:
+                hints.append(self.select_arg_hint(paramtype))
+        return hints
 
     def set_param_names(self, params, names, hints):
         for (param, name, hint) in zip(params, names, hints):
@@ -259,7 +266,7 @@ class MockGenerator:
 
         params = funcdecl.args.params
         arg_names = self.arg_names(params)
-        arg_hints = self.arg_hints(params)
+        arg_hints = self.arg_hints(typedefs, params)
         self.set_param_names(params, arg_names, arg_hints)
         args_info = self.make_args_info(arg_names, arg_hints)
 

@@ -16,6 +16,9 @@ cgen = CGenerator()
 emptyast = cparser.parse('')
 
 class MockGeneratorTests(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
     def test_souldStoreHeaderName(self):
         # Given
         mgen = MockGenerator(cgen, "mockable.h", emptyast)
@@ -299,4 +302,26 @@ class MockGeneratorTests(TestCase):
                                    return_text = "charp",
                                    return_hint = ReturnHint.POINTER,
                                    args_info = [])
+                         ])
+
+    def test_shouldUseTypedefsForArgHints(self):
+        # Given
+        source = """
+            typedef char *charp;
+            void func1(charp cp);
+        """
+        mgen = MockGenerator(cgen, "mockable.h",
+                             cparser.parse(source))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(charp __pfstest_arg_0)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.POINTER)])
                          ])
