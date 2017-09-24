@@ -1,20 +1,3 @@
-* Nothing verifies the correct return values of print_char, print_nv_string
-* No return value comes from the other primitive formatters
-* Add test suites for output formatters?
-* Matchers and values for stdint.h types
-* Determine what issues const might play in values, matchers, and mocks
-* Auto-mocking
-* Better Makefile modeled after my Unity/CMock one
-    Make it faster by allowing some test binaries to share object files?
+NOTE: Most issues are now at https://github.com/malsyned/pfstest/issues/
+
 * Attempt to port some test suites for real projects from Unity/CMock to pfstest
-* Decide on whether to rename output_formatters to something with "reporter" in the name, since they also manage the return value for the program
-* Actually, should they be managing the return value for the program?
-* Is the number of failures a poor choice for the return value to begin with? What does Unity return on failure?
-* Move platforms into separate headers
-* Is my use of uintptr_t, intmax_t, uintmax_t and ULONG_MAX incompatible with my assertion that I support C89?
-* Colored output mode
-* the_char printer doesn't escape special characters
-* Stack checking for AVR, both for end users and for my education
-* Bring all identifiers in line with https://www.gnu.org/software/libc/manual/html_node/Reserved-Names.html
-* Buffer overrun checking in pfstest-alloc
-* Separate out from core: pfstest_main, pfstest_arguments_parse, pfstest_print_usage, pfstest_start, stdout_print_char. I believe this enables removing fflush from the platform header.
