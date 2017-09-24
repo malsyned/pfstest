@@ -17,3 +17,4 @@
 * Stack checking for AVR, both for end users and for my education
 * Bring all identifiers in line with https://www.gnu.org/software/libc/manual/html_node/Reserved-Names.html
 * Buffer overrun checking in pfstest-alloc
+* Separate out from core: pfstest_main, pfstest_arguments_parse, pfstest_print_usage, pfstest_start, stdout_print_char. I believe this enables removing fflush from the platform header.
