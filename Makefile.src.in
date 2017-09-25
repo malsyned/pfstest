@@ -1,15 +1,17 @@
 # -*- Makefile -*-
 
-PFSTEST_SRC := pfstest-basename.c pfstest-list.c pfstest-value.c \
-               pfstest-matcher.c pfstest-values.c pfstest-matchers.c \
-               pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
-               pfstest-arg-handlers.c pfstest-mock.c pfstest-output.c
+PFSTEST_SRC := $(addprefix src/, \
+                 pfstest-basename.c pfstest-list.c pfstest-value.c \
+                 pfstest-matcher.c pfstest-values.c pfstest-matchers.c \
+                 pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
+                 pfstest-arg-handlers.c pfstest-mock.c pfstest-output.c \
+                 pfstest-output-formatter-xml.c)
 
-TESTS_SRC := pfstest-output-formatter-message-spy.c \
-             pfstest-output-formatter-xml.c \
-             capture-output.c core-tests.c core-test-cases.c \
-             core-test-cases-2.c invocation-tests.c \
-             assert-that-tests.c values-and-matchers-tests.c \
-             mock-dep.c mock-tests.c xml-tests.c
+TESTS_SRC := $(addprefix test/, \
+               pfstest-output-formatter-message-spy.c \
+               capture-output.c core-tests.c core-test-cases.c \
+               core-test-cases-2.c invocation-tests.c \
+               assert-that-tests.c values-and-matchers-tests.c \
+               mock-dep.c mock-tests.c xml-tests.c)
 
 COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)

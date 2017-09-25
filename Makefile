@@ -13,11 +13,11 @@ WARN := -Wall -Wextra -Werror -Wwrite-strings \
         -pedantic -pedantic-errors
 CFLAGS := -g -O$(OPT) $(WARN) -MD -MP -std=c89
 LDFLAGS :=
-CPPFLAGS :=
+CPPFLAGS := -Isrc -Itest
 LDLIBS :=
 
 .PHONY: all
-all: tests register-tests.c
+all: testrunner src/main/register-tests.c
 
 .PHONY: test
 test: testrunner
@@ -32,9 +32,9 @@ test: testrunner
 	echo "\033[30;2;$${color}m$${text}\033[00m"; \
 	return $$retval
 
-ALLOC_SRC := pfstest-alloc-malloc.c
+ALLOC_SRC := src/pfstest-alloc-malloc.c
 
-SRC := $(COMMON_SRC) $(ALLOC_SRC) gcc-main.c
+SRC := $(COMMON_SRC) $(ALLOC_SRC) src/main/gcc-main.c
 
 %.o: %.c $(MAKEFILE_LIST)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
@@ -45,13 +45,16 @@ SRC := $(COMMON_SRC) $(ALLOC_SRC) gcc-main.c
 testrunner: $(SRC:%.c=%.o)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-register-tests.c: testrunner register-tests.c.header register-tests.c.footer
-	cat register-tests.c.header > $@
+src/main/register-tests.c: testrunner src/main/register-tests.c.header \
+                           src/main/register-tests.c.footer
+	cat src/main/register-tests.c.header > $@
 	./$< -r >> $@
-	cat register-tests.c.footer >> $@
+	cat src/main/register-tests.c.footer >> $@
 
 .PHONY: clean
 clean:
-	rm -f *.o *.d *.i testrunner register-tests.c
+	rm -f \
+          $(foreach dir,src src/main test,$(addprefix $(dir)/,*.o *.d *.i)) \
+	  testrunner src/main/register-tests.c
 
 -include $(wildcard *.d)

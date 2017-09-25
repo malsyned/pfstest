@@ -89,7 +89,8 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(COMMON_SRC) pfstest-platform-avr8.c pfstest-alloc-malloc.c avr-main.c
+SRC = $(COMMON_SRC) src/pfstest-platform-avr8.c src/pfstest-alloc-malloc.c \
+      src/main/avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -123,7 +124,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS = 
+EXTRAINCDIRS = src test
 
 
 # Compiler flag to set the C Standard level.
@@ -775,10 +776,14 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
 	$(REMOVEDIR) .dep
+	$(REMOVEDIR) $(OBJDIR)/src/main
+	$(REMOVEDIR) $(OBJDIR)/src
+	$(REMOVEDIR) $(OBJDIR)/test
+	$(REMOVEDIR) $(OBJDIR)
 
 
 # Create object files directory
-$(shell mkdir $(OBJDIR) 2>/dev/null)
+$(shell mkdir -p $(OBJDIR)/src $(OBJDIR)/src/main $(OBJDIR)/test 2>/dev/null)
 
 
 # Include the dependency files.
