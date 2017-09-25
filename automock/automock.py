@@ -352,10 +352,7 @@ if __name__ == "__main__":
     hwriter = MockHeaderWriter(mpaths, mg)
     cwriter = MockImplementationWriter(mpaths, mg)
 
-    stdout.write('%s\n%s\n\n' % (mpaths.mockheaderpath,
-                                 '=' * len(mpaths.mockheaderpath)))
-    hwriter.write_header(stdout)
-    stdout.write('\n\n%s\n%s\n\n' 
-                 % (mpaths.mockimplementationpath,
-                    '=' * len(mpaths.mockimplementationpath)))
-    cwriter.write_implementation(stdout)
+    with open(mpaths.mockheaderpath, 'w') as hstream:
+        hwriter.write_header(hstream)
+    with open(mpaths.mockimplementationpath, 'w') as cstream:
+        cwriter.write_implementation(cstream)
