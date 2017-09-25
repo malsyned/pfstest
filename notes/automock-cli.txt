@@ -1,0 +1,43 @@
+Use case:
+
+pfstest/src
+src/
+src/dep.h
+test/
+test/mocks
+Makefile
+test/test.inc.mk
+
+
+build test/mocks/mock-dep.[ch] from src/dep.h
+
+cpp src/dep.h | automock.py -i - -h src/dep.h -o test/mocks/mock-dep
+
+Should create test/mocks/mock-dep.h and test/mocks/mock-dep.c. mock-dep.h should contain the original header path pointing to the right place. This means that even though src/dep.h is passed in, and should be used to filter definitions from the mock list, the mock header should include "../../src/dep.h".
+
+mock-dep.c should include mock-dep.h with no path (that is, it should not include "test/mocks/mock-dep.h", just "mock.h".
+
+
+
+Code for parsing stdin and writing to the .h and .c files:
+
+    from sys import stdin, stdout
+    from pycparser.c_parser import CParser
+    ast = CParser().parse(stdin.read(), header)
+    # [...]
+    with open(path.join(outdir, mockheadername), 'w') as hstream:
+        hwriter.write_header(hstream)
+    with open(path.join(outdir, mockimplementationname), 'w') as cstream:
+        cwriter.write_implementation(cstream)
+
+
+Code for computing the location of the original header relative to the mock:
+
+>>> path.relpath('src/dep.h', 'mocks/mock-dep')
+'../../src/dep.h'
+
+====
+
+Notes:
+
+Since the filename is provided by the user, the guard macro may no longer have to have PFSTEST in it. It certainly doesn't need MOCK in it, since the user will be providing that explicitly in the filename.
