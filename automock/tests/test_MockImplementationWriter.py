@@ -20,11 +20,12 @@ class MockImplementationWriterTests(TestCase):
     def setUp(self):
         self.maxDiff = None
         self.cBuffer = StringIO()
+        self.mockpaths = MagicMock()
+        self.mockpaths.mockheaderrelpath = "mock-mockable.h"
 
     def test_shouldWriteImplementation(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -33,7 +34,7 @@ class MockImplementationWriterTests(TestCase):
                      return_hint = ReturnHint.VOID,
                      args_info = [])
         ]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -59,7 +60,6 @@ void func1(void)
     def test_shouldWriteMultipleFunctions(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -74,7 +74,7 @@ void func1(void)
                      return_hint = ReturnHint.VOID,
                      args_info = []),
         ]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -110,7 +110,6 @@ void func2(void)
     def test_shouldHandlePrimitiveReturnTypes(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -119,7 +118,7 @@ void func2(void)
                      return_hint = ReturnHint.PRIMITIVE,
                      args_info = [])
         ]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -147,7 +146,6 @@ int func1(void)
     def test_shouldHandlePointerReturnTypes(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -156,7 +154,7 @@ int func1(void)
                      return_hint = ReturnHint.POINTER,
                      args_info = [])
         ]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -184,7 +182,6 @@ char *func1(void)
     def test_shouldHandleStructReturnTypes(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -193,7 +190,7 @@ char *func1(void)
                      return_hint = ReturnHint.BLOB,
                      args_info = [])
         ]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -222,7 +219,6 @@ struct foo func1(void)
     def test_shouldWriteBlobParameter(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -231,7 +227,7 @@ struct foo func1(void)
                      return_hint = ReturnHint.VOID,
                      args_info = [ArgInfo('__pfstest_arg_0', ArgHint.BLOB)]
             )]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -258,7 +254,6 @@ void func1(int __pfstest_arg_0)
     def test_shouldWritePointerParameter(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -268,7 +263,7 @@ void func1(int __pfstest_arg_0)
                      args_info = [ArgInfo('__pfstest_arg_0',
                                           ArgHint.POINTER)]
             )]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)
@@ -295,7 +290,6 @@ void func1(char *__pfstest_arg_0)
     def test_shouldWriteMultipleParameters(self):
         # Given
         mockgen = MagicMock()
-        mockgen.mockheadername = "mock-mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "func1",
@@ -307,7 +301,7 @@ void func1(char *__pfstest_arg_0)
                                   ArgInfo('__pfstest_arg_1',
                                           ArgHint.POINTER)]
             )]
-        mock_c_writer = MockImplementationWriter(mockgen)
+        mock_c_writer = MockImplementationWriter(self.mockpaths, mockgen)
 
         # When
         mock_c_writer.write_implementation(self.cBuffer)

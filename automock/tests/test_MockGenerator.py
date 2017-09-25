@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+from compat import MagicMock
+
 from pycparser.c_parser import CParser
 from pycparser.c_generator import CGenerator
 
@@ -13,77 +15,18 @@ from os import path
 # only once instead of in setUp() for every test
 cparser = CParser()
 cgen = CGenerator()
-defaulthname = "mockable.h"
 emptyast = cparser.parse('')
+defaulthname = "../mockable.h"
 
 class MockGeneratorTests(TestCase):
     def setUp(self):
         self.maxDiff = None
-
-    def test_souldStoreHeaderName(self):
-        # Given
-        mgen = MockGenerator(cgen, "mockable.h", emptyast)
-        # When
-        hname = mgen.headername
-        # Then
-        self.assertEqual(hname, "mockable.h")
-
-    def test_shouldRemoveDirectoryFromHeaderName(self):
-        # Given
-        headername = path.join("..", "foo", "theheader.h")
-        mgen = MockGenerator(cgen, headername, emptyast)
-        # When
-        hname = mgen.headername
-        # Then
-        self.assertEqual(hname, "theheader.h")
-
-    def test_shouldCreateGuardMacro(self):
-        # Given
-        mgen = MockGenerator(cgen, "mockable.h", emptyast)
-        # When
-        gm = mgen.guardmacro
-        # Then
-        self.assertEqual(gm, "_PFSTEST_MOCK_MOCKABLE_H")
-
-    def test_shouldStripDirNameFromGuardMacro(self):
-        # Given
-        headername = path.join("..", "foo", "theheader.h")
-        mgen = MockGenerator(cgen, headername, emptyast)
-        # When
-        gm = mgen.guardmacro
-        # Then
-        self.assertEqual(gm, "_PFSTEST_MOCK_THEHEADER_H")
-
-    def test_shouldCleanNonIdentifierCharactersFromGuardMacro(self):
-        # Given
-        headername = "some header-file?with&bad\"chars'.h"
-        mgen = MockGenerator(cgen, headername, emptyast)
-        # When
-        gm = mgen.guardmacro
-        # Then
-        self.assertEqual(gm,
-                         "_PFSTEST_MOCK_SOME_HEADER_FILE_WITH_BAD_CHARS__H")
-
-    def test_shouldCreateMockHeaderName(self):
-        # Given
-        mgen = MockGenerator(cgen, "mockable.h", emptyast)
-        # When
-        mockh = mgen.mockheadername
-        # Then
-        self.assertEqual(mockh, "mock-mockable.h")
-
-    def test_shouldRemoveDirectoryFromMockHeaderName(self):
-        # Given
-        headername = path.join("..", "foo", "theheader.h")
-        mgen = MockGenerator(cgen, headername, emptyast)
-        # When
-        mockh = mgen.mockheadername
-        # Then
-        self.assertEqual(mockh, "mock-theheader.h")
+        self.mpaths = MagicMock()
+        self.mpaths.headerpath = defaulthname
 
     def test_shouldGenerateMockFromOtherwiseEmptyHeader(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("void func1(void);",
                                            defaulthname))
         # When
@@ -100,7 +43,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldGenerateMultipleMocks(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("void func1(void);" +
                                            "void func2(void);",
                                            defaulthname))
@@ -125,7 +68,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleSimplePrimitiveReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("int func1(void);",
                                            defaulthname))
         # When
@@ -142,7 +85,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleCompoundTypeSpecifierInReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("unsigned long int func1(void);",
                                            defaulthname))
         # When
@@ -160,7 +103,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandlePointerReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("char *func1(void);",
                                            defaulthname))
         # When
@@ -177,7 +120,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleStructReturnType(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("struct foo func1(void);",
                                            defaulthname))
         # When
@@ -194,7 +137,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandlePrimitiveParam(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("void func1(int);",
                                            defaulthname))
         # When
@@ -213,7 +156,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandlePointerParam(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("void func1(char *);",
                                            defaulthname))
         # When
@@ -232,7 +175,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleStructParam(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("void func1(struct foo bar);",
                                            defaulthname))
         # When
@@ -251,7 +194,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldHandleMultipleParams(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse("void func1(int, char);",
                                            defaulthname))
         # When
@@ -281,7 +224,7 @@ class MockGeneratorTests(TestCase):
             inline int ifunc(void) { return 0; }
             void func1(void);
         """
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
@@ -301,7 +244,7 @@ class MockGeneratorTests(TestCase):
             typedef char *charp;
             charp func1(void);
         """
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
@@ -321,7 +264,7 @@ class MockGeneratorTests(TestCase):
             typedef char *charp;
             void func1(charp cp);
         """
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
@@ -345,8 +288,8 @@ class MockGeneratorTests(TestCase):
             # 1 "../mockable.h"
             void func1(void);
         """
-        mgen = MockGenerator(cgen, "../mockable.h",
-                             cparser.parse(source, "../mockable.h"))
+        mgen = MockGenerator(self.mpaths, cgen,
+                             cparser.parse(source, defaulthname))
         # When
         mocks = mgen.mocks
         # Then
@@ -361,7 +304,7 @@ class MockGeneratorTests(TestCase):
 
     def test_shouldSkipVariadicFunctions(self):
         # Given
-        mgen = MockGenerator(cgen, defaulthname,
+        mgen = MockGenerator(self.mpaths, cgen,
                              cparser.parse('void foo(int, ...);',
                                            defaulthname))
         # When

@@ -11,9 +11,10 @@ class MockHeaderWriterTests(TestCase):
 
     def test_shouldWriteHeader(self):
         # Given
+        mockpaths = MagicMock()
+        mockpaths.headerrelpath = "mockable.h"
+        mockpaths.guardmacro = "MOCK_MOCKABLE_H"
         mockgen = MagicMock()
-        mockgen.guardmacro = "MOCK_MOCKABLE_H"
-        mockgen.headername = "mockable.h"
         mockgen.mocks = [
             MockInfo(mockname = "mock_func1",
                      funcname = "", prototype = "", return_text = "",
@@ -21,7 +22,7 @@ class MockHeaderWriterTests(TestCase):
             MockInfo(mockname = "mock_func2",
                      funcname = "", prototype = "", return_text = "",
                      return_hint = "", args_info = [])]
-        mock_h_writer = MockHeaderWriter(mockgen)
+        mock_h_writer = MockHeaderWriter(mockpaths, mockgen)
 
         # When
         mock_h_writer.write_header(self.hBuffer)

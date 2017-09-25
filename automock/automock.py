@@ -8,34 +8,52 @@ from collections import namedtuple
 sys.path.append(path.join(path.dirname(__file__), 'pycparser'))
 from pycparser.c_ast import *
 
+class MockPathHandler:
+    def __init__(self, headerpath, outputpath):
+        self.headerpath = headerpath
+        self.mockheaderpath = outputpath + '.h'
+        self.mockimplementationpath = outputpath + '.c'
+        self.mockheaderrelpath = \
+            path.relpath(self.mockheaderpath,
+                         path.dirname(self.mockimplementationpath))
+        self.headerrelpath = path.relpath(headerpath,
+                                          path.dirname(self.mockheaderpath))
+        self.guardmacro = self.make_guardname(self.mockheaderpath)
+
+    def make_guardname(self, filename):
+        return re.sub('[^A-Za-z_]', '_', path.basename(filename).upper())
+
 class MockHeaderWriter:
-    def __init__(self, mockgen):
+    def __init__(self, mockpaths, mockgen):
+        self.mockpaths = mockpaths
         self.mockgen = mockgen
 
     def write_header(self, ostream):
-        ostream.write('#ifndef %s\n' % self.mockgen.guardmacro)
-        ostream.write('#define %s\n\n' % self.mockgen.guardmacro)
-        ostream.write('#include "%s"\n\n' % self.mockgen.headername)
+        ostream.write('#ifndef %s\n' % self.mockpaths.guardmacro)
+        ostream.write('#define %s\n\n' % self.mockpaths.guardmacro)
+        ostream.write('#include "%s"\n\n' % self.mockpaths.headerrelpath)
         ostream.write('#include "pfstest-mock.h"\n\n')
 
         for mock in self.mockgen.mocks:
             ostream.write('pfstest_mock_declare(%s);\n' % mock.mockname)
         ostream.write('\n')
 
-        ostream.write('#endif /* !defined(%s) */\n' % self.mockgen.guardmacro)
+        ostream.write('#endif /* !defined(%s) */\n'
+                      % self.mockpaths.guardmacro)
 
 class MockImplementationWriter:
-    def __init__(self, mockgen):
+    def __init__(self, mockpaths, mockgen):
+        self.mockpaths = mockpaths
         self.mockgen = mockgen
 
     def write_implementation(self, ostream):
-        self.write_header_include(ostream)
+        self.write_mock_header_include(ostream)
         self.write_boilerplate_includes(ostream)
         for mock in self.mockgen.mocks:
             self.write_mock(ostream, mock)
 
-    def write_header_include(self, ostream):
-        ostream.write('#include "%s"\n\n' % self.mockgen.mockheadername)
+    def write_mock_header_include(self, ostream):
+        ostream.write('#include "%s"\n\n' % self.mockpaths.mockheaderrelpath)
 
     def write_boilerplate_includes(self, ostream):
         ostream.write('#include <stddef.h>\n')
@@ -147,17 +165,10 @@ class MockImplementationWriter:
         ostream.write('the_pointer(&%s)' % arg_name)
 
 class MockGenerator:
-    def __init__(self, cgen, headerpath, ast):
+    def __init__(self, mpaths, cgen, ast):
         self.cgen = cgen
-        self.headerpath = headerpath
-        self.headername = path.basename(headerpath)
-        self.mockheadername = "mock-" + self.headername
-        self.guardmacro = self.make_guardname(headerpath)
+        self.mpaths = mpaths
         self.mocks = self.make_mocks(ast.ext)
-
-    def make_guardname(self, filename):
-        return "_PFSTEST_MOCK_" + re.sub('[^A-Za-z_]', '_',
-                                         path.basename(filename).upper())
 
     def make_mocks(self, ext):
         typedefs = {}
@@ -168,7 +179,8 @@ class MockGenerator:
                 typedefs[typedef_name] = extdecl.type
             elif self.ext_declares_function(extdecl):
                 funcdecl = extdecl.type
-                if not self.function_in_file(funcdecl, self.headerpath):
+                if not self.function_in_file(funcdecl,
+                                             self.mpaths.headerpath):
                     continue
                 if self.function_is_variadic(funcdecl):
                     continue
@@ -189,7 +201,7 @@ class MockGenerator:
                 and isinstance(extdecl.type, FuncDecl))
 
     def function_in_file(self, funcdecl, path):
-        return funcdecl.coord.file == self.headerpath
+        return funcdecl.coord.file == path
 
     def function_is_variadic(self, funcdecl):
         return any(isinstance(param, EllipsisParam)
@@ -325,20 +337,25 @@ if __name__ == "__main__":
     import pycparser
     from pycparser.c_generator import CGenerator
 
-    header = sys.argv[1]
+    headerpath = sys.argv[1]
+    outputpath= sys.argv[2]
     ast = pycparser.parse_file(
-        header, use_cpp=True,
+        headerpath, use_cpp=True,
         cpp_args=['-D__attribute__(x)=',
                   '-D__restrict=restrict',
                   '-D__asm__(x)=',
                   '-D__inline=inline',
                   '-D__extension__=',
                   '-D__builtin_va_list=void *'])
-    mg = MockGenerator(CGenerator(), header, ast)
-    hwriter = MockHeaderWriter(mg)
-    cwriter = MockImplementationWriter(mg)
+    mpaths = MockPathHandler(headerpath, outputpath)
+    mg = MockGenerator(mpaths, CGenerator(), ast)
+    hwriter = MockHeaderWriter(mpaths, mg)
+    cwriter = MockImplementationWriter(mpaths, mg)
 
-    stdout.write('H File:\n======\n\n')
+    stdout.write('%s\n%s\n\n' % (mpaths.mockheaderpath,
+                                 '=' * len(mpaths.mockheaderpath)))
     hwriter.write_header(stdout)
-    stdout.write('\n\nC File:\n======\n\n')
+    stdout.write('\n\n%s\n%s\n\n' 
+                 % (mpaths.mockimplementationpath,
+                    '=' * len(mpaths.mockimplementationpath)))
     cwriter.write_implementation(stdout)

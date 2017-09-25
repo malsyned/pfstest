@@ -44,12 +44,37 @@ Since the filename is provided by the user, the guard macro may no longer have t
 
 ====
 
-We need:
-* the mock H file
-* the mock C file
-* the original H file path
-* the relpath from the mock H file to the original H file
-
 We get:
 * the original H file path
 * the target output path
+
+We need:
+* the mock H file - target output path
+* the mock H file basename - target output path
+* the mock C file - target output path
+* the original H file path - original H file path
+* the relpath from the mock H file to the original H file - original H file path, mock H file path
+
+====
+
+Plan:
+
+Create a new module, MockPathHandler
+Constructor: H file path, target output path
+Accessors:
+    mockheaderpath
+    mockguardmacro
+    mockimplementationpath
+    mockheaderrelpath
+    headerpath
+    headerrelpath
+
+Supply it to the Mock*Writers in addition to the MockGenerator
+
+Swap the Mock*Writers over to use those accessors instead of MockGenerators
+    mgen.headername
+    mgen.guardmacro
+    mgen.mockheadername
+Remove path support from MockGenerator
+    Means removing header argument from constructor (yay)
+    All tests above shouldGenerateMockFromOtherwiseEmptyHeader
