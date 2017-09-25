@@ -21,6 +21,7 @@ register-*tests.c
 *.opensdf
 *.sdf
 *.user
+*.mcs
 *.mcw
 *.err
 *.pyc
