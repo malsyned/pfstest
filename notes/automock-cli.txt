@@ -41,3 +41,15 @@ Code for computing the location of the original header relative to the mock:
 Notes:
 
 Since the filename is provided by the user, the guard macro may no longer have to have PFSTEST in it. It certainly doesn't need MOCK in it, since the user will be providing that explicitly in the filename.
+
+====
+
+We need:
+* the mock H file
+* the mock C file
+* the original H file path
+* the relpath from the mock H file to the original H file
+
+We get:
+* the original H file path
+* the target output path
