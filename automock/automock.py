@@ -333,20 +333,14 @@ ArgInfo = namedtuple('ArgInfo', 'name hint')
 ArgHint = enum('ArgHint', 'POINTER BLOB')
 
 if __name__ == "__main__":
-    from sys import stdout
+    from sys import stdin, stdout
     import pycparser
     from pycparser.c_generator import CGenerator
+    from pycparser.c_parser import CParser
 
     headerpath = sys.argv[1]
     outputpath= sys.argv[2]
-    ast = pycparser.parse_file(
-        headerpath, use_cpp=True,
-        cpp_args=['-D__attribute__(x)=',
-                  '-D__restrict=restrict',
-                  '-D__asm__(x)=',
-                  '-D__inline=inline',
-                  '-D__extension__=',
-                  '-D__builtin_va_list=void *'])
+    ast = CParser().parse(stdin.read(), headerpath)
     mpaths = MockPathHandler(headerpath, outputpath)
     mg = MockGenerator(mpaths, CGenerator(), ast)
     hwriter = MockHeaderWriter(mpaths, mg)
