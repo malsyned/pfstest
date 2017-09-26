@@ -60,4 +60,4 @@ clean:
           testrunner src/main/register-tests.c \
           tests/mock-dep.h tests/mock-dep.c
 
--include $(wildcard *.d)
+-include $(wildcard src/*.d src/main/*.d test/*.d)
