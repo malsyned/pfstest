@@ -17,7 +17,7 @@
 testrunner
 tests/mock-dep.*
 nbproject/private/*
-pfstest-vcxx/Debug/*
+Debug/*
 register-*tests.c
 *.opensdf
 *.sdf
