@@ -9,9 +9,9 @@ PFSTEST_SRC := $(addprefix src/, \
 
 TESTS_SRC := $(addprefix tests/, \
                pfstest-output-formatter-message-spy.c \
-               capture-output.c core-tests.c core-test-cases.c \
-               core-test-cases-2.c invocation-tests.c \
-               assert-that-tests.c values-and-matchers-tests.c \
-               mock-dep.c mock-tests.c xml-tests.c)
+               capture-output.c test-core.c core-test-cases.c \
+               core-test-cases-2.c test-invocation.c \
+               test-assert-that.c test-values-and-matchers.c \
+               mock-dep.c test-mock.c test-xml.c)
 
 COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)

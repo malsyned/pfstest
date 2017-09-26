@@ -66,14 +66,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="tests/assert-that-tests.c" />
+    <ClCompile Include="tests/test-assert-that.c" />
     <ClCompile Include="tests/capture-output.c" />
     <ClCompile Include="tests/core-test-cases-2.c" />
     <ClCompile Include="tests/core-test-cases.c" />
-    <ClCompile Include="tests/core-tests.c" />
-    <ClCompile Include="tests/invocation-tests.c" />
+    <ClCompile Include="tests/test-core.c" />
+    <ClCompile Include="tests/test-invocation.c" />
     <ClCompile Include="tests/mock-dep.c" />
-    <ClCompile Include="tests/mock-tests.c" />
+    <ClCompile Include="tests/test-mock.c" />
     <ClCompile Include="src/pfstest-alloc-malloc.c" />
     <ClCompile Include="src/pfstest-arg-handler.c" />
     <ClCompile Include="src/pfstest-arg-handlers.c" />
@@ -89,9 +89,9 @@
     <ClCompile Include="src/pfstest-output.c" />
     <ClCompile Include="src/pfstest-value.c" />
     <ClCompile Include="src/pfstest-values.c" />
-    <ClCompile Include="tests/values-and-matchers-tests.c" />
+    <ClCompile Include="tests/test-values-and-matchers.c" />
     <ClCompile Include="src/main/vc-main.c" />
-    <ClCompile Include="tests/xml-tests.c" />
+    <ClCompile Include="tests/test-xml.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
