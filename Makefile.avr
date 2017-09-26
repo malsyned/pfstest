@@ -124,7 +124,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS = src test
+EXTRAINCDIRS = src tests
 
 
 # Compiler flag to set the C Standard level.
@@ -778,12 +778,12 @@ clean_list :
 	$(REMOVEDIR) .dep
 	$(REMOVEDIR) $(OBJDIR)/src/main
 	$(REMOVEDIR) $(OBJDIR)/src
-	$(REMOVEDIR) $(OBJDIR)/test
+	$(REMOVEDIR) $(OBJDIR)/tests
 	$(REMOVEDIR) $(OBJDIR)
 
 
 # Create object files directory
-$(shell mkdir -p $(OBJDIR)/src $(OBJDIR)/src/main $(OBJDIR)/test 2>/dev/null)
+$(shell mkdir -p $(OBJDIR)/src $(OBJDIR)/src/main $(OBJDIR)/tests 2>/dev/null)
 
 
 # Include the dependency files.

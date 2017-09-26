@@ -13,7 +13,7 @@ WARN := -Wall -Wextra -Werror -Wwrite-strings \
         -pedantic -pedantic-errors
 CFLAGS := -g -O$(OPT) $(WARN) -MD -MP -std=c89
 LDFLAGS :=
-CPPFLAGS := -Isrc -Itest
+CPPFLAGS := -Isrc -Itests
 LDLIBS :=
 
 .PHONY: all
@@ -54,7 +54,7 @@ src/main/register-tests.c: testrunner src/main/register-tests.c.header \
 .PHONY: clean
 clean:
 	rm -f \
-          $(foreach dir,src src/main test,$(addprefix $(dir)/,*.o *.d *.i)) \
+          $(foreach dir,src src/main tests,$(addprefix $(dir)/,*.o *.d *.i)) \
 	  testrunner src/main/register-tests.c
 
 -include $(wildcard *.d)

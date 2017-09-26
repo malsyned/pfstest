@@ -7,7 +7,7 @@ PFSTEST_SRC := $(addprefix src/, \
                  pfstest-arg-handlers.c pfstest-mock.c pfstest-output.c \
                  pfstest-output-formatter-xml.c)
 
-TESTS_SRC := $(addprefix test/, \
+TESTS_SRC := $(addprefix tests/, \
                pfstest-output-formatter-message-spy.c \
                capture-output.c core-tests.c core-test-cases.c \
                core-test-cases-2.c invocation-tests.c \

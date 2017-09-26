@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -45,6 +45,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;src\main;tests</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -65,14 +66,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test/assert-that-tests.c" />
-    <ClCompile Include="test/capture-output.c" />
-    <ClCompile Include="test/core-test-cases-2.c" />
-    <ClCompile Include="test/core-test-cases.c" />
-    <ClCompile Include="test/core-tests.c" />
-    <ClCompile Include="test/invocation-tests.c" />
-    <ClCompile Include="test/mock-dep.c" />
-    <ClCompile Include="test/mock-tests.c" />
+    <ClCompile Include="tests/assert-that-tests.c" />
+    <ClCompile Include="tests/capture-output.c" />
+    <ClCompile Include="tests/core-test-cases-2.c" />
+    <ClCompile Include="tests/core-test-cases.c" />
+    <ClCompile Include="tests/core-tests.c" />
+    <ClCompile Include="tests/invocation-tests.c" />
+    <ClCompile Include="tests/mock-dep.c" />
+    <ClCompile Include="tests/mock-tests.c" />
     <ClCompile Include="src/pfstest-alloc-malloc.c" />
     <ClCompile Include="src/pfstest-arg-handler.c" />
     <ClCompile Include="src/pfstest-arg-handlers.c" />
@@ -83,14 +84,14 @@
     <ClCompile Include="src/pfstest-matcher.c" />
     <ClCompile Include="src/pfstest-matchers.c" />
     <ClCompile Include="src/pfstest-mock.c" />
-    <ClCompile Include="test/pfstest-output-formatter-message-spy.c" />
+    <ClCompile Include="tests/pfstest-output-formatter-message-spy.c" />
     <ClCompile Include="src/pfstest-output-formatter-xml.c" />
     <ClCompile Include="src/pfstest-output.c" />
     <ClCompile Include="src/pfstest-value.c" />
     <ClCompile Include="src/pfstest-values.c" />
-    <ClCompile Include="test/values-and-matchers-tests.c" />
+    <ClCompile Include="tests/values-and-matchers-tests.c" />
     <ClCompile Include="src/main/vc-main.c" />
-    <ClCompile Include="test/xml-tests.c" />
+    <ClCompile Include="tests/xml-tests.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
