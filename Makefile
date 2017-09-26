@@ -36,6 +36,8 @@ ALLOC_SRC := src/pfstest-alloc-malloc.c
 
 SRC := $(COMMON_SRC) $(ALLOC_SRC) src/main/gcc-main.c
 
+include Makefile.mock.in
+
 %.o: %.c $(MAKEFILE_LIST)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
@@ -50,8 +52,6 @@ src/main/register-tests.c: testrunner src/main/register-tests.c.header \
 	cat src/main/register-tests.c.header > $@
 	./$< -r >> $@
 	cat src/main/register-tests.c.footer >> $@
-
-include Makefile.mock.in
 
 .PHONY: clean
 clean:
