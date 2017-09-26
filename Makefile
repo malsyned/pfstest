@@ -51,10 +51,13 @@ src/main/register-tests.c: testrunner src/main/register-tests.c.header \
 	./$< -r >> $@
 	cat src/main/register-tests.c.footer >> $@
 
+include Makefile.mock.in
+
 .PHONY: clean
 clean:
 	rm -f \
           $(foreach dir,src src/main tests,$(addprefix $(dir)/,*.o *.d *.i)) \
-	  testrunner src/main/register-tests.c
+          testrunner src/main/register-tests.c \
+          tests/mock-dep.h tests/mock-dep.c
 
 -include $(wildcard *.d)

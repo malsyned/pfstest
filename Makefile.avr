@@ -39,7 +39,6 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-
 include Makefile.src.in
 
 SIMULAVR=$$HOME/local/bin/simulavr
@@ -479,6 +478,8 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 # Default target.
 all: begin gccversion sizebefore build sizeafter end
 
+include Makefile.mock.in
+
 # Change the build target to build a HEX file or a library.
 build: elf hex eep fuse lock lss sym
 #build: lib
@@ -775,6 +776,8 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
+	$(REMOVE) tests/mock-dep.h
+	$(REMOVE) tests/mock-dep.c
 	$(REMOVEDIR) .dep
 	$(REMOVEDIR) $(OBJDIR)/src/main
 	$(REMOVEDIR) $(OBJDIR)/src

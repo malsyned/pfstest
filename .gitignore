@@ -15,6 +15,7 @@
 *.suo
 *.orig
 testrunner
+tests/mock-dep.*
 nbproject/private/*
 pfstest-vcxx/Debug/*
 register-*tests.c

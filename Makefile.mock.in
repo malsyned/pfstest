@@ -1,0 +1,11 @@
+# -*- Makefile -*-
+
+MOCK_CPPFLAGS := -D"__attribute__(x)=" \
+                 -D"__asm__(x)=" \
+                 -D__extension__= \
+                 -D__restrict=restrict \
+                 -D__inline=inline \
+                 -D__builtin_va_list="void *"
+
+tests/mock-dep.h tests/mock-dep.c: tests/dep.h
+	cpp $(MOCK_CPPFLAGS) $<	| automock/automock.py $< $(basename $@)
