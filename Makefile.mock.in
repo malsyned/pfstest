@@ -8,4 +8,5 @@ MOCK_CPPFLAGS := -D"__attribute__(x)=" \
                  -D__builtin_va_list="void *"
 
 tests/mock-%.c tests/mock-%.h: tests/%.h $(MAKEFILE_LIST)
-	cpp $(MOCK_CPPFLAGS) $<	| automock/automock.py $< $(basename $@)
+	cpp $(CPPFLAGS) $(MOCK_CPPFLAGS) $< \
+	| automock/automock.py $< $(basename $@)
