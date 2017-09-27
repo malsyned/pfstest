@@ -11,10 +11,12 @@ WARN := -Wall -Wextra -Werror -Wwrite-strings \
         -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations \
         -Wvariadic-macros -Wunsuffixed-float-constants \
         -pedantic -pedantic-errors
-CFLAGS := -g -O$(OPT) $(WARN) -MD -MP -std=c89
+CFLAGS := -g -O$(OPT) $(WARN) -std=c89
 LDFLAGS :=
 CPPFLAGS := -Isrc -Itests
 LDLIBS :=
+
+dep-flags := -MD -MP
 
 .PHONY: all
 all: testrunner src/main/register-tests.c
@@ -39,7 +41,7 @@ SRC := $(COMMON_SRC) $(ALLOC_SRC) src/main/gcc-main.c
 include Makefile.mock.in
 
 %.o: %.c $(MAKEFILE_LIST)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(dep-flags) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 %.i: %.c
 	$(CC) $(CPPFLAGS) -E -o $@ $<
