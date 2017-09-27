@@ -13,10 +13,19 @@ WARN := -Wall -Wextra -Werror -Wwrite-strings \
         -pedantic -pedantic-errors
 CFLAGS := -g -O$(OPT) $(WARN) -std=c89
 LDFLAGS :=
-CPPFLAGS := -Isrc -Itests
+CPPFLAGS :=
 LDLIBS :=
 
+ALLOC_SRC := src/pfstest-alloc-malloc.c
+
+SRC := $(COMMON_SRC) $(ALLOC_SRC) src/main/gcc-main.c
+
 dep-flags := -MD -MP
+
+src-dirs = $(sort $(dir $(SRC)))
+auto-incs = $(addprefix -I,$(src-dirs))
+
+all-cppflags = $(auto-incs) $(CPPFLAGS)
 
 .PHONY: all
 all: testrunner src/main/register-tests.c
@@ -34,17 +43,13 @@ test: testrunner
 	echo "\033[30;2;$${color}m$${text}\033[00m"; \
 	return $$retval
 
-ALLOC_SRC := src/pfstest-alloc-malloc.c
-
-SRC := $(COMMON_SRC) $(ALLOC_SRC) src/main/gcc-main.c
-
 include Makefile.mock.in
 
 %.o: %.c $(MAKEFILE_LIST)
-	$(CC) $(dep-flags) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(dep-flags) $(CFLAGS) $(all-cppflags) -c -o $@ $<
 
 %.i: %.c
-	$(CC) $(CPPFLAGS) -E -o $@ $<
+	$(CC) $(all-cppflags) -E -o $@ $<
 
 testrunner: $(SRC:%.c=%.o)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
@@ -58,8 +63,8 @@ src/main/register-tests.c: testrunner src/main/register-tests.c.header \
 .PHONY: clean
 clean:
 	rm -f \
-          $(foreach dir,src src/main tests,$(addprefix $(dir)/,*.o *.d *.i)) \
+          $(SRC:%.c=%.o) $(SRC:%.c=%.d) $(SRC:%.c=%.i) \
           testrunner src/main/register-tests.c \
           tests/mock-dep.h tests/mock-dep.c
 
--include $(wildcard src/*.d src/main/*.d test/*.d)
+-include $(wildcard $(addsuffix *.d,$(dir $(SRC))))
