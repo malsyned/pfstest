@@ -135,7 +135,7 @@ int func1(void)
 
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
-                            the_pointer(&__pfstest_default_return));
+                            pfstest_the_pointer(&__pfstest_default_return));
 
     return *(int *)pfstest_value_data(__pfstest_return_value);
 }
@@ -171,7 +171,7 @@ char *func1(void)
 
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
-                            the_pointer(__pfstest_default_return));
+                            pfstest_the_pointer(__pfstest_default_return));
 
     return (char *)pfstest_value_data(__pfstest_return_value);
 }
@@ -208,7 +208,7 @@ struct foo func1(void)
 
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
-                            the_pointer(&__pfstest_default_return));
+                            pfstest_the_pointer(&__pfstest_default_return));
 
     return *(struct foo *)pfstest_value_data(__pfstest_return_value);
 }
@@ -243,7 +243,7 @@ void func1(int __pfstest_arg_0)
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
                             NULL,
-                            the_pointer(&__pfstest_arg_0));
+                            pfstest_the_pointer(&__pfstest_arg_0));
 
     (void)__pfstest_return_value;
 }
@@ -279,7 +279,7 @@ void func1(char *__pfstest_arg_0)
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
                             NULL,
-                            the_pointer(__pfstest_arg_0));
+                            pfstest_the_pointer(__pfstest_arg_0));
 
     (void)__pfstest_return_value;
 }
@@ -317,8 +317,8 @@ void func1(int __pfstest_arg_0, char *__pfstest_arg_1)
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
                             NULL,
-                            the_pointer(&__pfstest_arg_0),
-                            the_pointer(__pfstest_arg_1));
+                            pfstest_the_pointer(&__pfstest_arg_0),
+                            pfstest_the_pointer(__pfstest_arg_1));
 
     (void)__pfstest_return_value;
 }

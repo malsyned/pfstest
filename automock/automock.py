@@ -111,7 +111,7 @@ class MockImplementationWriter:
                           % self.return_type_text)
 
         def create_default_return_argument(self, ostream):
-            ostream.write('the_pointer(__pfstest_default_return)')
+            ostream.write('pfstest_the_pointer(__pfstest_default_return)')
 
         def return_result(self, ostream):
             ostream.write(('    return (%s)pfstest_value_data('
@@ -129,7 +129,7 @@ class MockImplementationWriter:
                           + 'sizeof(__pfstest_default_return));\n\n')
 
         def create_default_return_argument(self, ostream):
-            ostream.write('the_pointer(&__pfstest_default_return)')
+            ostream.write('pfstest_the_pointer(&__pfstest_default_return)')
 
         def return_result(self, ostream):
             ostream.write(('    return *(%s *)pfstest_value_data('
@@ -145,7 +145,7 @@ class MockImplementationWriter:
                           % self.return_type_text)
 
         def create_default_return_argument(self, ostream):
-            ostream.write('the_pointer(&__pfstest_default_return)')
+            ostream.write('pfstest_the_pointer(&__pfstest_default_return)')
 
         def return_result(self, ostream):
             ostream.write(('    return *(%s *)pfstest_value_data('
@@ -159,10 +159,10 @@ class MockImplementationWriter:
             return self.arg_type_writer_blob
 
     def arg_type_writer_pointer(self, ostream, arg_name):
-        ostream.write('the_pointer(%s)' % arg_name)
+        ostream.write('pfstest_the_pointer(%s)' % arg_name)
 
     def arg_type_writer_blob(self, ostream, arg_name):
-        ostream.write('the_pointer(&%s)' % arg_name)
+        ostream.write('pfstest_the_pointer(&%s)' % arg_name)
 
 class MockGenerator:
     def __init__(self, mpaths, cgen, ast):
