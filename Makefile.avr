@@ -39,7 +39,8 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-include Makefile.src.in
+include src/src.mk
+include tests/selftestsrc.mk
 
 SIMULAVR=$$HOME/local/bin/simulavr
 
@@ -88,8 +89,8 @@ OBJDIR = avr-obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(COMMON_SRC) src/pfstest-platform-avr8.c src/pfstest-alloc-malloc.c \
-      src/main/avr-main.c
+SRC = $(PFSTEST_SRC) $(SELFTEST_SRC) src/pfstest-platform-avr8.c \
+      src/pfstest-alloc-malloc.c src/main/avr-main.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -478,7 +479,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 # Default target.
 all: begin gccversion sizebefore build sizeafter end
 
-include Makefile.mock.in
+include mock.mk
 
 # Change the build target to build a HEX file or a library.
 build: elf hex eep fuse lock lss sym
@@ -776,8 +777,8 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
-	$(REMOVE) tests/mock-dep.h
-	$(REMOVE) tests/mock-dep.c
+	$(REMOVE) tests/dep-mock.h
+	$(REMOVE) tests/dep-mock.c
 	$(REMOVEDIR) .dep
 	$(REMOVEDIR) $(OBJDIR)/src/main
 	$(REMOVEDIR) $(OBJDIR)/src

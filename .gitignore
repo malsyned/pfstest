@@ -15,7 +15,7 @@
 *.suo
 *.orig
 testrunner
-tests/mock-dep.*
+mocks
 nbproject/private/*
 Debug/*
 register-*tests.c

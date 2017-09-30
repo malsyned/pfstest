@@ -1,37 +1,34 @@
-include Makefile.src.in
+MAKEFLAGS += --no-builtin-rules --jobs
 
-CC = cc
+CC = gcc
+CFLAGS = -g -Og $(WARN) -std=c89
+WARN = -Wall -Wextra -Werror -Wwrite-strings \
+       -Wsuggest-attribute=noreturn -Wmissing-include-dirs \
+       -Wswitch-default -Wfloat-equal -Wpointer-arith -Wundef \
+       -Wunused-macros -Wbad-function-cast -Wcast-align \
+       -Wjump-misses-init -Wconversion -Wlogical-op -Wstrict-prototypes \
+       -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations \
+       -Wvariadic-macros -Wunsuffixed-float-constants \
+       -pedantic -pedantic-errors
 
-OPT := g
-WARN := -Wall -Wextra -Werror -Wwrite-strings \
-        -Wsuggest-attribute=noreturn -Wmissing-include-dirs \
-        -Wswitch-default -Wfloat-equal -Wpointer-arith -Wundef \
-        -Wunused-macros -Wbad-function-cast -Wcast-align \
-        -Wjump-misses-init -Wconversion -Wlogical-op -Wstrict-prototypes \
-        -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations \
-        -Wvariadic-macros -Wunsuffixed-float-constants \
-        -pedantic -pedantic-errors
-CFLAGS := -g -O$(OPT) $(WARN) -std=c89
-LDFLAGS :=
-CPPFLAGS :=
-LDLIBS :=
+EXEC_PATTERN = %-runner
 
-ALLOC_SRC := src/pfstest-alloc-malloc.c
+BUILDPREFIX = build/
+MOCKPREFIX = mocks/
 
-SRC := $(COMMON_SRC) $(ALLOC_SRC) src/main/gcc-main.c
+include src/src.mk
+include tests/selftestsrc.mk
+SRC = $(PFSTEST_SRC) src/pfstest-alloc-malloc.c src/main/gcc-main.c
+selftest_SRC = $(SELFTEST_SRC) $(SELFTEST_MOCKS)
 
-dep-flags := -MD -MP
+TARGETS = selftest
 
-src-dirs = $(sort $(dir $(SRC)))
-auto-incs = $(addprefix -I,$(src-dirs))
-
-all-cppflags = $(auto-incs) $(CPPFLAGS)
-
+.DEFAULT_GOAL := all
 .PHONY: all
-all: testrunner src/main/register-tests.c
+all: targets src/main/register-tests.c
 
 .PHONY: test
-test: testrunner
+test: $(BUILDPREFIX)selftest-runner
 	@echo ./$< $(ARGS); echo; \
 	MALLOC_CHECK_=1 ./$< $(ARGS); \
 	retval=$$?; \
@@ -43,28 +40,20 @@ test: testrunner
 	echo "\033[30;2;$${color}m$${text}\033[00m"; \
 	return $$retval
 
-include Makefile.mock.in
+include mock.mk
 
-%.o: %.c $(MAKEFILE_LIST)
-	$(CC) $(dep-flags) $(CFLAGS) $(all-cppflags) -c -o $@ $<
-
-%.i: %.c
-	$(CC) $(all-cppflags) -E -o $@ $<
-
-testrunner: $(SRC:%.c=%.o)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-src/main/register-tests.c: testrunner src/main/register-tests.c.header \
+src/main/register-tests.c: $(BUILDPREFIX)selftest-runner \
+                           src/main/register-tests.c.header \
                            src/main/register-tests.c.footer
-	cat src/main/register-tests.c.header > $@
-	./$< -r >> $@
-	cat src/main/register-tests.c.footer >> $@
+	./$< -r >> $@ \
+	  | cat src/main/register-tests.c.header \
+	    - \
+	    src/main/register-tests.c.footer \
+	  > $@
 
-.PHONY: clean
-clean:
-	rm -f \
-          $(SRC:%.c=%.o) $(SRC:%.c=%.d) $(SRC:%.c=%.i) \
-          testrunner src/main/register-tests.c \
-          tests/mock-dep.h tests/mock-dep.c
+clean: clean-targets
+	rm -rf $(addprefix $(basename $(SELFTEST_MOCKS)),.c .h)
+	rm -rf src/main/register-tests.c
+	rm -rf build mocks
 
--include $(wildcard $(addsuffix *.d,$(dir $(SRC))))
+include util/testsuite.mk

@@ -6,12 +6,3 @@ PFSTEST_SRC := $(addprefix src/, \
                  pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
                  pfstest-arg-handlers.c pfstest-mock.c pfstest-output.c \
                  pfstest-output-formatter-xml.c)
-
-TESTS_SRC := $(addprefix tests/, \
-               pfstest-output-formatter-message-spy.c \
-               capture-output.c test-core.c core-test-cases.c \
-               core-test-cases-2.c test-invocation.c \
-               test-assert-that.c test-values-and-matchers.c \
-               mock-dep.c test-mock.c test-xml.c)
-
-COMMON_SRC := $(PFSTEST_SRC) $(TESTS_SRC)

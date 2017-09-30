@@ -1,0 +1,52 @@
+How do we want make to handle header dependencies?
+
+
+
+A C file depends on a set of headers, which can be deduced by -M
+
+That deduction forms an input to Make as an include file
+
+
+What can happen?
+
+A new C file can be created
+    No .d file will exist for it ahead of time
+A C file can be deleted
+    A .d file will exist for it, but the corresponding .o file won't be needed
+A C file can be edited to depend on new headers
+A C file can be edited to remove dependencies
+
+Strategies that can be employed:
+
+* Manually listing header dependencies in the Makefile
+* Making an explicit recipe for .d files and including with %.c=%.d
+* Generating .d files as a side-effect and including $(wildcard *.d)
+
+How Make remakes makefiles:
+
+All Makefiles are read
+If any are out of date, they are remade
+Then Make completely resets itself and starts over
+
+
+
+The problem that I am having is this:
+
+Any C file in tests/ can include a mock header
+GCC can't generate a dependency for that header because it needs the header to exist to preprocess the C file
+This can be worked around with -MG, but -MG has no what to know which -I directive makes the header findable
+*This* can be worked around with sed, I think.
+gcc -Isrc -Itests -MT 'tests/test-mock.o' -MM -MG -o - tests/test-mock.c | sed 's%\([^/]\)\<\(mock-\)%\1tests/\2%g'
+But that still isn't enough. The .d file produced that way is produced too late for Make to take its instructions into account. I think this is a fundamental problem with the technique of producing .d files as a side-effect of compilation and not as first-class dependencies specified with $(SRC:%c=%d).
+
+
+****************************************************************
+
+Requirements spec:
+
+When a C file changes, rebuild the .o file and the executable
+When a header file that the C file includes changes, rebuild the .o file and the executable
+When C file X includes header file A, and header file A includes header file B, and header file B changes, rebuild the .o file and the executable.
+When a C/H file pair are a mock that are auto-generated from another H file, and that H file changes, rebuild the .o file for that C file, for any C file that uses that mock, and the executable.
+When a header file is deleted and a C file is updated to no longer refer to it, the build should not fail.
+Parallel builds should be possible -- which they will be if all dependencies are properly laid out.
