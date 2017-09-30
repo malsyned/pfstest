@@ -23,10 +23,10 @@ static bool is_the_whatever_test(pfstest_matcher_t *matcher,
     pfstest_value_t *expected_value =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
 
-    void *expected = pfstest_value_data(expected_value);
+    const void *expected = pfstest_value_data(expected_value);
     size_t expected_size = pfstest_value_size(expected_value);
 
-    void *actual = pfstest_value_data(actual_value);
+    const void *actual = pfstest_value_data(actual_value);
     size_t actual_size = pfstest_value_size(actual_value);
 
     /* If someone is comparing two different-sized blocks of memory in
@@ -108,7 +108,7 @@ pfstest_matcher_t *pfstest_is_the_char(char c)
 
 /* is_the_string */
 
-pfstest_matcher_t *pfstest_is_the_string(char *s)
+pfstest_matcher_t *pfstest_is_the_string(const char *s)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,
@@ -122,13 +122,13 @@ static bool is_the_pointer_test(pfstest_matcher_t *matcher,
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
-    void *expected_pointer = pfstest_value_data(expected);
-    void *actual_pointer = pfstest_value_data(actual);
+    const void *expected_pointer = pfstest_value_data(expected);
+    const void *actual_pointer = pfstest_value_data(actual);
 
     return (expected_pointer == actual_pointer);
 }
 
-pfstest_matcher_t *pfstest_is_the_pointer(void *p)
+pfstest_matcher_t *pfstest_is_the_pointer(const void *p)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_pointer_test,
@@ -137,7 +137,7 @@ pfstest_matcher_t *pfstest_is_the_pointer(void *p)
 
 /* is_the_memory */
 
-pfstest_matcher_t *pfstest_is_the_memory(void *m, size_t size)
+pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size)
 {
     return pfstest_matcher_new(is_the_whatever_printer,
                                is_the_whatever_test,

@@ -11,9 +11,9 @@ pfstest_value_t *pfstest_the_int(int i);
 pfstest_value_t *pfstest_the_uint(unsigned int u);
 pfstest_value_t *pfstest_the_bool(bool b);
 pfstest_value_t *pfstest_the_char(char c);
-pfstest_value_t *pfstest_the_string(char *s);
-pfstest_value_t *pfstest_the_pointer(void *p);
-pfstest_value_t *pfstest_the_memory(void *m, size_t size);
+pfstest_value_t *pfstest_the_string(const char *s);
+pfstest_value_t *pfstest_the_pointer(const void *p);
+pfstest_value_t *pfstest_the_memory(const void *m, size_t size);
 
 #ifndef PFSTEST_NOALIAS_the_short
 # define the_short pfstest_the_short

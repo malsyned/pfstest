@@ -12,7 +12,7 @@
 static void the_short_printer(pfstest_output_formatter_t *formatter,
                               pfstest_value_t *value)
 {
-    short s = *(short *)pfstest_value_data(value);
+    short s = *(const short *)pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the short "));
@@ -32,7 +32,7 @@ pfstest_value_t *pfstest_the_short(short s)
 static void the_ushort_printer(pfstest_output_formatter_t *formatter,
                                pfstest_value_t *value)
 {
-    unsigned short u = *(unsigned short *)pfstest_value_data(value);
+    unsigned short u = *(const unsigned short *)pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the ushort "));
@@ -53,7 +53,7 @@ pfstest_value_t *pfstest_the_ushort(unsigned short u)
 static void the_int_printer(pfstest_output_formatter_t *formatter,
                             pfstest_value_t *value)
 {
-    int i = *(int *)pfstest_value_data(value);
+    int i = *(const int *)pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the int "));
@@ -73,7 +73,7 @@ pfstest_value_t *pfstest_the_int(int i)
 static void the_uint_printer(pfstest_output_formatter_t *formatter,
                              pfstest_value_t *value)
 {
-    unsigned int u = *(unsigned int *)pfstest_value_data(value);
+    unsigned int u = *(const unsigned int *)pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the uint "));
@@ -94,7 +94,7 @@ pfstest_value_t *pfstest_the_uint(unsigned int u)
 static void the_bool_printer(pfstest_output_formatter_t *formatter,
                              pfstest_value_t *value)
 {
-    bool b = *(bool *)pfstest_value_data(value);
+    bool b = *(const bool *)pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the bool "));
@@ -116,7 +116,7 @@ pfstest_value_t *pfstest_the_bool(bool b)
 static void the_char_printer(pfstest_output_formatter_t *formatter,
                              pfstest_value_t *value)
 {
-    char c = *(char *)pfstest_value_data(value);
+    char c = *(const char *)pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the char '"));
@@ -138,8 +138,8 @@ pfstest_value_t *pfstest_the_char(char c)
 static void the_string_printer(pfstest_output_formatter_t *formatter,
                                pfstest_value_t *value)
 {
-    char *data = pfstest_value_data(value);
-    char *p = data;
+    const char *data = pfstest_value_data(value);
+    const char *p = data;
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the string \""));
@@ -152,7 +152,7 @@ static void the_string_printer(pfstest_output_formatter_t *formatter,
         formatter, pfstest_nv_string("\""));
 }
 
-pfstest_value_t *pfstest_the_string(char *s)
+pfstest_value_t *pfstest_the_string(const char *s)
 {
     char *data = pfstest_alloc(strlen(s) + 1);
     strcpy(data, s);
@@ -165,7 +165,7 @@ pfstest_value_t *pfstest_the_string(char *s)
 static void the_pointer_printer(pfstest_output_formatter_t *formatter,
                                 pfstest_value_t *value)
 {
-    void *data = pfstest_value_data(value);
+    const void *data = pfstest_value_data(value);
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the pointer <"));
@@ -185,7 +185,7 @@ static void the_pointer_printer(pfstest_output_formatter_t *formatter,
 
 }
 
-pfstest_value_t *pfstest_the_pointer(void *p)
+pfstest_value_t *pfstest_the_pointer(const void *p)
 {
     return pfstest_value_new(the_pointer_printer, p, 0);
 }
@@ -195,7 +195,7 @@ pfstest_value_t *pfstest_the_pointer(void *p)
 static void the_memory_printer(pfstest_output_formatter_t *formatter,
                                pfstest_value_t *value)
 {
-    unsigned char *data = pfstest_value_data(value);
+    const unsigned char *data = pfstest_value_data(value);
     size_t size = pfstest_value_size(value);
     size_t i;
 
@@ -218,7 +218,7 @@ static void the_memory_printer(pfstest_output_formatter_t *formatter,
         formatter, pfstest_nv_string("}"));
 }
 
-pfstest_value_t *pfstest_the_memory(void *m, size_t size)
+pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
 {
     void *data = pfstest_alloc(size);
 

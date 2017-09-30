@@ -52,7 +52,13 @@ static void assign_arg_do_copy(pfstest_value_t *dest, pfstest_value_t *src)
 {
     /* TODO: Validate the size of the destination, to catch test bugs */
 
-    memcpy(pfstest_value_data(dest),
+    /* This (void *) cast removes the const qualifier and then memcpy
+     * writes to the underlying data object. This is safe provided
+     * that the original data that was boxed into the pfstest_value
+     * was not const data. It is up to the user to make sure that they
+     * don't use assign-through-pointer argument handlers to write to
+     * const memory and thereby run afoul of undefined behavior. */
+    memcpy((void *)pfstest_value_data(dest),
            pfstest_value_data(src),
            pfstest_value_size(src));
 }

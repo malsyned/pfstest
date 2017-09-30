@@ -1,0 +1,83 @@
+Dennis Lambe
+How to integrate const pointers into PFSTest
+Last modified: <2017-09-29 22:37:18>
+
+The biggest issue is assign_arg / assign_arg_that.
+
+assign_arg_that means that the argument passed to it has to be boxed up just like anything else into a pfstest-value.
+
+What happens to an argument to a mocked function?
+It gets boxed up one way or another.
+It gets passed to pfstest_mock_invoke.
+pfstest_mock_invoke passes it to assign_arg_that_test as actual
+if all args match, pfstest_mock_invoke passes it to assign_arg_that_matched
+At that point, the arg (as dest) is unboxed and passed to memcpy
+
+
+    when(mock_dep_func2,
+         arg_that(is_the_int(2)),
+         assign_arg_that(is_the_string(foo),
+                         the_string(bar)));
+
+    dep_func2(2, untouched_buf);
+    dep_func2(2, buf);
+
+void dep_func2(int __pfstest_arg_0, char *__pfstest_arg_1)
+{
+    pfstest_value_t *__pfstest_return_value =
+        pfstest_mock_invoke(mock_dep_func2,
+                            NULL,
+                            the_pointer(&__pfstest_arg_0),
+                            the_pointer(__pfstest_arg_1));
+
+    (void)__pfstest_return_value;
+}
+
+pfstest_value_t *pfstest_mock_invoke(
+    const pfstest_nv_ptr pfstest_mock_t *mock,
+    pfstest_value_t *default_return_value,
+    ...)
+        args[i] = va_arg(ap, pfstest_value_t *);
+
+static bool assign_arg_that_test(pfstest_arg_handler_t *arg_handler,
+                                 pfstest_value_t *actual)
+{
+    struct assign_arg_that_args *args =
+        pfstest_arg_handler_data(arg_handler);
+    return pfstest_matcher_matches(args->matcher, actual);
+}
+
+static void assign_arg_do_copy(pfstest_value_t *dest, pfstest_value_t *src)
+{
+    /* TODO: Validate the size of the destination, to catch test bugs */
+
+    memcpy(pfstest_value_data(dest),
+           pfstest_value_data(src),
+           pfstest_value_size(src));
+}
+
+static void assign_arg_that_matched(pfstest_arg_handler_t *arg_handler,
+                                    pfstest_value_t *dest)
+{
+    struct assign_arg_that_args *args =
+        pfstest_arg_handler_data(arg_handler);
+    assign_arg_do_copy(dest, args->src);
+}
+
+pfstest_arg_handler_t *pfstest_assign_arg_that(pfstest_matcher_t *matcher,
+                                               pfstest_value_t *src)
+{
+    struct assign_arg_that_args *args = pfstest_alloc(sizeof(*args));
+    args->matcher = matcher;
+    args->src = src;
+    
+    return pfstest_arg_handler_new(assign_arg_that_test,
+                                   assign_arg_that_matched,
+                                   assign_arg_that_printer,
+                                   args);
+}
+
+****************
+
+-Wcast-qual is going to jam us up in certain solution scenarios.
+-Wcast-qual -Wno-error=cast-qual can be enabled occasionally to check for unexpected cast-quals.

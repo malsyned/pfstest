@@ -6,7 +6,7 @@ OPT := g
 WARN := -Wall -Wextra -Werror -Wwrite-strings \
         -Wsuggest-attribute=noreturn -Wmissing-include-dirs \
         -Wswitch-default -Wfloat-equal -Wpointer-arith -Wundef \
-        -Wunused-macros -Wbad-function-cast -Wcast-qual -Wcast-align \
+        -Wunused-macros -Wbad-function-cast -Wcast-align \
         -Wjump-misses-init -Wconversion -Wlogical-op -Wstrict-prototypes \
         -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations \
         -Wvariadic-macros -Wunsuffixed-float-constants \
