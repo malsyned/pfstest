@@ -120,7 +120,7 @@ static void the_char_printer(pfstest_output_formatter_t *formatter,
 
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("the char '"));
-    pfstest_output_formatter_print_char(formatter, c);
+    pfstest_output_formatter_print_escaped_char(formatter, c);
     pfstest_output_formatter_print_nv_string(
         formatter, pfstest_nv_string("'"));
 }

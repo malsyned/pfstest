@@ -154,6 +154,25 @@ test(should_fail_on_different_chars)
                 matches_the_nv_string(expected));
 }
 
+pfstest_case(assert_special_chars)
+{
+    assert_that("", the_char('\n'), is_the_char('n'));
+}
+
+test(the_char_should_escape_special_chars_in_failure_messages)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the char 'n'\n"
+        "Actual:   the char '\\n'");
+
+    capture_test_results(assert_special_chars);
+
+    assert_that("different chars fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 test(should_match_strings)
 {
     char s1[] = "foo";
