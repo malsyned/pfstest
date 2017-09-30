@@ -332,16 +332,44 @@ ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
 ArgInfo = namedtuple('ArgInfo', 'name hint')
 ArgHint = enum('ArgHint', 'POINTER BLOB')
 
-if __name__ == "__main__":
-    from sys import stdin, stdout
-    import pycparser
-    from pycparser.c_generator import CGenerator
-    from pycparser.c_parser import CParser
+from argparse import ArgumentParser
 
-    headerpath = sys.argv[1]
-    outputpath= sys.argv[2]
-    ast = CParser().parse(stdin.read(), headerpath)
-    mpaths = MockPathHandler(headerpath, outputpath)
+argv_parser = ArgumentParser(
+    description=
+    'Generate a PFSTest mock from a preprocessed header file on stdin')
+argv_parser.add_argument('headerpath', metavar='header-name', type=str,
+                         help='The name of the original header file')
+argv_parser.add_argument('mockroot', metavar='mock-template', type=str,
+                         help='The initial part of the path to the '
+                         + 'generated mock. automock.py will append '
+                         + '.h and .c to this to generate the mock '
+                         + 'source files')
+argv_parser.add_argument('-s', '--storage-class-specifier',
+                         metavar='specifier', type=str, action='append',
+                         help='Additional storage class specifier to accept')
+argv_parser.add_argument('-q', '--type-qualifier',
+                         metavar='qualifier', type=str, action='append',
+                         help='Additional type qualifier to accept')
+argv_parser.add_argument('-t', '--type',
+                         metavar='type', type=str, action='append',
+                         help='Additional built-in type to accept')
+argv_parser.add_argument('-f', '--function-specifier',
+                         metavar='specifier', type=str, action='append',
+                         help='Additional function specifier to accept')
+
+if __name__ == "__main__":
+    from sys import stdin
+    from pycparser.c_generator import CGenerator
+    from extensiblecparser import ExtensibleCParser
+
+    args = argv_parser.parse_args()
+    cparser = ExtensibleCParser(
+        storage_class_specifiers=args.storage_class_specifier or [],
+        type_qualifiers=args.type_qualifier or [],
+        types=args.type or [],
+        function_specifiers=args.function_specifier or [])
+    ast = cparser.parse(stdin.read(), args.headerpath)
+    mpaths = MockPathHandler(args.headerpath, args.mockroot)
     mg = MockGenerator(mpaths, CGenerator(), ast)
     hwriter = MockHeaderWriter(mpaths, mg)
     cwriter = MockImplementationWriter(mpaths, mg)

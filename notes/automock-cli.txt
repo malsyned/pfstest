@@ -78,3 +78,23 @@ Swap the Mock*Writers over to use those accessors instead of MockGenerators
 Remove path support from MockGenerator
     Means removing header argument from constructor (yay)
     All tests above shouldGenerateMockFromOtherwiseEmptyHeader
+
+================
+
+automock.py dep.h test/mocks/mock-dep -s overlay -q near -q far -t __builtin_va_list -f __inline -f_Noreturn
+
+automock.py dep.h test/mocks/mock-dep --storage-class-specifier=overlay --type-qualifier=near --type-qualifier=far --types=__builtin_va_list --function-specifier=__inline --function-specifier=_Noreturn
+
+Generate a PFSTest mock from a preprocessed header file on stdin
+
+positional arguments:
+
+ header-name    The name of the original header file
+ mock-template  The initial part of the path to the generated mock. automock.py will append .h and .c to this to generate the mock source files
+
+optional arguments:
+
+ -s, --storage-class-specifiers  Additional storage class specifiers to accept
+ -q, --type-qualifiers           Additional type qualifiers to accept
+ -t, --types                     Additional types to accept
+ -f, --function-specifiers       Additional function specifiers to accept
