@@ -2,11 +2,14 @@
 
 MOCK_CPPFLAGS := -D"__attribute__(x)=" \
                  -D"__asm__(x)=" \
-                 -D__extension__= \
-                 -D__restrict=restrict \
-                 -D__inline=inline \
-                 -D__builtin_va_list="void *"
+                 -D"__extension__="
+
+AUTOMOCK_ARGS := -t __builtin_va_list \
+                 -f __inline \
+                 -f __inline__ \
+                 -q __const \
+                 -q __restrict
 
 tests/mock-%.c tests/mock-%.h: tests/%.h $(MAKEFILE_LIST)
 	$(CC) -E $(all-cppflags) $(MOCK_CPPFLAGS) -o - $< \
-	  | automock/automock.py $< $(basename $@)
+	  | automock/automock.py $(AUTOMOCK_ARGS) $< $(basename $@)
