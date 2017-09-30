@@ -16,21 +16,52 @@ cparser = ExtensibleCParser(storage_class_specifiers=['overlay'],
                             yacc_optimize = False)
 
 class ExtensibleCParserTests(TestCase):
-    def setUp(self):
-        self.showbuf = StringIO()
+    def assertASTShows(self, ast, string):
+        showbuf = StringIO()
+        ast.show(buf=showbuf, nodenames=True, attrnames=True)
+        self.assertEqual(showbuf.getvalue(), string)
 
     def test_shouldAcceptNewStorageClassSpecifiers(self):
-        pass
+        # such as: auto, register, static, extern
+        ast = cparser.parse('void foo(overlay char a);')
+
+        self.assertASTShows(ast, """FileAST: 
+  Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=[]
+    FuncDecl <type>: 
+      ParamList <args>: 
+        Decl <params[0]>: name=a, quals=[], storage=['overlay'], funcspec=[]
+          TypeDecl <type>: declname=a, quals=[]
+            IdentifierType <type>: names=['char']
+      TypeDecl <type>: declname=foo, quals=[]
+        IdentifierType <type>: names=['void']
+""")
 
     def test_shouldAcceptNewTypeQualifiers(self):
-        pass
+        # such as: const, volatile, restrict
+        ast = cparser.parse('void foo(near char *a, far int *b);')
+
+        self.assertASTShows(ast, """FileAST: 
+  Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=[]
+    FuncDecl <type>: 
+      ParamList <args>: 
+        Decl <params[0]>: name=a, quals=['near'], storage=[], funcspec=[]
+          PtrDecl <type>: quals=[]
+            TypeDecl <type>: declname=a, quals=['near']
+              IdentifierType <type>: names=['char']
+        Decl <params[1]>: name=b, quals=['far'], storage=[], funcspec=[]
+          PtrDecl <type>: quals=[]
+            TypeDecl <type>: declname=b, quals=['far']
+              IdentifierType <type>: names=['int']
+      TypeDecl <type>: declname=foo, quals=[]
+        IdentifierType <type>: names=['void']
+""")
 
     def test_shouldAcceptNewTypes(self):
+        # CHECKME: Do I want to support new type specifiers (such as:
+        # int, char, short, unsigned), or just new types?
         ast = cparser.parse('__builtin_va_list va; a_builtin_type abt;')
-        ast.show(buf=self.showbuf, nodenames=True, attrnames=True)
 
-        self.assertEqual(self.showbuf.getvalue(),
-                         """FileAST: 
+        self.assertASTShows(ast, """FileAST: 
   Decl <ext[0]>: name=va, quals=[], storage=[], funcspec=[]
     TypeDecl <type>: declname=va, quals=[]
       IdentifierType <type>: names=['__builtin_va_list']
@@ -40,7 +71,16 @@ class ExtensibleCParserTests(TestCase):
 """)
 
     def test_shouldAcceptNewFunctionSpecifiers(self):
-        pass
+        # such as: inline
+        ast = cparser.parse('_Noreturn void foo(void);')
 
-    # CHECKME: Do I want to support new type specifiers, or just new
-    # types?
+        self.assertASTShows(ast, """FileAST: 
+  Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=['_Noreturn']
+    FuncDecl <type>: 
+      ParamList <args>: 
+        Typename <params[0]>: name=None, quals=[]
+          TypeDecl <type>: declname=None, quals=[]
+            IdentifierType <type>: names=['void']
+      TypeDecl <type>: declname=foo, quals=[]
+        IdentifierType <type>: names=['void']
+""")
