@@ -246,6 +246,27 @@ test(should_fail_on_shorter_expected_string)
                 matches_the_nv_string(expected));
 }
 
+pfstest_case(assert_special_strings)
+{
+    char s1[] = "\a\b\f\n\r";
+    char s2[] = "\t\v\\\"\?";
+    assert_that("", the_string(s1), is_the_string(s2));
+}
+
+test(the_string_should_escape_special_chars_in_failure_messages)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the string \"\\t\\v\\\\\\\"\\?\"\n"
+        "Actual:   the string \"\\a\\b\\f\\n\\r\"");
+
+    capture_test_results(assert_special_strings);
+
+    assert_that("different strings fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 #ifdef __18CXX
 /* All of the strings in this file overran 256 bytes of idata */
 #pragma idata values_and_matchers_2

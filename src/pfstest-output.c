@@ -316,18 +316,53 @@ pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
 
 /* Message Output */
 
+struct escape_char_map
+{
+    char ch;
+    const pfstest_nv_ptr char *str;
+};
+
+static const pfstest_nv char esc_a[] = "\\a";
+static const pfstest_nv char esc_b[] = "\\b";
+static const pfstest_nv char esc_f[] = "\\f";
+static const pfstest_nv char esc_n[] = "\\n";
+static const pfstest_nv char esc_r[] = "\\r";
+static const pfstest_nv char esc_t[] = "\\t";
+static const pfstest_nv char esc_v[] = "\\v";
+static const pfstest_nv char esc_backslash[] = "\\\\";
+static const pfstest_nv char esc_apostrophe[] = "\\'";
+static const pfstest_nv char esc_quote[] = "\\\"";
+static const pfstest_nv char esc_question[] = "\\?";
+
+static struct escape_char_map escape_char_map[] =
+{
+    {'\a', esc_a},
+    {'\b', esc_b},
+    {'\f', esc_f},
+    {'\n', esc_n},
+    {'\r', esc_r},
+    {'\t', esc_t},
+    {'\v', esc_v},
+    {'\\', esc_backslash},
+    {'\'', esc_apostrophe},
+    {'\"', esc_quote},
+    {'\?', esc_question},
+};
+
 void pfstest_output_formatter_print_escaped_char(
     pfstest_output_formatter_t *formatter, int c)
 {
-    if (c == '\n') {
-        pfstest_output_formatter_print_nv_string(
-            formatter, pfstest_nv_string("\\n"));
-    } else if (c == '\"') {
-        pfstest_output_formatter_print_nv_string(
-            formatter, pfstest_nv_string("\\\""));
-    } else {
-        pfstest_output_formatter_print_char(formatter, c);
+    size_t i;
+
+    for (i = 0; i < sizeof(escape_char_map)/sizeof(escape_char_map[0]); i++)
+    {
+        if (c == escape_char_map[i].ch) {
+            pfstest_output_formatter_print_nv_string(
+                formatter, escape_char_map[i].str);
+            return;
+        }
     }
+    pfstest_output_formatter_print_char(formatter, c);
 }
 
 void pfstest_output_formatter_print_nv_string(
