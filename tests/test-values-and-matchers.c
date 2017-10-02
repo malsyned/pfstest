@@ -401,6 +401,27 @@ test(should_fail_on_shorter_memory)
                 matches_the_nv_string(expected));
 }
 
+test(should_match_anything)
+{
+    assert_that("is_anything matches a short",
+                the_short(5), is_anything());
+    assert_that("is_anything matches an int",
+                the_int(8), is_anything());
+    assert_that("is_anything matches a pointer",
+                the_pointer(NULL), is_anything());
+}
+
+test(is_anything_should_print_itself)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string("anything");
+
+    pfstest_matcher_print(message_spy, is_anything());
+
+    assert_that("is_anything()'s printer prints \"anything\"",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 test(should_match_memory_with_pointer)
 {
     char actual[] = {1, 2, 3, 4, 5};

@@ -150,3 +150,26 @@ pfstest_matcher_t *pfstest_matches_the_nv_string(
                                matches_the_nv_string_test,
                                (void *)sp);
 }
+
+/* is_anything */
+
+static void is_anything_printer(pfstest_output_formatter_t *formatter,
+                                pfstest_matcher_t *matcher)
+{
+    (void)matcher;
+    pfstest_output_formatter_print_nv_string(
+        formatter, pfstest_nv_string("anything"));
+}
+
+static bool is_anything_test(pfstest_matcher_t *matcher,
+                             pfstest_value_t *actual)
+{
+    (void)matcher;
+    (void)actual;
+    return true;
+}
+
+pfstest_matcher_t *pfstest_is_anything(void)
+{
+    return pfstest_matcher_new(is_anything_printer, is_anything_test, NULL);
+}
