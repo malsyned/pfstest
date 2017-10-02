@@ -16,7 +16,8 @@ pfstest_matcher_t *pfstest_is_the_pointer(const void *p);
 pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size);
 pfstest_matcher_t *pfstest_matches_the_nv_string(
     const pfstest_nv_ptr char *s);
-pfstest_matcher_t *pfstest_is_anything(void);
+pfstest_matcher_t *_pfstest_is_anything(void);
+#define pfstest_is_anything (_pfstest_is_anything())
 
 #ifndef PFSTEST_NOALIAS_is_the_short
 # define is_the_short pfstest_is_the_short

@@ -169,7 +169,7 @@ static bool is_anything_test(pfstest_matcher_t *matcher,
     return true;
 }
 
-pfstest_matcher_t *pfstest_is_anything(void)
+pfstest_matcher_t *_pfstest_is_anything(void)
 {
     return pfstest_matcher_new(is_anything_printer, is_anything_test, NULL);
 }
