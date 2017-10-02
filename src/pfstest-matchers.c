@@ -6,58 +6,15 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-values.h"
+#include "pfstest-equality.h"
 #include "pfstest-alloc.h"
-
-static void is_the_whatever_printer(pfstest_output_formatter_t *formatter,
-                                    pfstest_matcher_t *matcher)
-{
-    pfstest_value_t *expected =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
-
-    pfstest_value_print(formatter, expected);
-}
-
-static bool is_the_whatever_test(pfstest_matcher_t *matcher,
-                                 pfstest_value_t *actual_value)
-{
-    pfstest_value_t *expected_value =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
-
-    const void *expected = pfstest_value_data(expected_value);
-    size_t expected_size = pfstest_value_size(expected_value);
-
-    const void *actual = pfstest_value_data(actual_value);
-    size_t actual_size = pfstest_value_size(actual_value);
-
-    /* If someone is comparing two different-sized blocks of memory in
-     * an assertion, that's almost certainly a bug in the tests, not
-     * in the production code. Since we're carrying around the size
-     * for printing purposes anyway, we might as well check for and
-     * catch this mistake. */
-    if (expected_size != actual_size)
-    {
-        /* However, if actual_size is 0, someone is comparing a memory
-         * block with a value created with something like
-         * the_pointer(). We allow this, especially because auto-mocks
-         * are dumb and use the_pointer for everything. The trade-off
-         * for this is that the_pointer_printer will print only the
-         * address of the actual value. mock verifiers should never
-         * print argument values for anything anyway, because the data
-         * they'd be printing might be stack data that's gone out of
-         * scope by the time the verifier is run. */
-        if (actual_size != 0)
-            return false;
-    }
-
-    return (0 == memcmp(expected, actual, expected_size));
-}
 
 /* is_the_short */
 
 pfstest_matcher_t *pfstest_is_the_short(short s)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_short(s));
 }
 
@@ -65,8 +22,8 @@ pfstest_matcher_t *pfstest_is_the_short(short s)
 
 pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_ushort(s));
 }
 
@@ -74,8 +31,8 @@ pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s)
 
 pfstest_matcher_t *pfstest_is_the_int(int i)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_int(i));
 }
 
@@ -83,8 +40,8 @@ pfstest_matcher_t *pfstest_is_the_int(int i)
 
 pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_uint(u));
 }
 
@@ -92,8 +49,8 @@ pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
 
 pfstest_matcher_t *pfstest_is_the_bool(bool b)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_bool(b));
 }
 
@@ -101,8 +58,8 @@ pfstest_matcher_t *pfstest_is_the_bool(bool b)
 
 pfstest_matcher_t *pfstest_is_the_char(char c)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_char(c));
 }
 
@@ -110,8 +67,8 @@ pfstest_matcher_t *pfstest_is_the_char(char c)
 
 pfstest_matcher_t *pfstest_is_the_string(const char *s)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_string(s));
 }
 
@@ -130,7 +87,7 @@ static bool is_the_pointer_test(pfstest_matcher_t *matcher,
 
 pfstest_matcher_t *pfstest_is_the_pointer(const void *p)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
+    return pfstest_matcher_new(pfstest_equality_printer,
                                is_the_pointer_test,
                                the_pointer(p));
 }
@@ -139,8 +96,8 @@ pfstest_matcher_t *pfstest_is_the_pointer(const void *p)
 
 pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size)
 {
-    return pfstest_matcher_new(is_the_whatever_printer,
-                               is_the_whatever_test,
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
                                the_memory(m, size));
 }
 

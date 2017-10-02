@@ -18,7 +18,8 @@ MOCKPREFIX = mocks/
 
 include src/src.mk
 include tests/selftestsrc.mk
-SRC = $(PFSTEST_SRC) src/pfstest-alloc-malloc.c src/main/gcc-main.c
+SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) \
+      src/pfstest-alloc-malloc.c src/main/gcc-main.c
 selftest_SRC = $(SELFTEST_SRC) $(SELFTEST_MOCKS)
 
 TARGETS = selftest
