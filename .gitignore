@@ -16,6 +16,7 @@
 *.orig
 testrunner
 mocks
+build
 nbproject/private/*
 Debug/*
 register-*tests.c
