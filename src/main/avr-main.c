@@ -38,14 +38,15 @@ static int print_char(int c)
 int main(void)
 {
     pfstest_arguments_t args;
+    int r;
+
     memset(&args, 0, sizeof(args));
     args.verbose = true;
 
     stdout = &mystdout;
     stderr = stdout;
 
-
-    int r = pfstest_start(print_char, &args);
+    r = pfstest_start(print_char, &args);
     
     assert(malloc_used() == 0);
 
