@@ -35,9 +35,12 @@ target-ldlibs = $(call target-class-param,$1,LDLIBS)
 # $(call target-src,target)
 target-src = $(call target-param,$1,SRC) $(SRC)
 
+# $(call target-output,target,file...,extension)
+target-output = $(addprefix $(call target-buildprefix,$1), \
+                              $(patsubst %.c,%.$3,$2))
+
 # $(call target-files,target,extension)
-target-files = $(addprefix $(call target-buildprefix,$1), \
-                           $(patsubst %.c,%.$2,$(call target-src,$1)))
+target-files = $(call target-output,$1,$(call target-src,$1),$2)
 
 # $(call targets-files,target...,extension)
 targets-files = $(foreach target,$1,$(call target-files,$(target),$2))
