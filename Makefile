@@ -56,4 +56,4 @@ clean: clean-targets
 	rm -rf src/main/register-tests.c
 	rm -rf build mocks
 
-include util/testsuite.mk
+include util/multiple-targets.mk
