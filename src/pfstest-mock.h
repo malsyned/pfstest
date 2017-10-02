@@ -89,14 +89,14 @@ struct _pfstest_verify_mode_t
 
 void pfstest_verify_at_location(const pfstest_nv_ptr char *file, int line,
                                 pfstest_expectation_t *e);
-#define pfstest_verify(e)                                               \
-    pfstest_verify_at_location(pfstest_nv_string(__FILE__), __LINE__, e)
+#define pfstest_verify(e)                                       \
+    pfstest_verify_at_location(__PFSTEST_FILE__, __LINE__, e)
 void pfstest_verify_times_at_location(const pfstest_nv_ptr char *file,
                                       int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e);
-#define pfstest_verify_times(m, e)                                  \
-    pfstest_verify_times_at_location(pfstest_nv_string(__FILE__),   \
+#define pfstest_verify_times(m, e)                      \
+    pfstest_verify_times_at_location(__PFSTEST_FILE__,  \
                                      __LINE__, m, e)
 pfstest_verify_mode_t *pfstest_exactly(int times);
 pfstest_verify_mode_t *pfstest_at_most(int times);
@@ -110,7 +110,7 @@ void pfstest_verify_no_more_interactions_at_location(
     const pfstest_nv_ptr pfstest_mock_t *mock);
 #define pfstest_verify_no_more_interactions(m)          \
     pfstest_verify_no_more_interactions_at_location(    \
-        pfstest_nv_string(__FILE__), __LINE__, m)
+        __PFSTEST_FILE__, __LINE__, m)
 
 /* No more invocations verification */
 
@@ -118,7 +118,7 @@ void pfstest_verify_no_more_invocations_at_location(
     const pfstest_nv_ptr char *file, int line);
 #define pfstest_verify_no_more_invocations()        \
     pfstest_verify_no_more_invocations_at_location( \
-        pfstest_nv_string(__FILE__), __LINE__)
+        __PFSTEST_FILE__, __LINE__)
 
 /* In order verification */
 
@@ -132,9 +132,9 @@ void pfstest_in_order_verify_at_location(const pfstest_nv_ptr char *file,
                                          int line,
                                          pfstest_in_order_t *order,
                                          pfstest_expectation_t *expectation);
-#define pfstest_in_order_verify(order, expectation)                     \
-    pfstest_in_order_verify_at_location(pfstest_nv_string(__FILE__),    \
-                                        __LINE__,                       \
+#define pfstest_in_order_verify(order, expectation)         \
+    pfstest_in_order_verify_at_location(__PFSTEST_FILE__,   \
+                                        __LINE__,           \
                                         order, expectation)
 
 /* Convenience aliases without the pfstest namespace prefix */

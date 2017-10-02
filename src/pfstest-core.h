@@ -202,6 +202,8 @@ void pfstest_fail_with_printer(
                     const void *),
     const void *object);
 
+#define __PFSTEST_FILE__ pfstest_nv_string(__FILE__)
+
 PFSTEST_NORETURN
 void _pfstest_fail_at_location(
     const pfstest_nv_ptr char *file, int line,
@@ -209,7 +211,7 @@ void _pfstest_fail_at_location(
 #define pfstest_fail_at_location(file, line, message)                   \
     _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
 #define pfstest_fail(message)                                           \
-    pfstest_fail_at_location(pfstest_nv_string(__FILE__), __LINE__, message)
+    pfstest_fail_at_location(__PFSTEST_FILE__, __LINE__, message)
 
 /* Framework entry points */
 
