@@ -28,7 +28,7 @@ TARGETS = selftest
 all: targets src/main/register-tests.c
 
 .PHONY: test
-test: $(BUILDPREFIX)selftest-runner
+test: selftest-runner
 	@echo ./$< $(ARGS); echo; \
 	MALLOC_CHECK_=1 ./$< $(ARGS); \
 	retval=$$?; \
@@ -42,7 +42,7 @@ test: $(BUILDPREFIX)selftest-runner
 
 include mock.mk
 
-src/main/register-tests.c: $(BUILDPREFIX)selftest-runner \
+src/main/register-tests.c: selftest-runner \
                            src/main/register-tests.c.header \
                            src/main/register-tests.c.footer
 	./$< -r >> $@ \

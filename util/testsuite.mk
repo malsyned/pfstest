@@ -58,8 +58,7 @@ target-d = $(call targets-files,$1,d)
 target-includes = $(addprefix -I,$(sort $(dir $(call target-src,$1))))
 
 # $(call target-exec-name,target)
-target-exec-name = \
-    $(call target-buildprefix,$1)$(patsubst %,$(EXEC_PATTERN),$1)
+target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
 
 # $(call targets-exec-names,target...)
 targets-exec-names = $(foreach target,$1,$(call target-exec-name,$(target)))

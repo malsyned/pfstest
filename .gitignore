@@ -14,7 +14,7 @@
 *.cof
 *.suo
 *.orig
-testrunner
+selftest-runner
 mocks
 build
 nbproject/private/*
