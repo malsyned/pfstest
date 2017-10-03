@@ -82,7 +82,7 @@ TARGETS = self-tests-avr
 all: sizebefore targets sizeafter
 
 clean: clean-targets
-	rm -f self-test-avr.map
+	rm -f self-tests-avr.map
 	rm -rf avrbuild/
 
 .PHONY: sizebefore sizeafter
