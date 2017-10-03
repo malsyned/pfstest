@@ -37,7 +37,7 @@ target-src = $(call target-param,$1,SRC) $(SRC)
 
 # $(call target-output,target,file...,extension)
 target-output = $(addprefix $(call target-buildprefix,$1), \
-                              $(patsubst %.c,%.$3,$2))
+                              $(patsubst %.c,%$3,$2))
 
 # $(call target-files,target,extension)
 target-files = $(call target-output,$1,$(call target-src,$1),$2)
@@ -46,13 +46,13 @@ target-files = $(call target-output,$1,$(call target-src,$1),$2)
 targets-files = $(foreach target,$1,$(call target-files,$(target),$2))
 
 # $(call target-obj,target...)
-target-obj = $(call targets-files,$1,o)
+target-obj = $(call targets-files,$1,.o)
 
 # $(call target-i,target...)
-target-i = $(call targets-files,$1,i)
+target-i = $(call targets-files,$1,.i)
 
 # $(call target-d,target...)
-target-d = $(call targets-files,$1,d)
+target-d = $(call targets-files,$1,.d)
 
 # $(call target-includes,target)
 target-includes = $(addprefix -I,$(sort $(dir $(call target-src,$1))))

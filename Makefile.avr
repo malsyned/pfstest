@@ -40,7 +40,7 @@ CFLAGS += -fpack-struct
 CFLAGS += -fshort-enums
 CFLAGS += -ffunction-sections -fdata-sections
 
-CFLAGS += -Wa,-adhlns=$(call target-output,$(TARGETS),$<,lst)
+CFLAGS += -Wa,-adhlns=$(call target-output,$(TARGETS),$<,.lst)
 
 CPPFLAGS = -DF_CPU=$(F_CPU)UL
 ifdef NAMED_ADDR_SPACES
