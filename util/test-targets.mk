@@ -151,4 +151,7 @@ dump-templates:
 	$(info $(all-templates))
 	@:
 
+# Don't include .d files if a command-line goal contains "clean"
+ifeq ($(findstring clean,$(MAKECMDGOALS)),)
 -include $(call target-d,$(TARGETS))
+endif
