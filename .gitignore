@@ -16,6 +16,7 @@
 *.orig
 selftest-runner
 build
+avrbuild
 nbproject/private/*
 Debug/*
 register-*tests.c
