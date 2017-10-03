@@ -1,3 +1,7 @@
+include src/src.mk
+include tests/selftestsrc.mk
+include util/automock.mk
+
 MAKEFLAGS += --no-builtin-rules --jobs
 
 CC = gcc
@@ -11,22 +15,12 @@ WARN = -Wall -Wextra -Werror -Wwrite-strings \
        -Wvariadic-macros -Wunsuffixed-float-constants \
        -pedantic -pedantic-errors
 
-EXEC_PATTERN = %-runner
+MOCK_CPPFLAGS = $(GCC_MOCK_CPPFLAGS)
+AUTOMOCK_ARGS = $(GCC_AUTOMOCK_ARGS)
 
+EXEC_PATTERN = %-runner
 BUILDPREFIX = build/
 
-MOCK_CPPFLAGS := -D"__attribute__(x)=" \
-                 -D"__asm__(x)=" \
-                 -D"__extension__="
-
-AUTOMOCK_ARGS := -t __builtin_va_list \
-                 -f __inline \
-                 -f __inline__ \
-                 -q __const \
-                 -q __restrict
-
-include src/src.mk
-include tests/selftestsrc.mk
 SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) \
       src/pfstest-alloc-malloc.c src/main/gcc-main.c
 
