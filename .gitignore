@@ -15,7 +15,6 @@
 *.suo
 *.orig
 selftest-runner
-mocks
 build
 nbproject/private/*
 Debug/*

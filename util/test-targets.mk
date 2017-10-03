@@ -17,6 +17,29 @@ target-class-param = $($(call target-class-param-name,$1,$2))
 target-buildprefix = $(or $(call target-class-param,$1,BUILDPREFIX), \
                           $(BUILDPREFIX))
 
+# $(call target-mocks,target)
+target-mock-reqs = $(call target-param,$1,MOCKS)
+
+# $(call target-mock-templates,target)
+target-mock-templates = \
+    $(addsuffix -mock, $(addprefix $(call target-buildprefix,$1), \
+                                   $(basename $(call target-mock-reqs,$1))))
+
+# $(call target-mock-src,target)
+target-mock-src = $(addsuffix .c,$(call target-mock-templates,$1))
+
+# $(call target-mock-h,target)
+target-mock-h = $(addsuffix .h,$(call target-mock-templates,$1))
+
+# $(call targets-mock-h,target...)
+targets-mock-h = $(foreach target,$1,$(call target-mock-h,$(target)))
+
+# $(call target-mock-files,target)
+target-mock-files = $(call target-mock-src,$1) $(call target-mock-h,$1)
+
+# $(call targets-mock-files,target...)
+targets-mock-files = $(foreach target,$1,$(call target-mock-files,$(target)))
+
 # $(call target-cc,target)
 target-cc = $(or $(call target-class-param,$1,CC),$(CC))
 
@@ -33,7 +56,7 @@ target-ldflags = $(call target-class-param,$1,LDFLAGS)
 target-ldlibs = $(call target-class-param,$1,LDLIBS)
 
 # $(call target-src,target)
-target-src = $(call target-param,$1,SRC) $(SRC)
+target-src = $(call target-param,$1,SRC) $(call target-mock-src,$1) $(SRC)
 
 # $(call target-output,target,file...,extension)
 target-output = $(addprefix $(call target-buildprefix,$1), \
@@ -55,13 +78,15 @@ target-i = $(call targets-files,$1,.i)
 target-d = $(call targets-files,$1,.d)
 
 # $(call target-includes,target)
-target-includes = $(addprefix -I,$(sort $(dir $(call target-src,$1))))
+target-includes = $(addprefix -I, $(sort $(dir $(call target-src,$1))))
 
 # $(call target-exec-name,target)
 target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
 
 # $(call targets-exec-names,target...)
 targets-exec-names = $(foreach target,$1,$(call target-exec-name,$(target)))
+
+AUTOMOCK ?= automock/automock.py
 
 .PHONY: targets
 targets: $(call targets-exec-names,$(TARGETS))
@@ -86,7 +111,16 @@ define target-template
     $$(call target-buildprefix,$1)%.d: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
 	$$(call target-cc,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
-	    -MM -MG -MP -MT "$$(@) $$(@:%d=%o)" -o $$@ $$<
+	    -MM -MP -MT "$$(@) $$(@:%d=%o)" -o $$@ $$<
+
+    #TODO: per-target MOCK_CPPFLAGS
+    #TODO: per-target AUTOMOCK_ARGS
+    $$(call target-buildprefix,$1)%-mock.c \
+    $$(call target-buildprefix,$1)%-mock.c : %.h $$(MAKEFILE_LIST)
+	@mkdir -p $$(dir $$@)
+	$$(call target-cc,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
+	  $$(MOCK_CPPFLAGS) -E -o - $$< \
+	  | $(AUTOMOCK) $(AUTOMOCK_ARGS) $$< $$(basename $$@)
 
 endef
 
@@ -100,7 +134,13 @@ clean-targets:
 	rm -f $(call targets-exec-names,$(TARGETS)) \
 	  $(sort $(call target-obj,$(TARGETS)) \
 	         $(call target-i,$(TARGETS)) \
-	         $(call target-d,$(TARGETS)))
+	         $(call target-d,$(TARGETS)) \
+	         $(call targets-mock-files,$(TARGETS)))
+
+# Without this, GNU Make deletes mock C files after regenerating .d
+# files, even though they're still needed
+.SECONDARY: $(call targets-mock-files,$(TARGETS))
+$(call target-d,$(TARGETS)): | $(call targets-mock-h,$(TARGETS))
 
 .PHONY: none
 none:

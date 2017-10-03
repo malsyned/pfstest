@@ -14,15 +14,26 @@ WARN = -Wall -Wextra -Werror -Wwrite-strings \
 EXEC_PATTERN = %-runner
 
 BUILDPREFIX = build/
-MOCKPREFIX = mocks/
+
+MOCK_CPPFLAGS := -D"__attribute__(x)=" \
+                 -D"__asm__(x)=" \
+                 -D"__extension__="
+
+AUTOMOCK_ARGS := -t __builtin_va_list \
+                 -f __inline \
+                 -f __inline__ \
+                 -q __const \
+                 -q __restrict
 
 include src/src.mk
 include tests/selftestsrc.mk
 SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) \
       src/pfstest-alloc-malloc.c src/main/gcc-main.c
-selftest_SRC = $(SELFTEST_SRC) $(SELFTEST_MOCKS)
 
 TARGETS = selftest
+
+selftest_SRC = $(SELFTEST_SRC)
+selftest_MOCKS = $(SELFTEST_MOCKS)
 
 .DEFAULT_GOAL := all
 .PHONY: all
@@ -41,8 +52,6 @@ test: selftest-runner
 	echo "\033[30;2;$${color}m$${text}\033[00m"; \
 	return $$retval
 
-include mock.mk
-
 src/main/register-tests.c: selftest-runner \
                            src/main/register-tests.c.header \
                            src/main/register-tests.c.footer
@@ -53,8 +62,7 @@ src/main/register-tests.c: selftest-runner \
 	  > $@
 
 clean: clean-targets
-	rm -rf $(addprefix $(basename $(SELFTEST_MOCKS)),.c .h)
 	rm -rf src/main/register-tests.c
-	rm -rf build mocks
+	rm -rf build
 
-include util/multiple-targets.mk
+include util/test-targets.mk

@@ -1,0 +1,40 @@
+Problems with the Makefile:
+
+Mocks aren't built with per-class parameters, which I might want them to be
+Paths to mocks aren't automatically inferred and placed on the include list
+-MG, put in place to tolerate missing mocks, causes Makefile looping
+
+
+I believe that the first two problems can be solved by integrating mocking into the multitarget system. The third one is trickier.
+
+
+
+Mock headers must exist before the headers which depend on them are examined for dependencies.
+Which is to say that the generation of some .d files will depend on the existence of some mocks. *but* not the age of those mocks, necessarily.
+
+So, make all mock headers order-only dependencies of all .d files, and then remove -MG from the .d generation command line.
+
+
+Is order-only sufficient?
+
+Yes. The list of headers included by a mock header never changes, so its direct dependency list will not get out of date. Dependency trees are collapsed by gcc -M, so any version of the mock header is as good as any other for dependency checking.
+
+
+What did the old system do for mocks?
+
+*For each mock of a target, add the dir of the mock header to the -Is for all dependencies of that target
+*For each mock of a target, add the object file built from the mock to the list of dependencies for that target
+For some reason that I don't understand, make all .o files from the target depend on the mock header
+*Ensure that the makefile includes the dep file for the mock
+*Ensure that the clean target removes all of the -mock.c and -mock.h files
+
+TARGETS = selftest
+selftest_MOCKS = tests/dep.h
+
+selftest-mockprefix = $(call target-buildprefix,selftest)tests/dep-mock.[ch]
+
+
+New mock needs:
+
+*$(call target-d,$(TARGETS)): | $(call targets-mock-h,$(TARGETS))
+

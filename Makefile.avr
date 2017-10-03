@@ -53,17 +53,28 @@ LDLIBS = -lm
 
 EXEC_PATTERN = %.elf
 BUILDPREFIX = avrbuild/
-MOCKPREFIX = avrbuild/mocks/
+
+MOCK_CPPFLAGS := -D"__attribute__(x)=" \
+                 -D"__asm__(x)=" \
+                 -D"__extension__="
+
+AUTOMOCK_ARGS := -t __builtin_va_list \
+                 -f __inline \
+                 -f __inline__ \
+                 -q __const \
+                 -q __flash \
+                 -q __restrict
 
 include src/src.mk
 include tests/selftestsrc.mk
 
-SRC = $(PFSTEST_SRC) \
+SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) \
       src/pfstest-platform-avr8.c \
       src/pfstest-alloc-malloc.c \
       src/main/avr-main.c
 
-self-tests-avr_SRC = $(SELFTEST_SRC) $(SELFTEST_MOCKS)
+self-tests-avr_SRC = $(SELFTEST_SRC)
+self-tests-avr_MOCKS = $(SELFTEST_MOCKS)
 
 TARGETS = self-tests-avr
 
@@ -72,6 +83,7 @@ TARGETS = self-tests-avr
 all: sizebefore targets sizeafter
 
 clean: clean-targets
+	rm -f self-test-avr.map
 	rm -rf avrbuild/
 
 .PHONY: sizebefore sizeafter
@@ -84,8 +96,7 @@ SIMULAVR=$$HOME/local/bin/simulavr
 test: targets
 	echo ; $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $(call target-exec-name,$(TARGETS)) -W 0x20,- -T exit
 
-include mock.mk
-include util/multiple-targets.mk
+include util/test-targets.mk
 
 # TODO:
 # Support $(TARGETS) containing multiple targets
