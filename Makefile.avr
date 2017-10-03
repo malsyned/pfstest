@@ -4,7 +4,7 @@ MCU = atmega128
 F_CPU = 8000000
 
 CC = avr-gcc
-CFLAGS = -gdwarf-2 -Os $(WARN) -std=c99
+CFLAGS = -gdwarf-2 -Os $(WARN) -std=gnu99
 
 WARN  = -Wall
 WARN += -Wextra
