@@ -72,17 +72,23 @@ TARGETS = self-tests-avr
 
 .DEFAULT_GOAL := all
 .PHONY: all 
-all: sizebefore targets sizeafter
+all: targets sizes
 
 clean: clean-targets
 	rm -rf $(call targets-files,$(TARGETS),.lst)
 	rm -f self-tests-avr.map
 	rm -rf avrbuild/
 
-.PHONY: sizebefore sizeafter
-sizebefore sizeafter:
-	@if test -f $(call target-exec-name,$(TARGETS)); then echo; avr-size --mcu=$(MCU) --format=avr $(call target-exec-name,$(TARGETS)); \
-	2>/dev/null; echo; fi
+.PHONY: sizes
+sizes:
+	@for elf in $(call targets-exec-names,$(TARGETS)); \
+	do \
+	    if test -f $${elf}; \
+	    then \
+	        echo; \
+	        avr-size --mcu=$(MCU) --format=avr $${elf} 2>/dev/null; \
+	    fi; \
+	done
 
 SIMULAVR=$$HOME/local/bin/simulavr
 .PHONY: test
@@ -97,7 +103,6 @@ test: targets
 include util/test-targets.mk
 
 # TODO:
-# Support $(TARGETS) containing multiple targets
 # debugging and programming
 # These kinds of things: hex eep fuse lock lss sym
 # %.hex: %.elf
