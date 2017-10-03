@@ -87,7 +87,12 @@ sizebefore sizeafter:
 SIMULAVR=$$HOME/local/bin/simulavr
 .PHONY: test
 test: targets
-	echo ; $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $(call target-exec-name,$(TARGETS)) -W 0x20,- -T exit
+	@set -e; \
+	for elf in $(call targets-exec-names,$(TARGETS)); \
+	do \
+	    echo ; \
+	    $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $${elf} -W 0x20,- -T exit ; \
+	done
 
 include util/test-targets.mk
 
