@@ -1,5 +1,7 @@
 #include "pfstest-equality.h"
 
+#include <string.h>
+
 void pfstest_equality_printer(pfstest_output_formatter_t *formatter,
                               pfstest_matcher_t *matcher)
 {
