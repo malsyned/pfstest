@@ -16,7 +16,6 @@ WARN += -Wswitch-default
 WARN += -Wfloat-equal
 WARN += -Wpointer-arith
 WARN += -Wundef
-WARN += -Wunused-macros
 WARN += -Wbad-function-cast
 WARN += -Wcast-align
 WARN += -Wjump-misses-init

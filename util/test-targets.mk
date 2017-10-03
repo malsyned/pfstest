@@ -105,12 +105,12 @@ define target-template
 
     $$(call target-buildprefix,$1)%.i: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
-	$$(call target-cc,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
+	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
 	    -E -o $$@ $$<
 
     $$(call target-buildprefix,$1)%.d: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
-	$$(call target-cc,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
+	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
 	    -MM -MP -MT "$$(@) $$(@:%d=%o)" -o $$@ $$<
 
     #TODO: per-target MOCK_CPPFLAGS
@@ -118,7 +118,7 @@ define target-template
     $$(call target-buildprefix,$1)%-mock.c \
     $$(call target-buildprefix,$1)%-mock.c : %.h $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
-	$$(call target-cc,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
+	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
 	  $$(MOCK_CPPFLAGS) -E -o - $$< \
 	  | $(AUTOMOCK) $(AUTOMOCK_ARGS) $$< $$(basename $$@)
 
