@@ -31,14 +31,15 @@ selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c
 
+include util/test-targets.mk
+include util/test-runners.mk
+
 .DEFAULT_GOAL := all
 .PHONY: all
 all: targets src/main/register-tests.c
 
 .PHONY: test
-test: selftest-runner
-	@echo ./$< $(ARGS); echo; \
-	MALLOC_CHECK_=1 ./$< $(ARGS); \
+test: run-test-targets
 
 src/main/register-tests.c: selftest-runner \
                            src/main/register-tests.c.header \
@@ -52,5 +53,3 @@ src/main/register-tests.c: selftest-runner \
 clean: clean-targets
 	rm -rf src/main/register-tests.c
 	rm -rf build
-
-include util/test-targets.mk
