@@ -3,6 +3,10 @@
 
 #include "pfstest-platform.h"
 
+typedef struct _pfstest_report_colorizer_t pfstest_report_colorizer_t;
+extern pfstest_report_colorizer_t *pfstest_report_colorizer_null;
+extern pfstest_report_colorizer_t *pfstest_report_colorizer_ansi;
+
 typedef
 struct _pfstest_output_formatter_vtable_t
 pfstest_output_formatter_vtable_t;
@@ -32,9 +36,9 @@ struct _pfstest_output_formatter_vtable_t
 };
 
 pfstest_output_formatter_t *pfstest_output_formatter_standard_new(
-    int (*print_char)(int));
+    int (*print_char)(int), pfstest_report_colorizer_t *colorizer);
 pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
-    int (*print_char)(int));
+    int (*print_char)(int), pfstest_report_colorizer_t *colorizer);
 
 int pfstest_output_formatter_print_char(
     pfstest_output_formatter_t *formatter, int c);

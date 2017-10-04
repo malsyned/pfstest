@@ -77,12 +77,30 @@ test(should_set_default_args_from_simplest_arg_list)
                 the_bool(args.verbose), is_the_bool(false));
     assert_that("xml flag defaults to false",
                 the_bool(args.xml), is_the_bool(false));
+    assert_that("color flag defaults to false",
+                the_bool(args.color), is_the_bool(false));
     assert_that("print_register_commands flag defaults to false",
                 the_bool(args.print_register_commands), is_the_bool(false));
     assert_that("filter_file defaults to false",
                 the_pointer(args.filter_file), is_the_pointer(NULL));
     assert_that("filter_name defaults to false",
                 the_pointer(args.filter_name), is_the_pointer(NULL));
+}
+
+test(should_parse_c_flag)
+{
+    char *argv[3];
+    int argc = sizeof(argv)/sizeof(argv[0]);
+    char argv_0[] = "progname";
+    char argv_1[] = "-c";
+    argv[0] = argv_0;
+    argv[1] = argv_1;
+    argv[2] = NULL;
+
+    pfstest_arguments_parse(&args, argc, argv);
+
+    assert_that("-c flag is parsed",
+                the_bool(args.color), is_the_bool(true));
 }
 
 test(should_parse_v_flag)
@@ -321,7 +339,7 @@ test(should_print_register_commands)
 test(should_print_usage)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "usage: program_name [-r] [-v] [-f source-file] [-n test-name]\n");
+        "usage: program_name [-r] [-v] [-c] [-f source-file] [-n test-name]\n");
     
     char program_name[] = "program_name";
     pfstest_print_usage(capture_output_char, program_name);

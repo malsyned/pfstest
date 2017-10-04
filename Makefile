@@ -29,6 +29,8 @@ TARGETS = selftest
 selftest_SRC = $(SELFTEST_SRC)
 selftest_MOCKS = $(SELFTEST_MOCKS)
 
+ARGS=-c
+
 .DEFAULT_GOAL := all
 .PHONY: all
 all: targets src/main/register-tests.c
@@ -37,14 +39,6 @@ all: targets src/main/register-tests.c
 test: selftest-runner
 	@echo ./$< $(ARGS); echo; \
 	MALLOC_CHECK_=1 ./$< $(ARGS); \
-	retval=$$?; \
-	if [ $$retval -eq 0 ]; then \
-		color=42; text=PASS; \
-	else \
-		color=41; text=FAIL; \
-	fi; \
-	echo "\033[30;2;$${color}m$${text}\033[00m"; \
-	return $$retval
 
 src/main/register-tests.c: selftest-runner \
                            src/main/register-tests.c.header \

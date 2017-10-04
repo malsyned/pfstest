@@ -3,6 +3,20 @@
 #include "pfstest-alloc.h"
 #include "pfstest-basename.h"
 
+typedef enum {
+    REPORT_COLOR_GREEN,
+    REPORT_COLOR_YELLOW,
+    REPORT_COLOR_RED,
+    REPORT_COLOR_BOLD,
+    REPORT_COLOR_VERY_RED
+} report_color_t;
+
+static void report_colorizer_start(pfstest_report_colorizer_t *this,
+                                   int (*char_writer)(int),
+                                   report_color_t color);
+static void report_colorizer_reset(pfstest_report_colorizer_t *this,
+                                   int (*char_writer)(int));
+
 typedef struct
 {
     int passed;
@@ -13,6 +27,7 @@ typedef struct
 typedef struct
 {
     pfstest_output_formatter_t parent;
+    pfstest_report_colorizer_t *colorizer;
     results_t results;
     volatile bool test_failed;
     bool test_ignored;
@@ -143,21 +158,38 @@ static void test_ignored_verbose(pfstest_output_formatter_t *formatter)
 {
     builtin_formatter_t *as_builtin_formatter =
         (builtin_formatter_t *)formatter;
+    pfstest_report_colorizer_t *colorizer = as_builtin_formatter->colorizer;
+    int (*char_writer)(int) = formatter->char_writer;
 
     test_ignored_bookkeeping(as_builtin_formatter);
-    print_nv_string(as_builtin_formatter, pfstest_nv_string("IGNORED\n"));
+    report_colorizer_start(colorizer, char_writer, REPORT_COLOR_YELLOW);
+    print_nv_string(as_builtin_formatter, pfstest_nv_string("IGNORED"));
+    report_colorizer_reset(colorizer, char_writer);
+    print_nv_string(as_builtin_formatter, pfstest_nv_string("\n"));
 }
 
 static void test_failed_message_start_common(
     builtin_formatter_t *formatter,
     const pfstest_nv_ptr char *file, int line)
 {
+    pfstest_output_formatter_t *as_output_formatter =
+        (pfstest_output_formatter_t *)formatter;
+    pfstest_report_colorizer_t *colorizer = formatter->colorizer;
+    int(*char_writer)(int) = as_output_formatter->char_writer;
+
+    report_colorizer_start(colorizer, char_writer, REPORT_COLOR_RED);
     print_nv_string(formatter, pfstest_nv_string("FAIL"));
+    report_colorizer_reset(colorizer, char_writer);
+
     print_nv_string(formatter, pfstest_nv_string("\n"));
     print_nv_string(formatter, pfstest_nv_string("    Location: "));
+
+    report_colorizer_start(colorizer, char_writer, REPORT_COLOR_BOLD);
     print_nv_string(formatter, pfstest_basename(file));
     print_nv_string(formatter, pfstest_nv_string(":"));
     print_int(formatter, line);
+    report_colorizer_reset(colorizer, char_writer);
+
     print_nv_string(formatter, pfstest_nv_string("\n"));
 
     formatter->indent = true;
@@ -191,6 +223,7 @@ static void test_failed_message_start_verbose(
 static void test_failed_message_complete(
     pfstest_output_formatter_t *formatter)
 {
+
     builtin_formatter_t *as_builtin_formatter =
         (builtin_formatter_t *)formatter;
 
@@ -227,10 +260,15 @@ static void test_complete_verbose(pfstest_output_formatter_t *formatter)
 {
     builtin_formatter_t *as_builtin_formatter =
         (builtin_formatter_t *)formatter;
+    pfstest_report_colorizer_t *colorizer = as_builtin_formatter->colorizer;
+    int (*char_writer)(int) = formatter->char_writer;
 
     if (test_passed(as_builtin_formatter)) {
         test_passed_bookkeeping(as_builtin_formatter);
-        print_nv_string(as_builtin_formatter, pfstest_nv_string("PASS\n"));
+        report_colorizer_start(colorizer, char_writer, REPORT_COLOR_GREEN);
+        print_nv_string(as_builtin_formatter, pfstest_nv_string("PASS"));
+        report_colorizer_reset(colorizer, char_writer);
+        print_nv_string(as_builtin_formatter, pfstest_nv_string("\n"));
     }
 }
 
@@ -238,15 +276,50 @@ static void run_complete(pfstest_output_formatter_t *formatter)
 {
     builtin_formatter_t *as_builtin_formatter =
         (builtin_formatter_t *)formatter;
+    pfstest_report_colorizer_t *colorizer =
+        as_builtin_formatter->colorizer;
+    bool pass_green = (as_builtin_formatter->results.passed > 0
+                       && as_builtin_formatter->results.failed == 0);
+    bool fail_red = (as_builtin_formatter->results.failed > 0);
+    bool ignore_yellow = (as_builtin_formatter->results.ignored > 0);
 
     print_nv_string(as_builtin_formatter,
                     pfstest_nv_string("\nRun complete. "));
+
+    if (pass_green)
+    {
+        report_colorizer_start(colorizer, formatter->char_writer,
+                               REPORT_COLOR_GREEN);
+    }
     print_int(as_builtin_formatter, as_builtin_formatter->results.passed);
-    print_nv_string(as_builtin_formatter, pfstest_nv_string(" passed, "));
+    print_nv_string(as_builtin_formatter, pfstest_nv_string(" passed"));
+    if (pass_green) {
+        report_colorizer_reset(colorizer, formatter->char_writer);
+    }
+
+    print_nv_string(as_builtin_formatter, pfstest_nv_string(", "));
+    if (fail_red) {
+        report_colorizer_start(colorizer, formatter->char_writer,
+                               REPORT_COLOR_VERY_RED);
+    }
     print_int(as_builtin_formatter, as_builtin_formatter->results.failed);
-    print_nv_string(as_builtin_formatter, pfstest_nv_string(" failed, "));
+    print_nv_string(as_builtin_formatter, pfstest_nv_string(" failed"));
+    if (fail_red) {
+        report_colorizer_reset(colorizer, formatter->char_writer);
+    }
+    print_nv_string(as_builtin_formatter, pfstest_nv_string(", "));
+
+    if (ignore_yellow) {
+        report_colorizer_start(colorizer, formatter->char_writer,
+                               REPORT_COLOR_YELLOW);
+    }
     print_int(as_builtin_formatter, as_builtin_formatter->results.ignored);
-    print_nv_string(as_builtin_formatter, pfstest_nv_string(" ignored\n"));
+    print_nv_string(as_builtin_formatter, pfstest_nv_string(" ignored"));
+    if (ignore_yellow) {
+        report_colorizer_reset(colorizer, formatter->char_writer);
+    }
+
+    print_nv_string(as_builtin_formatter, pfstest_nv_string("\n"));
 }
 
 static int return_value(pfstest_output_formatter_t *formatter)
@@ -289,26 +362,28 @@ static void bookkeeping_init(builtin_formatter_t *formatter)
 
 
 pfstest_output_formatter_t *pfstest_output_formatter_standard_new(
-    int (*char_writer)(int))
+    int (*char_writer)(int), pfstest_report_colorizer_t *colorizer)
 {
     builtin_formatter_t *formatter =
         pfstest_alloc(sizeof(*formatter));
 
     formatter->parent.vtable = &standard_vtable;
     formatter->parent.char_writer = char_writer;
+    formatter->colorizer = colorizer;
     bookkeeping_init(formatter);
 
     return (pfstest_output_formatter_t *)formatter;
 }
 
 pfstest_output_formatter_t *pfstest_output_formatter_verbose_new(
-    int (*char_writer)(int))
+    int (*char_writer)(int), pfstest_report_colorizer_t *colorizer)
 {
     builtin_formatter_t *formatter =
         pfstest_alloc(sizeof(*formatter));
 
     formatter->parent.vtable = &verbose_vtable;
     formatter->parent.char_writer = char_writer;
+    formatter->colorizer = colorizer;
     bookkeeping_init(formatter);
 
     return (pfstest_output_formatter_t *)formatter;
@@ -549,3 +624,91 @@ int pfstest_output_formatter_return_value(
         
     return return_value(formatter);
 }
+
+struct _pfstest_report_colorizer_t
+{
+    void (*start)(int (*char_writer)(int), report_color_t color);
+    void (*reset)(int (*char_writer)(int));
+};
+
+static void colorizer_null_start(int (*char_writer)(int),
+                                 report_color_t color)
+{
+    (void)char_writer;
+    (void)color;
+}
+
+static void colorizer_null_reset(int (*char_writer)(int))
+{
+    (void)char_writer;
+}
+
+static void start_color_esc(int (*char_writer)(int))
+{
+    char_writer('\033');
+    char_writer('[');
+}
+
+static void finish_color_esc(int (*char_writer)(int))
+{
+    char_writer('m');
+}
+
+static void colorizer_ansi_start(int (*char_writer)(int),
+                                 report_color_t color)
+{
+    (void)color;
+    start_color_esc(char_writer);
+    if (color == REPORT_COLOR_BOLD) {
+        char_writer('1');
+    } else if (color == REPORT_COLOR_RED) {
+        char_writer('3'); char_writer('1');
+    } else if (color == REPORT_COLOR_GREEN) {
+        char_writer('3'); char_writer('2');
+    } else if (color == REPORT_COLOR_YELLOW) {
+        char_writer('3'); char_writer('3');
+    } else if (color == REPORT_COLOR_VERY_RED) {
+        char_writer('3'); char_writer('7'); char_writer(';');
+        char_writer('4'); char_writer('1'); char_writer(';');
+        char_writer('1');
+    }
+    finish_color_esc(char_writer);
+}
+
+static void colorizer_ansi_reset(int (*char_writer)(int))
+{
+    start_color_esc(char_writer);
+    finish_color_esc(char_writer);
+}
+
+static void report_colorizer_start(pfstest_report_colorizer_t *this,
+                                   int (*char_writer)(int),
+                                   report_color_t color)
+{
+    this->start(char_writer, color);
+}
+
+static void report_colorizer_reset(pfstest_report_colorizer_t *this,
+                                   int (*char_writer)(int))
+{
+    this->reset(char_writer);
+}
+
+static pfstest_report_colorizer_t _pfstest_report_colorizer_null[] = {
+    {
+        colorizer_null_start,
+        colorizer_null_reset,
+    }
+};
+
+static pfstest_report_colorizer_t _pfstest_report_colorizer_ansi[] = {
+    {
+        colorizer_ansi_start,
+        colorizer_ansi_reset,
+    }
+};
+
+pfstest_report_colorizer_t *pfstest_report_colorizer_null =
+    _pfstest_report_colorizer_null;
+pfstest_report_colorizer_t *pfstest_report_colorizer_ansi =
+    _pfstest_report_colorizer_ansi;

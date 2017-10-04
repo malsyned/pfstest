@@ -177,7 +177,7 @@ void pfstest_print_usage(int (*print_char)(int), char *program_name)
     print_string(print_char, program_name);
     print_nv_string(
         print_char,
-        pfstest_nv_string(" [-r] [-v] [-f source-file] [-n test-name]\n"));
+        pfstest_nv_string(" [-r] [-v] [-c] [-f source-file] [-n test-name]\n"));
 }
 
 void _pfstest_suite_register_test(pfstest_list_t *suite,
@@ -331,6 +331,7 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
 
     args->verbose = false;
     args->xml = false;
+    args->color = false;
     args->print_register_commands = false;
     args->filter_file = NULL;
     args->filter_name = NULL;
@@ -349,6 +350,8 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-x"))) {
             args->xml = true;
             args->verbose = false;
+        } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-c"))) {
+            args->color = true;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-r"))) {
             args->print_register_commands = true;
         } else if (0 == pfstest_strcmp_nv(arg, pfstest_nv_string("-f"))) {
@@ -371,18 +374,26 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
 int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
 {
     pfstest_output_formatter_t *formatter;
+    pfstest_report_colorizer_t *colorizer;
     int r;
+
+    if (args->color)
+        colorizer = pfstest_report_colorizer_ansi;
+    else
+        colorizer = pfstest_report_colorizer_null;
 
     if (args->print_register_commands) {
         pfstest_print_register_commands(print_char, &before, &after, &tests);
         return 0;
     } else {
         if (args->verbose) {
-            formatter = pfstest_output_formatter_verbose_new(print_char);
+            formatter = pfstest_output_formatter_verbose_new(print_char,
+                                                             colorizer);
         } else if (args->xml) {
             formatter = pfstest_output_formatter_xml_new(print_char);
         } else {
-            formatter = pfstest_output_formatter_standard_new(print_char);
+            formatter = pfstest_output_formatter_standard_new(print_char,
+                                                              colorizer);
         }
 
         r = pfstest_suite_run(&before, &after, &tests,

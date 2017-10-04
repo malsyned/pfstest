@@ -1,0 +1,22 @@
+Print verbose PASS in green (32)
+Print verbose and regular FAIL in red (31)
+Print verbose IGNORE in yellow (33)
+Print location of failure in bold (1)
+
+If no failures, print "# passed" in green (32)
+If any failures, print "# failed" in bold white on red (37;41;1)
+print "# ignored" in yellow (33)
+
+
+run_complete: make passed green? or failed bold&red bg? or ignored yellow?
+test_ignored_verbose: make IGNORED yellow
+test_failed_message_start_common: make FAIL red, make location bold
+test_complete_verbose: make PASS green
+
+
+color_bold_start
+color_green_start
+color_red_start
+color_very_red_start
+color_yellow_start
+color_reset

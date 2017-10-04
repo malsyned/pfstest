@@ -222,6 +222,7 @@ typedef struct
     char *filter_name;
     bool xml;
     bool verbose;
+    bool color;
     bool print_register_commands;
 } pfstest_arguments_t;
 

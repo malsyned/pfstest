@@ -1,11 +1,11 @@
 #include "pfstest.h"
 
 #include "capture-output.h"
-
-#define VERSION "0.2"
-#define HEADER "PFSTest " VERSION "\n" "===========\n"
+#include "output-definitions.h"
 
 char call_log[150];
+
+static pfstest_report_colorizer_t *null_colorizer;
 
 static pfstest_output_formatter_t *standard_formatter;
 static pfstest_output_formatter_t *verbose_formatter;
@@ -23,10 +23,14 @@ before_tests(setup)
     pfstest_list_reset(&before_hooks);
     pfstest_list_reset(&after_hooks);
 
+    null_colorizer = pfstest_report_colorizer_null;
+
     standard_formatter =
-        pfstest_output_formatter_standard_new(capture_output_char);
+        pfstest_output_formatter_standard_new(capture_output_char,
+                                              null_colorizer);
     verbose_formatter =
-        pfstest_output_formatter_verbose_new(capture_output_char);
+        pfstest_output_formatter_verbose_new(capture_output_char,
+                                             null_colorizer);
 }
 
 test(should_run_tests)
