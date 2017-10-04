@@ -177,7 +177,7 @@ void pfstest_print_usage(int (*print_char)(int), char *program_name)
     print_string(print_char, program_name);
     print_nv_string(
         print_char,
-        pfstest_nv_string(" [-r] [-v] [-c] [-f source-file] [-n test-name]\n"));
+        pfstest_nv_string(" [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n"));
 }
 
 void _pfstest_suite_register_test(pfstest_list_t *suite,

@@ -339,7 +339,7 @@ test(should_print_register_commands)
 test(should_print_usage)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "usage: program_name [-r] [-v] [-c] [-f source-file] [-n test-name]\n");
+        "usage: program_name [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
     
     char program_name[] = "program_name";
     pfstest_print_usage(capture_output_char, program_name);
