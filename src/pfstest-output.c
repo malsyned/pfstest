@@ -2,6 +2,7 @@
 
 #include "pfstest-alloc.h"
 #include "pfstest-basename.h"
+#include "pfstest-version.h"
 
 typedef enum {
     REPORT_COLOR_GREEN,
@@ -102,8 +103,9 @@ static void run_started(pfstest_output_formatter_t *formatter)
         (builtin_formatter_t *)formatter;
 
     run_started_bookkeeping(as_builtin_formatter);
-    print_nv_string(as_builtin_formatter,
-                    pfstest_nv_string("PFSTest 0.2\n"));
+    print_nv_string(
+        as_builtin_formatter,
+        pfstest_nv_string("PFSTest " PFSTEST_VERSION_STRING "\n"));
     print_nv_string(as_builtin_formatter,
                     pfstest_nv_string("===========\n"));
 }

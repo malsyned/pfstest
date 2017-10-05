@@ -2,6 +2,7 @@
 
 #include "pfstest-output-formatter-xml.h"
 
+#include "output-definitions.h"
 #include "capture-output.h"
 
 static pfstest_output_formatter_t *xml_formatter;
@@ -17,7 +18,7 @@ test(should_print_empty_suite)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "</testsuite>\n"
         );
 
@@ -33,7 +34,7 @@ test(should_write_passing_test)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"pass\" />\n"
         "</testsuite>\n"
         );
@@ -54,7 +55,7 @@ test(should_write_ignored_test)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"ignored\" />\n"
         "</testsuite>\n"
         );
@@ -76,7 +77,7 @@ test(should_write_failed_test)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
         "fail_file=\"bar.c\" fail_line=\"47\">\n"
         "    two lines of\n"
@@ -145,7 +146,7 @@ test(should_write_multiple_results)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"ignored\" />\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"pass\" />\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
@@ -183,7 +184,7 @@ test(should_escape_in_file_name)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo&lt;&quot;&amp;&gt;bar.c\" result=\"pass\" />\n"
         "</testsuite>\n"
         );
@@ -204,7 +205,7 @@ test(should_escape_in_failure_file_name)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
         "fail_file=\"bar&lt;&quot;&amp;&gt;foo.c\" fail_line=\"47\">\n"
         "  </test>\n"
@@ -231,7 +232,7 @@ test(should_escape_in_message_body)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<testsuite>\n"
+        "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
         "fail_file=\"bar.c\" fail_line=\"47\">\n"
         "    &lt;\"&amp;&gt;\n"

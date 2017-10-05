@@ -1,6 +1,7 @@
 #include "pfstest-output-formatter-xml.h"
 
 #include "pfstest-alloc.h"
+#include "pfstest-version.h"
 
 typedef struct
 {
@@ -116,7 +117,7 @@ static void run_started(pfstest_output_formatter_t *formatter)
         formatter,
         pfstest_nv_string(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            "<testsuite>\n"
+            "<testsuite version=\"" PFSTEST_VERSION_STRING "\">\n"
             ));
 }
 
