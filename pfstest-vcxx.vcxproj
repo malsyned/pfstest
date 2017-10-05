@@ -72,7 +72,7 @@
     <ClCompile Include="tests\core-test-cases-2.c" />
     <ClCompile Include="tests\core-test-cases.c" />
     <ClCompile Include="tests\test-core.c" />
-    <ClCompile Include="tests\dep-mock.c" />
+    <ClCompile Include="tests\dep.mock.c" />
     <ClCompile Include="tests\test-mock.c" />
     <ClCompile Include="src\pfstest-alloc-malloc.c" />
     <ClCompile Include="src\pfstest-arg-handler.c" />

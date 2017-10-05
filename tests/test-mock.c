@@ -1,7 +1,7 @@
 #include "pfstest.h"
 #include "capture-output.h"
 
-#include "dep-mock.h"
+#include "dep.mock.h"
 
 before_tests(set_up_mock_tests)
 {

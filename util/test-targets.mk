@@ -20,10 +20,13 @@ target-buildprefix = $(or $(call target-class-param,$1,BUILDPREFIX), \
 # $(call target-mocks,target)
 target-mock-reqs = $(call target-param,$1,MOCKS)
 
+mock-suffix = .mock
+
 # $(call target-mock-templates,target)
 target-mock-templates = \
-    $(addsuffix -mock, $(addprefix $(call target-buildprefix,$1), \
-                                   $(basename $(call target-mock-reqs,$1))))
+    $(addsuffix $(mock-suffix), \
+                $(addprefix $(call target-buildprefix,$1), \
+                            $(basename $(call target-mock-reqs,$1))))
 
 # $(call target-mock-src,target)
 target-mock-src = $(addsuffix .c,$(call target-mock-templates,$1))
@@ -115,8 +118,8 @@ define target-template
 
     #TODO: per-target MOCK_CPPFLAGS
     #TODO: per-target AUTOMOCK_ARGS
-    $$(call target-buildprefix,$1)%-mock.c \
-    $$(call target-buildprefix,$1)%-mock.c : %.h $$(MAKEFILE_LIST)
+    $$(call target-buildprefix,$1)%$$(mock-suffix).c \
+    $$(call target-buildprefix,$1)%$$(mock-suffix).c : %.h $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
 	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
 	  $$(MOCK_CPPFLAGS) -E -o - $$< \
