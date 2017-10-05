@@ -103,23 +103,22 @@ pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size)
 /* matches_the_nv_string */
 
 static void matches_the_nv_string_printer(
-    pfstest_output_formatter_t *formatter, pfstest_matcher_t *matcher)
+    pfstest_reporter_t *reporter, pfstest_matcher_t *matcher)
 {
     const pfstest_nv_ptr char **sp =
         (const pfstest_nv_ptr char **)pfstest_matcher_data(matcher);
     const pfstest_nv_ptr char *expected = *sp;
     char c;
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the string \""));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the string \""));
     
     while (pfstest_memcpy_nv(&c, expected, sizeof(c)), c) {
-        pfstest_output_formatter_print_escaped_char(formatter, c);
+        pfstest_reporter_print_escaped_char(reporter, c);
         expected++;
     }
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("\""));
+    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\""));
 }
 
 static bool matches_the_nv_string_test(pfstest_matcher_t *matcher,
@@ -152,12 +151,12 @@ pfstest_matcher_t *pfstest_matches_the_nv_string(
 
 /* is_anything */
 
-static void is_anything_printer(pfstest_output_formatter_t *formatter,
+static void is_anything_printer(pfstest_reporter_t *reporter,
                                 pfstest_matcher_t *matcher)
 {
     (void)matcher;
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("anything"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("anything"));
 }
 
 static bool is_anything_test(pfstest_matcher_t *matcher,

@@ -2,13 +2,13 @@
 
 #include <string.h>
 
-void pfstest_equality_printer(pfstest_output_formatter_t *formatter,
+void pfstest_equality_printer(pfstest_reporter_t *reporter,
                               pfstest_matcher_t *matcher)
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
 
-    pfstest_value_print(formatter, expected);
+    pfstest_value_print(reporter, expected);
 }
 
 bool pfstest_equality_test(pfstest_matcher_t *matcher,

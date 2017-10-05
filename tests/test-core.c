@@ -7,8 +7,8 @@ char call_log[150];
 
 static pfstest_report_colorizer_t *null_colorizer;
 
-static pfstest_output_formatter_t *standard_formatter;
-static pfstest_output_formatter_t *verbose_formatter;
+static pfstest_reporter_t *standard_reporter;
+static pfstest_reporter_t *verbose_reporter;
 
 static pfstest_list_t suite;
 static pfstest_list_t before_hooks;
@@ -25,12 +25,10 @@ before_tests(setup)
 
     null_colorizer = pfstest_report_colorizer_null;
 
-    standard_formatter =
-        pfstest_output_formatter_standard_new(capture_output_char,
-                                              null_colorizer);
-    verbose_formatter =
-        pfstest_output_formatter_verbose_new(capture_output_char,
-                                             null_colorizer);
+    standard_reporter = pfstest_reporter_standard_new(capture_output_char,
+                                                      null_colorizer);
+    verbose_reporter = pfstest_reporter_verbose_new(capture_output_char,
+                                                    null_colorizer);
 }
 
 test(should_run_tests)
@@ -42,8 +40,7 @@ test(should_run_tests)
     pfstest_suite_register_test(&suite, should_also_run);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -60,8 +57,7 @@ test(should_run_before_hooks)
     pfstest_suite_register_test(&suite, should_run);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -78,8 +74,7 @@ test(should_run_after_hooks)
     pfstest_suite_register_test(&suite, should_run);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -95,8 +90,7 @@ test(should_skip_ignored_tests)
     pfstest_suite_register_test(&suite, should_be_ignored);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -128,8 +122,7 @@ test(should_reset_hooks_and_tests)
     pfstest_suite_register_test(&suite, should_run);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -147,8 +140,7 @@ test(should_report_results)
     pfstest_suite_register_test(&suite, should_also_run);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -165,8 +157,7 @@ test(should_report_ignored_tests)
     pfstest_suite_register_test(&suite, should_be_ignored);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -185,8 +176,7 @@ test(should_report_failed_tests)
 
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -208,8 +198,7 @@ test(should_report_results_including_failed_tests)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_register_test(&suite, should_also_run);
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -233,8 +222,7 @@ test(should_report_results_verbose)
     pfstest_suite_register_test(&suite, should_be_ignored);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      verbose_formatter);
+                      NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -255,8 +243,7 @@ test(should_indent_multi_line_error_messages)
 
     pfstest_suite_register_test(&suite, should_have_multi_line_failure);
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -277,8 +264,7 @@ test(should_indent_multi_line_error_messages_verbose)
 
     pfstest_suite_register_test(&suite, should_have_multi_line_failure);
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      verbose_formatter);
+                      NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -299,8 +285,7 @@ test(should_catch_failures_in_before_hooks)
     pfstest_suite_register_test(&suite, should_run);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -316,8 +301,7 @@ test(should_run_after_hooks_when_test_fails)
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -338,8 +322,7 @@ test(should_catch_failures_in_after_hooks)
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -364,8 +347,7 @@ test(should_catch_multiple_after_hook_failures)
     pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -390,8 +372,7 @@ test(should_output_multiple_after_hook_failures_correctly_verbose)
     pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      verbose_formatter);
+                      NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -403,7 +384,7 @@ test(should_accept_null_before_hook_list)
     pfstest_suite_register_test(&suite, should_run);
 
     pfstest_suite_run(NULL, &after_hooks, &suite,
-                      NULL, NULL, standard_formatter);
+                      NULL, NULL, standard_reporter);
 }
 
 test(should_accept_null_after_hook_list)
@@ -411,7 +392,7 @@ test(should_accept_null_after_hook_list)
     pfstest_suite_register_test(&suite, should_run);
 
     pfstest_suite_run(&before_hooks, NULL, &suite,
-                      NULL, NULL, standard_formatter);
+                      NULL, NULL, standard_reporter);
 }
 
 test(should_only_count_each_failing_test_once)
@@ -431,8 +412,7 @@ test(should_only_count_each_failing_test_once)
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -448,8 +428,7 @@ test(should_return_0_on_success)
 
     result = 
         pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                          NULL, NULL,
-                          standard_formatter);
+                          NULL, NULL, standard_reporter);
 
     if (0 != result) {
         fail("pfstest_suite_run did not return 0");
@@ -465,8 +444,7 @@ test(should_return_fail_count_on_failure)
 
     result = 
         pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                          NULL, NULL,
-                          standard_formatter);
+                          NULL, NULL, standard_reporter);
 
     if (2 != result) {
         fail("pfstest_suite_run did not return 2");
@@ -482,8 +460,7 @@ test(should_only_call_before_hooks_in_same_file)
     pfstest_suite_register_test(&suite, should_run);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -500,8 +477,7 @@ test(should_only_call_after_hooks_in_same_file)
     pfstest_suite_register_test(&suite, should_run);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, NULL,
-                      standard_formatter);
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -518,7 +494,7 @@ test(should_filter_by_file_name)
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
                       pfstest_nv_string("core-test-cases.c"), NULL,
-                      standard_formatter);
+                      standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -535,7 +511,7 @@ test(should_filter_by_test_name)
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
                       NULL, pfstest_nv_string("should_run"),
-                      standard_formatter);
+                      standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");

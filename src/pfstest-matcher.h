@@ -8,20 +8,18 @@ typedef struct _pfstest_matcher_t pfstest_matcher_t;
 
 struct _pfstest_matcher_t
 {
-    void (*printer)(pfstest_output_formatter_t *formatter,
-                    pfstest_matcher_t *);
+    void (*printer)(pfstest_reporter_t *reporter, pfstest_matcher_t *);
     bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual);
     void *data;
 };
 
 pfstest_matcher_t *pfstest_matcher_new(
-    void (*printer)(pfstest_output_formatter_t *formatter,
-                    pfstest_matcher_t *),
+    void (*printer)(pfstest_reporter_t *reporter, pfstest_matcher_t *),
     bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual),
     void *data);
 bool pfstest_matcher_matches(pfstest_matcher_t *matcher,
                              pfstest_value_t *actual);
-void pfstest_matcher_print(pfstest_output_formatter_t *formatter,
+void pfstest_matcher_print(pfstest_reporter_t *reporter,
                            pfstest_matcher_t *matcher);
 void *pfstest_matcher_data(pfstest_matcher_t *matcher);
 

@@ -5,7 +5,7 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-list.h"
-#include "pfstest-output.h"
+#include "pfstest-reporter.h"
 
 /* Basic utilities */
 
@@ -87,12 +87,12 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_list_t *suite,
                       const pfstest_nv_ptr char *filter_file,
                       const pfstest_nv_ptr char *filter_name,
-                      pfstest_output_formatter_t *formatter);
+                      pfstest_reporter_t *reporter);
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
                  const pfstest_nv_ptr char *filter_file,
                  const pfstest_nv_ptr char *filter_name,
-                 pfstest_output_formatter_t *formatter);
+                 pfstest_reporter_t *reporter);
 
 #define _pfstest_define(name, flags)            \
     _pfstest_init_define(name)                  \
@@ -198,8 +198,7 @@ void _pfstest_register_after(pfstest_hook_t *the_hook);
 PFSTEST_NORETURN
 void pfstest_fail_with_printer(
     const pfstest_nv_ptr char *file, int line,
-    void (*printer)(pfstest_output_formatter_t *formatter,
-                    const void *),
+    void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object);
 
 #define __PFSTEST_FILE__ pfstest_nv_string(__FILE__)
@@ -210,7 +209,7 @@ void _pfstest_fail_at_location(
     const pfstest_nv_ptr char *message);
 #define pfstest_fail_at_location(file, line, message)                   \
     _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
-#define pfstest_fail(message)                                           \
+#define pfstest_fail(message)                                       \
     pfstest_fail_at_location(__PFSTEST_FILE__, __LINE__, message)
 
 /* Framework entry points */

@@ -4,12 +4,12 @@
 #include "pfstest.h"
 #include "capture-output.h"
 
-static void some_value_printer(pfstest_output_formatter_t *formatter,
+static void some_value_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     (void)value;
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("some value"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("some value"));
 }
 
 static pfstest_value_t some_value[1] = {{
@@ -40,12 +40,12 @@ static bool always_return_false(pfstest_matcher_t *matcher,
     return false;
 }
 
-static void nothing_printer(pfstest_output_formatter_t *formatter,
+static void nothing_printer(pfstest_reporter_t *reporter,
                             pfstest_matcher_t *matcher)
 {
     (void)matcher;
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("nothing (guaranteed to fail)"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("nothing (guaranteed to fail)"));
 }
 
 static pfstest_matcher_t matches_nothing[1] = {{
@@ -74,7 +74,7 @@ test(should_fail_on_false_assertion)
     capture_test_results(assert_always_fail);
 
     assert_that("False assertions fail",
-                the_int(pfstest_output_formatter_return_value(message_spy)),
+                the_int(pfstest_reporter_return_value(message_spy)),
                 is_the_int(1));
 }
 

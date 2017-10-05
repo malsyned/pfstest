@@ -23,11 +23,11 @@ static void arg_that_matched(pfstest_arg_handler_t *arg_handler,
     (void)actual;
 }
 
-static void arg_that_printer(pfstest_output_formatter_t *formatter,
+static void arg_that_printer(pfstest_reporter_t *reporter,
                              pfstest_arg_handler_t *arg_handler)
 {
     pfstest_matcher_t *matcher = pfstest_arg_handler_data(arg_handler);
-    pfstest_matcher_print(formatter, matcher);
+    pfstest_matcher_print(reporter, matcher);
 }
 
 pfstest_arg_handler_t *pfstest_arg_that(pfstest_matcher_t *matcher)
@@ -71,12 +71,12 @@ static void assign_arg_matched(pfstest_arg_handler_t *arg_handler,
     assign_arg_do_copy(dest, src);
 }
 
-static void assign_arg_printer(pfstest_output_formatter_t *formatter,
+static void assign_arg_printer(pfstest_reporter_t *reporter,
                                pfstest_arg_handler_t *this)
 {
     (void)this;
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("any pointer"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("any pointer"));
 }
 
 pfstest_arg_handler_t *pfstest_assign_arg(pfstest_value_t *src)
@@ -108,12 +108,12 @@ static void assign_arg_that_matched(pfstest_arg_handler_t *arg_handler,
     assign_arg_do_copy(dest, args->src);
 }
 
-static void assign_arg_that_printer(pfstest_output_formatter_t *formatter,
+static void assign_arg_that_printer(pfstest_reporter_t *reporter,
                                     pfstest_arg_handler_t *arg_handler)
 {
     struct assign_arg_that_args *args =
         pfstest_arg_handler_data(arg_handler);
-    pfstest_matcher_print(formatter, args->matcher);
+    pfstest_matcher_print(reporter, args->matcher);
 }
 
 pfstest_arg_handler_t *pfstest_assign_arg_that(pfstest_matcher_t *matcher,

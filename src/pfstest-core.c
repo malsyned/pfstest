@@ -6,7 +6,7 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-basename.h"
-#include "pfstest-output-formatter-xml.h"
+#include "pfstest-reporter-xml.h"
 /* TODO: plugin-ize */
 #include "pfstest-alloc.h"
 #include "pfstest-mock.h"
@@ -22,7 +22,7 @@ typedef struct _dynamic_env_t
     jmp_buf test_jmp_buf;
 
     /* IO Control */
-    pfstest_output_formatter_t *formatter;
+    pfstest_reporter_t *reporter;
 } dynamic_env_t;
 
 static dynamic_env_t *dynamic_env = NULL;
@@ -51,18 +51,14 @@ static int stdout_print_char(int c)
 
 void pfstest_fail_with_printer(
     const pfstest_nv_ptr char *file, int line,
-    void (*printer)(pfstest_output_formatter_t *formatter,
-                    const void *),
+    void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object)
 {
-    pfstest_output_formatter_t *formatter = dynamic_env->formatter;
+    pfstest_reporter_t *reporter = dynamic_env->reporter;
 
-    pfstest_output_formatter_test_failed_message_start(
-        formatter, file, line);
-
-    printer(formatter, object);
-
-    pfstest_output_formatter_test_failed_message_complete(formatter);
+    pfstest_reporter_test_failed_message_start(reporter, file, line);
+    printer(reporter, object);
+    pfstest_reporter_test_failed_message_complete(reporter);
 
     longjmp(dynamic_env->test_jmp_buf, RESULT_FAIL);
 }
@@ -72,11 +68,10 @@ struct message_printer_args
     const pfstest_nv_ptr char *message;
 };
 
-static void message_printer(pfstest_output_formatter_t *formatter,
-                            const void *object)
+static void message_printer(pfstest_reporter_t *reporter, const void *object)
 {
     const struct message_printer_args *args = object;
-    pfstest_output_formatter_print_nv_string(formatter, args->message);
+    pfstest_reporter_print_nv_string(reporter, args->message);
 }
 
 void _pfstest_fail_at_location(
@@ -198,7 +193,7 @@ void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
                  const pfstest_nv_ptr char *filter_file,
                  const pfstest_nv_ptr char *filter_name,
-                 pfstest_output_formatter_t *formatter)
+                 pfstest_reporter_t *reporter)
 {
     dynamic_env_t local_dynamic_env;
     _pfstest_test_nv_t current_test;
@@ -206,7 +201,7 @@ void pfstest_run(pfstest_t *the_test,
     _pfstest_hook_nv_t current_hook;
 
     dynamic_env_push(&local_dynamic_env);
-    dynamic_env->formatter = formatter;
+    dynamic_env->reporter = reporter;
 
     pfstest_memcpy_nv(&current_test, the_test->nv_data,
                       sizeof(current_test));
@@ -220,12 +215,11 @@ void pfstest_run(pfstest_t *the_test,
         goto cleanup;
     }
 
-    pfstest_output_formatter_test_started(formatter,
-                                          current_test.name,
-                                          current_test.file);
+    pfstest_reporter_test_started(reporter,
+                                  current_test.name, current_test.file);
 
     if (current_test.flags & _PFSTEST_FLAG_IGNORED) {
-        pfstest_output_formatter_test_ignored(formatter);
+        pfstest_reporter_test_ignored(reporter);
         goto finish;
     }
 
@@ -276,7 +270,7 @@ void pfstest_run(pfstest_t *the_test,
     pfstest_alloc_frame_pop();
 
 finish:
-    pfstest_output_formatter_test_complete(formatter);
+    pfstest_reporter_test_complete(reporter);
 
 cleanup:
     dynamic_env_pop();
@@ -286,23 +280,23 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_list_t *suite,
                       const pfstest_nv_ptr char *filter_file,
                       const pfstest_nv_ptr char *filter_name,
-                      pfstest_output_formatter_t *formatter)
+                      pfstest_reporter_t *reporter)
 {
     pfstest_list_node_t *test_node;
     int result;
 
-    pfstest_output_formatter_run_started(formatter);
+    pfstest_reporter_run_started(reporter);
 
     pfstest_list_iter (test_node, suite) {
         pfstest_t *the_test = (pfstest_t *)test_node;
 
         pfstest_run(the_test, before, after,
-                    filter_file, filter_name, formatter);
+                    filter_file, filter_name, reporter);
     }
 
-    pfstest_output_formatter_run_complete(formatter);
+    pfstest_reporter_run_complete(reporter);
 
-    result = pfstest_output_formatter_return_value(formatter);
+    result = pfstest_reporter_return_value(reporter);
 
     return result;
 }
@@ -373,7 +367,7 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
 
 int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
 {
-    pfstest_output_formatter_t *formatter;
+    pfstest_reporter_t *reporter;
     pfstest_report_colorizer_t *colorizer;
     int r;
 
@@ -387,18 +381,16 @@ int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args)
         return 0;
     } else {
         if (args->verbose) {
-            formatter = pfstest_output_formatter_verbose_new(print_char,
-                                                             colorizer);
+            reporter = pfstest_reporter_verbose_new(print_char, colorizer);
         } else if (args->xml) {
-            formatter = pfstest_output_formatter_xml_new(print_char);
+            reporter = pfstest_reporter_xml_new(print_char);
         } else {
-            formatter = pfstest_output_formatter_standard_new(print_char,
-                                                              colorizer);
+            reporter = pfstest_reporter_standard_new(print_char, colorizer);
         }
 
         r = pfstest_suite_run(&before, &after, &tests,
                               args->filter_file, args->filter_name,
-                              formatter);
+                              reporter);
         pfstest_alloc_free_frame();
         return r;
     }

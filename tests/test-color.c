@@ -7,8 +7,8 @@ static pfstest_report_colorizer_t *colorizer;
 
 static pfstest_list_t suite;
 
-static pfstest_output_formatter_t *standard_formatter;
-static pfstest_output_formatter_t *verbose_formatter;
+static pfstest_reporter_t *standard_reporter;
+static pfstest_reporter_t *verbose_reporter;
 
 before_tests(setup_color_tests)
 {
@@ -18,10 +18,10 @@ before_tests(setup_color_tests)
 
     colorizer = pfstest_report_colorizer_ansi;
 
-    standard_formatter =
-        pfstest_output_formatter_standard_new(capture_output_char, colorizer);
-    verbose_formatter =
-        pfstest_output_formatter_verbose_new(capture_output_char, colorizer);
+    standard_reporter =
+        pfstest_reporter_standard_new(capture_output_char, colorizer);
+    verbose_reporter =
+        pfstest_reporter_verbose_new(capture_output_char, colorizer);
 }
 
 test(should_print_pass_summary_in_green)
@@ -35,7 +35,7 @@ test(should_print_pass_summary_in_green)
     pfstest_suite_run(NULL, NULL,
                       &suite,
                       NULL, NULL,
-                      standard_formatter);
+                      standard_reporter);
 
     assert_that("pass count is green in the summary line",
                 the_string(captured_output),
@@ -55,7 +55,7 @@ test(should_colorize_failures)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_run(NULL, NULL, &suite,
                       NULL, NULL,
-                      standard_formatter);
+                      standard_reporter);
 
     assert_that("failures are properly colorized",
                 the_string(captured_output),
@@ -73,7 +73,7 @@ test(should_print_ignore_summary_in_yellow)
     pfstest_suite_run(NULL, NULL,
                       &suite,
                       NULL, NULL,
-                      standard_formatter);
+                      standard_reporter);
 
     assert_that("ignore count is yellow in the summary line",
                 the_string(captured_output),
@@ -95,7 +95,7 @@ test(should_not_print_pass_in_green_if_failures)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_run(NULL, NULL, &suite,
                       NULL, NULL,
-                      standard_formatter);
+                      standard_reporter);
 
     assert_that("passed count isn't green if there are failures",
                 the_string(captured_output),
@@ -114,7 +114,7 @@ test(should_print_verbose_pass_in_green)
 
     pfstest_suite_run(NULL, NULL, &suite,
                       NULL, NULL,
-                      verbose_formatter);
+                      verbose_reporter);
 
     assert_that("PASS is green in verbose mode",
                 the_string(captured_output),
@@ -133,7 +133,7 @@ test(should_print_verbose_ignore_in_yellow)
 
     pfstest_suite_run(NULL, NULL, &suite,
                       NULL, NULL,
-                      verbose_formatter);
+                      verbose_reporter);
 
     assert_that("IGNORED is yellow in verbose mode",
                 the_string(captured_output),

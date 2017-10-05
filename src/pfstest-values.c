@@ -9,14 +9,14 @@
 
 /* the_short */
 
-static void the_short_printer(pfstest_output_formatter_t *formatter,
+static void the_short_printer(pfstest_reporter_t *reporter,
                               pfstest_value_t *value)
 {
     short s = *(const short *)pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the short "));
-    pfstest_output_formatter_print_int(formatter, (intmax_t)s);
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the short "));
+    pfstest_reporter_print_int(reporter, (intmax_t)s);
 }
 
 pfstest_value_t *pfstest_the_short(short s)
@@ -29,15 +29,14 @@ pfstest_value_t *pfstest_the_short(short s)
 
 /* the_ushort */
 
-static void the_ushort_printer(pfstest_output_formatter_t *formatter,
+static void the_ushort_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     unsigned short u = *(const unsigned short *)pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the ushort "));
-    pfstest_output_formatter_print_uint(
-        formatter, (uintmax_t)u, 10, 0);
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the ushort "));
+    pfstest_reporter_print_uint(reporter, (uintmax_t)u, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_ushort(unsigned short u)
@@ -50,14 +49,14 @@ pfstest_value_t *pfstest_the_ushort(unsigned short u)
 
 /* the_int */
 
-static void the_int_printer(pfstest_output_formatter_t *formatter,
+static void the_int_printer(pfstest_reporter_t *reporter,
                             pfstest_value_t *value)
 {
     int i = *(const int *)pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the int "));
-    pfstest_output_formatter_print_int(formatter, (intmax_t)i);
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the int "));
+    pfstest_reporter_print_int(reporter, (intmax_t)i);
 }
 
 pfstest_value_t *pfstest_the_int(int i)
@@ -70,15 +69,14 @@ pfstest_value_t *pfstest_the_int(int i)
 
 /* the_uint */
 
-static void the_uint_printer(pfstest_output_formatter_t *formatter,
+static void the_uint_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
     unsigned int u = *(const unsigned int *)pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the uint "));
-    pfstest_output_formatter_print_uint(
-        formatter, (uintmax_t)u, 10, 0);
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the uint "));
+    pfstest_reporter_print_uint(reporter, (uintmax_t)u, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_uint(unsigned int u)
@@ -91,15 +89,15 @@ pfstest_value_t *pfstest_the_uint(unsigned int u)
 
 /* the_bool */
 
-static void the_bool_printer(pfstest_output_formatter_t *formatter,
+static void the_bool_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
     bool b = *(const bool *)pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the bool "));
-    pfstest_output_formatter_print_nv_string(
-        formatter,
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the bool "));
+    pfstest_reporter_print_nv_string(
+        reporter,
         b ? pfstest_nv_string("<true>") : pfstest_nv_string("<false>"));
 }
 
@@ -113,16 +111,15 @@ pfstest_value_t *pfstest_the_bool(bool b)
 
 /* the_char */
 
-static void the_char_printer(pfstest_output_formatter_t *formatter,
+static void the_char_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
     char c = *(const char *)pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the char '"));
-    pfstest_output_formatter_print_escaped_char(formatter, c);
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("'"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the char '"));
+    pfstest_reporter_print_escaped_char(reporter, c);
+    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("'"));
 }
 
 pfstest_value_t *pfstest_the_char(char c)
@@ -135,21 +132,20 @@ pfstest_value_t *pfstest_the_char(char c)
 
 /* the_string */
 
-static void the_string_printer(pfstest_output_formatter_t *formatter,
+static void the_string_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     const char *data = pfstest_value_data(value);
     const char *p = data;
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the string \""));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the string \""));
     
     while (*p) {
-        pfstest_output_formatter_print_escaped_char(formatter, *p++);
+        pfstest_reporter_print_escaped_char(reporter, *p++);
     }
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("\""));
+    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\""));
 }
 
 pfstest_value_t *pfstest_the_string(const char *s)
@@ -162,26 +158,24 @@ pfstest_value_t *pfstest_the_string(const char *s)
 
 /* the_pointer */
 
-static void the_pointer_printer(pfstest_output_formatter_t *formatter,
+static void the_pointer_printer(pfstest_reporter_t *reporter,
                                 pfstest_value_t *value)
 {
     const void *data = pfstest_value_data(value);
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the pointer <"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the pointer <"));
 
     if (data == NULL) {
-        pfstest_output_formatter_print_nv_string(
-            formatter, pfstest_nv_string("NULL"));
+        pfstest_reporter_print_nv_string(
+            reporter, pfstest_nv_string("NULL"));
     } else {
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("0x"));
-        pfstest_output_formatter_print_uint(
-            formatter, (uintmax_t)(uintptr_t)data, 16, 0);
+        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("0x"));
+        pfstest_reporter_print_uint(
+            reporter, (uintmax_t)(uintptr_t)data, 16, 0);
     }
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string(">"));
+    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(">"));
 
 }
 
@@ -192,30 +186,27 @@ pfstest_value_t *pfstest_the_pointer(const void *p)
 
 /* the_memory */
 
-static void the_memory_printer(pfstest_output_formatter_t *formatter,
+static void the_memory_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     const unsigned char *data = pfstest_value_data(value);
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("the memory {"));
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the memory {"));
 
     for (i = 0; i < size; i++) {
 
-        pfstest_output_formatter_print_nv_string(
-            formatter, pfstest_nv_string("0x"));
-        pfstest_output_formatter_print_uint(
-            formatter, data[i], 16, 2);
+        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("0x"));
+        pfstest_reporter_print_uint(reporter, data[i], 16, 2);
 
         if (i < size - 1) {
-            pfstest_output_formatter_print_nv_string(
-                formatter, pfstest_nv_string(", "));
+            pfstest_reporter_print_nv_string(
+                reporter, pfstest_nv_string(", "));
         }
     }
-    pfstest_output_formatter_print_nv_string(
-        formatter, pfstest_nv_string("}"));
+    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("}"));
 }
 
 pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
