@@ -37,17 +37,18 @@ static int print_char(int c)
 
 int main(void)
 {
-    pfstest_arguments_t args;
+    pfstest_reporter_t *reporter;
     int r;
-
-    memset(&args, 0, sizeof(args));
-    args.verbose = true;
 
     stdout = &mystdout;
     stderr = stdout;
 
-    r = pfstest_start(print_char, &args);
+    reporter = pfstest_reporter_verbose_new(
+        print_char, pfstest_report_colorizer_null);
+
+    r = pfstest_run_registered_tests(NULL, NULL, reporter);
     
+    pfstest_alloc_free_frame();
     assert(malloc_used() == 0);
 
     return r;

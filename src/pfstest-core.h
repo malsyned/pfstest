@@ -107,6 +107,7 @@ void _pfstest_register_test(pfstest_t *the_test);
         _pfstest_case_decl(the_test);           \
         _pfstest_register_test(the_test);       \
     } while (0)
+pfstest_list_t *pfstest_suite_get_tests(void);
 
 /* Hooks (before, after) */
 
@@ -193,6 +194,9 @@ void _pfstest_register_after(pfstest_hook_t *the_hook);
 #define pfstest_register_after(the_hook)        \
     _pfstest_register_hook(the_hook, after)
 
+pfstest_list_t *pfstest_suite_get_before_hooks(void);
+pfstest_list_t *pfstest_suite_get_after_hooks(void);
+
 /* Fail interface */
 
 PFSTEST_NORETURN
@@ -214,26 +218,8 @@ void _pfstest_fail_at_location(
 
 /* Framework entry points */
 
-typedef struct 
-{
-    char *program_name;
-    char *filter_file;
-    char *filter_name;
-    bool xml;
-    bool verbose;
-    bool color;
-    bool print_register_commands;
-} pfstest_arguments_t;
-
-bool pfstest_arguments_parse(pfstest_arguments_t *args,
-                             int argc, char *argv[]);
-void pfstest_print_register_commands(int (*print_char)(int),
-                                     pfstest_list_t *before,
-                                     pfstest_list_t *after,
-                                     pfstest_list_t *suite);
-void pfstest_print_usage(int (*print_char)(int), char *program_name);
-int pfstest_start(int (*print_char)(int), pfstest_arguments_t *args);
-int pfstest_main(int argc, char *argv[]);
+int pfstest_run_registered_tests(char *filter_file, char *filter_name,
+                                 pfstest_reporter_t *reporter);
 
 /* Convenience aliases without the pfstest namespace prefix */
 

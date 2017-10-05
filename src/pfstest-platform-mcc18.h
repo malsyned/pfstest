@@ -39,8 +39,6 @@ typedef unsigned long uintmax_t;
 # define pfstest_strchr_nv(nv, c) ((const pfstest_nv char *)strchrpgm(nv, c))
 # define PFSTEST_NORETURN
 
-# define fflush(stream) (0)
-
 int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);
 
 #endif /* !PFSTEST_PLATFORM_MCC18_H */

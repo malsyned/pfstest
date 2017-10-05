@@ -106,10 +106,6 @@ assert
 
     Compatible with C89 assert.h
 
-fflush
-
-    Compatible with C89 stdio.h
-
  */
 
 

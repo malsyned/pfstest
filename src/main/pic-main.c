@@ -19,15 +19,19 @@ static int print_char(int c)
 
 void main(void)
 {
-    pfstest_arguments_t args;
-    memset(&args, 0, sizeof(args));
-    args.verbose = true;
+    pfstest_reporter_t *reporter;
 
     pfstest_alloc_pic_init(heap, HEAP_SIZE);
 
     register_tests();
 
-    pfstest_start(print_char, &args);
+    reporter = pfstest_reporter_verbose_new(
+        print_char, pfstest_report_colorizer_null);
+
+    pfstest_run_registered_tests(NULL, NULL, reporter);
+
+    /* Free the memory allocated for the reporter created above */
+    pfstest_alloc_free_frame();
 
     /* The mcc18 runtime restarts the program if main()
      * returns. mcc18's standard library doesn't define exit() though,

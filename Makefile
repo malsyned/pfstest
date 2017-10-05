@@ -21,12 +21,12 @@ AUTOMOCK_ARGS = $(GCC_AUTOMOCK_ARGS)
 EXEC_PATTERN = %-runner
 BUILDPREFIX = build/
 
-SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) \
+SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) $(PFSTEST_CLI_SRC) \
       src/pfstest-alloc-malloc.c src/main/gcc-main.c
 
 TARGETS = selftest
 
-selftest_SRC = $(SELFTEST_SRC)
+selftest_SRC = $(SELFTEST_SRC) $(SELFTEST_CLI_SRC)
 selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c

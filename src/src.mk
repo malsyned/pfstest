@@ -7,5 +7,7 @@ PFSTEST_SRC := $(addprefix src/, \
                  pfstest-arg-handlers.c pfstest-mock.c pfstest-reporter.c \
                  pfstest-equality.c pfstest-reporter-xml.c)
 
+PFSTEST_CLI_SRC := src/pfstest-cli.c
+
 PFSTEST_STDINT_SRC := $(addprefix src/, \
                       pfstest-stdint-values.c pfstest-stdint-matchers.c)

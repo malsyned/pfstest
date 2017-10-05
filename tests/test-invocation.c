@@ -1,4 +1,5 @@
 #include "pfstest.h"
+#include "pfstest-cli.h"
 
 #include <string.h>
 
