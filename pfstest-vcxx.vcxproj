@@ -85,6 +85,7 @@
     <ClCompile Include="src\pfstest-matchers.c" />
     <ClCompile Include="src\pfstest-mock.c" />
     <ClCompile Include="tests\pfstest-reporter-message-spy.c" />
+    <ClCompile Include="src\pfstest-reporters-standard.c" />
     <ClCompile Include="src\pfstest-reporter-xml.c" />
     <ClCompile Include="src\pfstest-reporter.c" />
     <ClCompile Include="src\pfstest-value.c" />

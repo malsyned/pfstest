@@ -11,4 +11,6 @@
 
 #include "pfstest-mock.h"
 
+#include "pfstest-reporters-standard.h"
+
 #endif /* !PFSTEST_H */

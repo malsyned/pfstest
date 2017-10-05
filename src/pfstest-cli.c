@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "pfstest-core.h"
+#include "pfstest-reporters-standard.h"
 #include "pfstest-reporter-xml.h"
 #include "pfstest-alloc.h"
 
