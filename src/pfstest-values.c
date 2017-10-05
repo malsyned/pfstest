@@ -217,3 +217,35 @@ pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
 
     return pfstest_value_new(the_memory_printer, data, size);
 }
+
+/* the_int_array */
+
+static void the_int_array_printer(pfstest_reporter_t *reporter,
+                                  pfstest_value_t *value)
+{
+    const int *data = (const int *)pfstest_value_data(value);
+    size_t length = pfstest_value_size(value) / sizeof(data[0]);
+    size_t i;
+
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("{ "));
+
+    for (i = 0; i < length; i++) {
+        pfstest_value_print(reporter, pfstest_the_int(data[i]));
+        if (i < length - 1) {
+            pfstest_reporter_print_nv_string(
+                reporter, pfstest_nv_string(", "));
+        }
+    }
+
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string(" }"));
+}
+
+pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
+{
+    size_t size = length * sizeof(*a);
+    void *data = pfstest_alloc(size);
+    memcpy(data, a, size);
+    return pfstest_value_new(the_int_array_printer, data, size);
+}

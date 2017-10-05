@@ -16,6 +16,9 @@ pfstest_matcher_t *pfstest_is_the_pointer(const void *p);
 pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size);
 pfstest_matcher_t *pfstest_matches_the_nv_string(
     const pfstest_nv_ptr char *s);
+
+pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first, ...);
+
 pfstest_matcher_t *_pfstest_is_anything(void);
 #define pfstest_is_anything (_pfstest_is_anything())
 
@@ -48,6 +51,9 @@ pfstest_matcher_t *_pfstest_is_anything(void);
 #endif
 #ifndef PFSTEST_NOALIAS_matches_the_nv_string
 # define matches_the_nv_string pfstest_matches_the_nv_string
+#endif
+#ifndef PFSTEST_NOALIAS_int_members_match
+# define int_members_match pfstest_int_members_match
 #endif
 #ifndef PFSTEST_NOALIAS_is_anything
 # define is_anything pfstest_is_anything

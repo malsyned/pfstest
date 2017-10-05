@@ -15,6 +15,8 @@ pfstest_value_t *pfstest_the_string(const char *s);
 pfstest_value_t *pfstest_the_pointer(const void *p);
 pfstest_value_t *pfstest_the_memory(const void *m, size_t size);
 
+pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
+
 #ifndef PFSTEST_NOALIAS_the_short
 # define the_short pfstest_the_short
 #endif
@@ -41,6 +43,9 @@ pfstest_value_t *pfstest_the_memory(const void *m, size_t size);
 #endif
 #ifndef PFSTEST_NOALIAS_the_memory
 # define the_memory pfstest_the_memory
+#endif
+#ifndef PFSTEST_NOALIAS_the_int_array
+# define the_int_array pfstest_the_int_array
 #endif
 
 #endif /* !PFSTEST_VALUES_H */

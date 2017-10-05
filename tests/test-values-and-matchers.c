@@ -468,3 +468,43 @@ test(should_detect_data_type_mismatches)
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
+
+test(should_match_int_array_against_matcher_list)
+{
+    int actual[] = {1, 3, INT_MAX, -5};
+
+    assert_that("Matcher arrays match against elements of integer array",
+                the_int_array(actual, sizeof(actual)/sizeof(actual[0])),
+                int_members_match(is_the_int(1),
+                                  is_the_int(3),
+                                  is_the_int(INT_MAX),
+                                  is_the_int(-5),
+                                  NULL));
+}
+
+pfstest_case(assert_mismatched_arrays)
+{
+    int actual[] = {1, 3, 32767, -4};
+
+    assert_that("",
+                the_int_array(actual, sizeof(actual)/sizeof(actual[0])),
+                int_members_match(is_the_int(1),
+                                  is_the_int(3),
+                                  is_the_int(32767),
+                                  is_the_int(-5),
+                                  NULL));
+}
+
+test(should_fail_on_int_array_element_mismatch)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: { the int 1, the int 3, the int 32767, the int -5 }\n"
+        "Actual:   { the int 1, the int 3, the int 32767, the int -4 }");
+
+    capture_test_results(assert_mismatched_arrays);
+
+    assert_that("Non-matching integer arrays fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
