@@ -7,6 +7,7 @@
 #include "pfstest-values.h"
 #include "pfstest-equality.h"
 #include "pfstest-alloc.h"
+#include "pfstest-list.h"
 
 /* is_the_short */
 
@@ -174,25 +175,26 @@ pfstest_matcher_t *_pfstest_is_anything(void)
 
 /* int_members_match */
 
-struct int_members_match_args
+struct submatcher
 {
-    size_t matcher_count;
-    pfstest_matcher_t **matchers;
+    pfstest_list_node_t node;
+    pfstest_matcher_t *matcher;
 };
 
 static void int_members_match_printer(pfstest_reporter_t *reporter,
                                       pfstest_matcher_t *matcher)
 {
-    struct int_members_match_args *args = pfstest_matcher_data(matcher);
-    size_t i;
+    pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
+    pfstest_list_node_t *submatcher_node;
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("{ "));
-    for (i = 0; i < args->matcher_count; i++) {
-        pfstest_matcher_t *member_matcher = args->matchers[i];
-        pfstest_matcher_print(reporter, member_matcher);
 
-        if (i < args->matcher_count - 1) {
+    pfstest_list_iter (submatcher_node, submatchers) {
+        struct submatcher *submatcher = (struct submatcher *)submatcher_node;
+        pfstest_matcher_print(reporter, submatcher->matcher);
+
+        if (submatcher_node->next != NULL) {
             pfstest_reporter_print_nv_string(
                 reporter, pfstest_nv_string(", "));
         }
@@ -204,13 +206,17 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
 static bool int_members_match_test(pfstest_matcher_t *matcher,
                                    pfstest_value_t *actual_value)
 {
-    struct int_members_match_args *args = pfstest_matcher_data(matcher);
+    pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
     const int *actual = pfstest_value_data(actual_value);
-    size_t i;
+    size_t i = 0;
+    pfstest_list_node_t *submatcher_node;
 
-    for (i = 0; i < args->matcher_count; i++) {
-        pfstest_value_t *member_value = the_int(actual[i]);
-        pfstest_matcher_t *member_matcher = args->matchers[i];
+    pfstest_list_iter (submatcher_node, submatchers) {
+        struct submatcher *submatcher = (struct submatcher *)submatcher_node;
+
+        pfstest_value_t *member_value = the_int(actual[i++]);
+        pfstest_matcher_t *member_matcher = submatcher->matcher;
+
         bool match = pfstest_matcher_matches(member_matcher, member_value);
         if (!match)
             return false;
@@ -218,70 +224,36 @@ static bool int_members_match_test(pfstest_matcher_t *matcher,
     return true;
 }
 
-static size_t count_va_matchers(va_list ap)
+static pfstest_list_t *package_all_matcher_args(
+    pfstest_matcher_t *first_arg, va_list ap)
 {
-    pfstest_matcher_t *current_matcher;
-    size_t va_matcher_count = 0;
+    pfstest_list_t *submatchers = pfstest_alloc(sizeof(*submatchers));
+    pfstest_matcher_t *current_arg;
+    struct submatcher *submatcher;
 
-    while (1) {
-        current_matcher = va_arg(ap, pfstest_matcher_t *);
-        if (current_matcher == NULL)
-            break;
-        va_matcher_count++;
+    pfstest_list_reset(submatchers);
+    for (current_arg = first_arg;
+         current_arg != NULL;
+         current_arg = va_arg(ap, pfstest_matcher_t *))
+    {
+        submatcher = pfstest_alloc(sizeof(*submatcher));
+        pfstest_list_node_init((pfstest_list_node_t *)submatcher);
+        submatcher->matcher = current_arg;
+        pfstest_list_append(submatchers, (pfstest_list_node_t *)submatcher);
     }
 
-    return va_matcher_count;
-}
-
-static void extract_va_matchers(va_list ap,
-                                pfstest_matcher_t **matchers,
-                                size_t matcher_count)
-{
-    size_t i;
-
-    for (i = 0; i < matcher_count; i++) {
-        matchers[i] = va_arg(ap, pfstest_matcher_t *);
-    }
-}
-
-static struct int_members_match_args *package_all_matcher_args(
-    pfstest_matcher_t *first_matcher, va_list ap, size_t va_matcher_count)
-{
-    size_t matcher_count;
-    pfstest_matcher_t **matchers;
-    struct int_members_match_args *args;
-
-    matcher_count = 1 + va_matcher_count;
-    matchers =  pfstest_alloc(sizeof(*matchers) * matcher_count);
-    matchers[0] = first_matcher;
-
-    extract_va_matchers(ap, matchers + 1, va_matcher_count);
-
-    args = pfstest_alloc(sizeof(*args));
-    args->matcher_count = matcher_count;
-    args->matchers = matchers;
-
-    return args;
+    return submatchers;
 }
 
 pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first,...)
 {
-    /* Use two different va_lists to work around a compiler bug in gcc
-     * (Ubuntu 6.3.0-12ubuntu2) 6.3.0 20170406 -Og that causes a
-     * failure to generate code for the first of the two va_start
-     * calls. */
-    va_list ap1, ap2;
-    size_t va_matcher_count;
-    struct int_members_match_args *args;
+    va_list ap;
+    pfstest_list_t *submatchers;
 
-    va_start(ap1, first);
-    va_matcher_count = count_va_matchers(ap1);
-    va_end(ap1);
-
-    va_start(ap2, first);
-    args = package_all_matcher_args(first, ap2, va_matcher_count);
-    va_end(ap2);
+    va_start(ap, first);
+    submatchers = package_all_matcher_args(first, ap);
+    va_end(ap);
 
     return pfstest_matcher_new(
-        int_members_match_printer, int_members_match_test, args);
+        int_members_match_printer, int_members_match_test, submatchers);
 }
