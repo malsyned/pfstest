@@ -5,9 +5,8 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-basename.h"
-#include "pfstest-reporter-xml.h"
-/* TODO: plugin-ize */
 #include "pfstest-alloc.h"
+/* TODO: plugin-ize */
 #include "pfstest-mock.h"
 
 #define RESULT_FAIL 1
@@ -107,9 +106,8 @@ pfstest_list_t *pfstest_suite_get_tests(void)
 
 static void call_protected(void (*function)(void))
 {
-    if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+    if (0 == setjmp(dynamic_env->test_jmp_buf))
         function();
-    }
 }
 
 static bool nv_strs_eq(
@@ -126,66 +124,51 @@ static bool str_eq_nv_str(
     return (0 == pfstest_strcmp_nv(s1, s2));
 }
 
-static bool test_matches_filter(_pfstest_test_nv_t *test_desc,
+static _pfstest_test_nv_t extract_test_descriptor(pfstest_t *the_test)
+{
+    _pfstest_test_nv_t test_desc;
+    pfstest_memcpy_nv(&test_desc, the_test->nv_data, sizeof(test_desc));
+    return test_desc;
+}
+
+static bool test_matches_filter(pfstest_t *the_test,
                                 const char *filter_file,
                                 const char *filter_name)
 {
-    const pfstest_nv_ptr char *basename = pfstest_basename(test_desc->file);
+    _pfstest_test_nv_t test_desc = extract_test_descriptor(the_test);
+    const pfstest_nv_ptr char *basename =  pfstest_basename(test_desc.file);
+
     bool file_passed = (filter_file == NULL
                         || str_eq_nv_str(filter_file, basename));
     bool name_passed = (filter_name == NULL
-                        || str_eq_nv_str(filter_name, test_desc->name));
+                        || str_eq_nv_str(filter_name, test_desc.name));
 
     return name_passed && file_passed;
 }
 
-void pfstest_run(pfstest_t *the_test,
-                 pfstest_list_t *before, pfstest_list_t *after,
-                 const char *filter_file, const char *filter_name,
-                 pfstest_reporter_t *reporter)
+static void run_before_hooks(pfstest_list_t *before,
+                             const pfstest_nv_ptr char *file)
 {
-    dynamic_env_t local_dynamic_env;
-    _pfstest_test_nv_t current_test;
     pfstest_list_node_t *hook_node;
     _pfstest_hook_nv_t current_hook;
 
-    local_dynamic_env.reporter = reporter;
-    dynamic_env_push(&local_dynamic_env);
-
-    pfstest_memcpy_nv(&current_test, the_test->nv_data, sizeof(current_test));
-
-    if (!test_matches_filter(&current_test, filter_file, filter_name))
-        goto cleanup;
-
-    pfstest_reporter_test_started(reporter,
-                                  current_test.name, current_test.file);
-
-    if (current_test.flags & _PFSTEST_FLAG_IGNORED) {
-        pfstest_reporter_test_ignored(reporter);
-        goto finish;
-    }
-
-    pfstest_alloc_frame_push();
-
-    pfstest_mock_init();
+    if (before != NULL) {
+        pfstest_list_iter(hook_node, before) {
+            pfstest_hook_t *before_hook = (pfstest_hook_t *)hook_node;
+            pfstest_memcpy_nv(&current_hook, before_hook->nv_data,
+                              sizeof(current_hook));
         
-    if (0 == setjmp(dynamic_env->test_jmp_buf)) {
-        if (before != NULL) {
-            pfstest_list_iter(hook_node, before) {
-                pfstest_hook_t *before_hook =
-                    (pfstest_hook_t *)hook_node;
-                pfstest_memcpy_nv(&current_hook, before_hook->nv_data,
-                                  sizeof(current_hook));
-        
-                if (nv_strs_eq(current_test.file, current_hook.file))
-                    current_hook.function();
-            }
+            if (nv_strs_eq(file, current_hook.file))
+                current_hook.function();
         }
-
-        current_test.function();
-        pfstest_run_verifiers(); /* TODO: plugin-ize */
     }
-    pfstest_mock_finish(); /* TODO: plugin-ize */
+}
+
+static void run_after_hooks(pfstest_list_t *after,
+                            const pfstest_nv_ptr char *file)
+{
+    pfstest_list_node_t *hook_node;
+    _pfstest_hook_nv_t current_hook;
 
     if (after != NULL) {
         pfstest_list_iter(hook_node, after) {
@@ -193,7 +176,7 @@ void pfstest_run(pfstest_t *the_test,
             pfstest_memcpy_nv(&current_hook, after_hook->nv_data,
                               sizeof(current_hook));
 
-            if (nv_strs_eq(current_test.file, current_hook.file))
+            if (nv_strs_eq(file, current_hook.file))
             {
                 /* Calling setjmp directly here was causing -Wclobber
                  * to issue a warning about after_hook. I think the
@@ -203,14 +186,43 @@ void pfstest_run(pfstest_t *the_test,
             }
         }
     }
+}
 
-    pfstest_alloc_free_frame();
-    pfstest_alloc_frame_pop();
+static bool test_ignored(_pfstest_test_nv_t *test_desc)
+{
+    return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
+}
 
-finish:
+void pfstest_run(pfstest_t *the_test,
+                 pfstest_list_t *before, pfstest_list_t *after,
+                 pfstest_reporter_t *reporter)
+{
+    _pfstest_test_nv_t current_test = extract_test_descriptor(the_test);
+    dynamic_env_t local_dynamic_env;
+
+    dynamic_env_push(&local_dynamic_env);
+    dynamic_env->reporter = reporter;
+    pfstest_alloc_frame_push();
+
+    pfstest_mock_init();        /* TODO: plugin-ize */
+
+    pfstest_reporter_test_started(reporter,
+                                  current_test.name, current_test.file);
+    if (test_ignored(&current_test)) {
+        pfstest_reporter_test_ignored(reporter);
+    } else {
+        if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+            run_before_hooks(before, current_test.file);
+            current_test.function();
+            pfstest_mock_run_verifiers(); /* TODO: plugin-ize */
+        }
+        run_after_hooks(after, current_test.file);
+    }
     pfstest_reporter_test_complete(reporter);
 
-cleanup:
+    pfstest_mock_finish(); /* TODO: plugin-ize */
+
+    pfstest_alloc_frame_pop();
     dynamic_env_pop();
 }
 
@@ -221,22 +233,19 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_reporter_t *reporter)
 {
     pfstest_list_node_t *test_node;
-    int result;
 
     pfstest_reporter_run_started(reporter);
 
     pfstest_list_iter (test_node, suite) {
         pfstest_t *the_test = (pfstest_t *)test_node;
 
-        pfstest_run(the_test, before, after,
-                    filter_file, filter_name, reporter);
+        if (test_matches_filter(the_test, filter_file, filter_name))
+            pfstest_run(the_test, before, after, reporter);
     }
 
     pfstest_reporter_run_complete(reporter);
 
-    result = pfstest_reporter_return_value(reporter);
-
-    return result;
+    return pfstest_reporter_return_value(reporter);
 }
 
 void _pfstest_hook_list_register_hook(pfstest_list_t *list,

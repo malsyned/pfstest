@@ -32,5 +32,5 @@ int capture_output_char(int c)
 
 void capture_test_results(pfstest_t *the_test)
 {
-    pfstest_run(the_test, NULL, NULL, NULL, NULL, message_spy);
+    pfstest_run(the_test, NULL, NULL, message_spy);
 }

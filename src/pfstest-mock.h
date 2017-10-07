@@ -74,7 +74,7 @@ struct _pfstest_verifier_t
     void *data;
 };
 
-void pfstest_run_verifiers(void);
+void pfstest_mock_run_verifiers(void);
 
 /* Verification with mode */
 

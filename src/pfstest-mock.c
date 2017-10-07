@@ -293,7 +293,7 @@ static pfstest_verifier_t *verifier_new(
     return v;
 }
 
-void pfstest_run_verifiers(void)
+void pfstest_mock_run_verifiers(void)
 {
     pfstest_list_node_t *verifier_node;
 
