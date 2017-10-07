@@ -115,26 +115,33 @@ static void call_protected(void (*function)(void))
 static bool nv_strs_eq(
     const pfstest_nv_ptr char *s1, const pfstest_nv_ptr char *s2)
 {
+
     return (0 == pfstest_strcmp_nvnv(s1, s2));
 }
 
+static bool str_eq_nv_str(
+    const char *s1, const pfstest_nv_ptr char *s2)
+{
+
+    return (0 == pfstest_strcmp_nv(s1, s2));
+}
+
 static bool test_matches_filter(_pfstest_test_nv_t *test_desc,
-                 const pfstest_nv_ptr char *filter_file,
-                 const pfstest_nv_ptr char *filter_name)
+                                const char *filter_file,
+                                const char *filter_name)
 {
     const pfstest_nv_ptr char *basename = pfstest_basename(test_desc->file);
     bool file_passed = (filter_file == NULL
-                        || nv_strs_eq(filter_file, basename));
+                        || str_eq_nv_str(filter_file, basename));
     bool name_passed = (filter_name == NULL
-                        || nv_strs_eq(filter_name, test_desc->name));
+                        || str_eq_nv_str(filter_name, test_desc->name));
 
     return name_passed && file_passed;
 }
 
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
-                 const pfstest_nv_ptr char *filter_file,
-                 const pfstest_nv_ptr char *filter_name,
+                 const char *filter_file, const char *filter_name,
                  pfstest_reporter_t *reporter)
 {
     dynamic_env_t local_dynamic_env;
@@ -209,8 +216,8 @@ cleanup:
 
 int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_list_t *suite,
-                      const pfstest_nv_ptr char *filter_file,
-                      const pfstest_nv_ptr char *filter_name,
+                      const char *filter_file,
+                      const char *filter_name,
                       pfstest_reporter_t *reporter)
 {
     pfstest_list_node_t *test_node;

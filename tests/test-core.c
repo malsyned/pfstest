@@ -493,8 +493,7 @@ test(should_filter_by_file_name)
     pfstest_suite_register_test(&suite, other_file_test);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      pfstest_nv_string("core-test-cases.c"), NULL,
-                      standard_reporter);
+                      "core-test-cases.c", NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -510,8 +509,7 @@ test(should_filter_by_test_name)
     pfstest_suite_register_test(&suite, should_also_run);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &suite,
-                      NULL, pfstest_nv_string("should_run"),
-                      standard_reporter);
+                      NULL, "should_run", standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
