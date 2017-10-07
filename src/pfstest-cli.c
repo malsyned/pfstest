@@ -187,7 +187,7 @@ static pfstest_reporter_t *create_selected_reporter(
     }
 }
 
-static void print_suite_register_commands(int (*print_char)(int))
+static void registered_tests_print_register_commands(int (*print_char)(int))
 {
     pfstest_list_t *before = pfstest_suite_get_before_hooks();
     pfstest_list_t *after = pfstest_suite_get_after_hooks();
@@ -203,7 +203,7 @@ int pfstest_start_with_args(int (*print_char)(int), pfstest_arguments_t *args)
     int r;
 
     if (args->print_register_commands) {
-        print_suite_register_commands(print_char);
+        registered_tests_print_register_commands(print_char);
         return 0;
     } else {
         colorizer = select_colorizer(args);

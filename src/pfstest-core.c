@@ -112,6 +112,25 @@ static void call_protected(void (*function)(void))
     }
 }
 
+static bool nv_strs_eq(
+    const pfstest_nv_ptr char *s1, const pfstest_nv_ptr char *s2)
+{
+    return (0 == pfstest_strcmp_nvnv(s1, s2));
+}
+
+static bool test_matches_filter(_pfstest_test_nv_t *test_desc,
+                 const pfstest_nv_ptr char *filter_file,
+                 const pfstest_nv_ptr char *filter_name)
+{
+    const pfstest_nv_ptr char *basename = pfstest_basename(test_desc->file);
+    bool file_passed = (filter_file == NULL
+                        || nv_strs_eq(filter_file, basename));
+    bool name_passed = (filter_name == NULL
+                        || nv_strs_eq(filter_name, test_desc->name));
+
+    return name_passed && file_passed;
+}
+
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
                  const pfstest_nv_ptr char *filter_file,
@@ -123,20 +142,13 @@ void pfstest_run(pfstest_t *the_test,
     pfstest_list_node_t *hook_node;
     _pfstest_hook_nv_t current_hook;
 
+    local_dynamic_env.reporter = reporter;
     dynamic_env_push(&local_dynamic_env);
-    dynamic_env->reporter = reporter;
 
-    pfstest_memcpy_nv(&current_test, the_test->nv_data,
-                      sizeof(current_test));
+    pfstest_memcpy_nv(&current_test, the_test->nv_data, sizeof(current_test));
 
-    if ((filter_name != NULL
-         && 0 != pfstest_strcmp_nvnv(filter_name, current_test.name))
-        || (filter_file != NULL
-            && 0 != pfstest_strcmp_nvnv(
-                filter_file, pfstest_basename(current_test.file))))
-    {
+    if (!test_matches_filter(&current_test, filter_file, filter_name))
         goto cleanup;
-    }
 
     pfstest_reporter_test_started(reporter,
                                   current_test.name, current_test.file);
@@ -158,11 +170,8 @@ void pfstest_run(pfstest_t *the_test,
                 pfstest_memcpy_nv(&current_hook, before_hook->nv_data,
                                   sizeof(current_hook));
         
-                if (0 == pfstest_strcmp_nvnv(current_test.file,
-                                             current_hook.file))
-                {
+                if (nv_strs_eq(current_test.file, current_hook.file))
                     current_hook.function();
-                }
             }
         }
 
@@ -177,8 +186,7 @@ void pfstest_run(pfstest_t *the_test,
             pfstest_memcpy_nv(&current_hook, after_hook->nv_data,
                               sizeof(current_hook));
 
-            if (0 == pfstest_strcmp_nvnv(current_test.file,
-                                         current_hook.file))
+            if (nv_strs_eq(current_test.file, current_hook.file))
             {
                 /* Calling setjmp directly here was causing -Wclobber
                  * to issue a warning about after_hook. I think the
