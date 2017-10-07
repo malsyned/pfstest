@@ -349,3 +349,15 @@ test(should_print_usage)
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
+
+test(print_usage_should_cope_with_null_program_name)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "usage: [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
+
+    pfstest_print_usage(capture_output_char, NULL);
+
+    assert_that("Usage message is printed without program name",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}

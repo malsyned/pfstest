@@ -79,13 +79,16 @@ void pfstest_print_register_commands(int (*print_char)(int),
     print_register_test_commands(print_char, suite);
 }
 
+#define USAGE_ARGS "[-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n"
+
 void pfstest_print_usage(int (*print_char)(int), char *program_name)
 {
     print_nv_string(print_char, pfstest_nv_string("usage: "));
-    print_string(print_char, program_name);
-    print_nv_string(
-        print_char,
-        pfstest_nv_string(" [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n"));
+    if (program_name != NULL) {
+        print_string(print_char, program_name);
+        print_nv_string(print_char, pfstest_nv_string(" "));
+    }
+    print_nv_string(print_char, pfstest_nv_string(USAGE_ARGS));
 }
 
 static char *next_arg(char **argv[])
