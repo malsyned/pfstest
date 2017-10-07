@@ -13,6 +13,11 @@ struct assert_that_args
     pfstest_matcher_t *matcher;
 };
 
+static bool nv_str_empty(const pfstest_nv_ptr char *str)
+{
+    return (0 == pfstest_strcmp_nvnv(str, pfstest_nv_string("")));
+}
+
 static void assert_that_printer(pfstest_reporter_t *reporter,
                                 const void *data)
 {
@@ -20,8 +25,7 @@ static void assert_that_printer(pfstest_reporter_t *reporter,
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("Failed assertion"));
-    if ((args->message != NULL)
-        && (0 != pfstest_strcmp_nvnv(args->message, pfstest_nv_string(""))))
+    if ((args->message != NULL) && !nv_str_empty(args->message))
     {
         pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(": "));
         pfstest_reporter_print_nv_string(reporter, args->message);
