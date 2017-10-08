@@ -27,8 +27,8 @@ typedef struct
 #define pfstest_mock_declare(mock_name)                 \
     extern const pfstest_nv pfstest_mock_t mock_name[]
 
-void pfstest_mock_init(void);
-void pfstest_mock_finish(void);
+void pfstest_mock_setup(void);
+void pfstest_mock_teardown(void);
 
 /* Expectation */
 

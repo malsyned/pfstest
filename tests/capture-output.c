@@ -32,5 +32,11 @@ int capture_output_char(int c)
 
 void capture_test_results(pfstest_t *the_test)
 {
-    pfstest_run(the_test, NULL, NULL, message_spy);
+    capture_test_results_with_plugins(the_test, NULL);
+}
+
+void capture_test_results_with_plugins(pfstest_t *the_test,
+                                       pfstest_list_t *plugins)
+{
+    pfstest_run(the_test, NULL, NULL, plugins, message_spy);
 }

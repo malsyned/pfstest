@@ -1,0 +1,11 @@
+should_ call various plugin hooks
+should_ do more than one of each
+should_ be a part of register tests
+should_ accept NULL as a plugin list
+should_ accep NULL as each plugin function?
+
+What plugin hooks are needed?
+
+init the plugin before every test
+run additional verifiers after each test function
+finish the plugin after every test

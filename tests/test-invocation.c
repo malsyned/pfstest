@@ -308,13 +308,21 @@ pfstest_hook(before2) {}
 pfstest_hook(after1) {}
 pfstest_hook(after2) {}
 
+static void do_nothing(void) {}
+
+pfstest_plugin_define(plugin1, do_nothing, do_nothing, do_nothing);
+pfstest_plugin_define(plugin2, do_nothing, do_nothing, do_nothing);
+
 test(should_print_register_commands)
 {
     pfstest_list_t suite = PFSTEST_LIST_EMPTY();
     pfstest_list_t before_hooks = PFSTEST_LIST_EMPTY();
     pfstest_list_t after_hooks = PFSTEST_LIST_EMPTY();
+    pfstest_list_t plugins = PFSTEST_LIST_EMPTY();
 
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "    register_plugin(plugin1);\n"
+        "    register_plugin(plugin2);\n"
         "    register_before(before1);\n"
         "    register_before(before2);\n"
         "    register_after(after1);\n"
@@ -328,9 +336,12 @@ test(should_print_register_commands)
     pfstest_hook_list_register_hook(&before_hooks, before2);
     pfstest_hook_list_register_hook(&after_hooks, after1);
     pfstest_hook_list_register_hook(&after_hooks, after2);
+    pfstest_plugin_list_register_plugin(&plugins, plugin1);
+    pfstest_plugin_list_register_plugin(&plugins, plugin2);
 
     pfstest_print_register_commands(capture_output_char,
-                                    &before_hooks, &after_hooks, &suite);
+                                    &before_hooks, &after_hooks,
+                                    &plugins, &suite);
 
     assert_that("Test registrations are printed",
                 the_string(captured_output),

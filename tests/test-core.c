@@ -13,6 +13,7 @@ static pfstest_reporter_t *verbose_reporter;
 static pfstest_list_t suite;
 static pfstest_list_t before_hooks;
 static pfstest_list_t after_hooks;
+static pfstest_list_t plugins;
 
 before_tests(setup)
 {
@@ -22,6 +23,7 @@ before_tests(setup)
     pfstest_list_reset(&suite);
     pfstest_list_reset(&before_hooks);
     pfstest_list_reset(&after_hooks);
+    pfstest_list_reset(&plugins);
 
     null_colorizer = pfstest_report_colorizer_null;
 
@@ -39,7 +41,7 @@ test(should_run_tests)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -56,7 +58,7 @@ test(should_run_before_hooks)
     pfstest_hook_list_register_hook(&before_hooks, should_also_be_run_before);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -73,7 +75,7 @@ test(should_run_after_hooks)
     pfstest_hook_list_register_hook(&after_hooks, should_also_be_run_after);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -89,7 +91,7 @@ test(should_skip_ignored_tests)
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
     pfstest_suite_register_test(&suite, should_be_ignored);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -121,7 +123,7 @@ test(should_reset_hooks_and_tests)
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -139,7 +141,7 @@ test(should_report_results)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -156,7 +158,7 @@ test(should_report_ignored_tests)
 
     pfstest_suite_register_test(&suite, should_be_ignored);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -175,7 +177,7 @@ test(should_report_failed_tests)
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_fail);
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -197,7 +199,7 @@ test(should_report_results_including_failed_tests)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_register_test(&suite, should_also_run);
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -221,7 +223,7 @@ test(should_report_results_verbose)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_register_test(&suite, should_be_ignored);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -242,7 +244,7 @@ test(should_indent_multi_line_error_messages)
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_have_multi_line_failure);
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -263,7 +265,7 @@ test(should_indent_multi_line_error_messages_verbose)
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_have_multi_line_failure);
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -284,7 +286,7 @@ test(should_catch_failures_in_before_hooks)
     pfstest_hook_list_register_hook(&before_hooks, hook_should_fail);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -300,7 +302,7 @@ test(should_run_after_hooks_when_test_fails)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -321,7 +323,7 @@ test(should_catch_failures_in_after_hooks)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -346,7 +348,7 @@ test(should_catch_multiple_after_hook_failures)
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
     pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -371,7 +373,7 @@ test(should_output_multiple_after_hook_failures_correctly_verbose)
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
     pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -383,7 +385,7 @@ test(should_accept_null_before_hook_list)
 {
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(NULL, &after_hooks, &suite,
+    pfstest_suite_run(NULL, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 }
 
@@ -391,7 +393,7 @@ test(should_accept_null_after_hook_list)
 {
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, NULL, &suite,
+    pfstest_suite_run(&before_hooks, NULL, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 }
 
@@ -411,7 +413,7 @@ test(should_only_count_each_failing_test_once)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(captured_output, expected)) {
@@ -427,7 +429,7 @@ test(should_return_0_on_success)
     pfstest_suite_register_test(&suite, should_also_run);
 
     result = 
-        pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+        pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                           NULL, NULL, standard_reporter);
 
     if (0 != result) {
@@ -443,7 +445,7 @@ test(should_return_fail_count_on_failure)
     pfstest_suite_register_test(&suite, should_also_fail);
 
     result = 
-        pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+        pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                           NULL, NULL, standard_reporter);
 
     if (2 != result) {
@@ -459,7 +461,7 @@ test(should_only_call_before_hooks_in_same_file)
     pfstest_hook_list_register_hook(&before_hooks, other_file_hook);
     pfstest_suite_register_test(&suite, should_run);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -476,7 +478,7 @@ test(should_only_call_after_hooks_in_same_file)
     pfstest_hook_list_register_hook(&after_hooks, other_file_hook);
     pfstest_suite_register_test(&suite, should_run);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -492,7 +494,7 @@ test(should_filter_by_file_name)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, other_file_test);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       "core-test-cases.c", NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
@@ -508,8 +510,81 @@ test(should_filter_by_test_name)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &suite,
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, "should_run", standard_reporter);
+
+    if (0 != pfstest_strcmp_nv(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+
+static void plugin_setup(void)
+{
+    pfstest_strcat_nv(call_log, pfstest_nv_string("plugin_setup "));
+}
+
+static void plugin_checks(void)
+{
+    pfstest_strcat_nv(call_log, pfstest_nv_string("plugin_check "));
+}
+
+static void plugin_teardown(void)
+{
+    pfstest_strcat_nv(call_log, pfstest_nv_string("plugin_teardown "));
+}
+
+static void do_nothing(void) {}
+
+pfstest_plugin_define(setup_only_plugin,
+                      plugin_setup, do_nothing, do_nothing);
+pfstest_plugin_define(teardown_only_plugin,
+                      do_nothing, do_nothing, plugin_teardown);
+pfstest_plugin_define(plugin_with_check,
+                      do_nothing, plugin_checks, plugin_teardown);
+
+test(should_call_plugin_setup_hook)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "plugin_setup should_run ");
+
+    pfstest_plugin_list_register_plugin(&plugins, setup_only_plugin);
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_nv(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+test(should_call_plugin_teardown_hook)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "should_run plugin_teardown ");
+
+    pfstest_plugin_list_register_plugin(&plugins, teardown_only_plugin);
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_nv(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+test(should_call_plugin_check_hook)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "should_run plugin_check plugin_teardown ");
+
+    pfstest_plugin_list_register_plugin(&plugins, plugin_with_check);
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");

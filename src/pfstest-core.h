@@ -84,11 +84,13 @@ void _pfstest_suite_register_test(pfstest_list_t *suite,
 #define PFSTEST_SUITE_RUN_FLAG_VERBOSE 0x0001
 
 int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
-                      pfstest_list_t *suite,
-                      const char *filter_file, const char *filter_name,
+                      pfstest_list_t *plugins, pfstest_list_t *suite,
+                      const char *filter_file,
+                      const char *filter_name,
                       pfstest_reporter_t *reporter);
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
+                 pfstest_list_t *plugins,
                  pfstest_reporter_t *reporter);
 
 #define _pfstest_define(name, flags)            \
@@ -194,6 +196,72 @@ void _pfstest_register_after(pfstest_hook_t *the_hook);
 pfstest_list_t *pfstest_suite_get_before_hooks(void);
 pfstest_list_t *pfstest_suite_get_after_hooks(void);
 
+/* Plugins */
+
+#define _PFSTEST_PLUGIN_CALLBACK_SETUP    0
+#define _PFSTEST_PLUGIN_CALLBACK_CHECKS   1
+#define _PFSTEST_PLUGIN_CALLBACK_TEARDOWN 2
+
+typedef struct
+{
+    const pfstest_nv_ptr char *name;
+    void (*callbacks[3])(void);
+} _pfstest_plugin_nv_t;
+
+typedef struct
+{
+    pfstest_list_node_t list_node;
+    const pfstest_nv_ptr _pfstest_plugin_nv_t *nv_data;
+} pfstest_plugin_t;
+
+#define _pfstest_plugin_name_var(name)              \
+    _pfstest_econcat(__pfstest_plugin_name__, name)
+
+#define _pfstest_plugin_nv_var(name)              \
+    _pfstest_econcat(__pfstest_plugin_nv__, name)
+
+#define _pfstest_plugin_decl(plugin_name)       \
+    extern pfstest_plugin_t plugin_name[]
+
+#define pfstest_plugin_define(plugin_name, setup, checks, teardown)     \
+    static const pfstest_nv char                                        \
+    _pfstest_plugin_name_var(plugin_name)[] = #plugin_name;             \
+    static const pfstest_nv _pfstest_plugin_nv_t                        \
+    _pfstest_plugin_nv_var(plugin_name) =                               \
+    {_pfstest_plugin_name_var(plugin_name), {setup, checks, teardown}}; \
+    pfstest_plugin_t plugin_name[1] =                                   \
+    {{ {NULL}, &_pfstest_plugin_nv_var(plugin_name) }}
+
+#if defined(pfstest_constructor)
+/* The final line is just something I know will be redundant to give
+ * the caller's semicolon something to attach to. */
+# define pfstest_plugin_autoload(name)                                  \
+    pfstest_constructor(_pfstest_econcat(__pfstest_plugin_init__, name)) \
+    {                                                                   \
+        pfstest_register_plugin(name);                                  \
+    }                                                                   \
+    _pfstest_plugin_decl(plugin_name)
+#else  /* !defined(pfstest_constructor) */
+# define _pfstest_init_define(name)
+#endif
+
+void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,
+                                          pfstest_plugin_t *plugin);
+#define pfstest_plugin_list_register_plugin(plugin_list, plugin_name)   \
+    do {                                                                \
+        _pfstest_plugin_decl(plugin_name);                              \
+        _pfstest_plugin_list_register_plugin(plugin_list, plugin_name); \
+    } while (0)
+
+void _pfstest_register_plugin(pfstest_plugin_t *plugin);
+#define pfstest_register_plugin(plugin_name)    \
+    do {                                        \
+        _pfstest_plugin_decl(plugin_name);      \
+        _pfstest_register_plugin(plugin_name);  \
+    } while (0)
+
+pfstest_list_t *pfstest_suite_get_plugins(void);
+
 /* Fail interface */
 
 PFSTEST_NORETURN
@@ -252,6 +320,9 @@ int pfstest_run_registered_tests(char *filter_file, char *filter_name,
 #endif
 #ifndef PFSTEST_NOALIAS_register_after
 # define register_after pfstest_register_after
+#endif
+#ifndef PFSTEST_NOALIAS_register_plugin
+# define register_plugin pfstest_register_plugin
 #endif
 
 #endif /* !PFSTEST_CORE_H */

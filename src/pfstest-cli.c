@@ -32,6 +32,23 @@ static int stdout_print_char(int c)
     return r;
 }
 
+static void print_register_plugin_commands(int (*print_char)(int),
+                                           pfstest_list_t *plugins)
+{
+    pfstest_list_node_t *plugin_node;
+    _pfstest_plugin_nv_t nv_data;
+
+    pfstest_list_iter (plugin_node, plugins) {
+        pfstest_plugin_t *plugin = (pfstest_plugin_t *)plugin_node;
+        pfstest_memcpy_nv(&nv_data, plugin->nv_data, sizeof(nv_data));
+
+        print_nv_string(print_char,
+                        pfstest_nv_string("    register_plugin("));
+        print_nv_string(print_char, nv_data.name);
+        print_nv_string(print_char, pfstest_nv_string(");\n"));
+    }
+}
+
 static void print_register_hook_commands(
     int (*print_char)(int), pfstest_list_t *list,
     const pfstest_nv_ptr char *list_name)
@@ -70,8 +87,10 @@ static void print_register_test_commands(int (*print_char)(int),
 void pfstest_print_register_commands(int (*print_char)(int),
                                      pfstest_list_t *before,
                                      pfstest_list_t *after,
+                                     pfstest_list_t *plugins,
                                      pfstest_list_t *suite)
 {
+    print_register_plugin_commands(print_char, plugins);
     print_register_hook_commands(print_char, before,
                                  pfstest_nv_string("before"));
     print_register_hook_commands(print_char, after,
@@ -189,11 +208,13 @@ static pfstest_reporter_t *create_selected_reporter(
 
 static void registered_tests_print_register_commands(int (*print_char)(int))
 {
+    pfstest_list_t *plugins = pfstest_suite_get_plugins();
     pfstest_list_t *before = pfstest_suite_get_before_hooks();
     pfstest_list_t *after = pfstest_suite_get_after_hooks();
     pfstest_list_t *suite = pfstest_suite_get_tests();
 
-    pfstest_print_register_commands(print_char, before, after, suite);
+    pfstest_print_register_commands(print_char, before, after,
+                                    plugins, suite);
 }
 
 int pfstest_start_with_args(int (*print_char)(int), pfstest_arguments_t *args)

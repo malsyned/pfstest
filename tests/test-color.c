@@ -32,7 +32,7 @@ test(should_print_pass_summary_in_green)
         "Run complete. \033[32m1 passed\033[m, 0 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_run);
-    pfstest_suite_run(NULL, NULL,
+    pfstest_suite_run(NULL, NULL, NULL,
                       &suite,
                       NULL, NULL,
                       standard_reporter);
@@ -53,7 +53,7 @@ test(should_colorize_failures)
         "Run complete. 0 passed, \033[37;41;1m1 failed\033[m, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_fail);
-    pfstest_suite_run(NULL, NULL, &suite,
+    pfstest_suite_run(NULL, NULL, NULL, &suite,
                       NULL, NULL,
                       standard_reporter);
 
@@ -70,7 +70,7 @@ test(should_print_ignore_summary_in_yellow)
         "Run complete. 0 passed, 0 failed, \033[33m1 ignored\033[m\n");
 
     pfstest_suite_register_test(&suite, should_be_ignored);
-    pfstest_suite_run(NULL, NULL,
+    pfstest_suite_run(NULL, NULL, NULL,
                       &suite,
                       NULL, NULL,
                       standard_reporter);
@@ -93,7 +93,7 @@ test(should_not_print_pass_in_green_if_failures)
 
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_fail);
-    pfstest_suite_run(NULL, NULL, &suite,
+    pfstest_suite_run(NULL, NULL, NULL, &suite,
                       NULL, NULL,
                       standard_reporter);
 
@@ -112,7 +112,7 @@ test(should_print_verbose_pass_in_green)
 
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(NULL, NULL, &suite,
+    pfstest_suite_run(NULL, NULL, NULL, &suite,
                       NULL, NULL,
                       verbose_reporter);
 
@@ -131,7 +131,7 @@ test(should_print_verbose_ignore_in_yellow)
 
     pfstest_suite_register_test(&suite, should_be_ignored);
 
-    pfstest_suite_run(NULL, NULL, &suite,
+    pfstest_suite_run(NULL, NULL, NULL, &suite,
                       NULL, NULL,
                       verbose_reporter);
 

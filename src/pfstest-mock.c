@@ -18,7 +18,13 @@ typedef struct _dynamic_env_t
 
 static dynamic_env_t *dynamic_env = NULL;
 
-void pfstest_mock_init(void)
+pfstest_plugin_define(pfstest_mock_plugin,
+                      pfstest_mock_setup,
+                      pfstest_mock_run_verifiers,
+                      pfstest_mock_teardown);
+pfstest_plugin_autoload(pfstest_mock_plugin);
+
+void pfstest_mock_setup(void)
 {
     dynamic_env_t *new_frame = pfstest_alloc(sizeof(*new_frame));
     new_frame->next = dynamic_env;
@@ -30,7 +36,7 @@ void pfstest_mock_init(void)
     pfstest_list_reset(&dynamic_env->default_expectations);
 }
 
-void pfstest_mock_finish(void)
+void pfstest_mock_teardown(void)
 {
     dynamic_env = dynamic_env->next;
 }

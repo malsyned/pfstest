@@ -3,8 +3,14 @@
 
 #include "dep.mock.h"
 
+static pfstest_list_t *plugins;
+
 before_tests(set_up_mock_tests)
 {
+    plugins = pfstest_alloc(sizeof(*plugins));
+    pfstest_list_reset(plugins);
+    pfstest_plugin_list_register_plugin(plugins, pfstest_mock_plugin);
+
     capture_output_init();
 }
 
@@ -79,7 +85,7 @@ test(should_report_when_verification_fails)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Never called dep_func1 with (the int 2)");
 
-    capture_test_results(fails_a_verification);
+    capture_test_results_with_plugins(fails_a_verification, plugins);
 
     assert_that("Verification failures are reported",
                 the_string(captured_output),
@@ -100,7 +106,7 @@ test(should_verify_invocation_counts)
         "Wanted dep_func1 with (the int 2) exactly 1 time\n"
         "Was called 2 times");
 
-    capture_test_results(fails_invocation_count);
+    capture_test_results_with_plugins(fails_invocation_count, plugins);
 
     assert_that("Invocation counts are verified",
                 the_string(captured_output),
@@ -120,7 +126,8 @@ test(should_handle_multiple_verifiers)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Never called dep_func1 with (the int 2)");
 
-    capture_test_results(fails_to_satisfy_multiple_verifiers);
+    capture_test_results_with_plugins(fails_to_satisfy_multiple_verifiers,
+                                      plugins);
 
     assert_that("Multiple verifiers are checked",
                 the_string(captured_output),
@@ -166,7 +173,8 @@ test(should_print_sensible_explanation_of_assign_arg_in_failures)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Never called dep_func2 with (the int 2, any pointer)");
 
-    capture_test_results(fails_to_invoke_assign_arg_expectation);
+    capture_test_results_with_plugins(fails_to_invoke_assign_arg_expectation,
+                                      plugins);
 
     assert_that("assign_arg description is sensible",
                 the_string(captured_output),
@@ -206,7 +214,8 @@ test(should_print_matcher_for_failures_involving_assign_arg_that)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Never called dep_func2 with (the int 2, the string \"foo\")");
 
-    capture_test_results(fails_to_invoke_assign_arg_that_expectation);
+    capture_test_results_with_plugins(
+        fails_to_invoke_assign_arg_that_expectation, plugins);
 
     assert_that("assign_arg_that description is sensible",
                 the_string(captured_output),
@@ -288,7 +297,7 @@ test(should_fail_when_out_of_order)
         "Not called in order: dep_func2 with (the int 4, the string \"foo\")\n"
         "Expected after: dep_func1 with (the int 2)");
 
-    capture_test_results(fails_to_invoke_in_order);
+    capture_test_results_with_plugins(fails_to_invoke_in_order, plugins);
 
     assert_that("in_order invocations are verified",
                 the_string(captured_output),
@@ -346,7 +355,7 @@ test(should_reject_too_many_invocations)
         "Wanted dep_func1 with (the int 1) exactly 3 times\n"
         "Was called 4 times");
 
-    capture_test_results(invokes_too_many_times);
+    capture_test_results_with_plugins(invokes_too_many_times, plugins);
 
     assert_that("too many invocation counts are verified in exact mode",
                 the_string(captured_output),
@@ -368,7 +377,7 @@ test(should_reject_too_few_invocations)
         "Wanted dep_func1 with (the int 1) exactly 3 times\n"
         "Was called 2 times");
 
-    capture_test_results(invokes_too_few_times);
+    capture_test_results_with_plugins(invokes_too_few_times, plugins);
 
     assert_that("too few invocation counts are verified in exact mode",
                 the_string(captured_output),
@@ -403,7 +412,7 @@ test(at_most_should_reject_too_many_invocations)
         "Wanted dep_func1 with (the int 1) at most 3 times\n"
         "Was called 4 times");
 
-    capture_test_results(inovkes_too_many_times);
+    capture_test_results_with_plugins(inovkes_too_many_times, plugins);
 
     assert_that("too many invocation counts are verified in at_most mode",
                 the_string(captured_output),
@@ -445,7 +454,8 @@ test(at_least_should_reject_insufficient_invocations)
         "Wanted dep_func1 with (the int 1) at least 3 times\n"
         "Was called 2 times");
 
-    capture_test_results(invokes_too_few_times_in_at_least_mode);
+    capture_test_results_with_plugins(invokes_too_few_times_in_at_least_mode,
+                                      plugins);
 
     assert_that("too few invocation counts are verified in at_least mode",
                 the_string(captured_output),
@@ -490,7 +500,8 @@ test(verify_no_more_interactions_should_reject_surplus_interactions)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Unexpected interactions with dep_func1");
 
-    capture_test_results(fails_to_pass_verify_no_more_interactions);
+    capture_test_results_with_plugins(
+        fails_to_pass_verify_no_more_interactions, plugins);
 
     assert_that("verify_no_more_interactions rejects surplus interactions",
                 the_string(captured_output),
@@ -538,7 +549,8 @@ test(verify_no_more_invocations_should_reject_surplus_invocations)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Unexpected mock invocations");
 
-    capture_test_results(fails_to_pass_verify_no_more_invocations);
+    capture_test_results_with_plugins(
+        fails_to_pass_verify_no_more_invocations, plugins);
 
     assert_that("verify_no_more_invocations rejects surplus invocations",
                 the_string(captured_output),

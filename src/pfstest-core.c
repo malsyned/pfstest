@@ -6,8 +6,6 @@
 #include "pfstest-platform.h"
 #include "pfstest-basename.h"
 #include "pfstest-alloc.h"
-/* TODO: plugin-ize */
-#include "pfstest-mock.h"
 
 #define RESULT_FAIL 1
 
@@ -28,6 +26,7 @@ static dynamic_env_t *dynamic_env = NULL;
 static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
 static pfstest_list_t before = PFSTEST_LIST_EMPTY();
 static pfstest_list_t after = PFSTEST_LIST_EMPTY();
+static pfstest_list_t plugins = PFSTEST_LIST_EMPTY();
 
 static void dynamic_env_push(dynamic_env_t *new_env)
 {
@@ -193,18 +192,50 @@ static bool test_ignored(_pfstest_test_nv_t *test_desc)
     return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
 }
 
+static void plugins_run_callback(pfstest_list_t *plugins, int id)
+{
+    pfstest_list_node_t *plugin_node;
+    _pfstest_plugin_nv_t current_plugin;
+
+    if (plugins != NULL) {
+        pfstest_list_iter (plugin_node, plugins) {
+            pfstest_plugin_t *plugin = (pfstest_plugin_t *)plugin_node;
+            pfstest_memcpy_nv(&current_plugin, plugin->nv_data,
+                              sizeof(current_plugin));
+            current_plugin.callbacks[id]();
+        }
+    }
+}
+
+static void setup_plugins(pfstest_list_t *plugins)
+{
+    plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_SETUP);
+}
+
+static void run_plugin_checks(pfstest_list_t *plugins)
+{
+    plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_CHECKS);
+}
+
+static void teardown_plugins(pfstest_list_t *plugins)
+{
+    plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_TEARDOWN);
+}
+
 void pfstest_run(pfstest_t *the_test,
                  pfstest_list_t *before, pfstest_list_t *after,
+                 pfstest_list_t *plugins,
                  pfstest_reporter_t *reporter)
 {
     _pfstest_test_nv_t current_test = extract_test_descriptor(the_test);
     dynamic_env_t local_dynamic_env;
+    (void)plugins;
 
     dynamic_env_push(&local_dynamic_env);
     dynamic_env->reporter = reporter;
     pfstest_alloc_frame_push();
 
-    pfstest_mock_init();        /* TODO: plugin-ize */
+    setup_plugins(plugins);
 
     pfstest_reporter_test_started(reporter,
                                   current_test.name, current_test.file);
@@ -214,20 +245,20 @@ void pfstest_run(pfstest_t *the_test,
         if (0 == setjmp(dynamic_env->test_jmp_buf)) {
             run_before_hooks(before, current_test.file);
             current_test.function();
-            pfstest_mock_run_verifiers(); /* TODO: plugin-ize */
+            run_plugin_checks(plugins);
         }
         run_after_hooks(after, current_test.file);
     }
     pfstest_reporter_test_complete(reporter);
 
-    pfstest_mock_finish(); /* TODO: plugin-ize */
+    teardown_plugins(plugins);
 
     pfstest_alloc_frame_pop();
     dynamic_env_pop();
 }
 
 int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
-                      pfstest_list_t *suite,
+                      pfstest_list_t *plugins, pfstest_list_t *suite,
                       const char *filter_file,
                       const char *filter_name,
                       pfstest_reporter_t *reporter)
@@ -240,7 +271,7 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
         pfstest_t *the_test = (pfstest_t *)test_node;
 
         if (test_matches_filter(the_test, filter_file, filter_name))
-            pfstest_run(the_test, before, after, reporter);
+            pfstest_run(the_test, before, after, plugins, reporter);
     }
 
     pfstest_reporter_run_complete(reporter);
@@ -265,10 +296,27 @@ pfstest_list_t *pfstest_suite_get_after_hooks(void)
     return &after;
 }
 
+void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,
+                                          pfstest_plugin_t *plugin)
+{
+    pfstest_list_node_init((pfstest_list_node_t *)plugin);
+    pfstest_list_append(plugins, (pfstest_list_node_t *)plugin);
+}
+
+void _pfstest_register_plugin(pfstest_plugin_t *plugin)
+{
+    _pfstest_plugin_list_register_plugin(&plugins, plugin);
+}
+
+pfstest_list_t *pfstest_suite_get_plugins(void)
+{
+    return &plugins;
+}
+
 int pfstest_run_registered_tests(char *filter_file, char *filter_name,
                                  pfstest_reporter_t *reporter)
 {
-    return  pfstest_suite_run(&before, &after, &tests,
+    return  pfstest_suite_run(&before, &after, &plugins, &tests,
                               filter_file, filter_name,
                               reporter);
 }
