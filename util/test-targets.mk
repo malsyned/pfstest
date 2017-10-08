@@ -114,7 +114,7 @@ define target-template
     $$(call target-buildprefix,$1)%.d: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
 	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
-	    -MM -MP -MT "$$(@) $$(@:%d=%o)" -o $$@ $$<
+	    -MM -MP -MT "$$(@) $$(@:%d=%o) $$(@:%d=%i)" -o $$@ $$<
 
     #TODO: per-target MOCK_CPPFLAGS
     #TODO: per-target AUTOMOCK_ARGS
