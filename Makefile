@@ -44,7 +44,7 @@ test: run-test-targets
 src/main/register-tests.c: selftest-runner \
                            src/main/register-tests.c.header \
                            src/main/register-tests.c.footer
-	./$< -r >> $@ \
+	./$< -r \
 	  | cat src/main/register-tests.c.header \
 	    - \
 	    src/main/register-tests.c.footer \
