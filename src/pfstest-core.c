@@ -98,7 +98,7 @@ void _pfstest_suite_register_test(pfstest_list_t *suite,
     pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
 }
 
-pfstest_list_t *pfstest_suite_get_tests(void)
+pfstest_list_t *pfstest_get_registered_tests(void)
 {
     return &tests;
 }
@@ -286,12 +286,12 @@ void _pfstest_hook_list_register_hook(pfstest_list_t *list,
     pfstest_list_append(list, (pfstest_list_node_t *)hook);
 }
 
-pfstest_list_t *pfstest_suite_get_before_hooks(void)
+pfstest_list_t *pfstest_get_registered_before_hooks(void)
 {
     return &before;
 }
 
-pfstest_list_t *pfstest_suite_get_after_hooks(void)
+pfstest_list_t *pfstest_get_registered_after_hooks(void)
 {
     return &after;
 }
@@ -308,7 +308,7 @@ void _pfstest_register_plugin(pfstest_plugin_t *plugin)
     _pfstest_plugin_list_register_plugin(&plugins, plugin);
 }
 
-pfstest_list_t *pfstest_suite_get_plugins(void)
+pfstest_list_t *pfstest_get_registered_plugins(void)
 {
     return &plugins;
 }

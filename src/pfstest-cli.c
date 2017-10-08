@@ -208,10 +208,10 @@ static pfstest_reporter_t *create_selected_reporter(
 
 static void registered_tests_print_register_commands(int (*print_char)(int))
 {
-    pfstest_list_t *plugins = pfstest_suite_get_plugins();
-    pfstest_list_t *before = pfstest_suite_get_before_hooks();
-    pfstest_list_t *after = pfstest_suite_get_after_hooks();
-    pfstest_list_t *suite = pfstest_suite_get_tests();
+    pfstest_list_t *plugins = pfstest_get_registered_plugins();
+    pfstest_list_t *before = pfstest_get_registered_before_hooks();
+    pfstest_list_t *after = pfstest_get_registered_after_hooks();
+    pfstest_list_t *suite = pfstest_get_registered_tests();
 
     pfstest_print_register_commands(print_char, before, after,
                                     plugins, suite);

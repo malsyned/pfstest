@@ -106,7 +106,7 @@ void _pfstest_register_test(pfstest_t *the_test);
         _pfstest_case_decl(the_test);           \
         _pfstest_register_test(the_test);       \
     } while (0)
-pfstest_list_t *pfstest_suite_get_tests(void);
+pfstest_list_t *pfstest_get_registered_tests(void);
 
 /* Hooks (before, after) */
 
@@ -193,8 +193,8 @@ void _pfstest_register_after(pfstest_hook_t *the_hook);
 #define pfstest_register_after(the_hook)        \
     _pfstest_register_hook(the_hook, after)
 
-pfstest_list_t *pfstest_suite_get_before_hooks(void);
-pfstest_list_t *pfstest_suite_get_after_hooks(void);
+pfstest_list_t *pfstest_get_registered_before_hooks(void);
+pfstest_list_t *pfstest_get_registered_after_hooks(void);
 
 /* Plugins */
 
@@ -260,7 +260,7 @@ void _pfstest_register_plugin(pfstest_plugin_t *plugin);
         _pfstest_register_plugin(plugin_name);  \
     } while (0)
 
-pfstest_list_t *pfstest_suite_get_plugins(void);
+pfstest_list_t *pfstest_get_registered_plugins(void);
 
 /* Fail interface */
 
