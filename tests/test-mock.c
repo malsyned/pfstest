@@ -395,7 +395,7 @@ test(should_verify_at_most_invocation_count)
     dep_func1(1);
 }
 
-pfstest_case(inovkes_too_many_times)
+pfstest_case(invokes_too_many_times_in_at_most_mode)
 {
     verify_times(at_most(3),
                  when(mock_dep_func1, arg_that(is_the_int(1))));
@@ -412,7 +412,8 @@ test(at_most_should_reject_too_many_invocations)
         "Wanted dep_func1 with (the int 1) at most 3 times\n"
         "Was called 4 times");
 
-    capture_test_results_with_plugins(inovkes_too_many_times, plugins);
+    capture_test_results_with_plugins(
+        invokes_too_many_times_in_at_most_mode, plugins);
 
     assert_that("too many invocation counts are verified in at_most mode",
                 the_string(captured_output),
