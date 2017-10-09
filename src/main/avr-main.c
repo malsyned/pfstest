@@ -50,12 +50,22 @@ static void print_memory_usage(void)
 static void print_max_memory_usage(void)
 {
     pfstest_avr_mem_usage_t usage = pfstest_avr_max_heap_and_stack_usage();
+    size_t max_stack;
+
+    /* If the memory_usage_plugin is registered, it will reset
+     * usage.stack before each test and update
+     * max_stack_used. Otherwise, max_stack_used will be 0 but
+     * usage.stack will be accurate. */
+    if (usage.stack > max_stack_used)
+        max_stack = usage.stack;
+    else
+        max_stack = max_stack_used;
 
     if (usage.collision) {
         printf("FATAL: Stack and heap collided!\n");
     } else {
         printf("Max stack used: %u; Max heap used: %u\n",
-               max_stack_used, usage.heap);
+               max_stack, usage.heap);
     }
 }
 
