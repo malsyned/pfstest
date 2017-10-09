@@ -60,7 +60,7 @@ AUTOMOCK_ARGS = $(AVR_GCC_AUTOMOCK_ARGS)
 EXEC_PATTERN = %.elf
 BUILDPREFIX = avrbuild/
 
-SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) \
+SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) $(PFSTEST_AVR_TOOLS_SRC) \
       src/pfstest-platform-avr8.c \
       src/pfstest-alloc-malloc.c \
       src/main/avr-main.c

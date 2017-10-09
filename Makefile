@@ -22,6 +22,7 @@ EXEC_PATTERN = %-runner
 BUILDPREFIX = build/
 
 SRC = $(PFSTEST_SRC) $(PFSTEST_STDINT_SRC) $(PFSTEST_CLI_SRC) \
+      $(PFSTEST_AVR_TOOLS_SRC) \
       src/pfstest-alloc-malloc.c src/main/gcc-main.c
 
 TARGETS = selftest

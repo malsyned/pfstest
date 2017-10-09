@@ -5,6 +5,8 @@
 
 #include "pfstest.h"
 
+#include "pfstest-avr-mem.h"
+
 /*
  *  This port correponds to the "-W 0x20,-" command line option.
  */
@@ -19,26 +21,28 @@ static int dbg_putchar(char c, FILE *stream)
 
 static FILE mystdout = FDEV_SETUP_STREAM(dbg_putchar, NULL, _FDEV_SETUP_WRITE);
 
-extern char *__brkval;
-extern char *__malloc_heap_start;
-
-static size_t malloc_used(void)
-{
-    if (__brkval == 0)          /* Uninitialized case */
-        return 0;
-    else
-        return (size_t)(__brkval - __malloc_heap_start);
-}
-
 static int print_char(int c)
 {
     return putchar(c);
 }
 
+static void print_heap_and_stack_usage(pfstest_avr_mem_usage_t *usage)
+{
+    if (usage->collision) {
+        printf("FATAL: Stack and heap collided!\n");
+    } else {
+        printf("Max stack used: %u; Max heap used: %u\n",
+               usage->stack, usage->heap);
+    }
+}
+
 int main(void)
 {
+    pfstest_avr_mem_usage_t usage;
     pfstest_reporter_t *reporter;
     int r;
+
+    pfstest_avr_fill_heap_with_sentinel();
 
     stdout = &mystdout;
     stderr = stdout;
@@ -49,7 +53,11 @@ int main(void)
     r = pfstest_run_registered_tests(NULL, NULL, reporter);
     
     pfstest_alloc_free_frame();
-    assert(malloc_used() == 0);
+    assert(pfstest_avr_malloc_used() == 0);
+
+    usage = pfstest_avr_max_heap_and_stack_usage();
+    assert(!usage.collision);
+    print_heap_and_stack_usage(&usage);
 
     return r;
 }

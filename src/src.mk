@@ -8,6 +8,8 @@ PFSTEST_SRC := $(addprefix src/, \
                  pfstest-reporters-standard.c pfstest-equality.c \
                  pfstest-reporter-xml.c)
 
+PFSTEST_AVR_TOOLS_SRC := src/avr/pfstest-avr-mem.c
+
 PFSTEST_CLI_SRC := src/pfstest-cli.c
 
 PFSTEST_STDINT_SRC := $(addprefix src/, \

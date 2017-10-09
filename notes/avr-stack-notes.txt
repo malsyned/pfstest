@@ -1,0 +1,11 @@
+My technique for monitoring the size of the stack is to fill the rest of the stack with 0xa5
+
+
+
+Fill from __heap_start to STACK_POINTER() with 0xba
+
+At the end of the program, search from RAMEND backward until you find four 0xba in a row.
+
+Subtract that address from RAMEND. That is how much stack you have used.
+Then keep searching until you find four not 0xba in a row.
+Subtract __heap_start from that. That is how much malloc you used.
