@@ -308,10 +308,8 @@ pfstest_hook(before2) {}
 pfstest_hook(after1) {}
 pfstest_hook(after2) {}
 
-static void do_nothing(void) {}
-
-pfstest_plugin_define(plugin1, do_nothing, do_nothing, do_nothing);
-pfstest_plugin_define(plugin2, do_nothing, do_nothing, do_nothing);
+pfstest_plugin_define(plugin1, NULL, NULL, NULL);
+pfstest_plugin_define(plugin2, NULL, NULL, NULL);
 
 test(should_print_register_commands)
 {

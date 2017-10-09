@@ -534,14 +534,10 @@ static void plugin_teardown(void)
     pfstest_strcat_nv(call_log, pfstest_nv_string("plugin_teardown "));
 }
 
-static void do_nothing(void) {}
-
-pfstest_plugin_define(setup_only_plugin,
-                      plugin_setup, do_nothing, do_nothing);
-pfstest_plugin_define(teardown_only_plugin,
-                      do_nothing, do_nothing, plugin_teardown);
+pfstest_plugin_define(setup_only_plugin, plugin_setup, NULL, NULL);
+pfstest_plugin_define(teardown_only_plugin, NULL, NULL, plugin_teardown);
 pfstest_plugin_define(plugin_with_check,
-                      do_nothing, plugin_checks, plugin_teardown);
+                      NULL, plugin_checks, plugin_teardown);
 
 test(should_call_plugin_setup_hook)
 {

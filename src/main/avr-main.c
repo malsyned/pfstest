@@ -28,8 +28,6 @@ static int print_char(int c)
 
 static size_t max_stack_used = 0;
 
-static void do_nothing(void) {}
-
 static void reset_stack_usage(void)
 {
     pfstest_avr_mem_usage_t usage = pfstest_avr_max_heap_and_stack_usage();
@@ -63,7 +61,7 @@ static void print_max_memory_usage(void)
 
 pfstest_plugin_define(memory_usage_plugin,
                       reset_stack_usage,
-                      do_nothing,
+                      NULL,
                       print_memory_usage);
 
 int main(void)

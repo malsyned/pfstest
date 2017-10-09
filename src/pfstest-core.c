@@ -196,13 +196,17 @@ static void plugins_run_callback(pfstest_list_t *plugins, int id)
 {
     pfstest_list_node_t *plugin_node;
     _pfstest_plugin_nv_t current_plugin;
+    void (*callback)(void);
 
     if (plugins != NULL) {
         pfstest_list_iter (plugin_node, plugins) {
             pfstest_plugin_t *plugin = (pfstest_plugin_t *)plugin_node;
             pfstest_memcpy_nv(&current_plugin, plugin->nv_data,
                               sizeof(current_plugin));
-            current_plugin.callbacks[id]();
+
+            callback = current_plugin.callbacks[id];
+            if (callback != NULL)
+                callback();
         }
     }
 }
