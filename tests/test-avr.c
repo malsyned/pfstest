@@ -143,3 +143,18 @@ test(should_respect_stack_pointer)
     assert_that("Bytes behind the stack pointer are assumed to be used",
                 the_uint((unsigned)used.stack), is_the_uint(6));
 }
+
+test(should_clear_above_stack)
+{
+    static unsigned char mem[] =
+        {'E', 'M', 'T', 'Y', 'E', 'M', 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5};
+    static unsigned char expected[] =
+        {'E', 'M', 'T', 'Y', 'E', 'M', 'T',  'Y',  'E',  0xa5, 0xa5, 0xa5};
+    stack_pointer = mem + 8;
+
+    _pfstest_avr_fill_unused_stack(mem, sizeof(mem), fake_get_stack_pointer);
+
+    assert_that("Previously-used stack bytes are reinitialized",
+                the_memory(mem, sizeof(mem)),
+                is_the_memory(expected, sizeof(expected)));
+}

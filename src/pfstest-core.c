@@ -296,11 +296,11 @@ pfstest_list_t *pfstest_get_registered_after_hooks(void)
     return &after;
 }
 
-void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,
+void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugin_list,
                                           pfstest_plugin_t *plugin)
 {
     pfstest_list_node_init((pfstest_list_node_t *)plugin);
-    pfstest_list_append(plugins, (pfstest_list_node_t *)plugin);
+    pfstest_list_append(plugin_list, (pfstest_list_node_t *)plugin);
 }
 
 void _pfstest_register_plugin(pfstest_plugin_t *plugin)

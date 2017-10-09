@@ -26,23 +26,56 @@ static int print_char(int c)
     return putchar(c);
 }
 
-static void print_heap_and_stack_usage(pfstest_avr_mem_usage_t *usage)
+static size_t max_stack_used = 0;
+
+static void do_nothing(void) {}
+
+static void reset_stack_usage(void)
 {
-    if (usage->collision) {
+    pfstest_avr_mem_usage_t usage = pfstest_avr_max_heap_and_stack_usage();
+    if (usage.stack > max_stack_used)
+        max_stack_used = usage.stack;
+    pfstest_avr_reset_stack_high_water_mark();
+}
+
+static void print_memory_usage(void)
+{
+    pfstest_avr_mem_usage_t usage = pfstest_avr_max_heap_and_stack_usage();
+    if (usage.collision) {
         printf("FATAL: Stack and heap collided!\n");
     } else {
-        printf("Max stack used: %u; Max heap used: %u\n",
-               usage->stack, usage->heap);
+        printf("Stack used: %u; Heap used: %d\n",
+               (unsigned)usage.stack, (unsigned)pfstest_avr_malloc_used());
     }
 }
 
+static void print_max_memory_usage(void)
+{
+    pfstest_avr_mem_usage_t usage = pfstest_avr_max_heap_and_stack_usage();
+
+    if (usage.collision) {
+        printf("FATAL: Stack and heap collided!\n");
+    } else {
+        printf("Max stack used: %u; Max heap used: %u\n",
+               max_stack_used, usage.heap);
+    }
+}
+
+pfstest_plugin_define(memory_usage_plugin,
+                      reset_stack_usage,
+                      do_nothing,
+                      print_memory_usage);
+
 int main(void)
 {
-    pfstest_avr_mem_usage_t usage;
     pfstest_reporter_t *reporter;
     int r;
 
     pfstest_avr_fill_heap_with_sentinel();
+
+    /* Uncomment this line to add a stack and heap report after every
+     * test. */
+    /* pfstest_register_plugin(memory_usage_plugin); */
 
     stdout = &mystdout;
     stderr = stdout;
@@ -55,9 +88,7 @@ int main(void)
     pfstest_alloc_free_frame();
     assert(pfstest_avr_malloc_used() == 0);
 
-    usage = pfstest_avr_max_heap_and_stack_usage();
-    assert(!usage.collision);
-    print_heap_and_stack_usage(&usage);
+    print_max_memory_usage();
 
     return r;
 }

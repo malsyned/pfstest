@@ -31,6 +31,14 @@ pfstest_avr_mem_usage_t pfstest_avr_max_heap_and_stack_usage(void)
                                   get_stack_pointer);
 }
 
+void pfstest_avr_reset_stack_high_water_mark(void)
+{
+    size_t heap_size =
+        (size_t)((unsigned char *)(RAMEND + 1) - &__heap_start);
+    _pfstest_avr_fill_unused_stack(&__heap_start, heap_size,
+                                   get_stack_pointer);
+}
+
 size_t pfstest_avr_malloc_used(void)
 {
     if (__brkval == 0)          /* Uninitialized case */
@@ -41,33 +49,30 @@ size_t pfstest_avr_malloc_used(void)
 
 #endif
 
-void _pfstest_avr_fill_mem_with_sentinel(unsigned char *heap,
-                                         unsigned char *(*get_sp)(void))
+static void fill_to_sp(unsigned char *buf, unsigned char *start,
+                       unsigned char *(*get_sp)(void))
 {
-    size_t i;
+    size_t i = (size_t)(start - buf);
     unsigned char *sp = get_sp();
-    unsigned char *p = heap;
+    unsigned char *p = start;
 
-    i = 0;
     while (p <= sp) {
         *p++ = get_fill_char(i++);
     }
 }
 
-pfstest_avr_mem_usage_t _pfstest_avr_mem_usage(
-    unsigned char *buf, size_t size, unsigned char *(*get_sp)(void))
+void _pfstest_avr_fill_mem_with_sentinel(unsigned char *heap,
+                                         unsigned char *(*get_sp)(void))
 {
-    pfstest_avr_mem_usage_t used = {0, 0, false};
-    unsigned char *sp = get_sp();
-    unsigned char *p = buf + (size - 1);
+    fill_to_sp(heap, heap, get_sp);
+}
+
+static unsigned char *find_stack_high_water_mark(unsigned char *buf,
+                                                 unsigned char *start)
+{
+    unsigned char *p = start;
     size_t sentinel_count = 0;
     unsigned char *found = NULL;
-
-    if (sp < p)
-        p = sp;
-
-    assert(size > 0);
-    assert(sp >= buf);
 
     while (1) {
         if (*p == get_fill_char(p - buf)) {
@@ -81,13 +86,19 @@ pfstest_avr_mem_usage_t _pfstest_avr_mem_usage(
         if (sentinel_count == 4)
             break;
         if (p == buf) {
-            used.collision = true;
-            return used;
+            return NULL;
         }
 
         p--;
     }
-    used.stack = size - (size_t)(found - buf);
+
+    return found;
+}
+
+static unsigned char *find_heap_high_water_mark(unsigned char *buf,
+                                                unsigned char *highest_sp)
+{
+    unsigned char *p = highest_sp;
 
     while (p != buf) {
         if (*p != get_fill_char(p - buf)) {
@@ -97,7 +108,44 @@ pfstest_avr_mem_usage_t _pfstest_avr_mem_usage(
 
         p--;
     }
-    used.heap = (size_t)(p - buf);
+
+    return p;
+}
+
+pfstest_avr_mem_usage_t _pfstest_avr_mem_usage(
+    unsigned char *buf, size_t size, unsigned char *(*get_sp)(void))
+{
+    pfstest_avr_mem_usage_t used = {0, 0, false};
+    unsigned char *sp = get_sp();
+    unsigned char *stack_hwm, *heap_hwm;
+
+    assert(size > 0);
+    assert(sp >= buf);
+    assert(sp < buf + size);
+
+    stack_hwm = find_stack_high_water_mark(buf, sp);
+    if (stack_hwm == NULL) {
+        used.collision = true;
+        return used;
+    }
+    used.stack = (size_t)(buf + size - stack_hwm);
+
+    heap_hwm = find_heap_high_water_mark(buf, stack_hwm - 1);
+    used.heap = (size_t)(heap_hwm - buf);
 
     return used;
+}
+
+void _pfstest_avr_fill_unused_stack(unsigned char *buf, size_t size,
+                                    unsigned char *(*get_sp)(void))
+{
+    unsigned char *sp = get_sp();
+    unsigned char *stack_hwm;
+
+    assert(size > 0);
+    assert(sp >= buf);
+    assert(sp < buf + size);
+
+    stack_hwm = find_stack_high_water_mark(buf, sp);
+    fill_to_sp(buf, stack_hwm, get_sp);
 }
