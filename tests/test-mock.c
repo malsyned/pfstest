@@ -5,11 +5,19 @@
 
 static pfstest_list_t *plugins;
 
+/* Each plugin can only be a member of one plugin list, and
+ * pfstest_mock_plugin is already a member of the registered plugins
+ * list. */
+pfstest_plugin_define(test_mock_plugin,
+                      pfstest_mock_setup,
+                      pfstest_mock_run_verifiers,
+                      pfstest_mock_teardown);
+
 before_tests(set_up_mock_tests)
 {
     plugins = pfstest_alloc(sizeof(*plugins));
     pfstest_list_reset(plugins);
-    pfstest_plugin_list_register_plugin(plugins, pfstest_mock_plugin);
+    pfstest_plugin_list_register_plugin(plugins, test_mock_plugin);
 
     capture_output_init();
 }
