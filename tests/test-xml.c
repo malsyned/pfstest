@@ -104,17 +104,17 @@ test(should_write_failed_test)
                 matches_the_nv_string(expected));
 }
 
-test(return_value_should_start_at_0)
+test(xml_should_return_EXIT_SUCCESS_on_success)
 {
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
 
-    assert_that("The return value starts at 0",
+    assert_that("EXIT_SUCCESS is returned on success",
                 the_int(pfstest_reporter_return_value(xml_reporter)),
-                is_the_int(0));
+                is_the_int(EXIT_SUCCESS));
 }
 
-test(should_return_failing_test_count)
+test(xml_should_return_EXIT_FAILURE_on_failure)
 {
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
@@ -133,9 +133,9 @@ test(should_return_failing_test_count)
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
 
-    assert_that("The return value matches the failing test count",
+    assert_that("EXIT_FAILURE is returned on failure",
                 the_int(pfstest_reporter_return_value(xml_reporter)),
-                is_the_int(2));
+                is_the_int(EXIT_FAILURE));
 }
 
 test(should_write_multiple_results)

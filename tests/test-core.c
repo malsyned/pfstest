@@ -421,7 +421,7 @@ test(should_only_count_each_failing_test_once)
     }
 }
 
-test(should_return_0_on_success)
+test(should_return_EXIT_SUCCESS_on_success)
 {
     int result;
 
@@ -432,12 +432,12 @@ test(should_return_0_on_success)
         pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                           NULL, NULL, standard_reporter);
 
-    if (0 != result) {
-        fail("pfstest_suite_run did not return 0");
+    if (EXIT_SUCCESS != result) {
+        fail("pfstest_suite_run did not return EXIT_SUCCESS");
     }
 }
 
-test(should_return_fail_count_on_failure)
+test(should_return_EXIT_FAILURE_on_failure)
 {
     int result;
 
@@ -448,8 +448,8 @@ test(should_return_fail_count_on_failure)
         pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                           NULL, NULL, standard_reporter);
 
-    if (2 != result) {
-        fail("pfstest_suite_run did not return 2");
+    if (EXIT_FAILURE != result) {
+        fail("pfstest_suite_run did not return EXIT_FAILURE");
     }
 }
 

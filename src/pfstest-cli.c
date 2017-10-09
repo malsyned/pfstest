@@ -126,7 +126,7 @@ int pfstest_main(int argc, char *argv[])
         return pfstest_start_with_args(stdout_print_char, &args);
     } else {
         pfstest_print_usage(stdout_print_char, args.program_name);
-        return 1;
+        return EXIT_FAILURE;
     }
 }
 
@@ -225,7 +225,7 @@ int pfstest_start_with_args(int (*print_char)(int), pfstest_arguments_t *args)
 
     if (args->print_register_commands) {
         registered_tests_print_register_commands(print_char);
-        return 0;
+        return EXIT_SUCCESS;
     } else {
         colorizer = select_colorizer(args);
         reporter = create_selected_reporter(print_char, args, colorizer);

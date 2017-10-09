@@ -1,5 +1,7 @@
 #include "pfstest-reporters-standard.h"
 
+#include <stdlib.h>
+
 #include "pfstest-basename.h"
 #include "pfstest-version.h"
 #include "pfstest-alloc.h"
@@ -307,7 +309,10 @@ static int return_value(pfstest_reporter_t *reporter)
 {
     builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
 
-    return as_builtin_reporter->results.failed;
+    if (as_builtin_reporter->results.failed == 0)
+        return EXIT_SUCCESS;
+    else
+        return EXIT_FAILURE;
 }
 
 static const pfstest_nv pfstest_reporter_vtable_t standard_vtable = {

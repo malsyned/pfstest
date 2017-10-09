@@ -1,12 +1,14 @@
 #include "pfstest-reporter-xml.h"
 
+#include <stdlib.h>
+
 #include "pfstest-alloc.h"
 #include "pfstest-version.h"
 
 typedef struct
 {
     pfstest_reporter_t parent;
-    int failed_tests;
+    bool failed;
     bool test_ignored;
     bool test_failed;
     bool fresh_line;
@@ -110,7 +112,7 @@ static void run_started(pfstest_reporter_t *reporter)
 {
     ((xml_reporter_t *)reporter)->in_message = false;
     ((xml_reporter_t *)reporter)->in_attribute = false;
-    ((xml_reporter_t *)reporter)->failed_tests = 0;
+    ((xml_reporter_t *)reporter)->failed = false;
 
     pfstest_reporter_print_nv_string(
         reporter,
@@ -168,7 +170,7 @@ static void test_failed_message_complete(
     pfstest_reporter_t *reporter)
 {
     ((xml_reporter_t *)reporter)->in_message = false;
-    ((xml_reporter_t *)reporter)->failed_tests++;
+    ((xml_reporter_t *)reporter)->failed = true;
 }
 
 static void get_fresh_line(pfstest_reporter_t *reporter)
@@ -204,7 +206,10 @@ static void run_complete(pfstest_reporter_t *reporter)
 
 static int return_value(pfstest_reporter_t *reporter)
 {
-    return ((xml_reporter_t *)reporter)->failed_tests;
+    if (((xml_reporter_t *)reporter)->failed)
+        return EXIT_FAILURE;
+    else
+        return EXIT_SUCCESS;
 }
 
 static const

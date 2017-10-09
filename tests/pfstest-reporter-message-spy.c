@@ -1,21 +1,23 @@
 #include "pfstest-reporter-message-spy.h"
 
+#include <stdlib.h>
+
 #include "pfstest-alloc.h"
 
 typedef struct
 {
     pfstest_reporter_t parent;
-    int failed;
+    bool failed;
 } message_spy_reporter_t;
 
 static void run_started(pfstest_reporter_t *reporter)
 {
-    ((message_spy_reporter_t *)reporter)->failed = 0;
+    ((message_spy_reporter_t *)reporter)->failed = false;
 }
 
 static void test_failed_message_complete(pfstest_reporter_t *reporter)
 {
-    ((message_spy_reporter_t *)reporter)->failed++;
+    ((message_spy_reporter_t *)reporter)->failed = true;
 }
 
 static void test_started(pfstest_reporter_t *reporter,
@@ -57,7 +59,10 @@ static int print_char(pfstest_reporter_t *reporter, int c)
 
 static int return_value(pfstest_reporter_t *reporter)
 {
-    return ((message_spy_reporter_t *)reporter)->failed;
+    if (((message_spy_reporter_t *)reporter)->failed)
+        return EXIT_FAILURE;
+    else
+        return EXIT_SUCCESS;
 }
 
 static const
@@ -77,7 +82,7 @@ pfstest_reporter_t *pfstest_reporter_message_spy_new(int (*char_writer)(int))
 {
     message_spy_reporter_t *reporter = pfstest_alloc(sizeof(*reporter));
 
-    reporter->failed = 0;
+    reporter->failed = false;
     reporter->parent.char_writer = char_writer;
     reporter->parent.vtable = &message_spy_vtable;
 
