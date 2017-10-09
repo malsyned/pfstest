@@ -4,7 +4,7 @@ SELFTEST_SRC := $(addprefix tests/, \
                   core-test-cases-2.c \
                   test-assert-that.c test-values-and-matchers.c \
                   test-stdint.c test-mock.c test-xml.c test-color.c \
-                  test-avr.c)
+                  test-avr.c test-shorthand.c)
 
 SELFTEST_CLI_SRC := tests/test-invocation.c
 

@@ -13,4 +13,6 @@
 
 #include "pfstest-reporters-standard.h"
 
+#include "pfstest-shorthand.h"
+
 #endif /* !PFSTEST_H */
