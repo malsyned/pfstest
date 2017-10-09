@@ -23,10 +23,10 @@ typedef struct _dynamic_env_t
 
 static dynamic_env_t *dynamic_env = NULL;
 
-static pfstest_list_t tests = PFSTEST_LIST_EMPTY();
-static pfstest_list_t before = PFSTEST_LIST_EMPTY();
-static pfstest_list_t after = PFSTEST_LIST_EMPTY();
-static pfstest_list_t plugins = PFSTEST_LIST_EMPTY();
+static pfstest_list_t registered_tests = PFSTEST_LIST_EMPTY();
+static pfstest_list_t registered_before_hooks = PFSTEST_LIST_EMPTY();
+static pfstest_list_t registered_after_hooks = PFSTEST_LIST_EMPTY();
+static pfstest_list_t registered_plugins = PFSTEST_LIST_EMPTY();
 
 static void dynamic_env_push(dynamic_env_t *new_env)
 {
@@ -78,17 +78,17 @@ void _pfstest_fail_at_location(
 
 void _pfstest_register_test(pfstest_t *the_test)
 {
-    _pfstest_suite_register_test(&tests, the_test);
+    _pfstest_suite_register_test(&registered_tests, the_test);
 }
 
 void _pfstest_register_before(pfstest_hook_t *the_hook)
 {
-    _pfstest_hook_list_register_hook(&before, the_hook);
+    _pfstest_hook_list_register_hook(&registered_before_hooks, the_hook);
 }
 
 void _pfstest_register_after(pfstest_hook_t *the_hook)
 {
-    _pfstest_hook_list_register_hook(&after, the_hook);
+    _pfstest_hook_list_register_hook(&registered_after_hooks, the_hook);
 }
 
 void _pfstest_suite_register_test(pfstest_list_t *suite,
@@ -100,7 +100,7 @@ void _pfstest_suite_register_test(pfstest_list_t *suite,
 
 pfstest_list_t *pfstest_get_registered_tests(void)
 {
-    return &tests;
+    return &registered_tests;
 }
 
 static void call_protected(void (*function)(void))
@@ -288,12 +288,12 @@ void _pfstest_hook_list_register_hook(pfstest_list_t *list,
 
 pfstest_list_t *pfstest_get_registered_before_hooks(void)
 {
-    return &before;
+    return &registered_before_hooks;
 }
 
 pfstest_list_t *pfstest_get_registered_after_hooks(void)
 {
-    return &after;
+    return &registered_after_hooks;
 }
 
 void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugin_list,
@@ -305,18 +305,20 @@ void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugin_list,
 
 void _pfstest_register_plugin(pfstest_plugin_t *plugin)
 {
-    _pfstest_plugin_list_register_plugin(&plugins, plugin);
+    _pfstest_plugin_list_register_plugin(&registered_plugins, plugin);
 }
 
 pfstest_list_t *pfstest_get_registered_plugins(void)
 {
-    return &plugins;
+    return &registered_plugins;
 }
 
 int pfstest_run_registered_tests(char *filter_file, char *filter_name,
                                  pfstest_reporter_t *reporter)
 {
-    return  pfstest_suite_run(&before, &after, &plugins, &tests,
+    return  pfstest_suite_run(&registered_before_hooks,
+                              &registered_after_hooks,
+                              &registered_plugins, &registered_tests,
                               filter_file, filter_name,
                               reporter);
 }
