@@ -2,6 +2,9 @@
 
 extern char call_log[];
 
+#undef __PFSTEST_FILE__
+#define __PFSTEST_FILE__ "core-test-cases.c"
+
 pfstest_case(should_run)
 {
     pfstest_strcat_nv(call_log, pfstest_nv_string("should_run "));

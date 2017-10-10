@@ -47,7 +47,7 @@ test(should_colorize_failures)
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         HEADER
         "core-test-cases.c:should_fail \033[31mFAIL\033[m\n"
-        "    Location: \033[1mcore-test-cases.c:22\033[m\n"
+        "    Location: \033[1mcore-test-cases.c:25\033[m\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, \033[37;41;1m1 failed\033[m, 0 ignored\n");
@@ -86,7 +86,7 @@ test(should_not_print_pass_in_green_if_failures)
         HEADER
         ".\n"
         "core-test-cases.c:should_fail \033[31mFAIL\033[m\n"
-        "    Location: \033[1mcore-test-cases.c:22\033[m\n"
+        "    Location: \033[1mcore-test-cases.c:25\033[m\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 1 passed, \033[37;41;1m1 failed\033[m, 0 ignored\n");
