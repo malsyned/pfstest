@@ -17,6 +17,7 @@
 selftest-runner
 build
 avrbuild
+mocks/*
 nbproject/private/*
 Debug/*
 register-*tests.c
