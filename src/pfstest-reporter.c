@@ -13,7 +13,7 @@ static const pfstest_nv char esc_n[] = "\\n";
 static const pfstest_nv char esc_r[] = "\\r";
 static const pfstest_nv char esc_t[] = "\\t";
 static const pfstest_nv char esc_v[] = "\\v";
-/* mcc18 was calling "\\\\" a syntax error */
+/* MPLAB C18 v3.03 was calling "\\\\" a syntax error */
 static const pfstest_nv char esc_backslash[] = {'\\', '\\', '\0'};
 static const pfstest_nv char esc_apostrophe[] = "\\'";
 static const pfstest_nv char esc_quote[] = "\\\"";
