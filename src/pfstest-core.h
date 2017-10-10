@@ -13,7 +13,9 @@
 #define _pfstest_econcat(a, b) _pfstest_concat(a, b)
 
 /* So that it can be overridden in core tests */
+#ifndef __PFSTEST_FILE__
 #define __PFSTEST_FILE__ __FILE__
+#endif
 
 /* Tests */
 
