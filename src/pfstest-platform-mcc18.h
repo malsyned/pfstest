@@ -16,6 +16,8 @@ typedef unsigned long uintmax_t;
 #define UINTMAX_MAX ULONG_MAX
 
 /* stdlib.h */
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
 #define _exit(n) do { while (1) ; } while (0)
 #define exit _exit
 

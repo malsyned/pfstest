@@ -243,7 +243,7 @@ typedef struct
     }                                                                   \
     _pfstest_plugin_decl(plugin_name)
 #else  /* !defined(pfstest_constructor) */
-# define _pfstest_init_define(name)
+# define pfstest_plugin_autoload(name) _pfstest_plugin_decl(name)
 #endif
 
 void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,

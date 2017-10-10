@@ -490,12 +490,13 @@ test(should_filter_by_file_name)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "should_run ");
+    const char filter_file[] = "core-test-cases.c";
 
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, other_file_test);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      "core-test-cases.c", NULL, standard_reporter);
+                      filter_file, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");
@@ -506,12 +507,13 @@ test(should_filter_by_test_name)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "should_run ");
+    const char filter_name[] = "should_run";
 
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
     
     pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, "should_run", standard_reporter);
+                      NULL, filter_name, standard_reporter);
 
     if (0 != pfstest_strcmp_nv(call_log, expected)) {
         fail("Log did not match expected log");

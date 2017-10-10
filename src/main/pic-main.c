@@ -6,7 +6,7 @@
 
 #pragma config WDT = OFF
 
-#define HEAP_SIZE ((int)2048)
+#define HEAP_SIZE ((int)0x700)
 
 #pragma udata heap
 unsigned char heap[HEAP_SIZE];
