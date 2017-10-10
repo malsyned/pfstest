@@ -12,6 +12,9 @@
 #define _pfstest_concat(a, b) a ## b
 #define _pfstest_econcat(a, b) _pfstest_concat(a, b)
 
+/* So that it can be overridden in core tests */
+#define __PFSTEST_FILE__ __FILE__
+
 /* Tests */
 
 #define _PFSTEST_FLAG_IGNORED 0x1
@@ -271,7 +274,7 @@ void pfstest_fail_with_printer(
     void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object);
 
-#define __PFSTEST_FILE__ pfstest_nv_string(__FILE__)
+#define __PFSTEST_NV_FILE__ pfstest_nv_string(__PFSTEST_FILE__)
 
 PFSTEST_NORETURN
 void _pfstest_fail_at_location(
@@ -280,7 +283,7 @@ void _pfstest_fail_at_location(
 #define pfstest_fail_at_location(file, line, message)                   \
     _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
 #define pfstest_fail(message)                                       \
-    pfstest_fail_at_location(__PFSTEST_FILE__, __LINE__, message)
+    pfstest_fail_at_location(__PFSTEST_NV_FILE__, __LINE__, message)
 
 /* Framework entry points */
 
