@@ -82,7 +82,7 @@ static void print_int(builtin_reporter_t *reporter, intmax_t n)
 static void print_context(builtin_reporter_t *reporter)
 {
     get_fresh_line(reporter);
-    print_nv_string(reporter, pfstest_basename(reporter->test_file));
+    print_nv_string(reporter, reporter->test_file);
     print_nv_string(reporter, pfstest_nv_string(":"));
     print_nv_string(reporter, reporter->test_name);
     print_nv_string(reporter, pfstest_nv_string(" "));
@@ -178,7 +178,7 @@ static void test_failed_message_start_common(
     print_nv_string(reporter, pfstest_nv_string("    Location: "));
 
     report_colorizer_start(colorizer, char_writer, REPORT_COLOR_BOLD);
-    print_nv_string(reporter, pfstest_basename(file));
+    print_nv_string(reporter, file);
     print_nv_string(reporter, pfstest_nv_string(":"));
     print_int(reporter, line);
     report_colorizer_reset(colorizer, char_writer);

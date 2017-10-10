@@ -1,9 +1,9 @@
 #include "pfstest-core.h"
 
-extern char call_log[];
-
 #undef __PFSTEST_FILE__
 #define __PFSTEST_FILE__ "core-test-cases.c"
+
+extern char call_log[];
 
 pfstest_case(should_run)
 {

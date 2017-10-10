@@ -42,7 +42,8 @@ typedef struct
 
 #define _pfstest_object(name, flags)                                    \
     static const pfstest_nv char _pfstest_name_var(name)[] = #name;     \
-    static const pfstest_nv char _pfstest_file_var(name)[] = __FILE__;  \
+    static const pfstest_nv char _pfstest_file_var(name)[] =            \
+        __PFSTEST_FILE__;                                               \
     static const pfstest_nv _pfstest_test_nv_t _pfstest_nv_var(name) =  \
     {                                                                   \
         _pfstest_name_var(name),                                        \
@@ -135,7 +136,7 @@ typedef struct
 
 #define _pfstest_hook_object(name)                                  \
     static const pfstest_nv char _pfstest_hook_file_var(name)[] =   \
-        __FILE__;                                                   \
+        __PFSTEST_FILE__;                                                   \
     static const pfstest_nv char _pfstest_hook_name_var(name)[] =   \
         #name;                                                      \
     static const pfstest_nv _pfstest_hook_nv_t                      \

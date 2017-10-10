@@ -1,5 +1,8 @@
 #include "pfstest-core.h"
 
+#undef __PFSTEST_FILE__
+#define __PFSTEST_FILE__ "core-test-cases-2.c"
+
 extern char call_log[];
 
 pfstest_hook(other_file_hook)
