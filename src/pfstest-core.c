@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "pfstest-platform.h"
-#include "pfstest-basename.h"
 #include "pfstest-alloc.h"
 
 #define RESULT_FAIL 1
@@ -135,10 +134,9 @@ static bool test_matches_filter(pfstest_t *the_test,
                                 const char *filter_name)
 {
     _pfstest_test_nv_t test_desc = extract_test_descriptor(the_test);
-    const pfstest_nv_ptr char *basename =  pfstest_basename(test_desc.file);
 
     bool file_passed = (filter_file == NULL
-                        || str_eq_nv_str(filter_file, basename));
+                        || str_eq_nv_str(filter_file, test_desc.file));
     bool name_passed = (filter_name == NULL
                         || str_eq_nv_str(filter_name, test_desc.name));
 

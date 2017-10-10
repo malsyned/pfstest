@@ -72,7 +72,6 @@
     <ClCompile Include="src\pfstest-arg-handler.c" />
     <ClCompile Include="src\pfstest-arg-handlers.c" />
     <ClCompile Include="src\pfstest-assert.c" />
-    <ClCompile Include="src\pfstest-basename.c" />
     <ClCompile Include="src\pfstest-cli.c" />
     <ClCompile Include="src\pfstest-core.c" />
     <ClCompile Include="src\pfstest-equality.c" />

@@ -34,9 +34,6 @@ typedef unsigned long uintmax_t;
 # define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 # define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
 # define pfstest_strcat_nv strcatpgm2ram
-/* mcc18's string.h leaves the const qualifier off of strchrpgm's
- * return type */
-# define pfstest_strchr_nv(nv, c) ((const pfstest_nv char *)strchrpgm(nv, c))
 # define PFSTEST_NORETURN
 
 int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2);

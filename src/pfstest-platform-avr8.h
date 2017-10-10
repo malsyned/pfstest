@@ -17,8 +17,6 @@ int pfstest_strcmp_nv(const char *s1, const pfstest_nv_ptr char *s2);
 int pfstest_strcmp_nvnv(const pfstest_nv_ptr char *s1,
                         const pfstest_nv_ptr char *s2);
 char *pfstest_strcat_nv(char *dest, const pfstest_nv_ptr char *src);
-const pfstest_nv_ptr char *pfstest_strchr_nv(const pfstest_nv_ptr char *s,
-                                             int c);
 
 #else /* !defined(__FLASH) */
 
@@ -43,7 +41,6 @@ const pfstest_nv_ptr char *pfstest_strchr_nv(const pfstest_nv_ptr char *s,
 
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
-# define pfstest_strchr_nv(nv, c) strchr_P(nv, c)
 int pfstest_strcmp_nvnv(const char *s1, const char *s2);
 
 #endif /* !defined(__FLASH) */

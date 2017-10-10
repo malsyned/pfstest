@@ -46,16 +46,6 @@ char *pfstest_strcat_nv(char *dest, const pfstest_nv_ptr char *src)
     return dest;
 }
 
-const pfstest_nv_ptr char *pfstest_strchr_nv(const pfstest_nv_ptr char *s,
-                                             int c)
-{
-    while (*s != (char)c) {
-        if (!*s++)
-            return NULL;
-    }
-    return s;
-}
-
 #else /* !defined(__FLASH) */
 
 int pfstest_strcmp_nvnv(const char *s1, const char *s2)
