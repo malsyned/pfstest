@@ -16,7 +16,7 @@ WARN = -Wall -Wextra -Werror -Wwrite-strings \
        -pedantic -pedantic-errors
 
 AUTOMOCK_CPPFLAGS = $(GCC_AUTOMOCK_CPPFLAGS)
-AUTOMOCK_ARGS = $(GCC_AUTOMOCK_FLAGS)
+AUTOMOCK_FLAGS = $(GCC_AUTOMOCK_FLAGS)
 
 EXEC_PATTERN = %-runner
 BUILDPREFIX = build/
