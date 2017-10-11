@@ -15,6 +15,21 @@ target-class-param-name = $(call target-class,$1)_$2
 # $(call target-class-param,target,param)
 target-class-param = $($(call target-class-param-name,$1,$2))
 
+targets-in-default-class = $(foreach target,$(TARGETS),\
+                             $(if $(call target-class,$(target)),\
+                                  , \
+                                  $(target)))
+
+# $(call targets-in-defined-class,class)
+targets-in-defined-class = \
+    $(foreach target,$(TARGETS),\
+              $(if $(filter $1,$(call target-class,$(target))),$(target)))
+
+# $(call targets-in-class,class)
+# supports empty class name
+targets-in-class = $(if $1,$(call targets-in-defined-class,$1),\
+                           $(targets-in-default-class))
+
 # $(call target-buildprefix,target)
 target-buildprefix = $(or $(call target-class-param,$1,BUILDPREFIX), \
                           $(BUILDPREFIX))
@@ -69,6 +84,9 @@ target-automock-flags = $(call target-class-param,$1,AUTOMOCK_FLAGS)
 # $(call target-src,target)
 target-src = $(call target-param,$1,SRC) $(call target-mock-src,$1) $(SRC)
 
+# #(call targets-src,targets...)
+targets-src = $(foreach target,$1,$(call target-src,$(target)))
+
 # $(call target-output,target,file...,extension)
 target-output = $(addprefix $(call target-buildprefix,$1), \
                               $(patsubst %.c,%$3,$2))
@@ -89,7 +107,10 @@ target-i = $(call targets-files,$1,.i)
 target-d = $(call targets-files,$1,.d)
 
 # $(call target-includes,target)
-target-includes = $(addprefix -I, $(sort $(dir $(call target-src,$1))))
+# Actually the includes for all targets in the class, so that objects
+# in the class are built the same way regardless of the rerequesite
+# they are built to satisfy
+target-includes = $(addprefix -I,$(sort $(dir $(call targets-src,$(call targets-in-class,$(call target-class,$1))))))
 
 # $(call target-exec-name,target)
 target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
