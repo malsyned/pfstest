@@ -1,3 +1,5 @@
+this-makefile := $(lastword $(MAKEFILE_LIST))
+
 # $(call target-param-name,target,param)
 target-param-name = $1_$2
 
@@ -95,14 +97,13 @@ target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
 # $(call targets-exec-names,target...)
 targets-exec-names = $(foreach target,$1,$(call target-exec-name,$(target)))
 
-AUTOMOCK ?= $(dir $(lastword $(MAKEFILE_LIST)))../automock/automock.py
+AUTOMOCK ?= $(dir $(this-makefile))../automock/automock.py
 
 .PHONY: targets
 targets: $(call targets-exec-names,$(TARGETS))
 
 # $(eval $(call target-template,$(target)))
 define target-template
-
     $(call target-exec-name,$1): $$(call target-obj,$1)
 	$$(call target-cc,$1) $$(LDFLAGS) $$(call target-ldflags,$1) $$^ \
 	    $$(LDLIBS) $$(call target-ldlibs,$1) -o $$@
