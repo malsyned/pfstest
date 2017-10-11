@@ -133,24 +133,31 @@ define target-template
     $$(call target-buildprefix,$1)%.o: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
 	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) \
-	    $$(call target-includes,$1) $$(CPPFLAGS) $(call target-cppflags,$1) -c -o $$@ $$<
+	    $$(call target-includes,$1) $$(CPPFLAGS) \
+	    $$(call target-cppflags,$1) -c -o $$@ $$<
 
     $$(call target-buildprefix,$1)%.i: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
-	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
-	    -E -o $$@ $$<
+	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) \
+	    $$(call target-includes,$1) $$(CPPFLAGS) \
+	    $$(call target-cppflags,$1) -E -o $$@ $$<
 
     $$(call target-buildprefix,$1)%.d: %.c $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
-	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
-	    -MM -MP -MT "$$(@) $$(@:%d=%o) $$(@:%d=%i)" -o $$@ $$<
+	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) \
+	    $$(call target-includes,$1) $$(CPPFLAGS) \
+	    $$(call target-cppflags,$1) -MM -MP \
+	    -MT "$$(@) $$(@:%d=%o) $$(@:%d=%i)" -o $$@ $$<
 
     $$(call target-buildprefix,$1)%$$(mock-suffix).c \
     $$(call target-buildprefix,$1)%$$(mock-suffix).h : %.h $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
-	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
-	  $$(AUTOMOCK_CPPFLAGS) $$(call target-automock-cppflags,$1) -E -o - $$< \
-	  | $$(AUTOMOCK) $$(AUTOMOCK_FLAGS) $$(call target-automock-flags,$1) $$< $$(basename $$@)
+	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) \
+	    $$(call target-includes,$1) $$(CPPFLAGS) \
+	    $$(call target-cppflags,$1) $$(AUTOMOCK_CPPFLAGS) \
+	    $$(call target-automock-cppflags,$1) -E -o - $$< \
+	    | $$(AUTOMOCK) $$(AUTOMOCK_FLAGS) \
+	      $$(call target-automock-flags,$1) $$< $$(basename $$@)
 
 endef
 
