@@ -15,8 +15,8 @@ WARN = -Wall -Wextra -Werror -Wwrite-strings \
        -Wvariadic-macros -Wunsuffixed-float-constants \
        -pedantic -pedantic-errors
 
-MOCK_CPPFLAGS = $(GCC_MOCK_CPPFLAGS)
-AUTOMOCK_ARGS = $(GCC_AUTOMOCK_ARGS)
+AUTOMOCK_CPPFLAGS = $(GCC_AUTOMOCK_CPPFLAGS)
+AUTOMOCK_ARGS = $(GCC_AUTOMOCK_FLAGS)
 
 EXEC_PATTERN = %-runner
 BUILDPREFIX = build/

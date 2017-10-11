@@ -58,6 +58,12 @@ target-ldflags = $(call target-class-param,$1,LDFLAGS)
 # $(call target-ldlibs,target)
 target-ldlibs = $(call target-class-param,$1,LDLIBS)
 
+# $(call target-automock-cppflags,target)
+target-automock-cppflags = $(call target-class-param,$1,AUTOMOCK_CPPFLAGS)
+
+# $(call target-automock-flags,target)
+target-automock-flags = $(call target-class-param,$1,AUTOMOCK_FLAGS)
+
 # $(call target-src,target)
 target-src = $(call target-param,$1,SRC) $(call target-mock-src,$1) $(SRC)
 
@@ -116,14 +122,12 @@ define target-template
 	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
 	    -MM -MP -MT "$$(@) $$(@:%d=%o) $$(@:%d=%i)" -o $$@ $$<
 
-    #TODO: per-target MOCK_CPPFLAGS
-    #TODO: per-target AUTOMOCK_ARGS
     $$(call target-buildprefix,$1)%$$(mock-suffix).c \
-    $$(call target-buildprefix,$1)%$$(mock-suffix).c : %.h $$(MAKEFILE_LIST)
+    $$(call target-buildprefix,$1)%$$(mock-suffix).h : %.h $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
 	$$(call target-cc,$1) $$(CFLAGS) $$(call target-cflags,$1) $$(call target-includes,$1) $$(CPPFLAGS) $$(call target-cppflags,$1) \
-	  $$(MOCK_CPPFLAGS) -E -o - $$< \
-	  | $(AUTOMOCK) $(AUTOMOCK_ARGS) $$< $$(basename $$@)
+	  $$(AUTOMOCK_CPPFLAGS) $$(call target-automock-cppflags,$1) -E -o - $$< \
+	  | $$(AUTOMOCK) $$(AUTOMOCK_FLAGS) $$(call target-automock-flags,$1) $$< $$(basename $$@)
 
 endef
 
