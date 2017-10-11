@@ -105,7 +105,7 @@ targets: $(call targets-exec-names,$(TARGETS))
 # $(eval $(call target-template,$(target)))
 define target-template
 
-    $(call target-exec-name,$1): $$(call target-obj,$1)
+    $$(call target-exec-name,$1): $$(call target-obj,$1)
 	$$(call target-cc,$1) $$(LDFLAGS) $$(call target-ldflags,$1) $$^ \
 	    $$(LDLIBS) $$(call target-ldlibs,$1) -o $$@
 
