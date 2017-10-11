@@ -311,3 +311,22 @@ class MockGeneratorTests(TestCase):
         mocks = mgen.mocks
         # Then
         self.assertEqual(mocks, [])
+
+    def test_shouldSkipDuplicateFunctionDeclarations(self):
+        source = """
+            void func1(void);
+            void func1(void);
+        """
+        mgen = MockGenerator(self.mpaths, cgen,
+                             cparser.parse(source, defaulthname))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "void func1(void)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [])
+                         ])

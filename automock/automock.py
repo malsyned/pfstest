@@ -172,11 +172,12 @@ class MockGenerator:
 
     def make_mocks(self, ext):
         typedefs = {}
+        seen_names = set()
         mocks = []
+
         for extdecl in ext:
             if self.ext_is_typedef(extdecl):
-                typedef_name = self.extract_typedecl(extdecl).declname
-                typedefs[typedef_name] = extdecl.type
+                self.update_typedefs(typedefs, extdecl)
             elif self.ext_declares_function(extdecl):
                 funcdecl = extdecl.type
                 if not self.function_in_file(funcdecl,
@@ -184,11 +185,20 @@ class MockGenerator:
                     continue
                 if self.function_is_variadic(funcdecl):
                     continue
-                mocks.append(self.make_mock(typedefs, funcdecl))
+                if self.extract_funcname(funcdecl) in seen_names:
+                    continue
+
+                mock = self.make_mock(typedefs, funcdecl)
+                mocks.append(mock)
+                seen_names.add(mock.funcname)
         return mocks
 
     def ext_is_typedef(self, extdecl):
         return isinstance(extdecl, Typedef)
+
+    def update_typedefs(self, typedefs, extdecl):
+        typedef_name = self.extract_typedecl(extdecl).declname
+        typedefs[typedef_name] = extdecl.type
 
     def extract_typedecl(self, node):
         if isinstance(node, TypeDecl):
@@ -207,10 +217,13 @@ class MockGenerator:
         return any(isinstance(param, EllipsisParam)
                    for param in funcdecl.args.params)
 
+    def extract_funcname(self, funcdecl):
+        return self.extract_typedecl(funcdecl).declname
+
     def make_mock(self, typedefs, funcdecl):
         # Make a copy so I can modify it with self.set_param_names()
         funcdecl = copy.deepcopy(funcdecl)
-        funcname = self.extract_typedecl(funcdecl).declname
+        funcname = self.extract_funcname(funcdecl)
 
         returntype = funcdecl.type
         typedef = self.find_typedef(typedefs, returntype)
