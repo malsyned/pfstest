@@ -140,8 +140,8 @@ test(should_fail_on_different_enums)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
-        "Expected: the enum <e_baz>\n"
-        "Actual:   the enum <e_foo>");
+        "Expected: the enum e_baz\n"
+        "Actual:   the enum e_foo");
 
     capture_test_results(assert_different_enums);
 

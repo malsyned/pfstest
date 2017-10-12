@@ -118,9 +118,7 @@ static void the_enum_printer(pfstest_reporter_t *reporter,
     pfstest_reporter_print_nv_string(reporter,
                                      pfstest_nv_string("the enum "));
     if (in_range) {
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("<"));
         pfstest_reporter_print_nv_string(reporter, name);
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(">"));
     } else {
         pfstest_reporter_print_int(reporter, e);
     }
