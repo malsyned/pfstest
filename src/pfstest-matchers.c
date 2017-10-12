@@ -45,6 +45,16 @@ pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
                                the_uint(u));
 }
 
+/* is_the_enum */
+
+pfstest_matcher_t *pfstest_is_the_enum(int e,
+                                       const pfstest_nv_ptr char **name_map)
+{
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
+                               the_enum(e, name_map));
+}
+
 /* is_the_bool */
 
 pfstest_matcher_t *pfstest_is_the_bool(bool b)

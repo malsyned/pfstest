@@ -9,6 +9,7 @@ pfstest_value_t *pfstest_the_short(short s);
 pfstest_value_t *pfstest_the_ushort(unsigned short u);
 pfstest_value_t *pfstest_the_int(int i);
 pfstest_value_t *pfstest_the_uint(unsigned int u);
+pfstest_value_t *pfstest_the_enum(int e, const pfstest_nv_ptr char **name_map);
 pfstest_value_t *pfstest_the_bool(bool b);
 pfstest_value_t *pfstest_the_char(char c);
 pfstest_value_t *pfstest_the_string(const char *s);
@@ -28,6 +29,9 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
 #endif
 #ifndef PFSTEST_NOALIAS_the_uint
 # define the_uint pfstest_the_uint
+#endif
+#ifndef PFSTEST_NOALIAS_the_enum
+# define the_enum pfstest_the_enum
 #endif
 #ifndef PFSTEST_NOALIAS_the_char
 # define the_char pfstest_the_char

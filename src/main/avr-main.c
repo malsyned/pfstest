@@ -74,6 +74,8 @@ pfstest_plugin_define(memory_usage_plugin,
                       NULL,
                       print_memory_usage);
 
+char filter_name[] = "should_print_enum_val_out_of_range";
+
 int main(void)
 {
     pfstest_reporter_t *reporter;

@@ -18,8 +18,8 @@ static void some_value_printer(pfstest_reporter_t *reporter,
 
 static pfstest_value_t some_value[1] = {{
         some_value_printer,
+        NULL, 0,
         NULL,
-        0,
     }};
 
 static bool always_return_true(pfstest_matcher_t *matcher,

@@ -105,6 +105,72 @@ test(should_fail_on_different_uints)
                 matches_the_nv_string(expected));
 }
 
+enum some_enum {
+    e_foo,
+    e_bar,
+    e_baz
+};
+
+const pfstest_nv char e_foo_name[] = "e_foo";
+const pfstest_nv char e_bar_name[] = "e_bar";
+const pfstest_nv char e_baz_name[] = "e_baz";
+
+const pfstest_nv_ptr char *some_enum_map[] = {
+    e_foo_name,
+    e_bar_name,
+    e_baz_name,
+    NULL,
+};
+
+test(should_match_enums)
+{
+    assert_that("same enums pass",
+                the_enum(e_foo, some_enum_map),
+                is_the_enum(e_foo, some_enum_map));
+}
+
+pfstest_case(assert_different_enums)
+{
+    assert_that("",
+                the_enum(e_foo, some_enum_map),
+                is_the_enum(e_baz, some_enum_map));
+}
+
+test(should_fail_on_different_enums)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the enum <e_baz>\n"
+        "Actual:   the enum <e_foo>");
+
+    capture_test_results(assert_different_enums);
+
+    assert_that("different enums fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
+pfstest_case(assert_out_of_range_enums)
+{
+    assert_that("",
+                the_enum(-1, some_enum_map),
+                is_the_enum(3, some_enum_map));
+}
+
+test(should_print_enum_val_out_of_range)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the enum 3 [out of range]\n"
+        "Actual:   the enum -1 [out of range]");
+
+    capture_test_results(assert_out_of_range_enums);
+
+    assert_that("different enums fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 test(should_match_bools)
 {
     assert_that("same bools pass",
