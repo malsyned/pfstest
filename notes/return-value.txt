@@ -1,0 +1,6 @@
+*pfstest_main returns 1 after printing the usage
+*pfstest_start_with_args returns 0 after printing register commands
+pfstest_suite_run returns pfstest_reporter_return_value
+*pfstest-reporters-standard.c:return_value returns results.failed
+*pfstest-reporter-xml.c:return_value returns failed_tests
+pfstest-reporter-message-spy.c:return_value returns failed (count)

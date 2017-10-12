@@ -1,0 +1,30 @@
+Here's the problem.
+
+All of the rules generated from a target are actually rules which configure the class, not the target. This is a quirk of my design that is only a problem in one particular case:
+
+If two targets are in the same class, then both of them create pattern rules with identical target patterns and prerequisite patterns, meaning that whichever one was defined first will be the one that gets executed for *all* targets in the class.
+
+The recipes, however, are not identical: they contain calls to functions with different target names in them. Mostly this isn't a problem in practice because most of the functions they call are wrappers around target-class-param, which will resolve to the same value for all members of a class. However, target-includes is not, and will resolve to different values for different targets.
+
+I need to find some way to provide different target-includes for different targets in the same class. I think that target-specific variables are the move here. The one target-generated rule that is really and truly target-specific is for the target-exec. Since this is not a pattern rule, target-specific variables will be inherited by prerequisites.
+
+Point of interest: This violated the usual promises of the class + target system, which is that all targets in a class want the same .o and want it compiled in the same way. With this fix, an object file used by more than one target in a class will be compiled with the -I flags for whichever target happens to need it first. The only way around that, I think, would be to have a mechanism that could work forward from class name to target name and use that to put -I flags for every target in the class onto every object in the class. I don't think this level of rigor is actually needed at the moment, but I wanted it written down somewhere in case this comes up later.
+
+** Update
+
+OK, well, that bit me in the ass immediately. As it happens, mocks get built often in the service of a .d file that is included directly in the Makefile and bypasses the target-exec rule and target-specific variable completely. Half-assing it isn't going to work. I need a way to work forward from a class to the targets in it.
+
+def targets-in-class(class):
+    targets-in-class = []
+    for each target in $(TARGETS):
+        if target-class(target) == class:
+	    targets-in-class.append(target)
+
+def targets-in-class(class):
+    [target for target in targets if target-class(target) == class]
+
+Oh shit, what about targets without an explicit class? I have to search for those specially.
+
+** Update
+
+Done

@@ -1,0 +1,94 @@
+C89:
+
+*char
+signed char
+unsigned char
+*int
+*unsigned int
+*short
+*unsigned short
+*long
+*unsigned long
+
+float
+double
+long double
+
+size_t?
+ptrdiff_t?
+
+C99:
+
+bool
+long long
+unsigned long long
+complex?
+intN_t, uintN_t
+intptr_t, uintptr_t
+intmax_t uintmax_t
+
+
+arrays of each of these
+
+
+ctypes-based matchers?
+
+
+Unity matchers:
+
+equal ints, various sizes
+equal uints, various sizes
+equal uints with hex printing, various sizes
+not equal
+whether certain bits are set, clear, or equal a mask in another int
+greater than, various integer sizes, signednesses, and hexnesses
+less than, various integer sizes, signednesses, and hexnesses
+within, various integer sizes, signednesses, and hexnesses
+equal pointers
+equal strings
+equal snstrings
+equal memory
+equal int arrays, various sizes, signednesses, and hexnesses
+equal pointer arrays
+equal string arrays
+equal memory arrays
+arrays where all elements match an int of various sizes, signednesses, and hexnesses
+arrays where all elements match a pointer
+arrays where all elements match a string
+arrays where all elements match a memory buffer
+
+within, floats (printing should include +/- inf, NaN)
+array of floats within
+
+within, doubles
+array of doubles within
+
+Hamcrest matchers:
+
+array containing an element
+array containing certain elements in order
+object whose value is in an array (thing that an any() combinator can do this)
+allOf()
+anyOf()
+Attach a different message string
+every item in an array matches one matcher
+is anything
+is equal (this is the is_the_<basic type> suite)
+is null (is_the_pointer(NULL) -- but maybe a convenience wrapper?)
+stringContains
+stringEndsWith
+stringStartsWith
+substring
+isCloseTo
+isNaN
+comparesEqualTo
+greaterThan
+greaterThanOrEqualTo
+lsssThan
+lessThanOrEqualTo
+isBlankString (only whitespace)
+isEmptyString ("") -- these two also match NULL
+isEqualIgnoringCase
+isEqualIgnoringWhitespace
+matchesPattern (regex)
+stringContainsInOrder

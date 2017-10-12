@@ -1,0 +1,11 @@
+Plan:
+
+Create a special section name that matches *(.progmem*) and won't collide with filenames if possible.
+
+Use attributes to arrange for function pointers to be stored in that section.
+
+Find some way to get the start and end addresses of that section into symbols.
+Point of interest: putting a linker script on the command line mixed in with object names causes it to augment the existing linker script. Perhaps this is how to get the symbols I want defined?
+
+
+Loop from the start to the end, calling those functions.
