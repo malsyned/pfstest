@@ -229,18 +229,15 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
         reporter, pfstest_nv_string(" }"));
 }
 
-static bool int_members_match_test(pfstest_matcher_t *matcher,
-                                   pfstest_value_t *actual_value)
+static bool submatchers_match_value_array(pfstest_list_t *submatchers,
+                                          pfstest_value_t **values)
 {
-    pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
-    const int *actual = pfstest_value_data(actual_value);
-    size_t i = 0;
     pfstest_list_node_t *submatcher_node;
 
     pfstest_list_iter (submatcher_node, submatchers) {
         struct submatcher *submatcher = (struct submatcher *)submatcher_node;
 
-        pfstest_value_t *member_value = the_int(actual[i++]);
+        pfstest_value_t *member_value = *values++;
         pfstest_matcher_t *member_matcher = submatcher->matcher;
 
         bool match = pfstest_matcher_matches(member_matcher, member_value);
@@ -248,6 +245,31 @@ static bool int_members_match_test(pfstest_matcher_t *matcher,
             return false;
     }
     return true;
+}
+
+static pfstest_value_t **box_int_members(pfstest_value_t *actual_value)
+{
+    size_t actual_count = pfstest_value_size(actual_value) / sizeof(int);
+    const int *actual = pfstest_value_data(actual_value);
+    pfstest_value_t **actual_values =
+        pfstest_alloc(sizeof(*actual_values) * actual_count);
+    size_t i;
+
+    for (i = 0; i < actual_count; i++) {
+        actual_values[i] = the_int(actual[i]);
+    }
+
+    return actual_values;
+}
+
+static bool int_members_match_test(pfstest_matcher_t *matcher,
+                                   pfstest_value_t *actual_value)
+{
+    pfstest_list_t *submembers = pfstest_matcher_data(matcher);
+    pfstest_value_t **boxed_values = box_int_members(actual_value);
+
+    return submatchers_match_value_array(submembers,
+                                         boxed_values);
 }
 
 static pfstest_list_t *package_all_matcher_args(
