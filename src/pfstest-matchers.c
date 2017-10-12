@@ -45,6 +45,22 @@ pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
                                the_uint(u));
 }
 
+/* is_the_long */
+pfstest_matcher_t *pfstest_is_the_long(long l)
+{
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
+                               the_long(l));
+}
+
+/* is_the_ulong */
+pfstest_matcher_t *pfstest_is_the_ulong(unsigned long u)
+{
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
+                               the_ulong(u));
+}
+
 /* is_the_enum */
 
 pfstest_matcher_t *pfstest_is_the_enum(

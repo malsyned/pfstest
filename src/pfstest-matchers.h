@@ -9,6 +9,8 @@ pfstest_matcher_t *pfstest_is_the_short(short s);
 pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s);
 pfstest_matcher_t *pfstest_is_the_int(int i);
 pfstest_matcher_t *pfstest_is_the_uint(unsigned int u);
+pfstest_matcher_t *pfstest_is_the_long(long l);
+pfstest_matcher_t *pfstest_is_the_ulong(unsigned long u);
 pfstest_matcher_t *pfstest_is_the_enum(
     int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map);
 pfstest_matcher_t *pfstest_is_the_char(char c);
@@ -35,6 +37,12 @@ pfstest_matcher_t *_pfstest_is_anything(void);
 #endif
 #ifndef PFSTEST_NOALIAS_is_the_uint
 # define is_the_uint pfstest_is_the_uint
+#endif
+#ifndef PFSTEST_NOALIAS_is_the_long
+# define is_the_long pfstest_is_the_long
+#endif
+#ifndef PFSTEST_NOALIAS_is_the_ulong
+# define is_the_ulong pfstest_is_the_ulong
 #endif
 #ifndef PFSTEST_NOALIAS_is_the_enum
 # define is_the_enum pfstest_is_the_enum

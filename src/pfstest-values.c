@@ -87,6 +87,42 @@ pfstest_value_t *pfstest_the_uint(unsigned int u)
     return pfstest_value_new(the_uint_printer, data, sizeof(u));
 }
 
+/* the_long */
+
+static void the_long_printer(pfstest_reporter_t *reporter,
+                             pfstest_value_t *value)
+{
+    long l = *(const long *)pfstest_value_data(value);
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the long "));
+    pfstest_reporter_print_int(reporter, (intmax_t)l);
+}
+
+pfstest_value_t *pfstest_the_long(long l)
+{
+    long *data = pfstest_alloc(sizeof(l));
+    *data = l;
+    return pfstest_value_new(the_long_printer, data, sizeof(l));
+}
+
+/* the_ulong */
+
+static void the_ulong_printer(pfstest_reporter_t *reporter,
+                              pfstest_value_t *value)
+{
+    unsigned long u = *(const unsigned long *)pfstest_value_data(value);
+    pfstest_reporter_print_nv_string(
+        reporter, pfstest_nv_string("the ulong "));
+    pfstest_reporter_print_uint(reporter, (uintmax_t)u, 10, 0);
+}
+
+pfstest_value_t *pfstest_the_ulong(unsigned long u)
+{
+    unsigned long *data = pfstest_alloc(sizeof(u));
+    *data = u;
+    return pfstest_value_new(the_ulong_printer, data, sizeof(data));
+}
+
 /* the_enum */
 
 struct enum_aux

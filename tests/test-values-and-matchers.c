@@ -105,6 +105,56 @@ test(should_fail_on_different_uints)
                 matches_the_nv_string(expected));
 }
 
+test(should_match_longs)
+{
+    assert_that("same longs pass",
+                the_long(2147483647l), is_the_long(2147483647l));
+}
+
+pfstest_case(assert_different_longs)
+{
+    assert_that("", the_long(2147483647l), is_the_long(-2147483648l));
+}
+
+test(should_fail_on_different_longs)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the long -2147483648\n"
+        "Actual:   the long 2147483647");
+
+    capture_test_results(assert_different_longs);
+
+    assert_that("different longs fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
+test(should_match_ulongs)
+{
+    assert_that("same ulongs pass",
+                the_ulong(4294967295l), is_the_ulong(4294967295l));
+}
+
+pfstest_case(assert_different_ulongs)
+{
+    assert_that("", the_ulong(4294967295l), is_the_ulong(4294967294l));
+}
+
+test(should_fail_on_different_ulongs)
+{
+    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        "Failed assertion\n"
+        "Expected: the ulong 4294967294\n"
+        "Actual:   the ulong 4294967295");
+
+    capture_test_results(assert_different_ulongs);
+
+    assert_that("different ulongs fail",
+                the_string(captured_output),
+                matches_the_nv_string(expected));
+}
+
 enum some_enum {
     e_foo,
     e_bar,
