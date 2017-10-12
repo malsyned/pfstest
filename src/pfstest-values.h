@@ -9,7 +9,8 @@ pfstest_value_t *pfstest_the_short(short s);
 pfstest_value_t *pfstest_the_ushort(unsigned short u);
 pfstest_value_t *pfstest_the_int(int i);
 pfstest_value_t *pfstest_the_uint(unsigned int u);
-pfstest_value_t *pfstest_the_enum(int e, const pfstest_nv_ptr char **name_map);
+pfstest_value_t *pfstest_the_enum(
+    int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map);
 pfstest_value_t *pfstest_the_bool(bool b);
 pfstest_value_t *pfstest_the_char(char c);
 pfstest_value_t *pfstest_the_string(const char *s);

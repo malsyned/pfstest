@@ -89,25 +89,37 @@ pfstest_value_t *pfstest_the_uint(unsigned int u)
 
 /* the_enum */
 
+struct enum_aux
+{
+    const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map;
+};
+
 static void the_enum_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
     int e = *(const int *)pfstest_value_data(value);
-    const pfstest_nv_ptr char **name_map = pfstest_value_aux(value);
-    const pfstest_nv_ptr char **name;
+    struct enum_aux *aux = pfstest_value_aux(value);
+    const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map = aux->name_map;
+    const pfstest_nv_ptr char *const pfstest_nv_ptr *name_p;
+    const pfstest_nv_ptr char *name;
     int count = 0;
     bool in_range = false;
 
-    for (count = 0, name = name_map; *name != NULL; count++, name++)
-    { }
-
-    in_range = (e >= 0 && e < count);
+    for (count = 0, name_p = name_map;
+         pfstest_memcpy_nv(&name, name_p, sizeof(name)), name != NULL;
+         count++, name_p++)
+    {
+        if (count == e) {
+            in_range = true;
+            break;
+        }
+    }
 
     pfstest_reporter_print_nv_string(reporter,
                                      pfstest_nv_string("the enum "));
     if (in_range) {
         pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("<"));
-        pfstest_reporter_print_nv_string(reporter, name_map[e]);
+        pfstest_reporter_print_nv_string(reporter, name);
         pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(">"));
     } else {
         pfstest_reporter_print_int(reporter, e);
@@ -119,13 +131,15 @@ static void the_enum_printer(pfstest_reporter_t *reporter,
     }
 }
 
-pfstest_value_t *pfstest_the_enum(int e, const pfstest_nv_ptr char **name_map)
+pfstest_value_t *pfstest_the_enum(
+    int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map)
 {
     int *data = pfstest_alloc(sizeof(e));
+    struct enum_aux *aux = pfstest_alloc(sizeof(*aux));
     *data = e;
+    aux->name_map = name_map;
 
-    return pfstest_value_new_with_aux(the_enum_printer,
-                                      data, sizeof(e), name_map);
+    return pfstest_value_new_with_aux(the_enum_printer, data, sizeof(e), aux);
 }
 
 /* the_bool */

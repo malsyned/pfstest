@@ -115,7 +115,7 @@ const pfstest_nv char e_foo_name[] = "e_foo";
 const pfstest_nv char e_bar_name[] = "e_bar";
 const pfstest_nv char e_baz_name[] = "e_baz";
 
-const pfstest_nv_ptr char *some_enum_map[] = {
+const pfstest_nv_ptr char *const pfstest_nv some_enum_map[] = {
     e_foo_name,
     e_bar_name,
     e_baz_name,

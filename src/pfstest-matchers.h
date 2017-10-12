@@ -9,8 +9,8 @@ pfstest_matcher_t *pfstest_is_the_short(short s);
 pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s);
 pfstest_matcher_t *pfstest_is_the_int(int i);
 pfstest_matcher_t *pfstest_is_the_uint(unsigned int u);
-pfstest_matcher_t *pfstest_is_the_enum(int e,
-                                       const pfstest_nv_ptr char **name_map);
+pfstest_matcher_t *pfstest_is_the_enum(
+    int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map);
 pfstest_matcher_t *pfstest_is_the_char(char c);
 pfstest_matcher_t *pfstest_is_the_bool(bool b);
 pfstest_matcher_t *pfstest_is_the_string(const char *s);
