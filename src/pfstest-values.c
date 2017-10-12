@@ -12,19 +12,19 @@
 static void the_short_printer(pfstest_reporter_t *reporter,
                               pfstest_value_t *value)
 {
-    short s = *(const short *)pfstest_value_data(value);
+    short n = *(const short *)pfstest_value_data(value);
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the short "));
-    pfstest_reporter_print_int(reporter, (intmax_t)s);
+    pfstest_reporter_print_int(reporter, (intmax_t)n);
 }
 
-pfstest_value_t *pfstest_the_short(short s)
+pfstest_value_t *pfstest_the_short(short n)
 {
-    short *data = pfstest_alloc(sizeof(s));
-    *data = s;
+    short *data = pfstest_alloc(sizeof(n));
+    *data = n;
 
-    return pfstest_value_new(the_short_printer, data, sizeof(s));
+    return pfstest_value_new(the_short_printer, data, sizeof(n));
 }
 
 /* the_ushort */
@@ -32,19 +32,19 @@ pfstest_value_t *pfstest_the_short(short s)
 static void the_ushort_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
-    unsigned short u = *(const unsigned short *)pfstest_value_data(value);
+    unsigned short n = *(const unsigned short *)pfstest_value_data(value);
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the ushort "));
-    pfstest_reporter_print_uint(reporter, (uintmax_t)u, 10, 0);
+    pfstest_reporter_print_uint(reporter, (uintmax_t)n, 10, 0);
 }
 
-pfstest_value_t *pfstest_the_ushort(unsigned short u)
+pfstest_value_t *pfstest_the_ushort(unsigned short n)
 {
-    unsigned short *data = pfstest_alloc(sizeof(u));
-    *data = u;
+    unsigned short *data = pfstest_alloc(sizeof(n));
+    *data = n;
 
-    return pfstest_value_new(the_ushort_printer, data, sizeof(u));
+    return pfstest_value_new(the_ushort_printer, data, sizeof(n));
 }
 
 /* the_int */
@@ -52,19 +52,19 @@ pfstest_value_t *pfstest_the_ushort(unsigned short u)
 static void the_int_printer(pfstest_reporter_t *reporter,
                             pfstest_value_t *value)
 {
-    int i = *(const int *)pfstest_value_data(value);
+    int n = *(const int *)pfstest_value_data(value);
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the int "));
-    pfstest_reporter_print_int(reporter, (intmax_t)i);
+    pfstest_reporter_print_int(reporter, (intmax_t)n);
 }
 
-pfstest_value_t *pfstest_the_int(int i)
+pfstest_value_t *pfstest_the_int(int n)
 {
-    int *data = pfstest_alloc(sizeof(i));
-    *data = i;
+    int *data = pfstest_alloc(sizeof(n));
+    *data = n;
     
-    return pfstest_value_new(the_int_printer, data, sizeof(i));
+    return pfstest_value_new(the_int_printer, data, sizeof(n));
 }
 
 /* the_uint */
@@ -72,19 +72,19 @@ pfstest_value_t *pfstest_the_int(int i)
 static void the_uint_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
-    unsigned int u = *(const unsigned int *)pfstest_value_data(value);
+    unsigned int n = *(const unsigned int *)pfstest_value_data(value);
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the uint "));
-    pfstest_reporter_print_uint(reporter, (uintmax_t)u, 10, 0);
+    pfstest_reporter_print_uint(reporter, (uintmax_t)n, 10, 0);
 }
 
-pfstest_value_t *pfstest_the_uint(unsigned int u)
+pfstest_value_t *pfstest_the_uint(unsigned int n)
 {
-    unsigned int *data = pfstest_alloc(sizeof(u));
-    *data = u;
+    unsigned int *data = pfstest_alloc(sizeof(n));
+    *data = n;
 
-    return pfstest_value_new(the_uint_printer, data, sizeof(u));
+    return pfstest_value_new(the_uint_printer, data, sizeof(n));
 }
 
 /* the_long */
@@ -92,17 +92,17 @@ pfstest_value_t *pfstest_the_uint(unsigned int u)
 static void the_long_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
-    long l = *(const long *)pfstest_value_data(value);
+    long n = *(const long *)pfstest_value_data(value);
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the long "));
-    pfstest_reporter_print_int(reporter, (intmax_t)l);
+    pfstest_reporter_print_int(reporter, (intmax_t)n);
 }
 
-pfstest_value_t *pfstest_the_long(long l)
+pfstest_value_t *pfstest_the_long(long n)
 {
-    long *data = pfstest_alloc(sizeof(l));
-    *data = l;
-    return pfstest_value_new(the_long_printer, data, sizeof(l));
+    long *data = pfstest_alloc(sizeof(n));
+    *data = n;
+    return pfstest_value_new(the_long_printer, data, sizeof(n));
 }
 
 /* the_ulong */
@@ -110,17 +110,17 @@ pfstest_value_t *pfstest_the_long(long l)
 static void the_ulong_printer(pfstest_reporter_t *reporter,
                               pfstest_value_t *value)
 {
-    unsigned long u = *(const unsigned long *)pfstest_value_data(value);
+    unsigned long n = *(const unsigned long *)pfstest_value_data(value);
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the ulong "));
-    pfstest_reporter_print_uint(reporter, (uintmax_t)u, 10, 0);
+    pfstest_reporter_print_uint(reporter, (uintmax_t)n, 10, 0);
 }
 
-pfstest_value_t *pfstest_the_ulong(unsigned long u)
+pfstest_value_t *pfstest_the_ulong(unsigned long n)
 {
-    unsigned long *data = pfstest_alloc(sizeof(u));
-    *data = u;
-    return pfstest_value_new(the_ulong_printer, data, sizeof(data));
+    unsigned long *data = pfstest_alloc(sizeof(n));
+    *data = n;
+    return pfstest_value_new(the_ulong_printer, data, sizeof(n));
 }
 
 /* the_enum */

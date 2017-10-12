@@ -11,54 +11,54 @@
 
 /* is_the_short */
 
-pfstest_matcher_t *pfstest_is_the_short(short s)
+pfstest_matcher_t *pfstest_is_the_short(short n)
 {
     return pfstest_matcher_new(pfstest_equality_printer,
                                pfstest_equality_test,
-                               the_short(s));
+                               the_short(n));
 }
 
 /* is_the_ushort */
 
-pfstest_matcher_t *pfstest_is_the_ushort(unsigned short s)
+pfstest_matcher_t *pfstest_is_the_ushort(unsigned short n)
 {
     return pfstest_matcher_new(pfstest_equality_printer,
                                pfstest_equality_test,
-                               the_ushort(s));
+                               the_ushort(n));
 }
 
 /* is_the_int */
 
-pfstest_matcher_t *pfstest_is_the_int(int i)
+pfstest_matcher_t *pfstest_is_the_int(int n)
 {
     return pfstest_matcher_new(pfstest_equality_printer,
                                pfstest_equality_test,
-                               the_int(i));
+                               the_int(n));
 }
 
 /* is_the_uint */
 
-pfstest_matcher_t *pfstest_is_the_uint(unsigned int u)
+pfstest_matcher_t *pfstest_is_the_uint(unsigned int n)
 {
     return pfstest_matcher_new(pfstest_equality_printer,
                                pfstest_equality_test,
-                               the_uint(u));
+                               the_uint(n));
 }
 
 /* is_the_long */
-pfstest_matcher_t *pfstest_is_the_long(long l)
+pfstest_matcher_t *pfstest_is_the_long(long n)
 {
     return pfstest_matcher_new(pfstest_equality_printer,
                                pfstest_equality_test,
-                               the_long(l));
+                               the_long(n));
 }
 
 /* is_the_ulong */
-pfstest_matcher_t *pfstest_is_the_ulong(unsigned long u)
+pfstest_matcher_t *pfstest_is_the_ulong(unsigned long n)
 {
     return pfstest_matcher_new(pfstest_equality_printer,
                                pfstest_equality_test,
-                               the_ulong(u));
+                               the_ulong(n));
 }
 
 /* is_the_enum */
