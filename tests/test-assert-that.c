@@ -1,8 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define __PFSTEST_FILE__ "tests/test-assert-that.c"
+
 #include "pfstest.h"
 #include "capture-output.h"
+
+static pfstest_reporter_t *standard_reporter;
 
 static void some_value_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
@@ -57,6 +61,8 @@ static pfstest_matcher_t matches_nothing[1] = {{
 before_tests(set_up_assert_that)
 {
     capture_output_init();
+    standard_reporter = pfstest_reporter_standard_new(
+        capture_output_char, pfstest_report_colorizer_null);
 }
 
 test(should_pass_assertion)
@@ -81,11 +87,13 @@ test(should_fail_on_false_assertion)
 test(should_print_explanation_on_failed_assertion)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
-        "Failed assertion: always fails\n"
-        "Expected: nothing (guaranteed to fail)\n"
-        "Actual:   some value");
+        "tests/test-assert-that.c:assert_always_fail FAIL\n"
+        "    Location: tests/test-assert-that.c:75\n"
+        "    Failed assertion: always fails\n"
+        "    Expected: nothing (guaranteed to fail)\n"
+        "    Actual:   some value\n");
 
-    capture_test_results(assert_always_fail);
+    pfstest_run(assert_always_fail, NULL, NULL, NULL, standard_reporter);
 
     assert_that("Failing assertions should print an explanatory message",
                 the_string(captured_output),
