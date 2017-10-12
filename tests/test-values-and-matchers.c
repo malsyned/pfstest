@@ -10,20 +10,20 @@ before_tests(set_up_values_and_matchers)
 
 test(should_match_shorts)
 {
-    assert_that("same shorts pass", the_short(5), is_the_short(5));
+    assert_that("same shorts pass", the_short(32767), is_the_short(32767));
 }
 
 pfstest_case(assert_different_shorts)
 {
-    assert_that("", the_short(5), is_the_short(6));
+    assert_that("", the_short(32767), is_the_short(-32768));
 }
 
 test(should_fail_on_different_shorts)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
-        "Expected: the short 6\n"
-        "Actual:   the short 5");
+        "Expected: the short -32768\n"
+        "Actual:   the short 32767");
 
     capture_test_results(assert_different_shorts);
 
@@ -34,20 +34,21 @@ test(should_fail_on_different_shorts)
 
 test(should_match_ushorts)
 {
-    assert_that("same ushorts pass", the_ushort(5), is_the_ushort(5));
+    assert_that("same ushorts pass",
+                the_ushort(65535), is_the_ushort(65535));
 }
 
 pfstest_case(assert_different_ushorts)
 {
-    assert_that("", the_ushort(5), is_the_ushort(6));
+    assert_that("", the_ushort(65535), is_the_ushort(65534));
 }
 
 test(should_fail_on_different_ushorts)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
-        "Expected: the ushort 6\n"
-        "Actual:   the ushort 5");
+        "Expected: the ushort 65534\n"
+        "Actual:   the ushort 65535");
 
     capture_test_results(assert_different_ushorts);
 
@@ -58,20 +59,20 @@ test(should_fail_on_different_ushorts)
 
 test(should_match_ints)
 {
-    assert_that("same ints pass", the_int(5), is_the_int(5));
+    assert_that("same ints pass", the_int(32767), is_the_int(32767));
 }
 
 pfstest_case(assert_different_ints)
 {
-    assert_that("", the_int(-6), is_the_int(6));
+    assert_that("", the_int(-32768), is_the_int(32767));
 }
 
 test(should_fail_on_different_ints)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
-        "Expected: the int 6\n"
-        "Actual:   the int -6");
+        "Expected: the int 32767\n"
+        "Actual:   the int -32768");
 
     capture_test_results(assert_different_ints);
 
@@ -83,20 +84,20 @@ test(should_fail_on_different_ints)
 test(should_match_uints)
 {
     assert_that("same uints pass",
-                the_uint(5), is_the_uint(5));
+                the_uint(65535), is_the_uint(65535));
 }
 
 pfstest_case(assert_different_uints)
 {
-    assert_that("", the_uint(5), is_the_uint(6));
+    assert_that("", the_uint(65534), is_the_uint(65535));
 }
 
 test(should_fail_on_different_uints)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
-        "Expected: the uint 6\n"
-        "Actual:   the uint 5");
+        "Expected: the uint 65535\n"
+        "Actual:   the uint 65534");
 
     capture_test_results(assert_different_uints);
 
