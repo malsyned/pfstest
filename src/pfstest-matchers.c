@@ -9,93 +9,49 @@
 #include "pfstest-alloc.h"
 #include "pfstest-list.h"
 
-/* is_the_short */
+static pfstest_matcher_t *memcmp_matcher(pfstest_value_t *expected)
+{
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
+                               expected);
+}
+
+/* is_the_[primitive] */
 
 pfstest_matcher_t *pfstest_is_the_short(short n)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_short(n));
-}
-
-/* is_the_ushort */
+{ return memcmp_matcher(the_short(n)); }
 
 pfstest_matcher_t *pfstest_is_the_ushort(unsigned short n)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_ushort(n));
-}
-
-/* is_the_int */
+{ return memcmp_matcher(the_ushort(n)); }
 
 pfstest_matcher_t *pfstest_is_the_int(int n)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_int(n));
-}
-
-/* is_the_uint */
+{ return memcmp_matcher(the_int(n)); }
 
 pfstest_matcher_t *pfstest_is_the_uint(unsigned int n)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_uint(n));
-}
+{ return memcmp_matcher(the_uint(n)); }
 
-/* is_the_long */
 pfstest_matcher_t *pfstest_is_the_long(long n)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_long(n));
-}
+{ return memcmp_matcher(the_long(n)); }
 
-/* is_the_ulong */
 pfstest_matcher_t *pfstest_is_the_ulong(unsigned long n)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_ulong(n));
-}
+{ return memcmp_matcher(the_ulong(n)); }
 
-/* is_the_enum */
+pfstest_matcher_t *pfstest_is_the_bool(bool b)
+{ return memcmp_matcher(the_bool(b)); }
+
+pfstest_matcher_t *pfstest_is_the_char(char c)
+{ return memcmp_matcher(the_char(c)); }
+
+pfstest_matcher_t *pfstest_is_the_string(const char *s)
+{ return memcmp_matcher(the_string(s)); }
+
+pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size)
+{ return memcmp_matcher(the_memory(m, size)); }
 
 pfstest_matcher_t *pfstest_is_the_enum(
     int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map)
 {
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_enum(e, name_map));
-}
-
-/* is_the_bool */
-
-pfstest_matcher_t *pfstest_is_the_bool(bool b)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_bool(b));
-}
-
-/* is_the_char */
-
-pfstest_matcher_t *pfstest_is_the_char(char c)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_char(c));
-}
-
-/* is_the_string */
-
-pfstest_matcher_t *pfstest_is_the_string(const char *s)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_string(s));
+    return memcmp_matcher(the_enum(e, name_map));
 }
 
 /* is_the_pointer */
@@ -116,15 +72,6 @@ pfstest_matcher_t *pfstest_is_the_pointer(const void *p)
     return pfstest_matcher_new(pfstest_equality_printer,
                                is_the_pointer_test,
                                the_pointer(p));
-}
-
-/* is_the_memory */
-
-pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size)
-{
-    return pfstest_matcher_new(pfstest_equality_printer,
-                               pfstest_equality_test,
-                               the_memory(m, size));
 }
 
 /* matches_the_nv_string */
