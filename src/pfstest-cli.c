@@ -219,8 +219,8 @@ static void registered_tests_print_register_commands(int (*print_char)(int))
 
 int pfstest_start_with_args(int (*print_char)(int), pfstest_arguments_t *args)
 {
-    pfstest_report_colorizer_t *colorizer;
     pfstest_reporter_t *reporter;
+    pfstest_report_colorizer_t *colorizer;
     int r;
 
     if (args->print_register_commands) {
