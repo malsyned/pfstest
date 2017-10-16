@@ -131,7 +131,8 @@ target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
 # $(call targets-exec-names,target...)
 targets-exec-names = $(foreach target,$1,$(call target-exec-name,$(target)))
 
-AUTOMOCK ?= $(dir $(this-makefile))../automock/automock.py
+PYTHON ?= python
+AUTOMOCK ?= $(PYTHON) $(dir $(this-makefile))../automock/automock.py
 
 .PHONY: targets
 targets: $(call targets-exec-names,$(TARGETS))
