@@ -114,7 +114,7 @@ test(should_match_longs)
 
 pfstest_case(assert_different_longs)
 {
-    assert_that("", the_long(2147483647l), is_the_long(-2147483648l));
+    assert_that("", the_long(2147483647l), is_the_long((-2147483647l - 1)));
 }
 
 test(should_fail_on_different_longs)
@@ -134,12 +134,12 @@ test(should_fail_on_different_longs)
 test(should_match_ulongs)
 {
     assert_that("same ulongs pass",
-                the_ulong(4294967295l), is_the_ulong(4294967295l));
+                the_ulong(4294967295ul), is_the_ulong(4294967295ul));
 }
 
 pfstest_case(assert_different_ulongs)
 {
-    assert_that("", the_ulong(4294967295l), is_the_ulong(4294967294l));
+    assert_that("", the_ulong(4294967295ul), is_the_ulong(4294967294ul));
 }
 
 test(should_fail_on_different_ulongs)
