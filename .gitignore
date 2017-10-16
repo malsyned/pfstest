@@ -15,6 +15,7 @@
 *.suo
 *.orig
 selftest-runner
+selftest-runner.exe
 build
 avrbuild
 mocks/*
