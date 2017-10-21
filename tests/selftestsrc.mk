@@ -1,4 +1,8 @@
-SELFTEST_SRC := $(addprefix tests/, \
+this-makefile := $(lastword $(MAKEFILE_LIST))
+
+selftest-path := $(dir $(this-makefile))
+
+SELFTEST_SRC := $(addprefix $(selftest-path), \
                   pfstest-reporter-message-spy.c \
                   capture-output.c test-core.c core-test-cases.c \
                   core-test-cases-2.c \
@@ -6,6 +10,6 @@ SELFTEST_SRC := $(addprefix tests/, \
                   test-stdint.c test-mock.c test-xml.c test-color.c \
                   test-avr.c test-shorthand.c)
 
-SELFTEST_CLI_SRC := tests/test-invocation.c
+SELFTEST_CLI_SRC := $(selftest-path)test-invocation.c
 
-SELFTEST_MOCKS :=  tests/dep.h
+SELFTEST_MOCKS :=  $(selftest-path)dep.h

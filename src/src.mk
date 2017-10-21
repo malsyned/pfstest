@@ -1,6 +1,8 @@
-# -*- Makefile -*-
+this-makefile := $(lastword $(MAKEFILE_LIST))
 
-PFSTEST_SRC := $(addprefix src/, \
+src-path := $(dir $(this-makefile))
+
+PFSTEST_SRC := $(addprefix $(src-path), \
                  pfstest-list.c pfstest-value.c \
                  pfstest-matcher.c pfstest-values.c pfstest-matchers.c \
                  pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
@@ -8,9 +10,9 @@ PFSTEST_SRC := $(addprefix src/, \
                  pfstest-reporters-standard.c pfstest-equality.c \
                  pfstest-reporter-xml.c)
 
-PFSTEST_AVR_TOOLS_SRC := src/avr/pfstest-avr-mem.c
+PFSTEST_AVR_TOOLS_SRC := $(src-path)avr/pfstest-avr-mem.c
 
-PFSTEST_CLI_SRC := src/pfstest-cli.c
+PFSTEST_CLI_SRC := $(src-path)pfstest-cli.c
 
-PFSTEST_STDINT_SRC := $(addprefix src/, \
+PFSTEST_STDINT_SRC := $(addprefix $(src-path), \
                       pfstest-stdint-values.c pfstest-stdint-matchers.c)
