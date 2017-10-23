@@ -224,10 +224,10 @@ static void teardown_plugins(pfstest_list_t *plugins)
     plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_TEARDOWN);
 }
 
-void pfstest_run(pfstest_t *the_test,
-                 pfstest_list_t *before, pfstest_list_t *after,
-                 pfstest_list_t *plugins,
-                 pfstest_reporter_t *reporter)
+static void pfstest_run(pfstest_t *the_test,
+                        pfstest_list_t *before, pfstest_list_t *after,
+                        pfstest_list_t *plugins,
+                        pfstest_reporter_t *reporter)
 {
     _pfstest_test_nv_t current_test = extract_test_descriptor(the_test);
     dynamic_env_t local_dynamic_env;

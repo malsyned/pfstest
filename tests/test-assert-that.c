@@ -5,6 +5,7 @@
 
 #include "pfstest.h"
 #include "capture-output.h"
+#include "output-definitions.h"
 
 static pfstest_reporter_t *standard_reporter;
 
@@ -87,13 +88,19 @@ test(should_fail_on_false_assertion)
 test(should_print_explanation_on_failed_assertion)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
+        HEADER
         "tests/test-assert-that.c:assert_always_fail FAIL\n"
-        "    Location: tests/test-assert-that.c:75\n"
+        "    Location: tests/test-assert-that.c:76\n"
         "    Failed assertion: always fails\n"
         "    Expected: nothing (guaranteed to fail)\n"
-        "    Actual:   some value\n");
+        "    Actual:   some value\n\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+    pfstest_list_t *suite = pfstest_alloc(sizeof(*suite));
+    pfstest_list_reset(suite);
+    pfstest_suite_register_test(suite, assert_always_fail);
 
-    pfstest_run(assert_always_fail, NULL, NULL, NULL, standard_reporter);
+    pfstest_suite_run(NULL, NULL, NULL, suite, NULL, NULL,
+                      standard_reporter);
 
     assert_that("Failing assertions should print an explanatory message",
                 the_string(captured_output),

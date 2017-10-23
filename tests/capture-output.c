@@ -35,8 +35,17 @@ void capture_test_results(pfstest_t *the_test)
     capture_test_results_with_plugins(the_test, NULL);
 }
 
+static void register_declared_test_with_suite(pfstest_list_t *suite,
+                                              pfstest_t *the_test)
+{
+    _pfstest_suite_register_test(suite, the_test);
+}
+
 void capture_test_results_with_plugins(pfstest_t *the_test,
                                        pfstest_list_t *plugins)
 {
-    pfstest_run(the_test, NULL, NULL, plugins, message_spy);
+    pfstest_list_t *suite = pfstest_alloc(sizeof(*suite));
+    pfstest_list_reset(suite);
+    register_declared_test_with_suite(suite, the_test);
+    pfstest_suite_run(NULL, NULL, plugins, suite, NULL, NULL, message_spy);
 }

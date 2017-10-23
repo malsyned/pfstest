@@ -94,10 +94,6 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       const char *filter_file,
                       const char *filter_name,
                       pfstest_reporter_t *reporter);
-void pfstest_run(pfstest_t *the_test,
-                 pfstest_list_t *before, pfstest_list_t *after,
-                 pfstest_list_t *plugins,
-                 pfstest_reporter_t *reporter);
 
 #define _pfstest_define(name, flags)            \
     _pfstest_init_define(name)                  \
