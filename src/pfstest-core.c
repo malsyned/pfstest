@@ -75,9 +75,28 @@ void _pfstest_fail_at_location(
                               (const void *)&args);
 }
 
+void _pfstest_suite_register_test(pfstest_list_t *suite,
+                                  pfstest_t *the_test)
+{
+    pfstest_list_node_init((pfstest_list_node_t *)the_test);
+    pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
+}
+
 void _pfstest_register_test(pfstest_t *the_test)
 {
     _pfstest_suite_register_test(&registered_tests, the_test);
+}
+
+pfstest_list_t *pfstest_get_registered_tests(void)
+{
+    return &registered_tests;
+}
+
+void _pfstest_hook_list_register_hook(pfstest_list_t *list,
+                                      pfstest_hook_t *hook)
+{
+    pfstest_list_node_init((pfstest_list_node_t *)hook);
+    pfstest_list_append(list, (pfstest_list_node_t *)hook);
 }
 
 void _pfstest_register_before(pfstest_hook_t *the_hook)
@@ -90,22 +109,31 @@ void _pfstest_register_after(pfstest_hook_t *the_hook)
     _pfstest_hook_list_register_hook(&registered_after_hooks, the_hook);
 }
 
-void _pfstest_suite_register_test(pfstest_list_t *suite,
-                                  pfstest_t *the_test)
+pfstest_list_t *pfstest_get_registered_before_hooks(void)
 {
-    pfstest_list_node_init((pfstest_list_node_t *)the_test);
-    pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
+    return &registered_before_hooks;
 }
 
-pfstest_list_t *pfstest_get_registered_tests(void)
+pfstest_list_t *pfstest_get_registered_after_hooks(void)
 {
-    return &registered_tests;
+    return &registered_after_hooks;
 }
 
-static void call_protected(void (*function)(void))
+void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugin_list,
+                                          pfstest_plugin_t *plugin)
 {
-    if (0 == setjmp(dynamic_env->test_jmp_buf))
-        function();
+    pfstest_list_node_init((pfstest_list_node_t *)plugin);
+    pfstest_list_append(plugin_list, (pfstest_list_node_t *)plugin);
+}
+
+void _pfstest_register_plugin(pfstest_plugin_t *plugin)
+{
+    _pfstest_plugin_list_register_plugin(&registered_plugins, plugin);
+}
+
+pfstest_list_t *pfstest_get_registered_plugins(void)
+{
+    return &registered_plugins;
 }
 
 static bool nv_strs_eq(
@@ -140,69 +168,77 @@ static bool test_matches_filter(_pfstest_test_nv_t *test_desc,
     return name_passed && file_passed;
 }
 
-static void run_before_hooks(pfstest_list_t *before,
+static void extract_hook_descriptor(pfstest_hook_t *the_hook,
+                                    _pfstest_hook_nv_t *hook_desc)
+{
+    pfstest_memcpy_nv(hook_desc, the_hook->nv_data, sizeof(*hook_desc));
+}
+
+static bool hook_in_file(_pfstest_hook_nv_t *hook_desc,
+                         const pfstest_nv_ptr char *file)
+{
+    return nv_strs_eq(file, hook_desc->file);
+}
+
+static void run_before_hooks(pfstest_list_t *hooks,
                              const pfstest_nv_ptr char *file)
 {
     pfstest_list_node_t *hook_node;
-    _pfstest_hook_nv_t current_hook;
+    _pfstest_hook_nv_t hook_desc;
 
-    if (before != NULL) {
-        pfstest_list_iter (hook_node, before) {
-            pfstest_hook_t *before_hook = (pfstest_hook_t *)hook_node;
-            pfstest_memcpy_nv(&current_hook, before_hook->nv_data,
-                              sizeof(current_hook));
+    if (hooks == NULL)
+        return;
+
+    pfstest_list_iter (hook_node, hooks) {
+        extract_hook_descriptor((pfstest_hook_t *)hook_node, &hook_desc);
         
-            if (nv_strs_eq(file, current_hook.file))
-                current_hook.function();
-        }
+        if (hook_in_file(&hook_desc, file))
+            hook_desc.function();
     }
 }
 
-static void run_after_hooks(pfstest_list_t *after,
+static void run_after_hooks(pfstest_list_t *hooks,
                             const pfstest_nv_ptr char *file)
 {
     pfstest_list_node_t *hook_node;
-    _pfstest_hook_nv_t current_hook;
+    _pfstest_hook_nv_t hook_desc;
 
-    if (after != NULL) {
-        pfstest_list_iter (hook_node, after) {
-            pfstest_hook_t *after_hook = (pfstest_hook_t *)hook_node;
-            pfstest_memcpy_nv(&current_hook, after_hook->nv_data,
-                              sizeof(current_hook));
+    if (hooks == NULL)
+        return;
 
-            if (nv_strs_eq(file, current_hook.file))
-            {
-                /* Calling setjmp directly here was causing -Wclobber
-                 * to issue a warning about after_hook. I think the
-                 * warning was spurious, but I want to make the
-                 * compiler happy. */
-                call_protected(current_hook.function);
-            }
+    pfstest_list_iter (hook_node, hooks) {
+        extract_hook_descriptor((pfstest_hook_t *)hook_node, &hook_desc);
+
+        if (hook_in_file(&hook_desc, file)) {
+            if (0 == setjmp(dynamic_env->test_jmp_buf))
+                hook_desc.function();
         }
     }
 }
 
-static bool test_ignored(_pfstest_test_nv_t *test_desc)
+static void extract_plugin_descriptor(pfstest_plugin_t *the_plugin,
+                                    _pfstest_plugin_nv_t *plugin_desc)
 {
-    return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
+    pfstest_memcpy_nv(plugin_desc, the_plugin->nv_data,
+                      sizeof(*plugin_desc));
 }
 
 static void plugins_run_callback(pfstest_list_t *plugins, int id)
 {
     pfstest_list_node_t *plugin_node;
-    _pfstest_plugin_nv_t current_plugin;
+    _pfstest_plugin_nv_t plugin_desc;
     void (*callback)(void);
 
-    if (plugins != NULL) {
-        pfstest_list_iter (plugin_node, plugins) {
-            pfstest_plugin_t *plugin = (pfstest_plugin_t *)plugin_node;
-            pfstest_memcpy_nv(&current_plugin, plugin->nv_data,
-                              sizeof(current_plugin));
+    if (plugins == NULL)
+        return;
 
-            callback = current_plugin.callbacks[id];
-            if (callback != NULL)
-                callback();
-        }
+    pfstest_list_iter (plugin_node, plugins) {
+        extract_plugin_descriptor((pfstest_plugin_t *)plugin_node,
+                                  &plugin_desc);
+
+        callback = plugin_desc.callbacks[id];
+        if (callback != NULL)
+            callback();
     }
 }
 
@@ -219,6 +255,11 @@ static void run_plugin_checks(pfstest_list_t *plugins)
 static void teardown_plugins(pfstest_list_t *plugins)
 {
     plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_TEARDOWN);
+}
+
+static bool test_ignored(_pfstest_test_nv_t *test_desc)
+{
+    return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
 }
 
 static void run_test(_pfstest_test_nv_t *current_test,
@@ -275,40 +316,6 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
     pfstest_reporter_run_complete(reporter);
 
     return pfstest_reporter_return_value(reporter);
-}
-
-void _pfstest_hook_list_register_hook(pfstest_list_t *list,
-                                      pfstest_hook_t *hook)
-{
-    pfstest_list_node_init((pfstest_list_node_t *)hook);
-    pfstest_list_append(list, (pfstest_list_node_t *)hook);
-}
-
-pfstest_list_t *pfstest_get_registered_before_hooks(void)
-{
-    return &registered_before_hooks;
-}
-
-pfstest_list_t *pfstest_get_registered_after_hooks(void)
-{
-    return &registered_after_hooks;
-}
-
-void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugin_list,
-                                          pfstest_plugin_t *plugin)
-{
-    pfstest_list_node_init((pfstest_list_node_t *)plugin);
-    pfstest_list_append(plugin_list, (pfstest_list_node_t *)plugin);
-}
-
-void _pfstest_register_plugin(pfstest_plugin_t *plugin)
-{
-    _pfstest_plugin_list_register_plugin(&registered_plugins, plugin);
-}
-
-pfstest_list_t *pfstest_get_registered_plugins(void)
-{
-    return &registered_plugins;
 }
 
 int pfstest_run_registered_tests(char *filter_file, char *filter_name,
