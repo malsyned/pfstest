@@ -147,7 +147,7 @@ static void run_before_hooks(pfstest_list_t *before,
     _pfstest_hook_nv_t current_hook;
 
     if (before != NULL) {
-        pfstest_list_iter(hook_node, before) {
+        pfstest_list_iter (hook_node, before) {
             pfstest_hook_t *before_hook = (pfstest_hook_t *)hook_node;
             pfstest_memcpy_nv(&current_hook, before_hook->nv_data,
                               sizeof(current_hook));
@@ -165,7 +165,7 @@ static void run_after_hooks(pfstest_list_t *after,
     _pfstest_hook_nv_t current_hook;
 
     if (after != NULL) {
-        pfstest_list_iter(hook_node, after) {
+        pfstest_list_iter (hook_node, after) {
             pfstest_hook_t *after_hook = (pfstest_hook_t *)hook_node;
             pfstest_memcpy_nv(&current_hook, after_hook->nv_data,
                               sizeof(current_hook));
