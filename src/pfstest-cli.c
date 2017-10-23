@@ -35,11 +35,10 @@ static int stdout_print_char(int c)
 static void print_register_plugin_commands(int (*print_char)(int),
                                            pfstest_list_t *plugins)
 {
-    pfstest_list_node_t *plugin_node;
+    pfstest_plugin_t *plugin;
     _pfstest_plugin_nv_t nv_data;
 
-    pfstest_list_iter (plugin_node, plugins) {
-        pfstest_plugin_t *plugin = (pfstest_plugin_t *)plugin_node;
+    pfstest_list_iter (plugin, plugins) {
         pfstest_memcpy_nv(&nv_data, plugin->nv_data, sizeof(nv_data));
 
         print_nv_string(print_char,
@@ -53,11 +52,10 @@ static void print_register_hook_commands(
     int (*print_char)(int), pfstest_list_t *list,
     const pfstest_nv_ptr char *list_name)
 {
-    pfstest_list_node_t *hook_node;
+    pfstest_hook_t *hook;
     _pfstest_hook_nv_t nv_data;
 
-    pfstest_list_iter (hook_node, list) {
-        pfstest_hook_t *hook = (pfstest_hook_t *)hook_node;
+    pfstest_list_iter (hook, list) {
         pfstest_memcpy_nv(&nv_data, hook->nv_data, sizeof(nv_data));
 
         print_nv_string(print_char, pfstest_nv_string("    register_"));
@@ -71,11 +69,10 @@ static void print_register_hook_commands(
 static void print_register_test_commands(int (*print_char)(int),
                                          pfstest_list_t *tests)
 {
-    pfstest_list_node_t *test_node;
+    pfstest_t *test;
     _pfstest_test_nv_t nv_data;
 
-    pfstest_list_iter (test_node, tests) {
-        pfstest_t *test = (pfstest_t *)test_node;
+    pfstest_list_iter (test, tests) {
         pfstest_memcpy_nv(&nv_data, test->nv_data, sizeof(nv_data));
 
         print_nv_string(print_char, pfstest_nv_string("    register_test("));

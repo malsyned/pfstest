@@ -183,14 +183,14 @@ static bool hook_in_file(_pfstest_hook_nv_t *hook_desc,
 static void run_before_hooks(pfstest_list_t *hooks,
                              const pfstest_nv_ptr char *file)
 {
-    pfstest_list_node_t *hook_node;
+    pfstest_hook_t *hook;
     _pfstest_hook_nv_t hook_desc;
 
     if (hooks == NULL)
         return;
 
-    pfstest_list_iter (hook_node, hooks) {
-        extract_hook_descriptor((pfstest_hook_t *)hook_node, &hook_desc);
+    pfstest_list_iter (hook, hooks) {
+        extract_hook_descriptor(hook, &hook_desc);
         
         if (hook_in_file(&hook_desc, file))
             hook_desc.function();
@@ -200,14 +200,14 @@ static void run_before_hooks(pfstest_list_t *hooks,
 static void run_after_hooks(pfstest_list_t *hooks,
                             const pfstest_nv_ptr char *file)
 {
-    pfstest_list_node_t *hook_node;
+    pfstest_hook_t *hook;
     _pfstest_hook_nv_t hook_desc;
 
     if (hooks == NULL)
         return;
 
-    pfstest_list_iter (hook_node, hooks) {
-        extract_hook_descriptor((pfstest_hook_t *)hook_node, &hook_desc);
+    pfstest_list_iter (hook, hooks) {
+        extract_hook_descriptor(hook, &hook_desc);
 
         if (hook_in_file(&hook_desc, file)) {
             if (0 == setjmp(dynamic_env->test_jmp_buf))
@@ -225,16 +225,15 @@ static void extract_plugin_descriptor(pfstest_plugin_t *the_plugin,
 
 static void plugins_run_callback(pfstest_list_t *plugins, int id)
 {
-    pfstest_list_node_t *plugin_node;
+    pfstest_plugin_t *plugin;
     _pfstest_plugin_nv_t plugin_desc;
     void (*callback)(void);
 
     if (plugins == NULL)
         return;
 
-    pfstest_list_iter (plugin_node, plugins) {
-        extract_plugin_descriptor((pfstest_plugin_t *)plugin_node,
-                                  &plugin_desc);
+    pfstest_list_iter (plugin, plugins) {
+        extract_plugin_descriptor(plugin, &plugin_desc);
 
         callback = plugin_desc.callbacks[id];
         if (callback != NULL)
@@ -301,13 +300,13 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       const char *filter_name,
                       pfstest_reporter_t *reporter)
 {
-    pfstest_list_node_t *test_node;
+    pfstest_t *the_test;
     _pfstest_test_nv_t test_desc;
 
     pfstest_reporter_run_started(reporter);
 
-    pfstest_list_iter (test_node, suite) {
-        extract_test_descriptor((pfstest_t *)test_node, &test_desc);
+    pfstest_list_iter (the_test, suite) {
+        extract_test_descriptor(the_test, &test_desc);
 
         if (test_matches_filter(&test_desc, filter_file, filter_name))
             run_test(&test_desc, before, after, plugins, reporter);

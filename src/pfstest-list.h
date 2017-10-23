@@ -22,9 +22,9 @@ pfstest_list_node_t *pfstest_list_head(pfstest_list_t *list);
 void pfstest_list_reset(pfstest_list_t *list);
 void pfstest_list_node_init(pfstest_list_node_t *node);
 
-#define pfstest_list_iter(node, list)           \
-    for (node = pfstest_list_head(list);        \
-         node != NULL;                          \
-         node = node->next)
+#define pfstest_list_iter(node, list)                           \
+    for (node = (void *)pfstest_list_head(list);                \
+         node != NULL;                                          \
+         node = (void *)((pfstest_list_node_t *)node)->next)
 
 #endif /* !PFSTEST_LIST_H */

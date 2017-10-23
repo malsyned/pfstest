@@ -213,14 +213,11 @@ static void args_matched(unsigned int arg_count,
 static pfstest_expectation_t *find_default_expectation(
     const pfstest_nv_ptr pfstest_mock_t *mock)
 {
-    pfstest_list_node_t *node;
+    pfstest_expectation_t *expectation;
 
-    pfstest_list_iter (node, &dynamic_env->default_expectations) {
-        pfstest_expectation_t *e = (pfstest_expectation_t *)node;
-
-        if (mock == e->mock) {
-            return e;
-        }
+    pfstest_list_iter (expectation, &dynamic_env->default_expectations) {
+        if (mock == expectation->mock)
+            return expectation;
     }
 
     return NULL;
@@ -245,7 +242,7 @@ pfstest_value_t *pfstest_mock_invoke(
     pfstest_value_t *default_return_value,
     ...)
 {
-    pfstest_list_node_t *expectation_node;
+    pfstest_expectation_t *e;
     unsigned int arg_count = pfstest_mock_arg_count(mock);
     pfstest_value_t **args = pfstest_alloc(sizeof(*args) * arg_count);
     pfstest_value_t *return_value = default_return_value;
@@ -258,9 +255,7 @@ pfstest_value_t *pfstest_mock_invoke(
     }
     va_end(ap);
 
-    pfstest_list_iter (expectation_node, &dynamic_env->expectations) {
-        pfstest_expectation_t *e = (pfstest_expectation_t *)expectation_node;
-
+    pfstest_list_iter (e, &dynamic_env->expectations) {
         if (e->mock == mock
             && e->times != 0
             && args_match(arg_count, args, e->arg_handlers))
@@ -278,7 +273,7 @@ pfstest_value_t *pfstest_mock_invoke(
             break;
         }
     }
-    if (expectation_node == NULL) {
+    if (e == NULL) {
         invocation_add(invocation_new(get_default_expectation(mock)));
     }
     
@@ -301,12 +296,10 @@ static pfstest_verifier_t *verifier_new(
 
 void pfstest_mock_run_verifiers(void)
 {
-    pfstest_list_node_t *verifier_node;
+    pfstest_verifier_t *verifier;
 
-    pfstest_list_iter (verifier_node, &dynamic_env->verifiers) {
-        pfstest_verifier_t *v = (pfstest_verifier_t *)verifier_node;
-
-        v->function(v);
+    pfstest_list_iter (verifier, &dynamic_env->verifiers) {
+        verifier->function(verifier);
     }
 }
 
@@ -398,13 +391,11 @@ void pfstest_verify_times_at_location(const pfstest_nv_ptr char *file,
 static int count_and_mark_invocations(pfstest_expectation_t *expectation)
 {
     int invocation_count = 0;
-    pfstest_list_node_t *invocation_node;
+    pfstest_invocation_t *invocation;
 
-    pfstest_list_iter (invocation_node, &dynamic_env->invocations) {
-        pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
-
-        if (expectation == i->expectation) {
-            i->mark = true;
+    pfstest_list_iter (invocation, &dynamic_env->invocations) {
+        if (expectation == invocation->expectation) {
+            invocation->mark = true;
             invocation_count++;
         }
     }
@@ -529,11 +520,9 @@ struct no_more_interactions_args
 static void do_verify_no_more_interactions(pfstest_verifier_t *v)
 {
     struct no_more_interactions_args *args = v->data;
-    
-    pfstest_list_node_t *invocation_node;
+    pfstest_invocation_t *i;
 
-    pfstest_list_iter (invocation_node, &dynamic_env->invocations) {
-        pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
+    pfstest_list_iter (i, &dynamic_env->invocations) {
         struct no_more_interactions_printer_args printer_args;
         printer_args.mock = args->mock;
 
@@ -569,12 +558,10 @@ struct no_more_invocations_args
 static void do_verify_no_more_invocations(pfstest_verifier_t *v)
 {
     struct no_more_invocations_args *args = v->data;
-    pfstest_list_node_t *invocation_node;
+    pfstest_invocation_t *invocation;
 
-    pfstest_list_iter (invocation_node, &dynamic_env->invocations) {
-        pfstest_invocation_t *i = (pfstest_invocation_t *)invocation_node;
-
-        if (!i->mark) {
+    pfstest_list_iter (invocation, &dynamic_env->invocations) {
+        if (!invocation->mark) {
             pfstest_fail_at_location(args->file, args->line,
                                      "Unexpected mock invocations");
         }
@@ -626,21 +613,18 @@ struct in_order_expectation
 static void do_in_order_verification(pfstest_verifier_t *v)
 {
     in_order_t *order = v->data;
-    pfstest_list_node_t *invocation_node;
+    pfstest_invocation_t *invocation;
     pfstest_list_node_t *in_order_expectation_node =
         pfstest_list_head(&order->expectations);
     pfstest_expectation_t *prev_expectation = NULL;
     struct in_order_expectation *in_order_expectation;
 
-    pfstest_list_iter (invocation_node, &dynamic_env->invocations) {
-        pfstest_invocation_t *invocation;
-
+    pfstest_list_iter (invocation, &dynamic_env->invocations) {
         if (in_order_expectation_node == NULL)
             break;
 
         in_order_expectation =
             (struct in_order_expectation *)in_order_expectation_node;
-        invocation = (pfstest_invocation_t *)invocation_node;
 
         if (in_order_expectation->expectation == invocation->expectation) {
             invocation->mark = true;

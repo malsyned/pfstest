@@ -158,16 +158,15 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
                                       pfstest_matcher_t *matcher)
 {
     pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
-    pfstest_list_node_t *submatcher_node;
+    struct submatcher *submatcher;
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("{ "));
 
-    pfstest_list_iter (submatcher_node, submatchers) {
-        struct submatcher *submatcher = (struct submatcher *)submatcher_node;
+    pfstest_list_iter (submatcher, submatchers) {
         pfstest_matcher_print(reporter, submatcher->matcher);
 
-        if (submatcher_node->next != NULL) {
+        if (((pfstest_list_node_t *)submatcher)->next != NULL) {
             pfstest_reporter_print_nv_string(
                 reporter, pfstest_nv_string(", "));
         }
@@ -179,11 +178,9 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
 static bool submatchers_match_value_array(pfstest_list_t *submatchers,
                                           pfstest_value_t **values)
 {
-    pfstest_list_node_t *submatcher_node;
+    struct submatcher *submatcher;
 
-    pfstest_list_iter (submatcher_node, submatchers) {
-        struct submatcher *submatcher = (struct submatcher *)submatcher_node;
-
+    pfstest_list_iter (submatcher, submatchers) {
         pfstest_value_t *member_value = *values++;
         pfstest_matcher_t *member_matcher = submatcher->matcher;
 
