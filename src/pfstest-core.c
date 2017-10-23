@@ -122,23 +122,20 @@ static bool str_eq_nv_str(
     return (0 == pfstest_strcmp_nv(s1, s2));
 }
 
-static _pfstest_test_nv_t extract_test_descriptor(pfstest_t *the_test)
+static void extract_test_descriptor(pfstest_t *the_test,
+                                    _pfstest_test_nv_t *test_desc)
 {
-    _pfstest_test_nv_t test_desc;
-    pfstest_memcpy_nv(&test_desc, the_test->nv_data, sizeof(test_desc));
-    return test_desc;
+    pfstest_memcpy_nv(test_desc, the_test->nv_data, sizeof(*test_desc));
 }
 
-static bool test_matches_filter(pfstest_t *the_test,
+static bool test_matches_filter(_pfstest_test_nv_t *test_desc,
                                 const char *filter_file,
                                 const char *filter_name)
 {
-    _pfstest_test_nv_t test_desc = extract_test_descriptor(the_test);
-
     bool file_passed = (filter_file == NULL
-                        || str_eq_nv_str(filter_file, test_desc.file));
+                        || str_eq_nv_str(filter_file, test_desc->file));
     bool name_passed = (filter_name == NULL
-                        || str_eq_nv_str(filter_name, test_desc.name));
+                        || str_eq_nv_str(filter_name, test_desc->name));
 
     return name_passed && file_passed;
 }
@@ -224,14 +221,12 @@ static void teardown_plugins(pfstest_list_t *plugins)
     plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_TEARDOWN);
 }
 
-static void pfstest_run(pfstest_t *the_test,
-                        pfstest_list_t *before, pfstest_list_t *after,
-                        pfstest_list_t *plugins,
-                        pfstest_reporter_t *reporter)
+static void run_test(_pfstest_test_nv_t *current_test,
+                     pfstest_list_t *before, pfstest_list_t *after,
+                     pfstest_list_t *plugins,
+                     pfstest_reporter_t *reporter)
 {
-    _pfstest_test_nv_t current_test = extract_test_descriptor(the_test);
     dynamic_env_t local_dynamic_env;
-    (void)plugins;
 
     dynamic_env_push(&local_dynamic_env);
     dynamic_env->reporter = reporter;
@@ -240,16 +235,16 @@ static void pfstest_run(pfstest_t *the_test,
     setup_plugins(plugins);
 
     pfstest_reporter_test_started(reporter,
-                                  current_test.name, current_test.file);
-    if (test_ignored(&current_test)) {
+                                  current_test->name, current_test->file);
+    if (test_ignored(current_test)) {
         pfstest_reporter_test_ignored(reporter);
     } else {
         if (0 == setjmp(dynamic_env->test_jmp_buf)) {
-            run_before_hooks(before, current_test.file);
-            current_test.function();
+            run_before_hooks(before, current_test->file);
+            current_test->function();
             run_plugin_checks(plugins);
         }
-        run_after_hooks(after, current_test.file);
+        run_after_hooks(after, current_test->file);
     }
     pfstest_reporter_test_complete(reporter);
 
@@ -266,14 +261,15 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_reporter_t *reporter)
 {
     pfstest_list_node_t *test_node;
+    _pfstest_test_nv_t test_desc;
 
     pfstest_reporter_run_started(reporter);
 
     pfstest_list_iter (test_node, suite) {
-        pfstest_t *the_test = (pfstest_t *)test_node;
+        extract_test_descriptor((pfstest_t *)test_node, &test_desc);
 
-        if (test_matches_filter(the_test, filter_file, filter_name))
-            pfstest_run(the_test, before, after, plugins, reporter);
+        if (test_matches_filter(&test_desc, filter_file, filter_name))
+            run_test(&test_desc, before, after, plugins, reporter);
     }
 
     pfstest_reporter_run_complete(reporter);
