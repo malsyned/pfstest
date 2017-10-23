@@ -95,17 +95,16 @@ static int print_char(pfstest_reporter_t *reporter, int c)
             sizeof(elem_references)/sizeof(elem_references[0]),
             c);
         return c;
-    }
-    if (xml_reporter->in_attribute) {
+    } else if (xml_reporter->in_attribute) {
         print_escaped_char(
             reporter,
             attr_references,
             sizeof(attr_references)/sizeof(attr_references[0]),
             c);
         return c;
+    } else {
+        return reporter->char_writer(c);
     }
-
-    return reporter->char_writer(c);
 }
 
 static void run_started(pfstest_reporter_t *reporter)
