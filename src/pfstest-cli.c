@@ -110,11 +110,53 @@ void pfstest_print_usage(int (*print_char)(int), char *program_name)
     print_nv_string(print_char, pfstest_nv_string(USAGE_ARGS));
 }
 
-static char *next_arg(char **argv[])
+static void registered_tests_print_register_commands(int (*print_char)(int))
 {
-    char *r = **argv;
-    (*argv)++;
+    pfstest_list_t *plugins = pfstest_get_registered_plugins();
+    pfstest_list_t *before = pfstest_get_registered_before_hooks();
+    pfstest_list_t *after = pfstest_get_registered_after_hooks();
+    pfstest_list_t *suite = pfstest_get_registered_tests();
 
+    pfstest_print_register_commands(print_char, before, after,
+                                    plugins, suite);
+}
+
+static pfstest_report_colorizer_t *select_colorizer(pfstest_arguments_t *args)
+{
+    if (args->color)
+        return pfstest_report_colorizer_ansi;
+    else
+        return pfstest_report_colorizer_null;
+}
+
+static pfstest_reporter_t *create_selected_reporter(
+    int (*print_char)(int),
+    pfstest_arguments_t *args,
+    pfstest_report_colorizer_t *colorizer)
+{
+    if (args->verbose) {
+        return pfstest_reporter_verbose_new(print_char, colorizer);
+    } else if (args->xml) {
+        return pfstest_reporter_xml_new(print_char);
+    } else {
+        return pfstest_reporter_standard_new(print_char, colorizer);
+    }
+}
+
+static int pfstest_start_with_args(int (*print_char)(int),
+                                   pfstest_arguments_t *args)
+{
+    pfstest_reporter_t *reporter;
+    pfstest_report_colorizer_t *colorizer;
+    int r;
+
+    colorizer = select_colorizer(args);
+    reporter = create_selected_reporter(print_char, args, colorizer);
+
+    r = pfstest_run_registered_tests(
+        args->filter_file, args->filter_name, reporter);
+    /* Free the memory allocated for the reporter created above */
+    pfstest_alloc_free_frame();
     return r;
 }
 
@@ -122,12 +164,23 @@ int pfstest_main(int argc, char *argv[])
 {
     pfstest_arguments_t args;
 
-    if (pfstest_arguments_parse(&args, argc, argv)) {
-        return pfstest_start_with_args(stdout_print_char, &args);
-    } else {
+    if (!pfstest_arguments_parse(&args, argc, argv)) {
         pfstest_print_usage(stdout_print_char, args.program_name);
         return EXIT_FAILURE;
+    } else if (args.print_register_commands) {
+        registered_tests_print_register_commands(stdout_print_char);
+        return EXIT_SUCCESS;
+    } else {
+        return pfstest_start_with_args(stdout_print_char, &args);
     }
+}
+
+static char *next_arg(char **argv[])
+{
+    char *r = **argv;
+    (*argv)++;
+
+    return r;
 }
 
 static bool str_is_nv_str(char *s1, const pfstest_nv_ptr char *s2)
@@ -182,58 +235,4 @@ bool pfstest_arguments_parse(pfstest_arguments_t *args,
     }
 
     return true;
-}
-
-static pfstest_report_colorizer_t *select_colorizer(pfstest_arguments_t *args)
-{
-    if (args->color)
-        return pfstest_report_colorizer_ansi;
-    else
-        return pfstest_report_colorizer_null;
-}
-
-static pfstest_reporter_t *create_selected_reporter(
-    int (*print_char)(int),
-    pfstest_arguments_t *args,
-    pfstest_report_colorizer_t *colorizer)
-{
-    if (args->verbose) {
-        return pfstest_reporter_verbose_new(print_char, colorizer);
-    } else if (args->xml) {
-        return pfstest_reporter_xml_new(print_char);
-    } else {
-        return pfstest_reporter_standard_new(print_char, colorizer);
-    }
-}
-
-static void registered_tests_print_register_commands(int (*print_char)(int))
-{
-    pfstest_list_t *plugins = pfstest_get_registered_plugins();
-    pfstest_list_t *before = pfstest_get_registered_before_hooks();
-    pfstest_list_t *after = pfstest_get_registered_after_hooks();
-    pfstest_list_t *suite = pfstest_get_registered_tests();
-
-    pfstest_print_register_commands(print_char, before, after,
-                                    plugins, suite);
-}
-
-int pfstest_start_with_args(int (*print_char)(int), pfstest_arguments_t *args)
-{
-    pfstest_reporter_t *reporter;
-    pfstest_report_colorizer_t *colorizer;
-    int r;
-
-    if (args->print_register_commands) {
-        registered_tests_print_register_commands(print_char);
-        return EXIT_SUCCESS;
-    } else {
-        colorizer = select_colorizer(args);
-        reporter = create_selected_reporter(print_char, args, colorizer);
-
-        r = pfstest_run_registered_tests(
-            args->filter_file, args->filter_name, reporter);
-        /* Free the memory allocated for the reporter created above */
-        pfstest_alloc_free_frame();
-        return r;
-    }
 }
