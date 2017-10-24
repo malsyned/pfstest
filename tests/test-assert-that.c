@@ -110,43 +110,43 @@ test(should_print_explanation_on_failed_assertion)
 /* avr-gcc throws a compiler error on NULL assert_that message
  * strings */
 #if !(defined(__GNUC__) && defined(__AVR__))
-pfstest_case(assert_null_string)
+pfstest_case(assert_null_message)
 {
     /* This is a failing test so that the output can be inspected */
     assert_that(NULL, some_value, matches_nothing);
 }
 
-test(should_cope_with_null_string)
+test(should_cope_with_null_message)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
         "Actual:   some value");
 
-    capture_test_results(assert_null_string);
+    capture_test_results(assert_null_message);
 
-    assert_that("assert_that handles NULL strings",
+    assert_that("assert_that handles NULL messages",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
 #endif
 
-pfstest_case(assert_empty_string)
+pfstest_case(assert_empty_message)
 {
     /* This is a failing test so that the output can be inspected */
     assert_that("", some_value, matches_nothing);
 }
 
-test(should_cope_with_empty_string)
+test(should_cope_with_empty_message)
 {
     const pfstest_nv_ptr char *expected = pfstest_nv_string(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
         "Actual:   some value");
 
-    capture_test_results(assert_empty_string);
+    capture_test_results(assert_empty_message);
 
-    assert_that("assert_that handles empty strings",
+    assert_that("assert_that handles empty messages",
                 the_string(captured_output),
                 matches_the_nv_string(expected));
 }
