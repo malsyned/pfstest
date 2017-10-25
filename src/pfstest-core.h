@@ -302,15 +302,6 @@ int pfstest_run_registered_tests(char *filter_file, char *filter_name,
 #ifndef PFSTEST_NOALIAS_register_test
 # define register_test pfstest_register_test
 #endif
-#ifndef PFSTEST_NOALIAS_run_tests
-# define run_tests pfstest_run_tests
-#endif
-#ifndef PFSTEST_NOALIAS_run_all_tests
-# define run_all_tests pfstest_run_all_tests
-#endif
-#ifndef PFSTEST_NOALIAS_run_all_tests_verbose
-# define run_all_tests_verbose pfstest_run_all_tests_verbose
-#endif
 #ifndef PFSTEST_NOALIAS_before_tests
 # define before_tests pfstest_before_tests
 #endif
