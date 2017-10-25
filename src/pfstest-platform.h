@@ -46,7 +46,7 @@ pfstest_strcmp_nv(ram, nv):
     A function or macro which is a version of strcmp which compares a
     string in RAM to one in the non-volatile memory space.
 
-pfstest_strcmp_nvnv:
+pfstest_strcmp_nvnv(nv1, nv2):
 
     A function or macro which is a version of strcmp which compares
     two strings that reside in the non-volatile memory space.
