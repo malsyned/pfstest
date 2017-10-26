@@ -10,7 +10,7 @@
 #define exit _exit
 
 #include <stdio.h>
-#define pfstest_c_assert(test)                                                    \
+#define pfstest_c_assert(test)                                          \
     if (!(test)) {                                                      \
         fputs(pfstest_nv_string(__FILE__ ":Assertion failed: " #test),  \
               stdout);                                                  \
