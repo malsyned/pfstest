@@ -167,9 +167,16 @@ pfstest_strcat_nv(ram, nv):
 # define pfstest_false 0
 #endif
 
+/* stdint.h-compatible support in pre-C99 platforms */
+#ifndef PFSTEST_HAS_STDINT
+# ifdef PFSTEST_C99
+#  include <stdint.h>
+#  define PFSTEST_HAS_STDINT 1
+# endif
+#endif
+
 /* Useful integer types */
-#ifdef PFSTEST_C99
-# include <stdint.h>
+#ifdef PFSTEST_HAS_STDINT
 # define pfstest_uintptr_t uintptr_t
 # define pfstest_intmax_t intmax_t
 # define pfstest_uintmax_t uintmax_t
@@ -188,13 +195,6 @@ pfstest_strcat_nv(ram, nv):
 # ifndef PFSTEST_UINTMAX_MAX
 #  include <limits.h>
 #  define PFSTEST_UINTMAX_MAX ULONG_MAX
-# endif
-#endif
-
-/* stdint.h support in pre-C99 compilers */
-#ifndef PFSTEST_HAS_STDINT
-# ifdef PFSTEST_C99
-#  define PFSTEST_HAS_STDINT 1
 # endif
 #endif
 
