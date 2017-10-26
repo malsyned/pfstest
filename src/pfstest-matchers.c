@@ -250,3 +250,19 @@ pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first,...)
     return pfstest_matcher_new(
         int_members_match_printer, int_members_match_test, submatchers);
 }
+
+#ifdef PFSTEST_HAS_STDINT
+pfstest_matcher_t *pfstest_is_the_u8(uint8_t u8)
+{
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
+                               the_u8(u8));
+}
+
+pfstest_matcher_t *pfstest_is_the_u16(uint16_t u16)
+{
+    return pfstest_matcher_new(pfstest_equality_printer,
+                               pfstest_equality_test,
+                               the_u16(u16));
+}
+#endif  /* defined(PFSTEST_HAS_STDINT) */

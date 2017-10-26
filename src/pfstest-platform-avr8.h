@@ -1,10 +1,6 @@
 #ifndef PFSTEST_PLATFORM_AVR8_H
 #define PFSTEST_PLATFORM_AVR8_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <assert.h>
-
 #if defined(PFSTEST_AVR8_NAMED_ADDR_SPACES) && defined(__FLASH)
 
 # define pfstest_nv __flash

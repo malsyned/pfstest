@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-matcher.h"
 
 pfstest_matcher_t *pfstest_is_the_short(short n);
@@ -71,5 +72,17 @@ pfstest_matcher_t *_pfstest_is_anything(void);
 #ifndef PFSTEST_NOALIAS_is_anything
 # define is_anything pfstest_is_anything
 #endif
+
+#ifdef PFSTEST_HAS_STDINT
+pfstest_matcher_t *pfstest_is_the_u8(uint8_t u8);
+pfstest_matcher_t *pfstest_is_the_u16(uint16_t u16);
+
+#ifndef PFSTEST_NOALIAS_is_the_u8
+# define is_the_u8 pfstest_is_the_u8
+#endif
+#ifndef PFSTEST_NOALIAS_is_the_u16
+# define is_the_u16 pfstest_is_the_u16
+#endif
+#endif  /* defined(PFSTEST_HAS_STDINT) */
 
 #endif /* !PFSTEST_MATCHERS_H */

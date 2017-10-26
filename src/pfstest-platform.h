@@ -191,6 +191,16 @@ pfstest_strcat_nv(ram, nv):
 # endif
 #endif
 
+/* stdint.h support in pre-C99 compilers */
+#ifndef PFSTEST_HAS_STDINT
+# ifdef PFSTEST_C99
+#  define PFSTEST_HAS_STDINT 1
+# endif
+#endif
+#ifdef PFSTEST_HAS_STDINT
+# include <stdint.h>
+#endif
+
 /* Alignment guessing */
 #ifndef PFSTEST_ALIGNMENT
 

@@ -6,4 +6,7 @@
 # define pfstest_constructor(name)                          \
     __attribute__((__constructor__)) static void name(void)
 
+/* Necessary to build stdint self-tests even with -std=c89 */
+#define PFSTEST_HAS_STDINT 1
+
 #endif /* !PFSTEST_PLATFORM_GCC_H */

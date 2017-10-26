@@ -13,6 +13,3 @@ PFSTEST_SRC := $(addprefix $(src-path), \
 PFSTEST_AVR_TOOLS_SRC := $(src-path)avr/pfstest-avr-mem.c
 
 PFSTEST_CLI_SRC := $(src-path)pfstest-cli.c
-
-PFSTEST_STDINT_SRC := $(addprefix $(src-path), \
-                      pfstest-stdint-values.c pfstest-stdint-matchers.c)

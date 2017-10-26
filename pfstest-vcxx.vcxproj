@@ -82,8 +82,6 @@
     <ClCompile Include="src\pfstest-reporter.c" />
     <ClCompile Include="src\pfstest-reporters-standard.c" />
     <ClCompile Include="src\pfstest-reporter-xml.c" />
-    <ClCompile Include="src\pfstest-stdint-matchers.c" />
-    <ClCompile Include="src\pfstest-stdint-values.c" />
     <ClCompile Include="src\pfstest-value.c" />
     <ClCompile Include="src\pfstest-values.c" />
     <ClCompile Include="src\avr\pfstest-avr-mem.c" />
@@ -99,7 +97,6 @@
     <ClCompile Include="tests\test-invocation.c" />
     <ClCompile Include="tests\test-mock.c" />
     <ClCompile Include="tests\test-shorthand.c" />
-    <ClCompile Include="tests\test-stdint.c" />
     <ClCompile Include="tests\test-values-and-matchers.c" />
     <ClCompile Include="tests\test-xml.c" />
   </ItemGroup>

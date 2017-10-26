@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+#include "pfstest-platform.h"
 #include "pfstest-value.h"
 
 pfstest_value_t *pfstest_the_short(short n);
@@ -60,5 +61,17 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
 #ifndef PFSTEST_NOALIAS_the_int_array
 # define the_int_array pfstest_the_int_array
 #endif
+
+#ifdef PFSTEST_HAS_STDINT
+pfstest_value_t *pfstest_the_u8(uint8_t u8);
+pfstest_value_t *pfstest_the_u16(uint16_t u16);
+
+#ifndef PFSTEST_NOALIAS_the_u8
+# define the_u8 pfstest_the_u8
+#endif
+#ifndef PFSTEST_NOALIAS_the_u16
+# define the_u16 pfstest_the_u16
+#endif
+#endif  /* defined(PFSTEST_HAS_STDINT) */
 
 #endif /* !PFSTEST_VALUES_H */
