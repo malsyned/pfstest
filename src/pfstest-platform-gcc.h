@@ -7,6 +7,7 @@
     __attribute__((__constructor__)) static void name(void)
 
 /* Necessary to build stdint self-tests even with -std=c89 */
+# include <stdint.h>
 #define PFSTEST_HAS_STDINT 1
 
 #endif /* !PFSTEST_PLATFORM_GCC_H */
