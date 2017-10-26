@@ -16,7 +16,7 @@ static void the_short_printer(pfstest_reporter_t *reporter,
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the short "));
-    pfstest_reporter_print_int(reporter, (intmax_t)n);
+    pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
 }
 
 pfstest_value_t *pfstest_the_short(short n)
@@ -36,7 +36,7 @@ static void the_ushort_printer(pfstest_reporter_t *reporter,
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the ushort "));
-    pfstest_reporter_print_uint(reporter, (uintmax_t)n, 10, 0);
+    pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_ushort(unsigned short n)
@@ -56,7 +56,7 @@ static void the_int_printer(pfstest_reporter_t *reporter,
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the int "));
-    pfstest_reporter_print_int(reporter, (intmax_t)n);
+    pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
 }
 
 pfstest_value_t *pfstest_the_int(int n)
@@ -76,7 +76,7 @@ static void the_uint_printer(pfstest_reporter_t *reporter,
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the uint "));
-    pfstest_reporter_print_uint(reporter, (uintmax_t)n, 10, 0);
+    pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_uint(unsigned int n)
@@ -95,7 +95,7 @@ static void the_long_printer(pfstest_reporter_t *reporter,
     long n = *(const long *)pfstest_value_data(value);
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the long "));
-    pfstest_reporter_print_int(reporter, (intmax_t)n);
+    pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
 }
 
 pfstest_value_t *pfstest_the_long(long n)
@@ -113,7 +113,7 @@ static void the_ulong_printer(pfstest_reporter_t *reporter,
     unsigned long n = *(const unsigned long *)pfstest_value_data(value);
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the ulong "));
-    pfstest_reporter_print_uint(reporter, (uintmax_t)n, 10, 0);
+    pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n, 10, 0);
 }
 
 pfstest_value_t *pfstest_the_ulong(unsigned long n)
@@ -139,14 +139,14 @@ static void the_enum_printer(pfstest_reporter_t *reporter,
     const pfstest_nv_ptr char *const pfstest_nv_ptr *name_p;
     const pfstest_nv_ptr char *name;
     int count = 0;
-    bool in_range = false;
+    pfstest_bool in_range = pfstest_false;
 
     for (count = 0, name_p = name_map;
          pfstest_memcpy_nv(&name, name_p, sizeof(name)), name != NULL;
          count++, name_p++)
     {
         if (count == e) {
-            in_range = true;
+            in_range = pfstest_true;
             break;
         }
     }
@@ -181,7 +181,7 @@ pfstest_value_t *pfstest_the_enum(
 static void the_bool_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
-    bool b = *(const bool *)pfstest_value_data(value);
+    pfstest_bool b = *(const pfstest_bool *)pfstest_value_data(value);
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("the bool "));
@@ -190,9 +190,9 @@ static void the_bool_printer(pfstest_reporter_t *reporter,
         b ? pfstest_nv_string("<true>") : pfstest_nv_string("<false>"));
 }
 
-pfstest_value_t *pfstest_the_bool(bool b)
+pfstest_value_t *pfstest_the_bool(pfstest_bool b)
 {
-    bool *data = pfstest_alloc(sizeof(b));
+    pfstest_bool *data = pfstest_alloc(sizeof(b));
     *data = b;
 
     return pfstest_value_new(the_bool_printer, data, sizeof(b));
@@ -261,7 +261,7 @@ static void the_pointer_printer(pfstest_reporter_t *reporter,
     } else {
         pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("0x"));
         pfstest_reporter_print_uint(
-            reporter, (uintmax_t)(uintptr_t)data, 16, 0);
+            reporter, (pfstest_uintmax_t)(pfstest_uintptr_t)data, 16, 0);
     }
 
     pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(">"));

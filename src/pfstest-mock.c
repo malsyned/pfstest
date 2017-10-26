@@ -174,29 +174,29 @@ static pfstest_invocation_t *invocation_new(pfstest_expectation_t *e)
     pfstest_invocation_t *i = pfstest_alloc(sizeof(*i));
     pfstest_list_node_init((pfstest_list_node_t *)i);
     i->expectation = e;
-    i->mark = false;
+    i->mark = pfstest_false;
 
     return i;
 }
 
-static bool args_match(unsigned int arg_count,
-                       pfstest_value_t **args,
-                       pfstest_arg_handler_t **arg_handlers)
+static pfstest_bool args_match(unsigned int arg_count,
+                               pfstest_value_t **args,
+                               pfstest_arg_handler_t **arg_handlers)
 {
     unsigned int i;
 
     /* The default expectation, which should match everything, has
      * NULL arg_handlers */
     if (arg_handlers == NULL) {
-        return true;
+        return pfstest_true;
     }
 
     for (i = 0; i < arg_count; i++) {
         if (!pfstest_arg_handler_test(arg_handlers[i], args[i]))
-            return false;
+            return pfstest_false;
     }
 
-    return true;
+    return pfstest_true;
 }
 
 static void args_matched(unsigned int arg_count,
@@ -395,7 +395,7 @@ static int count_and_mark_invocations(pfstest_expectation_t *expectation)
 
     pfstest_list_iter (invocation, &dynamic_env->invocations) {
         if (expectation == invocation->expectation) {
-            invocation->mark = true;
+            invocation->mark = pfstest_true;
             invocation_count++;
         }
     }
@@ -627,7 +627,7 @@ static void do_in_order_verification(pfstest_verifier_t *v)
             (struct in_order_expectation *)in_order_expectation_node;
 
         if (in_order_expectation->expectation == invocation->expectation) {
-            invocation->mark = true;
+            invocation->mark = pfstest_true;
             prev_expectation = in_order_expectation->expectation;
             in_order_expectation_node = in_order_expectation_node->next;
         }

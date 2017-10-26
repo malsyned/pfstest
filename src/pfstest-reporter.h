@@ -32,9 +32,11 @@ int pfstest_reporter_print_char(pfstest_reporter_t *reporter, int c);
 void pfstest_reporter_print_escaped_char(pfstest_reporter_t *reporter, int c);
 void pfstest_reporter_print_nv_string(
     pfstest_reporter_t *reporter, const pfstest_nv_ptr char *s);
-void pfstest_reporter_print_int(pfstest_reporter_t *reporter, intmax_t i);
-void pfstest_reporter_print_uint(
-    pfstest_reporter_t *reporter, uintmax_t i, unsigned int base, int zpad);
+void pfstest_reporter_print_int(pfstest_reporter_t *reporter,
+                                pfstest_intmax_t i);
+void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
+                                 pfstest_uintmax_t i,
+                                 unsigned int base, int zpad);
 
 void pfstest_reporter_run_started(pfstest_reporter_t *reporter);
 void pfstest_reporter_test_started(

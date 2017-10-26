@@ -180,56 +180,56 @@ static char *next_arg(char **argv[])
     return r;
 }
 
-static bool str_is_nv_str(char *s1, const pfstest_nv_ptr char *s2)
+static pfstest_bool str_is_nv_str(char *s1, const pfstest_nv_ptr char *s2)
 {
     return (0 == pfstest_strcmp_nv(s1, s2));
 }
 
-bool pfstest_arguments_parse(pfstest_arguments_t *args,
-                             int argc, char *argv[])
+pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
+                                     int argc, char *argv[])
 {
     char *arg;
     char *filter_file;
     char *filter_name;
 
-    args->verbose = false;
-    args->xml = false;
-    args->color = false;
-    args->print_register_commands = false;
+    args->verbose = pfstest_false;
+    args->xml = pfstest_false;
+    args->color = pfstest_false;
+    args->print_register_commands = pfstest_false;
     args->filter_file = NULL;
     args->filter_name = NULL;
 
     if (argc < 1 || argv[0] == NULL) {
         args->program_name = NULL;
-        return false;
+        return pfstest_false;
     }
 
     args->program_name = next_arg(&argv);
 
     while (arg = next_arg(&argv), arg != NULL) {
         if (str_is_nv_str(arg, pfstest_nv_string("-v"))) {
-            args->verbose = true;
-            args->xml = false;
+            args->verbose = pfstest_true;
+            args->xml = pfstest_false;
         } else if (str_is_nv_str(arg, pfstest_nv_string("-x"))) {
-            args->xml = true;
-            args->verbose = false;
+            args->xml = pfstest_true;
+            args->verbose = pfstest_false;
         } else if (str_is_nv_str(arg, pfstest_nv_string("-c"))) {
-            args->color = true;
+            args->color = pfstest_true;
         } else if (str_is_nv_str(arg, pfstest_nv_string("-r"))) {
-            args->print_register_commands = true;
+            args->print_register_commands = pfstest_true;
         } else if (str_is_nv_str(arg, pfstest_nv_string("-f"))) {
             filter_file = next_arg(&argv);
-            if (filter_file == NULL) return false;
+            if (filter_file == NULL) return pfstest_false;
             args->filter_file = filter_file;
         } else if (str_is_nv_str(arg, pfstest_nv_string("-n"))) {
             filter_name = next_arg(&argv);
-            if (filter_name == NULL) return false;
+            if (filter_name == NULL) return pfstest_false;
             args->filter_name = filter_name;
-            args->verbose = true;
+            args->verbose = pfstest_true;
         } else {
-            return false;
+            return pfstest_false;
         }
     }
 
-    return true;
+    return pfstest_true;
 }

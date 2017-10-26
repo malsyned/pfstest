@@ -7,10 +7,10 @@
 #include "pfstest-values.h"
 #include "pfstest-matchers.h"
 
-#define pfstest_assert_true(message, value)                 \
-    pfstest_assert_that(message, value, is_the_bool(true))
-#define pfstest_assert_false(message, value)                \
-    pfstest_assert_that(message, value, is_the_bool(false))
+#define pfstest_assert_true(message, value)                         \
+    pfstest_assert_that(message, value, is_the_bool(pfstest_true))
+#define pfstest_assert_false(message, value)                        \
+    pfstest_assert_that(message, value, is_the_bool(pfstest_false))
 #define pfstest_assert_null(message, value)                     \
     pfstest_assert_that(message, value, is_the_pointer(NULL))
 

@@ -11,8 +11,8 @@ void pfstest_equality_printer(pfstest_reporter_t *reporter,
     pfstest_value_print(reporter, expected);
 }
 
-bool pfstest_equality_test(pfstest_matcher_t *matcher,
-                           pfstest_value_t *actual_value)
+pfstest_bool pfstest_equality_test(pfstest_matcher_t *matcher,
+                                   pfstest_value_t *actual_value)
 {
     pfstest_value_t *expected_value =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
@@ -40,7 +40,7 @@ bool pfstest_equality_test(pfstest_matcher_t *matcher,
          * they'd be printing might be stack data that's gone out of
          * scope by the time the verifier is run. */
         if (actual_size != 0)
-            return false;
+            return pfstest_false;
     }
 
     return (0 == memcmp(expected, actual, expected_size));

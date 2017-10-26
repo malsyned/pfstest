@@ -8,8 +8,8 @@ typedef struct _pfstest_arg_handler_t pfstest_arg_handler_t;
 
 struct _pfstest_arg_handler_t
 {
-    bool (*test_function)(pfstest_arg_handler_t *arg_handler,
-                          pfstest_value_t *actual);
+    pfstest_bool (*test_function)(pfstest_arg_handler_t *arg_handler,
+                                  pfstest_value_t *actual);
     void (*matched_function)(pfstest_arg_handler_t *arg_handler,
                              pfstest_value_t *actual);
     void (*printer)(pfstest_reporter_t *reporter,
@@ -18,8 +18,8 @@ struct _pfstest_arg_handler_t
 };
 
 pfstest_arg_handler_t *pfstest_arg_handler_new(
-    bool (*test_function)(pfstest_arg_handler_t *arg_handler,
-                          pfstest_value_t *actual),
+    pfstest_bool (*test_function)(pfstest_arg_handler_t *arg_handler,
+                                  pfstest_value_t *actual),
     void (*matched_function)(pfstest_arg_handler_t *arg_handler,
                              pfstest_value_t *actual),
     void (*printer)(pfstest_reporter_t *reporter,
@@ -27,8 +27,8 @@ pfstest_arg_handler_t *pfstest_arg_handler_new(
     void *data);
 void pfstest_arg_handler_print(pfstest_reporter_t *reporter,
                                pfstest_arg_handler_t *arg_handler);
-bool pfstest_arg_handler_test(pfstest_arg_handler_t *arg_handler,
-                              pfstest_value_t *actual);
+pfstest_bool pfstest_arg_handler_test(pfstest_arg_handler_t *arg_handler,
+                                      pfstest_value_t *actual);
 void pfstest_arg_handler_matched(pfstest_arg_handler_t *arg_handler,
                                  pfstest_value_t *actual);
 void *pfstest_arg_handler_data(pfstest_arg_handler_t *arg_handler);

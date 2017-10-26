@@ -2,8 +2,8 @@
 
 #include "pfstest-alloc.h"
 
-bool pfstest_matcher_matches(pfstest_matcher_t *matcher,
-                             pfstest_value_t *actual)
+pfstest_bool pfstest_matcher_matches(pfstest_matcher_t *matcher,
+                                     pfstest_value_t *actual)
 {
     return matcher->test(matcher, actual);
 }
@@ -16,7 +16,7 @@ void pfstest_matcher_print(pfstest_reporter_t *reporter,
 
 pfstest_matcher_t *pfstest_matcher_new(
     void (*printer)(pfstest_reporter_t *reporter, pfstest_matcher_t *),
-    bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual),
+    pfstest_bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual),
     void *data)
 {
     pfstest_matcher_t *m = pfstest_alloc(sizeof(*m));

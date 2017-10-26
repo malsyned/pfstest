@@ -8,12 +8,12 @@
 typedef struct
 {
     pfstest_reporter_t parent;
-    bool failed;
-    bool test_ignored;
-    bool test_failed;
-    bool fresh_line;
-    bool in_message;
-    bool in_attribute;
+    pfstest_bool failed;
+    pfstest_bool test_ignored;
+    pfstest_bool test_failed;
+    pfstest_bool fresh_line;
+    pfstest_bool in_message;
+    pfstest_bool in_attribute;
 } xml_reporter_t;
 
 static int print_nv_string_raw(
@@ -109,9 +109,9 @@ static int print_char(pfstest_reporter_t *reporter, int c)
 
 static void run_started(pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->in_message = false;
-    ((xml_reporter_t *)reporter)->in_attribute = false;
-    ((xml_reporter_t *)reporter)->failed = false;
+    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
+    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
+    ((xml_reporter_t *)reporter)->failed = pfstest_false;
 
     pfstest_reporter_print_nv_string(
         reporter,
@@ -125,26 +125,26 @@ static void test_started(pfstest_reporter_t *reporter,
                          const pfstest_nv_ptr char *test_name,
                          const pfstest_nv_ptr char *test_file)
 {
-    ((xml_reporter_t *)reporter)->test_ignored = false;
-    ((xml_reporter_t *)reporter)->test_failed = false;
-    ((xml_reporter_t *)reporter)->in_message = false;
-    ((xml_reporter_t *)reporter)->in_attribute = false;
+    ((xml_reporter_t *)reporter)->test_ignored = pfstest_false;
+    ((xml_reporter_t *)reporter)->test_failed = pfstest_false;
+    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
+    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
 
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("  <test name=\""));
     pfstest_reporter_print_nv_string(reporter, test_name);
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("\" file=\""));
-    ((xml_reporter_t *)reporter)->in_attribute = true;
+    ((xml_reporter_t *)reporter)->in_attribute = pfstest_true;
     pfstest_reporter_print_nv_string(reporter, test_file);
-    ((xml_reporter_t *)reporter)->in_attribute = false;
+    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("\" result=\""));
 }
 
 static void test_ignored(pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->test_ignored = true;
+    ((xml_reporter_t *)reporter)->test_ignored = pfstest_true;
 }
 
 static void test_failed_message_start(
@@ -152,24 +152,24 @@ static void test_failed_message_start(
     const pfstest_nv_ptr char *file,
     int line)
 {
-    ((xml_reporter_t *)reporter)->test_failed = true;
+    ((xml_reporter_t *)reporter)->test_failed = pfstest_true;
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("fail\" fail_file=\""));
-    ((xml_reporter_t *)reporter)->in_attribute = true;
+    ((xml_reporter_t *)reporter)->in_attribute = pfstest_true;
     pfstest_reporter_print_nv_string(reporter, file);
-    ((xml_reporter_t *)reporter)->in_attribute = false;
+    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
     pfstest_reporter_print_nv_string(
         reporter, pfstest_nv_string("\" fail_line=\""));
     pfstest_reporter_print_int(reporter, line);
     pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\">\n"));
-    ((xml_reporter_t *)reporter)->in_message = true;
+    ((xml_reporter_t *)reporter)->in_message = pfstest_true;
 }
 
 static void test_failed_message_complete(
     pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->in_message = false;
-    ((xml_reporter_t *)reporter)->failed = true;
+    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
+    ((xml_reporter_t *)reporter)->failed = pfstest_true;
 }
 
 static void get_fresh_line(pfstest_reporter_t *reporter)
@@ -181,7 +181,7 @@ static void get_fresh_line(pfstest_reporter_t *reporter)
 
 static void test_complete(pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->in_message = false;
+    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
 
     if (((xml_reporter_t *)reporter)->test_ignored)
     {

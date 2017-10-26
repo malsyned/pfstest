@@ -60,18 +60,19 @@ void pfstest_reporter_print_nv_string(
     }
 }
 
-void pfstest_reporter_print_int(pfstest_reporter_t *reporter, intmax_t n)
+void pfstest_reporter_print_int(pfstest_reporter_t *reporter,
+                                pfstest_intmax_t n)
 {
-    uintmax_t nabs;
+    pfstest_uintmax_t nabs;
 
     if (n < 0) {
         pfstest_reporter_print_char(reporter, '-');
         /* Casting a negative number to an unsigned type is guaranteed
          * to result in that number, modulo MAX+1. (C Standard
          * 6.3.1.3.2) */
-        nabs = UINTMAX_MAX - (uintmax_t)n + 1;
+        nabs = PFSTEST_UINTMAX_MAX - (pfstest_uintmax_t)n + 1;
     } else {
-        nabs = (uintmax_t)n;
+        nabs = (pfstest_uintmax_t)n;
     }
 
     pfstest_reporter_print_uint(reporter, nabs, 10, 0);
@@ -83,17 +84,18 @@ static char digit_char(unsigned int digit)
 {
     char d;
 
-    assert(digit <= 0xf);
+    pfstest_c_assert(digit <= 0xf);
 
     pfstest_memcpy_nv(&d, &digits[digit], sizeof(d));
 
     return d;
 }
 
-void pfstest_reporter_print_uint(
-    pfstest_reporter_t *reporter, uintmax_t n, unsigned int base, int zpad)
+void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
+                                 pfstest_uintmax_t n,
+                                 unsigned int base, int zpad)
 {
-    uintmax_t d = 1;
+    pfstest_uintmax_t d = 1;
     int digits = 1;
 
     while (n / d > (base - 1)) {

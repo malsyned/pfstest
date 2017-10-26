@@ -18,7 +18,7 @@ static void assert_object_fits_in_heap(void *o, size_t size)
 {
     unsigned char *last_fitting_address = heap_end - (size - 1);
 
-    assert((unsigned char *)o <= last_fitting_address);
+    pfstest_assert((unsigned char *)o <= last_fitting_address);
 }
 
 static unsigned char *get_frame_start(dynamic_env_t *env)

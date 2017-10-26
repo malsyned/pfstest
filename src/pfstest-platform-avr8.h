@@ -12,11 +12,17 @@
 /* pfstest_nv_string adapted from avr-libc PSTR macro */
 # define pfstest_nv_string(s) (__extension__({static const pfstest_nv char __c[] = (s); &__c[0];}))
 
-void *pfstest_memcpy_nv(void *dest, const pfstest_nv_ptr void *src, size_t n);
-int pfstest_strcmp_nv(const char *s1, const pfstest_nv_ptr char *s2);
-int pfstest_strcmp_nvnv(const pfstest_nv_ptr char *s1,
-                        const pfstest_nv_ptr char *s2);
-char *pfstest_strcat_nv(char *dest, const pfstest_nv_ptr char *src);
+# define pfstest_memcpy_nv(dest, src, n) _pfstest_memcpy_nv_avr(dest, src, n)
+# define pfstest_strcmp_nv(s1, s2) _pfstest_strcmp_nv_avr(s1, s2)
+# define pfstest_strcmp_nvnv(s1, s2) _pfstest_strcmp_nvnv_avr(s1, s2)
+# define pfstest_strcat_nv(dest, src) _pfstest_strcat_nv_avr(dest, src)
+
+void *_pfstest_memcpy_nv_avr(void *dest, const pfstest_nv_ptr void *src,
+                             size_t n);
+int _pfstest_strcmp_nv_avr(const char *s1, const pfstest_nv_ptr char *s2);
+int _pfstest_strcmp_nvnv_avr(const pfstest_nv_ptr char *s1,
+                             const pfstest_nv_ptr char *s2);
+char *_pfstest_strcat_nv_avr(char *dest, const pfstest_nv_ptr char *src);
 
 #else /* !defined(__FLASH) */
 
@@ -41,12 +47,12 @@ char *pfstest_strcat_nv(char *dest, const pfstest_nv_ptr char *src);
 
 # define pfstest_strcmp_nv(ram, nv) strcmp_P(ram, nv)
 # define pfstest_strcat_nv(ram, nv) strcat_P(ram, nv)
-int pfstest_strcmp_nvnv(const char *s1, const char *s2);
+# define pfstest_strcmp_nvnv(s1, s2) _pfstest_strcmp_nvnv_avr(s1, s2)
+
+int _pfstest_strcmp_nvnv_avr(const char *s1, const char *s2);
 
 #endif /* !defined(__FLASH) */
 
-# define PFSTEST_NORETURN __attribute__((__noreturn__))
-# define pfstest_constructor(name)                          \
-    __attribute__((__constructor__)) static void name(void)
+#include "pfstest-platform-gcc.h"
 
 #endif /* !PFSTEST_PLATFORM_AVR8_H */

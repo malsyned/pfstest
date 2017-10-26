@@ -225,12 +225,12 @@ test(should_print_enum_val_out_of_range)
 test(should_match_bools)
 {
     assert_that("same bools pass",
-                the_bool(true), is_the_bool(true));
+                the_bool(pfstest_true), is_the_bool(pfstest_true));
 }
 
 pfstest_case(assert_different_bools)
 {
-    assert_that("", the_bool(true), is_the_bool(false));
+    assert_that("", the_bool(pfstest_true), is_the_bool(pfstest_false));
 }
 
 test(should_fail_on_different_bools)

@@ -7,17 +7,17 @@
 typedef struct
 {
     pfstest_reporter_t parent;
-    bool failed;
+    pfstest_bool failed;
 } message_spy_reporter_t;
 
 static void run_started(pfstest_reporter_t *reporter)
 {
-    ((message_spy_reporter_t *)reporter)->failed = false;
+    ((message_spy_reporter_t *)reporter)->failed = pfstest_false;
 }
 
 static void test_failed_message_complete(pfstest_reporter_t *reporter)
 {
-    ((message_spy_reporter_t *)reporter)->failed = true;
+    ((message_spy_reporter_t *)reporter)->failed = pfstest_true;
 }
 
 static void test_started(pfstest_reporter_t *reporter,
@@ -82,7 +82,7 @@ pfstest_reporter_t *pfstest_reporter_message_spy_new(int (*char_writer)(int))
 {
     message_spy_reporter_t *reporter = pfstest_alloc(sizeof(*reporter));
 
-    reporter->failed = false;
+    reporter->failed = pfstest_false;
     reporter->parent.char_writer = char_writer;
     reporter->parent.vtable = &message_spy_vtable;
 

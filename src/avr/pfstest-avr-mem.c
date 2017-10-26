@@ -1,6 +1,6 @@
 #include "pfstest-avr-mem.h"
 
-#include <assert.h>
+#include "pfstest-platform.h"
 
 static const unsigned char fill_chars[] = "EMTY";
 #define get_fill_char(i) (fill_chars[(i) & 0x3])
@@ -119,9 +119,9 @@ pfstest_avr_mem_usage_t _pfstest_avr_mem_usage(
     unsigned char *sp = get_sp();
     unsigned char *stack_hwm, *heap_hwm;
 
-    assert(size > 0);
-    assert(sp >= buf);
-    assert(sp < buf + size);
+    pfstest_c_assert(size > 0);
+    pfstest_c_assert(sp >= buf);
+    pfstest_c_assert(sp < buf + size);
 
     stack_hwm = find_stack_high_water_mark(buf, sp);
     if (stack_hwm == NULL) {
@@ -142,9 +142,9 @@ void _pfstest_avr_fill_unused_stack(unsigned char *buf, size_t size,
     unsigned char *sp = get_sp();
     unsigned char *stack_hwm;
 
-    assert(size > 0);
-    assert(sp >= buf);
-    assert(sp < buf + size);
+    pfstest_c_assert(size > 0);
+    pfstest_c_assert(sp >= buf);
+    pfstest_c_assert(sp < buf + size);
 
     stack_hwm = find_stack_high_water_mark(buf, sp);
     fill_to_sp(buf, stack_hwm, get_sp);

@@ -9,14 +9,14 @@ typedef struct
     char *program_name;
     char *filter_file;
     char *filter_name;
-    bool xml;
-    bool verbose;
-    bool color;
-    bool print_register_commands;
+    pfstest_bool xml;
+    pfstest_bool verbose;
+    pfstest_bool color;
+    pfstest_bool print_register_commands;
 } pfstest_arguments_t;
 
-bool pfstest_arguments_parse(pfstest_arguments_t *args,
-                             int argc, char *argv[]);
+pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
+                                     int argc, char *argv[]);
 void pfstest_print_register_commands(int (*print_char)(int),
                                      pfstest_list_t *before,
                                      pfstest_list_t *after,

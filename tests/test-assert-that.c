@@ -23,12 +23,12 @@ static pfstest_value_t some_value[1] = {{
         NULL,
     }};
 
-static bool always_return_true(pfstest_matcher_t *matcher,
-                               pfstest_value_t *actual)
+static pfstest_bool always_return_true(pfstest_matcher_t *matcher,
+                                       pfstest_value_t *actual)
 {
     (void)matcher;
     (void)actual;
-    return true;
+    return pfstest_true;
 }
 
 static pfstest_matcher_t matches_anything[1] = {{
@@ -37,12 +37,12 @@ static pfstest_matcher_t matches_anything[1] = {{
         NULL,
     }};
 
-static bool always_return_false(pfstest_matcher_t *matcher,
-                                pfstest_value_t *actual)
+static pfstest_bool always_return_false(pfstest_matcher_t *matcher,
+                                        pfstest_value_t *actual)
 {
     (void)matcher;
     (void)actual;
-    return false;
+    return pfstest_false;
 }
 
 static void nothing_printer(pfstest_reporter_t *reporter,

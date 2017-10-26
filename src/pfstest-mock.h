@@ -56,7 +56,7 @@ typedef struct
 {
     pfstest_list_node_t node;
     pfstest_expectation_t *expectation;
-    bool mark;
+    pfstest_bool mark;
 } pfstest_invocation_t;
 
 pfstest_value_t *pfstest_mock_invoke(

@@ -13,7 +13,7 @@ pfstest_value_t *pfstest_the_long(long n);
 pfstest_value_t *pfstest_the_ulong(unsigned long n);
 pfstest_value_t *pfstest_the_enum(
     int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map);
-pfstest_value_t *pfstest_the_bool(bool b);
+pfstest_value_t *pfstest_the_bool(pfstest_bool b);
 pfstest_value_t *pfstest_the_char(char c);
 pfstest_value_t *pfstest_the_string(const char *s);
 pfstest_value_t *pfstest_the_pointer(const void *p);

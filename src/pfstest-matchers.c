@@ -36,7 +36,7 @@ pfstest_matcher_t *pfstest_is_the_long(long n)
 pfstest_matcher_t *pfstest_is_the_ulong(unsigned long n)
 { return memcmp_matcher(the_ulong(n)); }
 
-pfstest_matcher_t *pfstest_is_the_bool(bool b)
+pfstest_matcher_t *pfstest_is_the_bool(pfstest_bool b)
 { return memcmp_matcher(the_bool(b)); }
 
 pfstest_matcher_t *pfstest_is_the_char(char c)
@@ -56,8 +56,8 @@ pfstest_matcher_t *pfstest_is_the_enum(
 
 /* is_the_pointer */
 
-static bool is_the_pointer_test(pfstest_matcher_t *matcher,
-                                pfstest_value_t *actual)
+static pfstest_bool is_the_pointer_test(pfstest_matcher_t *matcher,
+                                        pfstest_value_t *actual)
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
@@ -95,8 +95,8 @@ static void matches_the_nv_string_printer(
     pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\""));
 }
 
-static bool matches_the_nv_string_test(pfstest_matcher_t *matcher,
-                                       pfstest_value_t *actual_value)
+static pfstest_bool matches_the_nv_string_test(pfstest_matcher_t *matcher,
+                                               pfstest_value_t *actual_value)
 {
     const pfstest_nv_ptr char **sp =
         (const pfstest_nv_ptr char **)pfstest_matcher_data(matcher);
@@ -133,12 +133,12 @@ static void is_anything_printer(pfstest_reporter_t *reporter,
         reporter, pfstest_nv_string("anything"));
 }
 
-static bool is_anything_test(pfstest_matcher_t *matcher,
-                             pfstest_value_t *actual)
+static pfstest_bool is_anything_test(pfstest_matcher_t *matcher,
+                                     pfstest_value_t *actual)
 {
     (void)matcher;
     (void)actual;
-    return true;
+    return pfstest_true;
 }
 
 pfstest_matcher_t *_pfstest_is_anything(void)
@@ -175,8 +175,8 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
         reporter, pfstest_nv_string(" }"));
 }
 
-static bool submatchers_match_value_array(pfstest_list_t *submatchers,
-                                          pfstest_value_t **values)
+static pfstest_bool submatchers_match_value_array(
+    pfstest_list_t *submatchers, pfstest_value_t **values)
 {
     struct submatcher *submatcher;
 
@@ -184,11 +184,12 @@ static bool submatchers_match_value_array(pfstest_list_t *submatchers,
         pfstest_value_t *member_value = *values++;
         pfstest_matcher_t *member_matcher = submatcher->matcher;
 
-        bool match = pfstest_matcher_matches(member_matcher, member_value);
+        pfstest_bool match =
+            pfstest_matcher_matches(member_matcher, member_value);
         if (!match)
-            return false;
+            return pfstest_false;
     }
-    return true;
+    return pfstest_true;
 }
 
 static pfstest_value_t **box_int_members(pfstest_value_t *actual_value)
@@ -206,8 +207,8 @@ static pfstest_value_t **box_int_members(pfstest_value_t *actual_value)
     return actual_values;
 }
 
-static bool int_members_match_test(pfstest_matcher_t *matcher,
-                                   pfstest_value_t *actual_value)
+static pfstest_bool int_members_match_test(pfstest_matcher_t *matcher,
+                                           pfstest_value_t *actual_value)
 {
     pfstest_list_t *submembers = pfstest_matcher_data(matcher);
     pfstest_value_t **boxed_values = box_int_members(actual_value);

@@ -1,6 +1,6 @@
 #include "pfstest-platform-mcc18.h"
 
-int pfstest_strcmp_nvnv(const far rom char *s1, const far rom char *s2)
+int _pfstest_strcmp_nvnv_mcc18(const far rom char *s1, const far rom char *s2)
 {
     while (*s1 && *s1 == *s2)
         s1++, s2++;

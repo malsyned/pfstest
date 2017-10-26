@@ -31,10 +31,10 @@ typedef struct
     pfstest_reporter_t parent;
     pfstest_report_colorizer_t *colorizer;
     results_t results;
-    volatile bool test_failed;
-    bool test_ignored;
-    bool fresh_line;
-    bool indent;
+    volatile pfstest_bool test_failed;
+    pfstest_bool test_ignored;
+    pfstest_bool fresh_line;
+    pfstest_bool indent;
     const pfstest_nv_ptr char *test_name;
     const pfstest_nv_ptr char *test_file;
 } builtin_reporter_t;
@@ -73,7 +73,7 @@ static int builtin_print_char(pfstest_reporter_t *reporter, int c)
     return print_char((builtin_reporter_t *)reporter, c);
 }
 
-static void print_int(builtin_reporter_t *reporter, intmax_t n)
+static void print_int(builtin_reporter_t *reporter, pfstest_intmax_t n)
 {
     pfstest_reporter_print_int((pfstest_reporter_t *)reporter, n);
 }
@@ -110,8 +110,8 @@ static void test_started_bookkeeping(builtin_reporter_t *reporter,
                                      const pfstest_nv_ptr char *test_name,
                                      const pfstest_nv_ptr char *test_file)
 {
-    reporter->test_failed = false;
-    reporter->test_ignored = false;
+    reporter->test_failed = pfstest_false;
+    reporter->test_ignored = pfstest_false;
     reporter->test_name = test_name;
     reporter->test_file = test_file;
 }
@@ -137,7 +137,7 @@ static void test_started_verbose(pfstest_reporter_t *reporter,
 
 static void test_ignored_bookkeeping(builtin_reporter_t *reporter)
 {
-    reporter->test_ignored = true;
+    reporter->test_ignored = pfstest_true;
     reporter->results.ignored++;
 }
 
@@ -184,7 +184,7 @@ static void test_failed_message_start_common(
 
     print_nv_string(reporter, pfstest_nv_string("\n"));
 
-    reporter->indent = true;
+    reporter->indent = pfstest_true;
 }
 
 static void test_failed_message_start_standard(
@@ -215,13 +215,13 @@ static void test_failed_message_complete(pfstest_reporter_t *reporter)
 
     if (!as_builtin_reporter->test_failed) {
         as_builtin_reporter->results.failed++;
-        as_builtin_reporter->test_failed = true;
+        as_builtin_reporter->test_failed = pfstest_true;
     }
     print_nv_string(as_builtin_reporter, pfstest_nv_string("\n"));
-    as_builtin_reporter->indent = false;
+    as_builtin_reporter->indent = pfstest_false;
 }
 
-static bool test_passed(builtin_reporter_t *reporter)
+static pfstest_bool test_passed(builtin_reporter_t *reporter)
 {
     return (!reporter->test_ignored && !reporter->test_failed);
 }
@@ -260,10 +260,10 @@ static void run_complete(pfstest_reporter_t *reporter)
 {
     builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
     pfstest_report_colorizer_t *colorizer = as_builtin_reporter->colorizer;
-    bool pass_green = (as_builtin_reporter->results.passed > 0
-                       && as_builtin_reporter->results.failed == 0);
-    bool fail_red = (as_builtin_reporter->results.failed > 0);
-    bool ignore_yellow = (as_builtin_reporter->results.ignored > 0);
+    pfstest_bool pass_green = (as_builtin_reporter->results.passed > 0
+                               && as_builtin_reporter->results.failed == 0);
+    pfstest_bool fail_red = (as_builtin_reporter->results.failed > 0);
+    pfstest_bool ignore_yellow = (as_builtin_reporter->results.ignored > 0);
 
     print_nv_string(as_builtin_reporter,
                     pfstest_nv_string("\nRun complete. "));
@@ -340,8 +340,8 @@ static const pfstest_nv pfstest_reporter_vtable_t verbose_vtable = {
 
 static void bookkeeping_init(builtin_reporter_t *reporter)
 {
-    reporter->fresh_line = true;
-    reporter->indent = false;
+    reporter->fresh_line = pfstest_true;
+    reporter->indent = pfstest_false;
 }
 
 

@@ -3,8 +3,8 @@
 #include "pfstest-alloc.h"
 
 pfstest_arg_handler_t *pfstest_arg_handler_new(
-    bool (*test_function)(pfstest_arg_handler_t *arg_handler,
-                          pfstest_value_t *actual),
+    pfstest_bool (*test_function)(pfstest_arg_handler_t *arg_handler,
+                                  pfstest_value_t *actual),
     void (*matched_function)(pfstest_arg_handler_t *arg_handler,
                              pfstest_value_t *actual),
     void (*printer)(pfstest_reporter_t *reporter,
@@ -27,8 +27,8 @@ void pfstest_arg_handler_print(pfstest_reporter_t *reporter,
     arg_handler->printer(reporter, arg_handler);
 }
 
-bool pfstest_arg_handler_test(pfstest_arg_handler_t *arg_handler,
-                              pfstest_value_t *actual)
+pfstest_bool pfstest_arg_handler_test(pfstest_arg_handler_t *arg_handler,
+                                      pfstest_value_t *actual)
 {
     return arg_handler->test_function(arg_handler, actual);
 }

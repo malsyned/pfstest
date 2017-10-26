@@ -136,14 +136,14 @@ pfstest_list_t *pfstest_get_registered_plugins(void)
     return &registered_plugins;
 }
 
-static bool nv_strs_eq(
+static pfstest_bool nv_strs_eq(
     const pfstest_nv_ptr char *s1, const pfstest_nv_ptr char *s2)
 {
 
     return (0 == pfstest_strcmp_nvnv(s1, s2));
 }
 
-static bool str_eq_nv_str(
+static pfstest_bool str_eq_nv_str(
     const char *s1, const pfstest_nv_ptr char *s2)
 {
 
@@ -156,14 +156,14 @@ static void extract_test_descriptor(pfstest_t *the_test,
     pfstest_memcpy_nv(test_desc, the_test->nv_data, sizeof(*test_desc));
 }
 
-static bool test_matches_filter(_pfstest_test_nv_t *test_desc,
-                                const char *filter_file,
-                                const char *filter_name)
+static pfstest_bool test_matches_filter(_pfstest_test_nv_t *test_desc,
+                                        const char *filter_file,
+                                        const char *filter_name)
 {
-    bool file_passed = (filter_file == NULL
-                        || str_eq_nv_str(filter_file, test_desc->file));
-    bool name_passed = (filter_name == NULL
-                        || str_eq_nv_str(filter_name, test_desc->name));
+    pfstest_bool file_passed =
+        (filter_file == NULL || str_eq_nv_str(filter_file, test_desc->file));
+    pfstest_bool name_passed =
+        (filter_name == NULL || str_eq_nv_str(filter_name, test_desc->name));
 
     return name_passed && file_passed;
 }
@@ -174,8 +174,8 @@ static void extract_hook_descriptor(pfstest_hook_t *the_hook,
     pfstest_memcpy_nv(hook_desc, the_hook->nv_data, sizeof(*hook_desc));
 }
 
-static bool hook_in_file(_pfstest_hook_nv_t *hook_desc,
-                         const pfstest_nv_ptr char *file)
+static pfstest_bool hook_in_file(_pfstest_hook_nv_t *hook_desc,
+                                 const pfstest_nv_ptr char *file)
 {
     return nv_strs_eq(file, hook_desc->file);
 }
@@ -256,7 +256,7 @@ static void teardown_plugins(pfstest_list_t *plugins)
     plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_TEARDOWN);
 }
 
-static bool test_ignored(_pfstest_test_nv_t *test_desc)
+static pfstest_bool test_ignored(_pfstest_test_nv_t *test_desc)
 {
     return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
 }

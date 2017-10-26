@@ -13,7 +13,7 @@ struct assert_that_args
     pfstest_matcher_t *matcher;
 };
 
-static bool nv_str_empty(const pfstest_nv_ptr char *str)
+static pfstest_bool nv_str_empty(const pfstest_nv_ptr char *str)
 {
     return (0 == pfstest_strcmp_nvnv(str, pfstest_nv_string("")));
 }

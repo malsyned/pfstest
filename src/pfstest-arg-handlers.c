@@ -8,8 +8,8 @@
 
 /* arg_that */
 
-static bool arg_that_test(pfstest_arg_handler_t *arg_handler,
-                          pfstest_value_t *actual)
+static pfstest_bool arg_that_test(pfstest_arg_handler_t *arg_handler,
+                                  pfstest_value_t *actual)
 {
     pfstest_matcher_t *matcher = pfstest_arg_handler_data(arg_handler);
     return pfstest_matcher_matches(matcher, actual);
@@ -40,12 +40,12 @@ pfstest_arg_handler_t *pfstest_arg_that(pfstest_matcher_t *matcher)
 
 /* assign_arg */
 
-static bool assign_arg_test(pfstest_arg_handler_t *arg_handler,
-                            pfstest_value_t *actual)
+static pfstest_bool assign_arg_test(pfstest_arg_handler_t *arg_handler,
+                                    pfstest_value_t *actual)
 {
     (void)arg_handler;
     (void)actual;
-    return true;
+    return pfstest_true;
 }
 
 static void assign_arg_do_copy(pfstest_value_t *dest, pfstest_value_t *src)
@@ -92,8 +92,8 @@ struct assign_arg_that_args {
     pfstest_value_t *src;
 };
 
-static bool assign_arg_that_test(pfstest_arg_handler_t *arg_handler,
-                                 pfstest_value_t *actual)
+static pfstest_bool assign_arg_that_test(pfstest_arg_handler_t *arg_handler,
+                                         pfstest_value_t *actual)
 {
     struct assign_arg_that_args *args =
         pfstest_arg_handler_data(arg_handler);
