@@ -86,7 +86,8 @@ pfstest_nv_ptr:
     that a pointer should point to the non-volatile memory space. Note
     that this is only valid when creating pointers. It may not be
     correct to use this as a storage-class specifier for data objects
-    themselves (for example, on avr-gcc). See also: pfstest_nv_ptr
+    themselves (for example, on avr-gcc). If left undefined, defaults
+    to pfstest_nv. See also: pfstest_nv_ptr
 
 pfstest_nv_string(string):
 

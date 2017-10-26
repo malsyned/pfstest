@@ -18,7 +18,6 @@
     }
 
 #define pfstest_nv far rom
-#define pfstest_nv_ptr pfstest_nv
 #define pfstest_nv_string(string) ((const far rom char *)string)
 #define pfstest_memcpy_nv(ram, nv, size) memcpypgm2ram(ram, nv, size)
 #define pfstest_strcmp_nv(ram, nv) strcmppgm2ram(ram, nv)
