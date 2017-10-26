@@ -197,6 +197,12 @@ static void run_before_hooks(pfstest_list_t *hooks,
     }
 }
 
+static void run_after_hook(_pfstest_hook_nv_t *hook_desc)
+{
+    if (0 == setjmp(dynamic_env->test_jmp_buf))
+        hook_desc->function();
+}
+
 static void run_after_hooks(pfstest_list_t *hooks,
                             const pfstest_nv_ptr char *file)
 {
@@ -209,10 +215,8 @@ static void run_after_hooks(pfstest_list_t *hooks,
     pfstest_list_iter (hook, hooks) {
         extract_hook_descriptor(hook, &hook_desc);
 
-        if (hook_in_file(&hook_desc, file)) {
-            if (0 == setjmp(dynamic_env->test_jmp_buf))
-                hook_desc.function();
-        }
+        if (hook_in_file(&hook_desc, file))
+            run_after_hook(&hook_desc);
     }
 }
 
