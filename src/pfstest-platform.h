@@ -62,54 +62,54 @@ PFSTEST_NORETURN:
 
 PFSTest supports Harvard architectures, and on those architectures it
 attempts to use as little RAM as possible by storing strings and other
-constant data in non-volatile memory. The various compilers for these
+constant data in program memory. The various compilers for these
 architectures use different mechanisms and syntax to support multiple
 memory spaces, and much of the platform-specific configuration in this
-module is designed to provide a common API for accessing the
-non-volatile memory space.
+module is designed to provide a common API for accessing the program
+memory space.
 
 In order to enable Harvard architecture support, a platform port
 header must define:
 
-pfstest_nv:
+pfstest_pg:
 
     Expands to a keyword or keywords used by the compiler to specify
     that a data object should reside in the non-volatile memory space.
     Note that this is only valid when creating data objects. It may
     not be correct to use this as a general storage-class specifier to
     describe the location of the target of a pointer (for example, on
-    avr-gcc). See also: pfstest_nv_ptr
+    avr-gcc). See also: pfstest_pg_ptr
 
-pfstest_nv_ptr:
+pfstest_pg_ptr:
 
     Expands to a keyword or keywords used by the compiler to specify
     that a pointer should point to the non-volatile memory space. Note
     that this is only valid when creating pointers. It may not be
     correct to use this as a storage-class specifier for data objects
     themselves (for example, on avr-gcc). If left undefined, defaults
-    to pfstest_nv. See also: pfstest_nv_ptr
+    to pfstest_pg. See also: pfstest_pg_ptr
 
-pfstest_nv_string(string):
+pfstest_pg_string(string):
 
     Expands to a string constant which resides in the non-volatile
     memory space.
 
-pfstest_memcpy_nv(ram, nv, size):
+pfstest_memcpy_pg(ram, pg, size):
 
     A function or macro which is a version of memcpy which copies data
     from the nonvolatile memory space into RAM.
 
-pfstest_strcmp_nv(ram, nv):
+pfstest_strcmp_pg(ram, pg):
 
     A function or macro which is a version of strcmp which compares a
     string in RAM to one in the non-volatile memory space.
 
-pfstest_strcmp_nvnv(nv1, nv2):
+pfstest_strcmp_pgpg(pg1, pg2):
 
     A function or macro which is a version of strcmp which compares
     two strings that reside in the non-volatile memory space.
 
-pfstest_strcat_nv(ram, nv):
+pfstest_strcat_pg(ram, pg):
 
     A function or macro which is a version of strcat which
     concatenates a string which resides in the non-volatile memory
@@ -225,30 +225,30 @@ struct _pfstest_alignment_struct
 #endif
 
 /* Harvard architecture support */
-#ifndef pfstest_nv
-# define pfstest_nv
+#ifndef pfstest_pg
+# define pfstest_pg
 #endif
-#ifndef pfstest_nv_ptr
-# define pfstest_nv_ptr pfstest_nv
+#ifndef pfstest_pg_ptr
+# define pfstest_pg_ptr pfstest_pg
 #endif
-#ifndef pfstest_nv_string
-# define pfstest_nv_string(string) string
+#ifndef pfstest_pg_string
+# define pfstest_pg_string(string) string
 #endif
-#if !defined(pfstest_memcpy_nv) || !defined(pfstest_strcmp_nv)      \
-    || !defined(pfstest_strcmp_nvnv) || !defined(pfstest_strcat_nv)
+#if !defined(pfstest_memcpy_pg) || !defined(pfstest_strcmp_pg)      \
+    || !defined(pfstest_strcmp_pgpg) || !defined(pfstest_strcat_pg)
 # include <string.h>
 #endif
-#ifndef pfstest_memcpy_nv
-# define pfstest_memcpy_nv(ram, nv, size) memcpy(ram, nv, size)
+#ifndef pfstest_memcpy_pg
+# define pfstest_memcpy_pg(ram, pg, size) memcpy(ram, pg, size)
 #endif
-#ifndef pfstest_strcmp_nv
-# define pfstest_strcmp_nv(ram, nv) strcmp(ram, nv)
+#ifndef pfstest_strcmp_pg
+# define pfstest_strcmp_pg(ram, pg) strcmp(ram, pg)
 #endif
-#ifndef pfstest_strcmp_nvnv
-# define pfstest_strcmp_nvnv(nv1, nv2) strcmp(nv1, nv2)
+#ifndef pfstest_strcmp_pgpg
+# define pfstest_strcmp_pgpg(pg1, pg2) strcmp(pg1, pg2)
 #endif
-#ifndef pfstest_strcat_nv
-# define pfstest_strcat_nv(dest, src) strcat(dest, src)
+#ifndef pfstest_strcat_pg
+# define pfstest_strcat_pg(dest, src) strcat(dest, src)
 #endif
 
 /* mcc18 special snowflake */

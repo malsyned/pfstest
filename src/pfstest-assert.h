@@ -4,14 +4,14 @@
 #include "pfstest-value.h"
 #include "pfstest-matcher.h"
 
-void _pfstest_assert_that_at_location(const pfstest_nv_ptr char *file,
+void _pfstest_assert_that_at_location(const pfstest_pg_ptr char *file,
                                       int line,
-                                      const pfstest_nv_ptr char *message,
+                                      const pfstest_pg_ptr char *message,
                                       pfstest_value_t *actual,
                                       pfstest_matcher_t *matcher);
 #define pfstest_assert_that_at_location(file, line, message,            \
                                         actual, matcher)                \
-    _pfstest_assert_that_at_location(file, line, pfstest_nv_string(message), \
+    _pfstest_assert_that_at_location(file, line, pfstest_pg_string(message), \
                                      actual, matcher)
 #define pfstest_assert_that(message, actual, matcher)   \
     pfstest_assert_that_at_location(                    \

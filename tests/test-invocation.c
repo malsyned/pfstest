@@ -320,7 +320,7 @@ test(should_print_register_commands)
     pfstest_list_t after_hooks = PFSTEST_LIST_EMPTY();
     pfstest_list_t plugins = PFSTEST_LIST_EMPTY();
 
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "    register_plugin(plugin1);\n"
         "    register_plugin(plugin2);\n"
         "    register_before(before1);\n"
@@ -345,12 +345,12 @@ test(should_print_register_commands)
 
     assert_that("Test registrations are printed",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_print_usage)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "usage: program_name [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
     
     char program_name[] = "program_name";
@@ -358,17 +358,17 @@ test(should_print_usage)
 
     assert_that("Usage message is printed",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(print_usage_should_cope_with_null_program_name)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "usage: [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
 
     pfstest_print_usage(capture_output_char, NULL);
 
     assert_that("Usage message is printed without program name",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }

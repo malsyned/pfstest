@@ -90,14 +90,14 @@ pfstest_case(fails_a_verification)
 
 test(should_report_when_verification_fails)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Never called dep_func1 with (the int 2)");
 
     capture_test_results_with_plugins(fails_a_verification, plugins);
 
     assert_that("Verification failures are reported",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(fails_invocation_count)
@@ -110,7 +110,7 @@ pfstest_case(fails_invocation_count)
 
 test(should_verify_invocation_counts)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Wanted dep_func1 with (the int 2) exactly 1 time\n"
         "Was called 2 times");
 
@@ -118,7 +118,7 @@ test(should_verify_invocation_counts)
 
     assert_that("Invocation counts are verified",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(fails_to_satisfy_multiple_verifiers)
@@ -131,7 +131,7 @@ pfstest_case(fails_to_satisfy_multiple_verifiers)
 
 test(should_handle_multiple_verifiers)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Never called dep_func1 with (the int 2)");
 
     capture_test_results_with_plugins(fails_to_satisfy_multiple_verifiers,
@@ -139,7 +139,7 @@ test(should_handle_multiple_verifiers)
 
     assert_that("Multiple verifiers are checked",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_handle_multiple_invocations)
@@ -178,7 +178,7 @@ pfstest_case(fails_to_invoke_assign_arg_expectation)
 
 test(should_print_sensible_explanation_of_assign_arg_in_failures)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Never called dep_func2 with (the int 2, any pointer)");
 
     capture_test_results_with_plugins(fails_to_invoke_assign_arg_expectation,
@@ -186,7 +186,7 @@ test(should_print_sensible_explanation_of_assign_arg_in_failures)
 
     assert_that("assign_arg description is sensible",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_and_return_through_pointer)
@@ -219,7 +219,7 @@ pfstest_case(fails_to_invoke_assign_arg_that_expectation)
 
 test(should_print_matcher_for_failures_involving_assign_arg_that)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Never called dep_func2 with (the int 2, the string \"foo\")");
 
     capture_test_results_with_plugins(
@@ -227,7 +227,7 @@ test(should_print_matcher_for_failures_involving_assign_arg_that)
 
     assert_that("assign_arg_that description is sensible",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_stub_different_return_values_with_one_time)
@@ -301,7 +301,7 @@ pfstest_case(fails_to_invoke_in_order)
 
 test(should_fail_when_out_of_order)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Not called in order: dep_func2 with (the int 4, the string \"foo\")\n"
         "Expected after: dep_func1 with (the int 2)");
 
@@ -309,7 +309,7 @@ test(should_fail_when_out_of_order)
 
     assert_that("in_order invocations are verified",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_verify_multiple_in_orders)
@@ -359,7 +359,7 @@ pfstest_case(invokes_too_many_times)
 
 test(should_reject_too_many_invocations)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Wanted dep_func1 with (the int 1) exactly 3 times\n"
         "Was called 4 times");
 
@@ -367,7 +367,7 @@ test(should_reject_too_many_invocations)
 
     assert_that("too many invocation counts are verified in exact mode",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(invokes_too_few_times)
@@ -381,7 +381,7 @@ pfstest_case(invokes_too_few_times)
 
 test(should_reject_too_few_invocations)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Wanted dep_func1 with (the int 1) exactly 3 times\n"
         "Was called 2 times");
 
@@ -389,7 +389,7 @@ test(should_reject_too_few_invocations)
 
     assert_that("too few invocation counts are verified in exact mode",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_verify_at_most_invocation_count)
@@ -416,7 +416,7 @@ pfstest_case(invokes_too_many_times_in_at_most_mode)
 
 test(at_most_should_reject_too_many_invocations)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Wanted dep_func1 with (the int 1) at most 3 times\n"
         "Was called 4 times");
 
@@ -425,7 +425,7 @@ test(at_most_should_reject_too_many_invocations)
 
     assert_that("too many invocation counts are verified in at_most mode",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(at_most_should_allow_fewer_invocations)
@@ -459,7 +459,7 @@ pfstest_case(invokes_too_few_times_in_at_least_mode)
 
 test(at_least_should_reject_insufficient_invocations)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Wanted dep_func1 with (the int 1) at least 3 times\n"
         "Was called 2 times");
 
@@ -468,7 +468,7 @@ test(at_least_should_reject_insufficient_invocations)
 
     assert_that("too few invocation counts are verified in at_least mode",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(at_least_should_allow_more_invocations)
@@ -506,7 +506,7 @@ pfstest_case(fails_to_pass_verify_no_more_interactions)
 
 test(verify_no_more_interactions_should_reject_surplus_interactions)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Unexpected interactions with dep_func1");
 
     capture_test_results_with_plugins(
@@ -514,7 +514,7 @@ test(verify_no_more_interactions_should_reject_surplus_interactions)
 
     assert_that("verify_no_more_interactions rejects surplus interactions",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(in_order_should_mark_interactions)
@@ -555,7 +555,7 @@ pfstest_case(fails_to_pass_verify_no_more_invocations)
 
 test(verify_no_more_invocations_should_reject_surplus_invocations)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Unexpected mock invocations");
 
     capture_test_results_with_plugins(
@@ -563,5 +563,5 @@ test(verify_no_more_invocations_should_reject_surplus_invocations)
 
     assert_that("verify_no_more_invocations rejects surplus invocations",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }

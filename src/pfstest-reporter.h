@@ -7,7 +7,7 @@ typedef struct _pfstest_reporter_vtable_t pfstest_reporter_vtable_t;
 
 typedef struct 
 {
-    const pfstest_nv_ptr pfstest_reporter_vtable_t *vtable;
+    const pfstest_pg_ptr pfstest_reporter_vtable_t *vtable;
     int (*char_writer)(int);
 } pfstest_reporter_t;
 
@@ -16,11 +16,11 @@ struct _pfstest_reporter_vtable_t
     int (*print_char)(pfstest_reporter_t *reporter, int c);
     void (*run_started)(pfstest_reporter_t *reporter);
     void (*test_started)(pfstest_reporter_t *reporter,
-                         const pfstest_nv_ptr char *test_name,
-                         const pfstest_nv_ptr char *test_file);
+                         const pfstest_pg_ptr char *test_name,
+                         const pfstest_pg_ptr char *test_file);
     void (*test_ignored)(pfstest_reporter_t *reporter);
     void (*test_failed_message_start)(pfstest_reporter_t *reporter,
-                                      const pfstest_nv_ptr char *file,
+                                      const pfstest_pg_ptr char *file,
                                       int line);
     void (*test_failed_message_complete)(pfstest_reporter_t *reporter);
     void (*test_complete)(pfstest_reporter_t *reporter);
@@ -30,8 +30,8 @@ struct _pfstest_reporter_vtable_t
 
 int pfstest_reporter_print_char(pfstest_reporter_t *reporter, int c);
 void pfstest_reporter_print_escaped_char(pfstest_reporter_t *reporter, int c);
-void pfstest_reporter_print_nv_string(
-    pfstest_reporter_t *reporter, const pfstest_nv_ptr char *s);
+void pfstest_reporter_print_pg_string(
+    pfstest_reporter_t *reporter, const pfstest_pg_ptr char *s);
 void pfstest_reporter_print_int(pfstest_reporter_t *reporter,
                                 pfstest_intmax_t i);
 void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
@@ -41,11 +41,11 @@ void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
 void pfstest_reporter_run_started(pfstest_reporter_t *reporter);
 void pfstest_reporter_test_started(
     pfstest_reporter_t *reporter,
-    const pfstest_nv_ptr char *test_name,
-    const pfstest_nv_ptr char *test_file);
+    const pfstest_pg_ptr char *test_name,
+    const pfstest_pg_ptr char *test_file);
 void pfstest_reporter_test_ignored(pfstest_reporter_t *reporter);
 void pfstest_reporter_test_failed_message_start(
-    pfstest_reporter_t *reporter, const pfstest_nv_ptr char *file, int line);
+    pfstest_reporter_t *reporter, const pfstest_pg_ptr char *file, int line);
 void pfstest_reporter_test_failed_message_complete(
     pfstest_reporter_t *reporter);
 void pfstest_reporter_test_complete(pfstest_reporter_t *reporter);

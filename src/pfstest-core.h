@@ -23,40 +23,40 @@
 
 typedef struct
 {
-    const pfstest_nv_ptr char *name;
-    const pfstest_nv_ptr char *file;
+    const pfstest_pg_ptr char *name;
+    const pfstest_pg_ptr char *file;
     int line;
     unsigned int flags;
     void (*function)(void);
-} _pfstest_test_nv_t;
+} _pfstest_test_pg_t;
 
 typedef struct
 {
     pfstest_list_node_t list_node;
-    const pfstest_nv_ptr _pfstest_test_nv_t *nv_data;
+    const pfstest_pg_ptr _pfstest_test_pg_t *pg_data;
 } pfstest_t;
 
 #define _pfstest_function_name(name) _pfstest_econcat(__pfstest__, name)
 #define _pfstest_name_var(name) _pfstest_econcat(__pfstest_name__, name)
 #define _pfstest_file_var(name) _pfstest_econcat(__pfstest_file__, name)
-#define _pfstest_nv_var(name) _pfstest_econcat(__pfstest_nv__, name)
+#define _pfstest_pg_var(name) _pfstest_econcat(__pfstest_pg__, name)
 #define _pfstest_func_decl(name)                    \
     static void _pfstest_function_name(name)(void)
 
 #define _pfstest_object_decl(name) pfstest_t name[]
 
 #define _pfstest_object(name, flags)                                    \
-    static const pfstest_nv char _pfstest_name_var(name)[] = #name;     \
-    static const pfstest_nv char _pfstest_file_var(name)[] =            \
+    static const pfstest_pg char _pfstest_name_var(name)[] = #name;     \
+    static const pfstest_pg char _pfstest_file_var(name)[] =            \
         __PFSTEST_FILE__;                                               \
-    static const pfstest_nv _pfstest_test_nv_t _pfstest_nv_var(name) =  \
+    static const pfstest_pg _pfstest_test_pg_t _pfstest_pg_var(name) =  \
     {                                                                   \
         _pfstest_name_var(name),                                        \
         _pfstest_file_var(name),                                        \
         __LINE__, flags,                                                \
         _pfstest_function_name(name),                                   \
     };                                                                  \
-    pfstest_t name[1] = {{ {NULL}, &_pfstest_nv_var(name)}}
+    pfstest_t name[1] = {{ {NULL}, &_pfstest_pg_var(name)}}
 
 #define _pfstest_case_decl(name) extern pfstest_t name[]
 #if defined(pfstest_constructor)
@@ -114,20 +114,20 @@ pfstest_list_t *pfstest_get_registered_tests(void);
 
 typedef struct 
 {
-    const pfstest_nv_ptr char *file;
-    const pfstest_nv_ptr char *name;
+    const pfstest_pg_ptr char *file;
+    const pfstest_pg_ptr char *name;
     void (*function)(void);
-} _pfstest_hook_nv_t;
+} _pfstest_hook_pg_t;
 
 typedef struct 
 {
     pfstest_list_node_t list_node;
-    const pfstest_nv_ptr _pfstest_hook_nv_t *nv_data;
+    const pfstest_pg_ptr _pfstest_hook_pg_t *pg_data;
 } pfstest_hook_t;
 
 #define _pfstest_hook_name(name) _pfstest_econcat(__pfstest_hook__, name)
-#define _pfstest_hook_nv_var(name)              \
-    _pfstest_econcat(__pfstest_hook_nv__, name)
+#define _pfstest_hook_pg_var(name)              \
+    _pfstest_econcat(__pfstest_hook_pg__, name)
 #define _pfstest_hook_file_var(name)                \
     _pfstest_econcat(__pfstest_hook_file__, name)
 #define _pfstest_hook_name_var(name)                \
@@ -136,19 +136,19 @@ typedef struct
     static void _pfstest_hook_name(name)(void)
 
 #define _pfstest_hook_object(name)                                  \
-    static const pfstest_nv char _pfstest_hook_file_var(name)[] =   \
+    static const pfstest_pg char _pfstest_hook_file_var(name)[] =   \
         __PFSTEST_FILE__;                                                   \
-    static const pfstest_nv char _pfstest_hook_name_var(name)[] =   \
+    static const pfstest_pg char _pfstest_hook_name_var(name)[] =   \
         #name;                                                      \
-    static const pfstest_nv _pfstest_hook_nv_t                      \
-    _pfstest_hook_nv_var(name) =                                    \
+    static const pfstest_pg _pfstest_hook_pg_t                      \
+    _pfstest_hook_pg_var(name) =                                    \
     {                                                               \
         _pfstest_hook_file_var(name),                               \
         _pfstest_hook_name_var(name),                               \
         _pfstest_hook_name(name)                                    \
     };                                                              \
     pfstest_hook_t name[1] =                                        \
-    {{ {NULL}, &_pfstest_hook_nv_var(name) }}
+    {{ {NULL}, &_pfstest_hook_pg_var(name) }}
 
 #define _pfstest_hook_decl(name) extern pfstest_hook_t name[]
 
@@ -206,33 +206,33 @@ pfstest_list_t *pfstest_get_registered_after_hooks(void);
 
 typedef struct
 {
-    const pfstest_nv_ptr char *name;
+    const pfstest_pg_ptr char *name;
     void (*callbacks[3])(void);
-} _pfstest_plugin_nv_t;
+} _pfstest_plugin_pg_t;
 
 typedef struct
 {
     pfstest_list_node_t list_node;
-    const pfstest_nv_ptr _pfstest_plugin_nv_t *nv_data;
+    const pfstest_pg_ptr _pfstest_plugin_pg_t *pg_data;
 } pfstest_plugin_t;
 
 #define _pfstest_plugin_name_var(name)              \
     _pfstest_econcat(__pfstest_plugin_name__, name)
 
-#define _pfstest_plugin_nv_var(name)              \
-    _pfstest_econcat(__pfstest_plugin_nv__, name)
+#define _pfstest_plugin_pg_var(name)              \
+    _pfstest_econcat(__pfstest_plugin_pg__, name)
 
 #define _pfstest_plugin_decl(plugin_name)       \
     extern pfstest_plugin_t plugin_name[]
 
 #define pfstest_plugin_define(plugin_name, setup, checks, teardown)     \
-    static const pfstest_nv char                                        \
+    static const pfstest_pg char                                        \
     _pfstest_plugin_name_var(plugin_name)[] = #plugin_name;             \
-    static const pfstest_nv _pfstest_plugin_nv_t                        \
-    _pfstest_plugin_nv_var(plugin_name) =                               \
+    static const pfstest_pg _pfstest_plugin_pg_t                        \
+    _pfstest_plugin_pg_var(plugin_name) =                               \
     {_pfstest_plugin_name_var(plugin_name), {setup, checks, teardown}}; \
     pfstest_plugin_t plugin_name[1] =                                   \
-    {{ {NULL}, &_pfstest_plugin_nv_var(plugin_name) }}
+    {{ {NULL}, &_pfstest_plugin_pg_var(plugin_name) }}
 
 #if defined(pfstest_constructor)
 /* The final line is just something I know will be redundant to give
@@ -268,18 +268,18 @@ pfstest_list_t *pfstest_get_registered_plugins(void);
 
 PFSTEST_NORETURN
 void pfstest_fail_with_printer(
-    const pfstest_nv_ptr char *file, int line,
+    const pfstest_pg_ptr char *file, int line,
     void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object);
 
-#define __PFSTEST_NV_FILE__ pfstest_nv_string(__PFSTEST_FILE__)
+#define __PFSTEST_NV_FILE__ pfstest_pg_string(__PFSTEST_FILE__)
 
 PFSTEST_NORETURN
 void _pfstest_fail_at_location(
-    const pfstest_nv_ptr char *file, int line,
-    const pfstest_nv_ptr char *message);
+    const pfstest_pg_ptr char *file, int line,
+    const pfstest_pg_ptr char *message);
 #define pfstest_fail_at_location(file, line, message)                   \
-    _pfstest_fail_at_location(file, line, pfstest_nv_string(message))
+    _pfstest_fail_at_location(file, line, pfstest_pg_string(message))
 #define pfstest_fail(message)                                       \
     pfstest_fail_at_location(__PFSTEST_NV_FILE__, __LINE__, message)
 

@@ -20,7 +20,7 @@ pfstest_case(assert_different_shorts)
 
 test(should_fail_on_different_shorts)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the short -32768\n"
         "Actual:   the short 32767");
@@ -29,7 +29,7 @@ test(should_fail_on_different_shorts)
 
     assert_that("different shorts fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_ushorts)
@@ -45,7 +45,7 @@ pfstest_case(assert_different_ushorts)
 
 test(should_fail_on_different_ushorts)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the ushort 65534\n"
         "Actual:   the ushort 65535");
@@ -54,7 +54,7 @@ test(should_fail_on_different_ushorts)
 
     assert_that("different ushorts fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_ints)
@@ -69,7 +69,7 @@ pfstest_case(assert_different_ints)
 
 test(should_fail_on_different_ints)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the int 32767\n"
         "Actual:   the int -32768");
@@ -78,7 +78,7 @@ test(should_fail_on_different_ints)
 
     assert_that("different ints fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_uints)
@@ -94,7 +94,7 @@ pfstest_case(assert_different_uints)
 
 test(should_fail_on_different_uints)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the uint 65535\n"
         "Actual:   the uint 65534");
@@ -103,7 +103,7 @@ test(should_fail_on_different_uints)
 
     assert_that("different uints fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_longs)
@@ -119,7 +119,7 @@ pfstest_case(assert_different_longs)
 
 test(should_fail_on_different_longs)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the long -2147483648\n"
         "Actual:   the long 2147483647");
@@ -128,7 +128,7 @@ test(should_fail_on_different_longs)
 
     assert_that("different longs fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_ulongs)
@@ -144,7 +144,7 @@ pfstest_case(assert_different_ulongs)
 
 test(should_fail_on_different_ulongs)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the ulong 4294967294\n"
         "Actual:   the ulong 4294967295");
@@ -153,7 +153,7 @@ test(should_fail_on_different_ulongs)
 
     assert_that("different ulongs fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 enum some_enum {
@@ -162,11 +162,11 @@ enum some_enum {
     e_baz
 };
 
-const pfstest_nv char e_foo_name[] = "e_foo";
-const pfstest_nv char e_bar_name[] = "e_bar";
-const pfstest_nv char e_baz_name[] = "e_baz";
+const pfstest_pg char e_foo_name[] = "e_foo";
+const pfstest_pg char e_bar_name[] = "e_bar";
+const pfstest_pg char e_baz_name[] = "e_baz";
 
-const pfstest_nv_ptr char *const pfstest_nv some_enum_map[] = {
+const pfstest_pg_ptr char *const pfstest_pg some_enum_map[] = {
     e_foo_name,
     e_bar_name,
     e_baz_name,
@@ -189,7 +189,7 @@ pfstest_case(assert_different_enums)
 
 test(should_fail_on_different_enums)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the enum e_baz\n"
         "Actual:   the enum e_foo");
@@ -198,7 +198,7 @@ test(should_fail_on_different_enums)
 
     assert_that("different enums fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_out_of_range_enums)
@@ -210,7 +210,7 @@ pfstest_case(assert_out_of_range_enums)
 
 test(should_print_enum_val_out_of_range)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the enum 3 [out of range]\n"
         "Actual:   the enum -1 [out of range]");
@@ -219,7 +219,7 @@ test(should_print_enum_val_out_of_range)
 
     assert_that("different enums fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_bools)
@@ -235,7 +235,7 @@ pfstest_case(assert_different_bools)
 
 test(should_fail_on_different_bools)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the bool <false>\n"
         "Actual:   the bool <true>");
@@ -244,7 +244,7 @@ test(should_fail_on_different_bools)
 
     assert_that("different bools fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_chars)
@@ -259,7 +259,7 @@ pfstest_case(assert_different_chars)
 
 test(should_fail_on_different_chars)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the char 'd'\n"
         "Actual:   the char 'c'");
@@ -268,7 +268,7 @@ test(should_fail_on_different_chars)
 
     assert_that("different chars fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_special_chars)
@@ -278,7 +278,7 @@ pfstest_case(assert_special_chars)
 
 test(the_char_should_escape_special_chars_in_failure_messages)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the char 'n'\n"
         "Actual:   the char '\\n'");
@@ -287,7 +287,7 @@ test(the_char_should_escape_special_chars_in_failure_messages)
 
     assert_that("different chars fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_strings)
@@ -307,7 +307,7 @@ pfstest_case(assert_different_strings)
 
 test(should_fail_on_different_strings)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the string \"bar\"\n"
         "Actual:   the string \"foo\"");
@@ -316,7 +316,7 @@ test(should_fail_on_different_strings)
 
     assert_that("different strings fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_shorter_actual_string)
@@ -329,7 +329,7 @@ pfstest_case(assert_shorter_actual_string)
 
 test(should_fail_on_shorter_actual_string)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the string \"foobar\"\n"
         "Actual:   the string \"foo\"");
@@ -338,7 +338,7 @@ test(should_fail_on_shorter_actual_string)
 
     assert_that("shorter actual string fails",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_shorter_expected_string)
@@ -351,7 +351,7 @@ pfstest_case(assert_shorter_expected_string)
 
 test(should_fail_on_shorter_expected_string)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the string \"foo\"\n"
         "Actual:   the string \"foobar\"");
@@ -360,7 +360,7 @@ test(should_fail_on_shorter_expected_string)
 
     assert_that("shorter expected string fails",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_special_strings)
@@ -372,7 +372,7 @@ pfstest_case(assert_special_strings)
 
 test(the_string_should_escape_special_chars_in_failure_messages)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the string \"\\t\\v\\\\\\\"\\?\"\n"
         "Actual:   the string \"\\a\\b\\f\\n\\r\"");
@@ -381,7 +381,7 @@ test(the_string_should_escape_special_chars_in_failure_messages)
 
     assert_that("different strings fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 #ifdef __18CXX
@@ -405,7 +405,7 @@ pfstest_case(assert_different_pointers)
 
 test(should_fail_on_different_pointers)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the pointer <0xbeef>\n"
         "Actual:   the pointer <0xdead>");
@@ -414,7 +414,7 @@ test(should_fail_on_different_pointers)
 
     assert_that("different pointers fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_pointer_against_null)
@@ -424,7 +424,7 @@ pfstest_case(assert_pointer_against_null)
 
 test(should_print_null_pointers_specially)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the pointer <NULL>\n"
         "Actual:   the pointer <0xdead>");
@@ -433,7 +433,7 @@ test(should_print_null_pointers_specially)
 
     assert_that("NULL pointers are printed specially",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_memory)
@@ -458,7 +458,7 @@ pfstest_case(assert_different_memory)
 
 test(should_fail_on_different_memory)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the memory {0x01, 0x02, 0x04, 0x04, 0x05}\n"
         "Actual:   the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
@@ -467,7 +467,7 @@ test(should_fail_on_different_memory)
 
     assert_that("different memory fails",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_longer_memory)
@@ -482,7 +482,7 @@ pfstest_case(assert_longer_memory)
 
 test(should_fail_on_longer_memory)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the memory {0x01, 0x02, 0x03, 0x04}\n"
         "Actual:   the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
@@ -491,7 +491,7 @@ test(should_fail_on_longer_memory)
 
     assert_that("longer memory fails",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_shorter_memory)
@@ -506,7 +506,7 @@ pfstest_case(assert_shorter_memory)
 
 test(should_fail_on_shorter_memory)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the memory {0x01, 0x02, 0x03, 0x04, 0x05}\n"
         "Actual:   the memory {0x01, 0x02, 0x03, 0x04}");
@@ -515,7 +515,7 @@ test(should_fail_on_shorter_memory)
 
     assert_that("shorter memory fails",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_anything)
@@ -530,13 +530,13 @@ test(should_match_anything)
 
 test(is_anything_should_print_itself)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string("anything");
+    const pfstest_pg_ptr char *expected = pfstest_pg_string("anything");
 
     pfstest_matcher_print(message_spy, is_anything);
 
     assert_that("is_anything()'s printer prints \"anything\"",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_memory_with_pointer)
@@ -573,7 +573,7 @@ pfstest_case(assert_different_data_types)
 
 test(should_detect_data_type_mismatches)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the ushort 65535\n"
         "Actual:   the memory {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}"
@@ -583,7 +583,7 @@ test(should_detect_data_type_mismatches)
 
     assert_that("different data types fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_int_array_against_matcher_list)
@@ -614,7 +614,7 @@ pfstest_case(assert_mismatched_arrays)
 
 test(should_fail_on_int_array_element_mismatch)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: { the int 1, the int 3, the int 32767, the int -5 }\n"
         "Actual:   { the int 1, the int 3, the int 32767, the int -4 }");
@@ -623,7 +623,7 @@ test(should_fail_on_int_array_element_mismatch)
 
     assert_that("Non-matching integer arrays fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 #ifdef PFSTEST_HAS_STDINT
@@ -639,7 +639,7 @@ pfstest_case(assert_different_u8s)
 
 test(should_fail_on_different_u8s)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the uint8_t 6\n"
         "Actual:   the uint8_t 5");
@@ -648,7 +648,7 @@ test(should_fail_on_different_u8s)
 
     assert_that("different u8s fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_match_u16)
@@ -663,7 +663,7 @@ pfstest_case(assert_different_u16s)
 
 test(should_fail_on_different_u16s)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: the uint16_t 257\n"
         "Actual:   the uint16_t 256");
@@ -672,6 +672,6 @@ test(should_fail_on_different_u16s)
 
     assert_that("different u16s fail",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 #endif /* defined(PFSTEST_HAS_STDINT) */

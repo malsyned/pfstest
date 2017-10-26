@@ -13,14 +13,14 @@ pfstest_matcher_t *pfstest_is_the_uint(unsigned int n);
 pfstest_matcher_t *pfstest_is_the_long(long n);
 pfstest_matcher_t *pfstest_is_the_ulong(unsigned long n);
 pfstest_matcher_t *pfstest_is_the_enum(
-    int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map);
+    int e, const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map);
 pfstest_matcher_t *pfstest_is_the_char(char c);
 pfstest_matcher_t *pfstest_is_the_bool(pfstest_bool b);
 pfstest_matcher_t *pfstest_is_the_string(const char *s);
 pfstest_matcher_t *pfstest_is_the_pointer(const void *p);
 pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size);
-pfstest_matcher_t *pfstest_matches_the_nv_string(
-    const pfstest_nv_ptr char *s);
+pfstest_matcher_t *pfstest_matches_the_pg_string(
+    const pfstest_pg_ptr char *s);
 
 pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first, ...);
 
@@ -63,8 +63,8 @@ pfstest_matcher_t *_pfstest_is_anything(void);
 #ifndef PFSTEST_NOALIAS_is_the_memory
 # define is_the_memory pfstest_is_the_memory
 #endif
-#ifndef PFSTEST_NOALIAS_matches_the_nv_string
-# define matches_the_nv_string pfstest_matches_the_nv_string
+#ifndef PFSTEST_NOALIAS_matches_the_pg_string
+# define matches_the_pg_string pfstest_matches_the_pg_string
 #endif
 #ifndef PFSTEST_NOALIAS_int_members_match
 # define int_members_match pfstest_int_members_match

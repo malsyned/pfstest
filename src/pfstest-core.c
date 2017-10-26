@@ -39,7 +39,7 @@ static void dynamic_env_pop(void)
 }
 
 void pfstest_fail_with_printer(
-    const pfstest_nv_ptr char *file, int line,
+    const pfstest_pg_ptr char *file, int line,
     void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object)
 {
@@ -54,18 +54,18 @@ void pfstest_fail_with_printer(
 
 struct message_printer_args
 {
-    const pfstest_nv_ptr char *message;
+    const pfstest_pg_ptr char *message;
 };
 
 static void message_printer(pfstest_reporter_t *reporter, const void *object)
 {
     const struct message_printer_args *args = object;
-    pfstest_reporter_print_nv_string(reporter, args->message);
+    pfstest_reporter_print_pg_string(reporter, args->message);
 }
 
 void _pfstest_fail_at_location(
-    const pfstest_nv_ptr char *file, int line,
-    const pfstest_nv_ptr char *message)
+    const pfstest_pg_ptr char *file, int line,
+    const pfstest_pg_ptr char *message)
 {
     struct message_printer_args args;
 
@@ -136,55 +136,55 @@ pfstest_list_t *pfstest_get_registered_plugins(void)
     return &registered_plugins;
 }
 
-static pfstest_bool nv_strs_eq(
-    const pfstest_nv_ptr char *s1, const pfstest_nv_ptr char *s2)
+static pfstest_bool pg_strs_eq(
+    const pfstest_pg_ptr char *s1, const pfstest_pg_ptr char *s2)
 {
 
-    return (0 == pfstest_strcmp_nvnv(s1, s2));
+    return (0 == pfstest_strcmp_pgpg(s1, s2));
 }
 
-static pfstest_bool str_eq_nv_str(
-    const char *s1, const pfstest_nv_ptr char *s2)
+static pfstest_bool str_eq_pg_str(
+    const char *s1, const pfstest_pg_ptr char *s2)
 {
 
-    return (0 == pfstest_strcmp_nv(s1, s2));
+    return (0 == pfstest_strcmp_pg(s1, s2));
 }
 
 static void extract_test_descriptor(pfstest_t *the_test,
-                                    _pfstest_test_nv_t *test_desc)
+                                    _pfstest_test_pg_t *test_desc)
 {
-    pfstest_memcpy_nv(test_desc, the_test->nv_data, sizeof(*test_desc));
+    pfstest_memcpy_pg(test_desc, the_test->pg_data, sizeof(*test_desc));
 }
 
-static pfstest_bool test_matches_filter(_pfstest_test_nv_t *test_desc,
+static pfstest_bool test_matches_filter(_pfstest_test_pg_t *test_desc,
                                         const char *filter_file,
                                         const char *filter_name)
 {
     pfstest_bool file_passed =
-        (filter_file == NULL || str_eq_nv_str(filter_file, test_desc->file));
+        (filter_file == NULL || str_eq_pg_str(filter_file, test_desc->file));
     pfstest_bool name_passed =
-        (filter_name == NULL || str_eq_nv_str(filter_name, test_desc->name));
+        (filter_name == NULL || str_eq_pg_str(filter_name, test_desc->name));
 
     return name_passed && file_passed;
 }
 
 static void extract_hook_descriptor(pfstest_hook_t *the_hook,
-                                    _pfstest_hook_nv_t *hook_desc)
+                                    _pfstest_hook_pg_t *hook_desc)
 {
-    pfstest_memcpy_nv(hook_desc, the_hook->nv_data, sizeof(*hook_desc));
+    pfstest_memcpy_pg(hook_desc, the_hook->pg_data, sizeof(*hook_desc));
 }
 
-static pfstest_bool hook_in_file(_pfstest_hook_nv_t *hook_desc,
-                                 const pfstest_nv_ptr char *file)
+static pfstest_bool hook_in_file(_pfstest_hook_pg_t *hook_desc,
+                                 const pfstest_pg_ptr char *file)
 {
-    return nv_strs_eq(file, hook_desc->file);
+    return pg_strs_eq(file, hook_desc->file);
 }
 
 static void run_before_hooks(pfstest_list_t *hooks,
-                             const pfstest_nv_ptr char *file)
+                             const pfstest_pg_ptr char *file)
 {
     pfstest_hook_t *hook;
-    _pfstest_hook_nv_t hook_desc;
+    _pfstest_hook_pg_t hook_desc;
 
     if (hooks == NULL)
         return;
@@ -197,17 +197,17 @@ static void run_before_hooks(pfstest_list_t *hooks,
     }
 }
 
-static void run_after_hook(_pfstest_hook_nv_t *hook_desc)
+static void run_after_hook(_pfstest_hook_pg_t *hook_desc)
 {
     if (0 == setjmp(dynamic_env->test_jmp_buf))
         hook_desc->function();
 }
 
 static void run_after_hooks(pfstest_list_t *hooks,
-                            const pfstest_nv_ptr char *file)
+                            const pfstest_pg_ptr char *file)
 {
     pfstest_hook_t *hook;
-    _pfstest_hook_nv_t hook_desc;
+    _pfstest_hook_pg_t hook_desc;
 
     if (hooks == NULL)
         return;
@@ -221,16 +221,16 @@ static void run_after_hooks(pfstest_list_t *hooks,
 }
 
 static void extract_plugin_descriptor(pfstest_plugin_t *the_plugin,
-                                    _pfstest_plugin_nv_t *plugin_desc)
+                                    _pfstest_plugin_pg_t *plugin_desc)
 {
-    pfstest_memcpy_nv(plugin_desc, the_plugin->nv_data,
+    pfstest_memcpy_pg(plugin_desc, the_plugin->pg_data,
                       sizeof(*plugin_desc));
 }
 
 static void plugins_run_callback(pfstest_list_t *plugins, int id)
 {
     pfstest_plugin_t *plugin;
-    _pfstest_plugin_nv_t plugin_desc;
+    _pfstest_plugin_pg_t plugin_desc;
     void (*callback)(void);
 
     if (plugins == NULL)
@@ -260,12 +260,12 @@ static void teardown_plugins(pfstest_list_t *plugins)
     plugins_run_callback(plugins, _PFSTEST_PLUGIN_CALLBACK_TEARDOWN);
 }
 
-static pfstest_bool test_ignored(_pfstest_test_nv_t *test_desc)
+static pfstest_bool test_ignored(_pfstest_test_pg_t *test_desc)
 {
     return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
 }
 
-static void run_test(_pfstest_test_nv_t *current_test,
+static void run_test(_pfstest_test_pg_t *current_test,
                      pfstest_list_t *before, pfstest_list_t *after,
                      pfstest_list_t *plugins,
                      pfstest_reporter_t *reporter)
@@ -305,7 +305,7 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       pfstest_reporter_t *reporter)
 {
     pfstest_t *the_test;
-    _pfstest_test_nv_t test_desc;
+    _pfstest_test_pg_t test_desc;
 
     pfstest_reporter_run_started(reporter);
 

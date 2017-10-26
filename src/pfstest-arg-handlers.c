@@ -75,8 +75,8 @@ static void assign_arg_printer(pfstest_reporter_t *reporter,
                                pfstest_arg_handler_t *this)
 {
     (void)this;
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("any pointer"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("any pointer"));
 }
 
 pfstest_arg_handler_t *pfstest_assign_arg(pfstest_value_t *src)

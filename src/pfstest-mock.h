@@ -11,7 +11,7 @@
 
 typedef struct 
 {
-    const pfstest_nv_ptr char *name;
+    const pfstest_pg_ptr char *name;
     unsigned int arg_count;
 } pfstest_mock_t;
 
@@ -19,13 +19,13 @@ typedef struct
     _pfstest_econcat(__pfstest_mock_func_name__, name)
 
 #define pfstest_mock_define(mock_name, func_name, arg_count)    \
-    static const pfstest_nv char                                \
+    static const pfstest_pg char                                \
     _pfstest_mock_func_name_var(mock_name)[] = func_name;       \
-    const pfstest_nv pfstest_mock_t mock_name[1] = {{           \
+    const pfstest_pg pfstest_mock_t mock_name[1] = {{           \
             _pfstest_mock_func_name_var(mock_name), arg_count}}
 
 #define pfstest_mock_declare(mock_name)                 \
-    extern const pfstest_nv pfstest_mock_t mock_name[]
+    extern const pfstest_pg pfstest_mock_t mock_name[]
 
 void pfstest_mock_setup(void);
 void pfstest_mock_teardown(void);
@@ -35,14 +35,14 @@ void pfstest_mock_teardown(void);
 typedef struct 
 {
     pfstest_list_node_t node;
-    const pfstest_nv_ptr pfstest_mock_t *mock;
+    const pfstest_pg_ptr pfstest_mock_t *mock;
     pfstest_arg_handler_t **arg_handlers;
     pfstest_value_t *return_value;
     int times;
 } pfstest_expectation_t;
 
 pfstest_expectation_t *pfstest_when(
-    const pfstest_nv_ptr pfstest_mock_t *mock, ...);
+    const pfstest_pg_ptr pfstest_mock_t *mock, ...);
 
 pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
                                          pfstest_expectation_t *expectation);
@@ -60,7 +60,7 @@ typedef struct
 } pfstest_invocation_t;
 
 pfstest_value_t *pfstest_mock_invoke(
-    const pfstest_nv_ptr pfstest_mock_t *mock,
+    const pfstest_pg_ptr pfstest_mock_t *mock,
     pfstest_value_t *default_return_value,
     ...);
 
@@ -81,17 +81,17 @@ void pfstest_mock_run_verifiers(void);
 typedef struct _pfstest_verify_mode_t pfstest_verify_mode_t;
 struct _pfstest_verify_mode_t
 {
-    void (*function)(const pfstest_nv_ptr char *file, int line,
+    void (*function)(const pfstest_pg_ptr char *file, int line,
                      pfstest_verify_mode_t *mode,
                      pfstest_expectation_t *expectation);
     void *data;
 };
 
-void pfstest_verify_at_location(const pfstest_nv_ptr char *file, int line,
+void pfstest_verify_at_location(const pfstest_pg_ptr char *file, int line,
                                 pfstest_expectation_t *e);
 #define pfstest_verify(e)                                           \
     pfstest_verify_at_location(__PFSTEST_NV_FILE__, __LINE__, e)
-void pfstest_verify_times_at_location(const pfstest_nv_ptr char *file,
+void pfstest_verify_times_at_location(const pfstest_pg_ptr char *file,
                                       int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e);
@@ -105,9 +105,9 @@ pfstest_verify_mode_t *pfstest_at_least(int times);
 /* No more interactions verification */
 
 void pfstest_verify_no_more_interactions_at_location(
-    const pfstest_nv_ptr char *file,
+    const pfstest_pg_ptr char *file,
     int line,
-    const pfstest_nv_ptr pfstest_mock_t *mock);
+    const pfstest_pg_ptr pfstest_mock_t *mock);
 #define pfstest_verify_no_more_interactions(m)          \
     pfstest_verify_no_more_interactions_at_location(    \
         __PFSTEST_NV_FILE__, __LINE__, m)
@@ -115,7 +115,7 @@ void pfstest_verify_no_more_interactions_at_location(
 /* No more invocations verification */
 
 void pfstest_verify_no_more_invocations_at_location(
-    const pfstest_nv_ptr char *file, int line);
+    const pfstest_pg_ptr char *file, int line);
 #define pfstest_verify_no_more_invocations()        \
     pfstest_verify_no_more_invocations_at_location( \
         __PFSTEST_NV_FILE__, __LINE__)
@@ -128,7 +128,7 @@ typedef struct
 } pfstest_in_order_t;
 
 pfstest_in_order_t *pfstest_in_order_new(void);
-void pfstest_in_order_verify_at_location(const pfstest_nv_ptr char *file,
+void pfstest_in_order_verify_at_location(const pfstest_pg_ptr char *file,
                                          int line,
                                          pfstest_in_order_t *order,
                                          pfstest_expectation_t *expectation);

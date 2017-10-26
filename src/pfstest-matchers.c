@@ -49,7 +49,7 @@ pfstest_matcher_t *pfstest_is_the_memory(const void *m, size_t size)
 { return memcmp_matcher(the_memory(m, size)); }
 
 pfstest_matcher_t *pfstest_is_the_enum(
-    int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map)
+    int e, const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map)
 {
     return memcmp_matcher(the_enum(e, name_map));
 }
@@ -74,43 +74,43 @@ pfstest_matcher_t *pfstest_is_the_pointer(const void *p)
                                the_pointer(p));
 }
 
-/* matches_the_nv_string */
+/* matches_the_pg_string */
 
-static void matches_the_nv_string_printer(
+static void matches_the_pg_string_printer(
     pfstest_reporter_t *reporter, pfstest_matcher_t *matcher)
 {
-    const pfstest_nv_ptr char **sp =
-        (const pfstest_nv_ptr char **)pfstest_matcher_data(matcher);
-    const pfstest_nv_ptr char *expected = *sp;
+    const pfstest_pg_ptr char **sp =
+        (const pfstest_pg_ptr char **)pfstest_matcher_data(matcher);
+    const pfstest_pg_ptr char *expected = *sp;
     char c;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the string \""));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the string \""));
     
-    while (pfstest_memcpy_nv(&c, expected, sizeof(c)), c) {
+    while (pfstest_memcpy_pg(&c, expected, sizeof(c)), c) {
         pfstest_reporter_print_escaped_char(reporter, c);
         expected++;
     }
 
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\""));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\""));
 }
 
-static pfstest_bool matches_the_nv_string_test(pfstest_matcher_t *matcher,
+static pfstest_bool matches_the_pg_string_test(pfstest_matcher_t *matcher,
                                                pfstest_value_t *actual_value)
 {
-    const pfstest_nv_ptr char **sp =
-        (const pfstest_nv_ptr char **)pfstest_matcher_data(matcher);
-    const pfstest_nv_ptr char *expected = *sp;
+    const pfstest_pg_ptr char **sp =
+        (const pfstest_pg_ptr char **)pfstest_matcher_data(matcher);
+    const pfstest_pg_ptr char *expected = *sp;
 
     const char *actual = (const char *)pfstest_value_data(actual_value);
 
-    return (0 == pfstest_strcmp_nv(actual, expected));
+    return (0 == pfstest_strcmp_pg(actual, expected));
 }
 
-pfstest_matcher_t *pfstest_matches_the_nv_string(
-    const pfstest_nv_ptr char *s)
+pfstest_matcher_t *pfstest_matches_the_pg_string(
+    const pfstest_pg_ptr char *s)
 {
-    const pfstest_nv_ptr char **sp = pfstest_alloc(sizeof(*sp));
+    const pfstest_pg_ptr char **sp = pfstest_alloc(sizeof(*sp));
     *sp = s;
 
     /* The cast to (void *) in the third argument is to work around a
@@ -118,8 +118,8 @@ pfstest_matcher_t *pfstest_matches_the_nv_string(
 
      * https://connect.microsoft.com/VisualStudio/feedback/details/3111046/c-compiler-incorrectly-emits-c4090-warning
      */
-    return pfstest_matcher_new(matches_the_nv_string_printer,
-                               matches_the_nv_string_test,
+    return pfstest_matcher_new(matches_the_pg_string_printer,
+                               matches_the_pg_string_test,
                                (void *)sp);
 }
 
@@ -129,8 +129,8 @@ static void is_anything_printer(pfstest_reporter_t *reporter,
                                 pfstest_matcher_t *matcher)
 {
     (void)matcher;
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("anything"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("anything"));
 }
 
 static pfstest_bool is_anything_test(pfstest_matcher_t *matcher,
@@ -160,19 +160,19 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
     pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
     struct submatcher *submatcher;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("{ "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("{ "));
 
     pfstest_list_iter (submatcher, submatchers) {
         pfstest_matcher_print(reporter, submatcher->matcher);
 
         if (((pfstest_list_node_t *)submatcher)->next != NULL) {
-            pfstest_reporter_print_nv_string(
-                reporter, pfstest_nv_string(", "));
+            pfstest_reporter_print_pg_string(
+                reporter, pfstest_pg_string(", "));
         }
     }
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string(" }"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string(" }"));
 }
 
 static pfstest_bool submatchers_match_value_array(

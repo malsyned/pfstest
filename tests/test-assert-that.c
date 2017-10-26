@@ -13,8 +13,8 @@ static void some_value_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     (void)value;
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("some value"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("some value"));
 }
 
 static pfstest_value_t some_value[1] = {{
@@ -49,8 +49,8 @@ static void nothing_printer(pfstest_reporter_t *reporter,
                             pfstest_matcher_t *matcher)
 {
     (void)matcher;
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("nothing (guaranteed to fail)"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("nothing (guaranteed to fail)"));
 }
 
 static pfstest_matcher_t matches_nothing[1] = {{
@@ -87,7 +87,7 @@ test(should_fail_on_false_assertion)
 
 test(should_print_explanation_on_failed_assertion)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         "tests/test-assert-that.c:assert_always_fail FAIL\n"
         "    Location: tests/test-assert-that.c:76\n"
@@ -104,7 +104,7 @@ test(should_print_explanation_on_failed_assertion)
 
     assert_that("Failing assertions should print an explanatory message",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 /* avr-gcc throws a compiler error on NULL assert_that message
@@ -118,7 +118,7 @@ pfstest_case(assert_null_message)
 
 test(should_cope_with_null_message)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
         "Actual:   some value");
@@ -127,7 +127,7 @@ test(should_cope_with_null_message)
 
     assert_that("assert_that handles NULL messages",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 #endif
 
@@ -139,7 +139,7 @@ pfstest_case(assert_empty_message)
 
 test(should_cope_with_empty_message)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
         "Actual:   some value");
@@ -148,7 +148,7 @@ test(should_cope_with_empty_message)
 
     assert_that("assert_that handles empty messages",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_null_value)
@@ -158,14 +158,14 @@ pfstest_case(assert_null_value)
 
 test(should_cope_with_null_value)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "assert_that called with NULL value");
 
     capture_test_results(assert_null_value);
 
     assert_that("assert_that handles NULL value",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 pfstest_case(assert_null_matcher)
@@ -175,12 +175,12 @@ pfstest_case(assert_null_matcher)
 
 test(should_cope_with_null_matcher)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         "assert_that called with NULL matcher");
 
     capture_test_results(assert_null_matcher);
 
     assert_that("assert_that handles NULL matcher",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }

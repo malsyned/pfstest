@@ -6,16 +6,16 @@
 
 struct assert_that_args
 {
-    const pfstest_nv_ptr char *file;
+    const pfstest_pg_ptr char *file;
     int line;
-    const pfstest_nv_ptr char *message;
+    const pfstest_pg_ptr char *message;
     pfstest_value_t *actual;
     pfstest_matcher_t *matcher;
 };
 
-static pfstest_bool nv_str_empty(const pfstest_nv_ptr char *str)
+static pfstest_bool pg_str_empty(const pfstest_pg_ptr char *str)
 {
-    return (0 == pfstest_strcmp_nvnv(str, pfstest_nv_string("")));
+    return (0 == pfstest_strcmp_pgpg(str, pfstest_pg_string("")));
 }
 
 static void assert_that_printer(pfstest_reporter_t *reporter,
@@ -23,26 +23,26 @@ static void assert_that_printer(pfstest_reporter_t *reporter,
 {
     const struct assert_that_args *args = data;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("Failed assertion"));
-    if ((args->message != NULL) && !nv_str_empty(args->message))
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("Failed assertion"));
+    if ((args->message != NULL) && !pg_str_empty(args->message))
     {
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(": "));
-        pfstest_reporter_print_nv_string(reporter, args->message);
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(": "));
+        pfstest_reporter_print_pg_string(reporter, args->message);
     }
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\n"));
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("Expected: "));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("Expected: "));
     pfstest_matcher_print(reporter, args->matcher);
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\n"));
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("Actual:   "));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("Actual:   "));
     pfstest_value_print(reporter, args->actual);
 }
 
-void _pfstest_assert_that_at_location(const pfstest_nv_ptr char *file,
+void _pfstest_assert_that_at_location(const pfstest_pg_ptr char *file,
                                       int line,
-                                      const pfstest_nv_ptr char *message,
+                                      const pfstest_pg_ptr char *message,
                                       pfstest_value_t *actual,
                                       pfstest_matcher_t *matcher)
 {

@@ -2,11 +2,11 @@
 
 #if defined(PFSTEST_AVR8_NAMED_ADDR_SPACES) && defined(__FLASH)
 
-void *_pfstest_memcpy_nv_avr(void *dest, const pfstest_nv_ptr void *src,
+void *_pfstest_memcpy_pg_avr(void *dest, const pfstest_pg_ptr void *src,
                              size_t n)
 {
     char *d = dest;
-    const pfstest_nv char *s = src;
+    const pfstest_pg char *s = src;
     size_t i;
 
     for (i = 0; i < n; i++) {
@@ -15,7 +15,7 @@ void *_pfstest_memcpy_nv_avr(void *dest, const pfstest_nv_ptr void *src,
     return dest;
 }
 
-int _pfstest_strcmp_nv_avr(const char *s1, const pfstest_nv_ptr char *s2)
+int _pfstest_strcmp_pg_avr(const char *s1, const pfstest_pg_ptr char *s2)
 {
     for (; *s1 == *s2; s1++, s2++) {
         if (*s1 == '\0')
@@ -24,8 +24,8 @@ int _pfstest_strcmp_nv_avr(const char *s1, const pfstest_nv_ptr char *s2)
     return *s1 - *s2;
 }
 
-int _pfstest_strcmp_nvnv_avr(const pfstest_nv_ptr char *s1,
-                             const pfstest_nv_ptr char *s2)
+int _pfstest_strcmp_pgpg_avr(const pfstest_pg_ptr char *s1,
+                             const pfstest_pg_ptr char *s2)
 {
     for (; *s1 == *s2; s1++, s2++) {
         if (*s1 == '\0')
@@ -34,10 +34,10 @@ int _pfstest_strcmp_nvnv_avr(const pfstest_nv_ptr char *s1,
     return *s1 - *s2;
 }
 
-char *_pfstest_strcat_nv_avr(char *dest, const pfstest_nv_ptr char *src)
+char *_pfstest_strcat_pg_avr(char *dest, const pfstest_pg_ptr char *src)
 {
     char *d = dest;
-    const pfstest_nv char *s = src;
+    const pfstest_pg char *s = src;
 
     while (*d != '\0')
         d++;
@@ -49,7 +49,7 @@ char *_pfstest_strcat_nv_avr(char *dest, const pfstest_nv_ptr char *src)
 
 #else /* !defined(__FLASH) */
 
-int _pfstest_strcmp_nvnv_avr(const char *s1, const char *s2)
+int _pfstest_strcmp_pgpg_avr(const char *s1, const char *s2)
 {
     char c1, c2;
 

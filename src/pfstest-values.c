@@ -14,8 +14,8 @@ static void the_short_printer(pfstest_reporter_t *reporter,
 {
     short n = *(const short *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the short "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the short "));
     pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
 }
 
@@ -34,8 +34,8 @@ static void the_ushort_printer(pfstest_reporter_t *reporter,
 {
     unsigned short n = *(const unsigned short *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the ushort "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the ushort "));
     pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n, 10, 0);
 }
 
@@ -54,8 +54,8 @@ static void the_int_printer(pfstest_reporter_t *reporter,
 {
     int n = *(const int *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the int "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the int "));
     pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
 }
 
@@ -74,8 +74,8 @@ static void the_uint_printer(pfstest_reporter_t *reporter,
 {
     unsigned int n = *(const unsigned int *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the uint "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the uint "));
     pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n, 10, 0);
 }
 
@@ -93,8 +93,8 @@ static void the_long_printer(pfstest_reporter_t *reporter,
                              pfstest_value_t *value)
 {
     long n = *(const long *)pfstest_value_data(value);
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the long "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the long "));
     pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
 }
 
@@ -111,8 +111,8 @@ static void the_ulong_printer(pfstest_reporter_t *reporter,
                               pfstest_value_t *value)
 {
     unsigned long n = *(const unsigned long *)pfstest_value_data(value);
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the ulong "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the ulong "));
     pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n, 10, 0);
 }
 
@@ -127,7 +127,7 @@ pfstest_value_t *pfstest_the_ulong(unsigned long n)
 
 struct enum_aux
 {
-    const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map;
+    const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map;
 };
 
 static void the_enum_printer(pfstest_reporter_t *reporter,
@@ -135,14 +135,14 @@ static void the_enum_printer(pfstest_reporter_t *reporter,
 {
     int e = *(const int *)pfstest_value_data(value);
     struct enum_aux *aux = pfstest_value_aux(value);
-    const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map = aux->name_map;
-    const pfstest_nv_ptr char *const pfstest_nv_ptr *name_p;
-    const pfstest_nv_ptr char *name;
+    const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map = aux->name_map;
+    const pfstest_pg_ptr char *const pfstest_pg_ptr *name_p;
+    const pfstest_pg_ptr char *name;
     int count = 0;
     pfstest_bool in_range = pfstest_false;
 
     for (count = 0, name_p = name_map;
-         pfstest_memcpy_nv(&name, name_p, sizeof(name)), name != NULL;
+         pfstest_memcpy_pg(&name, name_p, sizeof(name)), name != NULL;
          count++, name_p++)
     {
         if (count == e) {
@@ -151,22 +151,22 @@ static void the_enum_printer(pfstest_reporter_t *reporter,
         }
     }
 
-    pfstest_reporter_print_nv_string(reporter,
-                                     pfstest_nv_string("the enum "));
+    pfstest_reporter_print_pg_string(reporter,
+                                     pfstest_pg_string("the enum "));
     if (in_range) {
-        pfstest_reporter_print_nv_string(reporter, name);
+        pfstest_reporter_print_pg_string(reporter, name);
     } else {
         pfstest_reporter_print_int(reporter, e);
     }
 
     if (!in_range) {
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string(" [out of range]"));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string(" [out of range]"));
     }
 }
 
 pfstest_value_t *pfstest_the_enum(
-    int e, const pfstest_nv_ptr char *const pfstest_nv_ptr *name_map)
+    int e, const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map)
 {
     int *data = pfstest_alloc(sizeof(e));
     struct enum_aux *aux = pfstest_alloc(sizeof(*aux));
@@ -183,11 +183,11 @@ static void the_bool_printer(pfstest_reporter_t *reporter,
 {
     pfstest_bool b = *(const pfstest_bool *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the bool "));
-    pfstest_reporter_print_nv_string(
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the bool "));
+    pfstest_reporter_print_pg_string(
         reporter,
-        b ? pfstest_nv_string("<true>") : pfstest_nv_string("<false>"));
+        b ? pfstest_pg_string("<true>") : pfstest_pg_string("<false>"));
 }
 
 pfstest_value_t *pfstest_the_bool(pfstest_bool b)
@@ -205,10 +205,10 @@ static void the_char_printer(pfstest_reporter_t *reporter,
 {
     char c = *(const char *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the char '"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the char '"));
     pfstest_reporter_print_escaped_char(reporter, c);
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("'"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("'"));
 }
 
 pfstest_value_t *pfstest_the_char(char c)
@@ -227,14 +227,14 @@ static void the_string_printer(pfstest_reporter_t *reporter,
     const char *data = pfstest_value_data(value);
     const char *p = data;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the string \""));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the string \""));
     
     while (*p) {
         pfstest_reporter_print_escaped_char(reporter, *p++);
     }
 
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\""));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\""));
 }
 
 pfstest_value_t *pfstest_the_string(const char *s)
@@ -252,19 +252,19 @@ static void the_pointer_printer(pfstest_reporter_t *reporter,
 {
     const void *data = pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the pointer <"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the pointer <"));
 
     if (data == NULL) {
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string("NULL"));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string("NULL"));
     } else {
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("0x"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("0x"));
         pfstest_reporter_print_uint(
             reporter, (pfstest_uintmax_t)(pfstest_uintptr_t)data, 16, 0);
     }
 
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(">"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(">"));
 
 }
 
@@ -282,20 +282,20 @@ static void the_memory_printer(pfstest_reporter_t *reporter,
     size_t size = pfstest_value_size(value);
     size_t i;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the memory {"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the memory {"));
 
     for (i = 0; i < size; i++) {
 
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("0x"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("0x"));
         pfstest_reporter_print_uint(reporter, data[i], 16, 2);
 
         if (i < size - 1) {
-            pfstest_reporter_print_nv_string(
-                reporter, pfstest_nv_string(", "));
+            pfstest_reporter_print_pg_string(
+                reporter, pfstest_pg_string(", "));
         }
     }
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("}"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("}"));
 }
 
 pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
@@ -316,19 +316,19 @@ static void the_int_array_printer(pfstest_reporter_t *reporter,
     size_t length = pfstest_value_size(value) / sizeof(data[0]);
     size_t i;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("{ "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("{ "));
 
     for (i = 0; i < length; i++) {
         pfstest_value_print(reporter, pfstest_the_int(data[i]));
         if (i < length - 1) {
-            pfstest_reporter_print_nv_string(
-                reporter, pfstest_nv_string(", "));
+            pfstest_reporter_print_pg_string(
+                reporter, pfstest_pg_string(", "));
         }
     }
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string(" }"));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string(" }"));
 }
 
 pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
@@ -345,8 +345,8 @@ static void the_u8_printer(pfstest_reporter_t *reporter,
 {
     uint8_t u8 = *(const uint8_t *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the uint8_t "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the uint8_t "));
     pfstest_reporter_print_uint(reporter, (uintmax_t)u8, 10, 0);
 }
 
@@ -363,8 +363,8 @@ static void the_u16_printer(pfstest_reporter_t *reporter,
 {
     uint16_t u16 = *(const uint16_t *)pfstest_value_data(value);
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("the uint16_t "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("the uint16_t "));
     pfstest_reporter_print_uint(reporter, (uintmax_t)u16, 10, 0);
 }
 

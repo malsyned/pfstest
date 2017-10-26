@@ -26,7 +26,7 @@ before_tests(setup_color_tests)
 
 test(should_print_pass_summary_in_green)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         ".\n"
         "Run complete. \033[32m1 passed\033[m, 0 failed, 0 ignored\n");
@@ -39,12 +39,12 @@ test(should_print_pass_summary_in_green)
 
     assert_that("pass count is green in the summary line",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_colorize_failures)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         "core-test-cases.c:should_fail \033[31mFAIL\033[m\n"
         "    Location: \033[1mcore-test-cases.c:25\033[m\n"
@@ -59,12 +59,12 @@ test(should_colorize_failures)
 
     assert_that("failures are properly colorized",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_print_ignore_summary_in_yellow)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         "I\n"
         "Run complete. 0 passed, 0 failed, \033[33m1 ignored\033[m\n");
@@ -77,12 +77,12 @@ test(should_print_ignore_summary_in_yellow)
 
     assert_that("ignore count is yellow in the summary line",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_not_print_pass_in_green_if_failures)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         ".\n"
         "core-test-cases.c:should_fail \033[31mFAIL\033[m\n"
@@ -99,12 +99,12 @@ test(should_not_print_pass_in_green_if_failures)
 
     assert_that("passed count isn't green if there are failures",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_print_verbose_pass_in_green)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         "core-test-cases.c:should_run \033[32mPASS\033[m\n"
         "\n"
@@ -118,12 +118,12 @@ test(should_print_verbose_pass_in_green)
 
     assert_that("PASS is green in verbose mode",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }
 
 test(should_print_verbose_ignore_in_yellow)
 {
-    const pfstest_nv_ptr char *expected = pfstest_nv_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_string(
         HEADER
         "core-test-cases.c:should_be_ignored \033[33mIGNORED\033[m\n"
         "\n"
@@ -137,5 +137,5 @@ test(should_print_verbose_ignore_in_yellow)
 
     assert_that("IGNORED is yellow in verbose mode",
                 the_string(captured_output),
-                matches_the_nv_string(expected));
+                matches_the_pg_string(expected));
 }

@@ -67,19 +67,19 @@ static void default_expectation_add(pfstest_expectation_t *expectation)
 /* mock */
 
 static unsigned int  pfstest_mock_arg_count(
-    const pfstest_nv_ptr pfstest_mock_t *mock)
+    const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     pfstest_mock_t m;
-    pfstest_memcpy_nv(&m, mock, sizeof(m));
+    pfstest_memcpy_pg(&m, mock, sizeof(m));
 
     return m.arg_count;
 }
 
-static const pfstest_nv_ptr char *pfstest_mock_name(
-    const pfstest_nv_ptr pfstest_mock_t *mock)
+static const pfstest_pg_ptr char *pfstest_mock_name(
+    const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     pfstest_mock_t m;
-    pfstest_memcpy_nv(&m, mock, sizeof(m));
+    pfstest_memcpy_pg(&m, mock, sizeof(m));
 
     return m.name;
 }
@@ -89,7 +89,7 @@ static const pfstest_nv_ptr char *pfstest_mock_name(
 #define PFSTEST_EXPECTATION_DO_TIMES_INFINITE -1
 
 static pfstest_expectation_t *pfstest_expectation_new(
-    const pfstest_nv_ptr pfstest_mock_t *mock,
+    const pfstest_pg_ptr pfstest_mock_t *mock,
     pfstest_arg_handler_t **arg_handlers)
 {
     pfstest_expectation_t *e = pfstest_alloc(sizeof(*e));
@@ -107,17 +107,17 @@ static void pfstest_expectation_print(pfstest_reporter_t *reporter,
 {
     unsigned int i;
 
-    pfstest_reporter_print_nv_string(reporter, pfstest_mock_name(e->mock));
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(" with ("));
+    pfstest_reporter_print_pg_string(reporter, pfstest_mock_name(e->mock));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(" with ("));
 
     for (i = 0; i < pfstest_mock_arg_count(e->mock); i++) {
         pfstest_arg_handler_print(reporter, e->arg_handlers[i]);
 
         if (i < pfstest_mock_arg_count(e->mock) - 1)
-            pfstest_reporter_print_nv_string(
-                reporter, pfstest_nv_string(", "));
+            pfstest_reporter_print_pg_string(
+                reporter, pfstest_pg_string(", "));
     }
-    pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(")"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(")"));
 }
 
 pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
@@ -144,7 +144,7 @@ pfstest_expectation_t *pfstest_do_times(int times,
 }
 
 pfstest_expectation_t *pfstest_when(
-    const pfstest_nv_ptr pfstest_mock_t *mock, ...)
+    const pfstest_pg_ptr pfstest_mock_t *mock, ...)
 {
     pfstest_arg_handler_t **arg_handlers;
     pfstest_expectation_t *expectation;
@@ -211,7 +211,7 @@ static void args_matched(unsigned int arg_count,
 }
 
 static pfstest_expectation_t *find_default_expectation(
-    const pfstest_nv_ptr pfstest_mock_t *mock)
+    const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     pfstest_expectation_t *expectation;
 
@@ -224,7 +224,7 @@ static pfstest_expectation_t *find_default_expectation(
 }
 
 static pfstest_expectation_t *get_default_expectation(
-    const pfstest_nv_ptr pfstest_mock_t *mock)
+    const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     pfstest_expectation_t *e = find_default_expectation(mock);
 
@@ -238,7 +238,7 @@ static pfstest_expectation_t *get_default_expectation(
 }
 
 pfstest_value_t *pfstest_mock_invoke(
-    const pfstest_nv_ptr pfstest_mock_t *mock,
+    const pfstest_pg_ptr pfstest_mock_t *mock,
     pfstest_value_t *default_return_value,
     ...)
 {
@@ -309,14 +309,14 @@ struct do_verification_printer_args
 {
     pfstest_expectation_t *expectation;
     int invocation_count;
-    const pfstest_nv_ptr char *wanted_desc_prefix;
+    const pfstest_pg_ptr char *wanted_desc_prefix;
     int wanted_count;
 };
 
 static void print_plural(pfstest_reporter_t *reporter, int count)
 {
     if (count != 1) {
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("s"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("s"));
     }
 }
 
@@ -326,33 +326,33 @@ static void wrong_call_count_printer(pfstest_reporter_t *reporter,
     const struct do_verification_printer_args *args = data;
 
     if (args->invocation_count == 0) {
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string("Never called "));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string("Never called "));
         pfstest_expectation_print(reporter, args->expectation);
     } else if (args->invocation_count != 1) {
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string("Wanted "));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string("Wanted "));
         pfstest_expectation_print(reporter, args->expectation);
 
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(" "));
-        pfstest_reporter_print_nv_string(reporter, args->wanted_desc_prefix);
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string(" "));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(" "));
+        pfstest_reporter_print_pg_string(reporter, args->wanted_desc_prefix);
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(" "));
         pfstest_reporter_print_int(reporter, args->wanted_count);
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string(" time"));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string(" time"));
         print_plural(reporter, args->wanted_count);
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\n"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
 
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string("Was called "));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string("Was called "));
         pfstest_reporter_print_int(reporter, args->invocation_count);
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string(" time"));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string(" time"));
         print_plural(reporter, args->invocation_count);
     }
 }
 
-void pfstest_verify_at_location(const pfstest_nv_ptr char *file, int line,
+void pfstest_verify_at_location(const pfstest_pg_ptr char *file, int line,
                                 pfstest_expectation_t *e)
 {
     pfstest_verify_times_at_location(file, line, exactly(1), e);
@@ -360,7 +360,7 @@ void pfstest_verify_at_location(const pfstest_nv_ptr char *file, int line,
 
 struct verify_with_mode_args
 {
-    const pfstest_nv_ptr char *file;
+    const pfstest_pg_ptr char *file;
     int line;
     pfstest_verify_mode_t *mode;
     pfstest_expectation_t *expectation;
@@ -374,7 +374,7 @@ static void do_verification_with_mode(pfstest_verifier_t *v)
                          args->mode, args->expectation);
 }
 
-void pfstest_verify_times_at_location(const pfstest_nv_ptr char *file,
+void pfstest_verify_times_at_location(const pfstest_pg_ptr char *file,
                                       int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e)
@@ -404,10 +404,10 @@ static int count_and_mark_invocations(pfstest_expectation_t *expectation)
 }
 
 static void fail_wrong_call_count(
-    const pfstest_nv_ptr char *file, int line,
+    const pfstest_pg_ptr char *file, int line,
     pfstest_expectation_t *expectation,
     int invocation_count,
-    const pfstest_nv_ptr char *wanted_desc_prefix,
+    const pfstest_pg_ptr char *wanted_desc_prefix,
     int wanted_count)
 {
     struct do_verification_printer_args printer_args;
@@ -421,7 +421,7 @@ static void fail_wrong_call_count(
                               (const void *)&printer_args);
 }
 
-static void do_exactly(const pfstest_nv_ptr char *file, int line,
+static void do_exactly(const pfstest_pg_ptr char *file, int line,
                        pfstest_verify_mode_t *mode,
                        pfstest_expectation_t *expectation)
 {
@@ -431,13 +431,13 @@ static void do_exactly(const pfstest_nv_ptr char *file, int line,
     if (invocation_count != wanted_count) {
         fail_wrong_call_count(file, line, expectation,
                               invocation_count,
-                              pfstest_nv_string("exactly"), wanted_count);
+                              pfstest_pg_string("exactly"), wanted_count);
     }
 }
 
 static pfstest_verify_mode_t *counting_mode_new(
     int times,
-    void function(const pfstest_nv_ptr char *file, int line,
+    void function(const pfstest_pg_ptr char *file, int line,
                   pfstest_verify_mode_t *mode,
                   pfstest_expectation_t *expectation))
 {
@@ -456,7 +456,7 @@ pfstest_verify_mode_t *pfstest_exactly(int times)
     return counting_mode_new(times, do_exactly);
 }
 
-static void do_at_most(const pfstest_nv_ptr char *file, int line,
+static void do_at_most(const pfstest_pg_ptr char *file, int line,
                        pfstest_verify_mode_t *mode,
                        pfstest_expectation_t *expectation)
 {
@@ -466,7 +466,7 @@ static void do_at_most(const pfstest_nv_ptr char *file, int line,
     if (invocation_count > wanted_count) {
         fail_wrong_call_count(file, line, expectation,
                               invocation_count,
-                              pfstest_nv_string("at most"), wanted_count);
+                              pfstest_pg_string("at most"), wanted_count);
     }
 }
 
@@ -475,7 +475,7 @@ pfstest_verify_mode_t *pfstest_at_most(int times)
     return counting_mode_new(times, do_at_most);
 }
 
-static void do_at_least(const pfstest_nv_ptr char *file, int line,
+static void do_at_least(const pfstest_pg_ptr char *file, int line,
                         pfstest_verify_mode_t *mode,
                         pfstest_expectation_t *expectation)
 {
@@ -485,7 +485,7 @@ static void do_at_least(const pfstest_nv_ptr char *file, int line,
     if (invocation_count < wanted_count) {
         fail_wrong_call_count(file, line, expectation,
                               invocation_count,
-                              pfstest_nv_string("at least"), wanted_count);
+                              pfstest_pg_string("at least"), wanted_count);
     }
 }
 
@@ -496,7 +496,7 @@ pfstest_verify_mode_t *pfstest_at_least(int times)
 
 struct no_more_interactions_printer_args
 {
-    const pfstest_nv_ptr pfstest_mock_t *mock;
+    const pfstest_pg_ptr pfstest_mock_t *mock;
 };
 
 static void no_more_interactions_printer(
@@ -504,16 +504,16 @@ static void no_more_interactions_printer(
 {
     const struct no_more_interactions_printer_args *args = data;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("Unexpected interactions with "));
-    pfstest_reporter_print_nv_string(
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("Unexpected interactions with "));
+    pfstest_reporter_print_pg_string(
         reporter, pfstest_mock_name(args->mock));
 }
 
 struct no_more_interactions_args
 {
-    const pfstest_nv_ptr pfstest_mock_t *mock;
-    const pfstest_nv_ptr char *file;
+    const pfstest_pg_ptr pfstest_mock_t *mock;
+    const pfstest_pg_ptr char *file;
     int line;
 };
 
@@ -535,9 +535,9 @@ static void do_verify_no_more_interactions(pfstest_verifier_t *v)
 }
 
 void pfstest_verify_no_more_interactions_at_location(
-    const pfstest_nv_ptr char *file,
+    const pfstest_pg_ptr char *file,
     int line,
-    const pfstest_nv_ptr pfstest_mock_t *mock)
+    const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     struct no_more_interactions_args *args = pfstest_alloc(sizeof(*args));
     args->mock = mock;
@@ -551,7 +551,7 @@ void pfstest_verify_no_more_interactions_at_location(
 
 struct no_more_invocations_args
 {
-    const pfstest_nv_ptr char *file;
+    const pfstest_pg_ptr char *file;
     int line;
 };
 
@@ -569,7 +569,7 @@ static void do_verify_no_more_invocations(pfstest_verifier_t *v)
 }
 
 void pfstest_verify_no_more_invocations_at_location(
-    const pfstest_nv_ptr char *file, int line)
+    const pfstest_pg_ptr char *file, int line)
 {
     struct no_more_invocations_args *args = pfstest_alloc(sizeof(*args));
     args->file = file;
@@ -591,13 +591,13 @@ static void in_order_fail_printer(pfstest_reporter_t *reporter,
 {
     const struct in_order_fail_printer_args *args = data;
 
-    pfstest_reporter_print_nv_string(
-        reporter, pfstest_nv_string("Not called in order: "));
+    pfstest_reporter_print_pg_string(
+        reporter, pfstest_pg_string("Not called in order: "));
     pfstest_expectation_print(reporter, args->expectation);
     if (args->prev_expectation != NULL) {
-        pfstest_reporter_print_nv_string(reporter, pfstest_nv_string("\n"));
-        pfstest_reporter_print_nv_string(
-            reporter, pfstest_nv_string("Expected after: "));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
+        pfstest_reporter_print_pg_string(
+            reporter, pfstest_pg_string("Expected after: "));
         pfstest_expectation_print(reporter, args->prev_expectation);
     }
 }
@@ -605,7 +605,7 @@ static void in_order_fail_printer(pfstest_reporter_t *reporter,
 struct in_order_expectation
 {
     pfstest_list_node_t node;
-    const pfstest_nv_ptr char *file;
+    const pfstest_pg_ptr char *file;
     int line;
     pfstest_expectation_t *expectation;
 };
@@ -659,7 +659,7 @@ pfstest_in_order_t *pfstest_in_order_new(void)
     return order;
 }
 
-void pfstest_in_order_verify_at_location(const pfstest_nv_ptr char *file, int line,
+void pfstest_in_order_verify_at_location(const pfstest_pg_ptr char *file, int line,
                                          pfstest_in_order_t *order,
                                          pfstest_expectation_t *expectation)
 {

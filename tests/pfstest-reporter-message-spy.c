@@ -21,8 +21,8 @@ static void test_failed_message_complete(pfstest_reporter_t *reporter)
 }
 
 static void test_started(pfstest_reporter_t *reporter,
-                         const pfstest_nv_ptr char *test_name,
-                         const pfstest_nv_ptr char *test_file)
+                         const pfstest_pg_ptr char *test_name,
+                         const pfstest_pg_ptr char *test_file)
 {
     (void)reporter;
     (void)test_name;
@@ -35,7 +35,7 @@ static void test_ignored(pfstest_reporter_t *reporter)
 }
 
 static void test_failed_message_start(
-    pfstest_reporter_t *reporter, const pfstest_nv_ptr char *file, int line)
+    pfstest_reporter_t *reporter, const pfstest_pg_ptr char *file, int line)
 {
     (void)reporter;
     (void)file;
@@ -66,7 +66,7 @@ static int return_value(pfstest_reporter_t *reporter)
 }
 
 static const
-pfstest_nv pfstest_reporter_vtable_t message_spy_vtable = {
+pfstest_pg pfstest_reporter_vtable_t message_spy_vtable = {
     print_char,
     run_started,
     test_started,
