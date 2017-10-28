@@ -13,7 +13,7 @@ static void some_value_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     (void)value;
-    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("some value"));
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("some value"));
 }
 
 static pfstest_value_t some_value[1] = {{
@@ -48,7 +48,7 @@ static void nothing_printer(pfstest_reporter_t *reporter,
                             pfstest_matcher_t *matcher)
 {
     (void)matcher;
-    pfstest_reporter_print_pg_string(
+    pfstest_reporter_print_pg_str(
         reporter, pfstest_pg_str("nothing (guaranteed to fail)"));
 }
 
@@ -89,7 +89,7 @@ test(should_print_explanation_on_failed_assertion)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "tests/test-assert-that.c:assert_always_fail FAIL\n"
-        "    Location: tests/test-assert-that.c:76\n"
+        "    Location: tests/test-assert-that.c:75\n"
         "    Failed assertion: always fails\n"
         "    Expected: nothing (guaranteed to fail)\n"
         "    Actual:   some value\n\n"

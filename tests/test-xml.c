@@ -88,9 +88,9 @@ test(should_write_failed_test)
         xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
         xml_reporter, pfstest_pg_str("bar.c"), 47);
-    pfstest_reporter_print_pg_string(
+    pfstest_reporter_print_pg_str(
         xml_reporter, pfstest_pg_str("two lines of\n"));
-    pfstest_reporter_print_pg_string(
+    pfstest_reporter_print_pg_str(
         xml_reporter, pfstest_pg_str("message text"));
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
@@ -230,7 +230,7 @@ test(should_escape_in_message_body)
         xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
         xml_reporter, pfstest_pg_str("bar.c"), 47);
-    pfstest_reporter_print_pg_string(
+    pfstest_reporter_print_pg_str(
         xml_reporter, pfstest_pg_str("<\"&>"));
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);

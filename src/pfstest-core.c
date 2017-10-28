@@ -60,7 +60,7 @@ struct message_printer_args
 static void message_printer(pfstest_reporter_t *reporter, const void *object)
 {
     const struct message_printer_args *args = object;
-    pfstest_reporter_print_pg_string(reporter, args->message);
+    pfstest_reporter_print_pg_str(reporter, args->message);
 }
 
 void _pfstest_fail_at_location(

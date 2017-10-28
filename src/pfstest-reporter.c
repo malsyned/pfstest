@@ -41,16 +41,15 @@ void pfstest_reporter_print_escaped_char(pfstest_reporter_t *reporter, int c)
     for (i = 0; i < sizeof(escape_char_map)/sizeof(escape_char_map[0]); i++)
     {
         if (c == escape_char_map[i].ch) {
-            pfstest_reporter_print_pg_string(
-                reporter, escape_char_map[i].str);
+            pfstest_reporter_print_pg_str(reporter, escape_char_map[i].str);
             return;
         }
     }
     pfstest_reporter_print_char(reporter, c);
 }
 
-void pfstest_reporter_print_pg_string(
-    pfstest_reporter_t *reporter, const pfstest_pg_ptr char *s)
+void pfstest_reporter_print_pg_str(pfstest_reporter_t *reporter,
+                                   const pfstest_pg_ptr char *s)
 {
     char c;
 

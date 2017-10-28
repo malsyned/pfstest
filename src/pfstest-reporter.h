@@ -30,8 +30,8 @@ struct _pfstest_reporter_vtable_t
 
 int pfstest_reporter_print_char(pfstest_reporter_t *reporter, int c);
 void pfstest_reporter_print_escaped_char(pfstest_reporter_t *reporter, int c);
-void pfstest_reporter_print_pg_string(
-    pfstest_reporter_t *reporter, const pfstest_pg_ptr char *s);
+void pfstest_reporter_print_pg_str(pfstest_reporter_t *reporter,
+                                   const pfstest_pg_ptr char *s);
 void pfstest_reporter_print_int(pfstest_reporter_t *reporter,
                                 pfstest_intmax_t i);
 void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
