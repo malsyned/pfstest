@@ -7,32 +7,32 @@
 #include "pfstest-reporter-xml.h"
 #include "pfstest-alloc.h"
 
-static void print_pg_str(int (*print_char)(int),
+static void print_pg_str(int (*char_writer)(int),
                          const pfstest_pg_ptr char *s)
 {
     char c;
 
     while (pfstest_memcpy_pg(&c, s, sizeof(c)), c) {
-        print_char(c);
+        char_writer(c);
         s++;
     }
 }
 
-static void print_string(int (*print_char)(int), const char *s)
+static void print_string(int (*char_writer)(int), const char *s)
 {
     while (*s) {
-        print_char(*s++);
+        char_writer(*s++);
     }
 }
 
-static int stdout_print_char(int c)
+static int stdout_char_writer(int c)
 {
     int r = putc(c, stdout);
     fflush(stdout);
     return r;
 }
 
-static void print_register_plugin_commands(int (*print_char)(int),
+static void print_register_plugin_commands(int (*char_writer)(int),
                                            pfstest_list_t *plugins)
 {
     pfstest_plugin_t *plugin;
@@ -41,14 +41,14 @@ static void print_register_plugin_commands(int (*print_char)(int),
     pfstest_list_iter (plugin, plugins) {
         pfstest_memcpy_pg(&pg_data, plugin->pg_data, sizeof(pg_data));
 
-        print_pg_str(print_char, pfstest_pg_str("    register_plugin("));
-        print_pg_str(print_char, pg_data.name);
-        print_pg_str(print_char, pfstest_pg_str(");\n"));
+        print_pg_str(char_writer, pfstest_pg_str("    register_plugin("));
+        print_pg_str(char_writer, pg_data.name);
+        print_pg_str(char_writer, pfstest_pg_str(");\n"));
     }
 }
 
 static void print_register_hook_commands(
-    int (*print_char)(int), pfstest_list_t *list,
+    int (*char_writer)(int), pfstest_list_t *list,
     const pfstest_pg_ptr char *list_name)
 {
     pfstest_hook_t *hook;
@@ -57,15 +57,15 @@ static void print_register_hook_commands(
     pfstest_list_iter (hook, list) {
         pfstest_memcpy_pg(&pg_data, hook->pg_data, sizeof(pg_data));
 
-        print_pg_str(print_char, pfstest_pg_str("    register_"));
-        print_pg_str(print_char, list_name);
-        print_pg_str(print_char, pfstest_pg_str("("));
-        print_pg_str(print_char, pg_data.name);
-        print_pg_str(print_char, pfstest_pg_str(");\n"));
+        print_pg_str(char_writer, pfstest_pg_str("    register_"));
+        print_pg_str(char_writer, list_name);
+        print_pg_str(char_writer, pfstest_pg_str("("));
+        print_pg_str(char_writer, pg_data.name);
+        print_pg_str(char_writer, pfstest_pg_str(");\n"));
     }
 }
 
-static void print_register_test_commands(int (*print_char)(int),
+static void print_register_test_commands(int (*char_writer)(int),
                                          pfstest_list_t *tests)
 {
     pfstest_t *test;
@@ -74,46 +74,46 @@ static void print_register_test_commands(int (*print_char)(int),
     pfstest_list_iter (test, tests) {
         pfstest_memcpy_pg(&pg_data, test->pg_data, sizeof(pg_data));
 
-        print_pg_str(print_char, pfstest_pg_str("    register_test("));
-        print_pg_str(print_char, pg_data.name);
-        print_pg_str(print_char, pfstest_pg_str(");\n"));
+        print_pg_str(char_writer, pfstest_pg_str("    register_test("));
+        print_pg_str(char_writer, pg_data.name);
+        print_pg_str(char_writer, pfstest_pg_str(");\n"));
     }
 }
 
-void pfstest_print_register_commands(int (*print_char)(int),
+void pfstest_print_register_commands(int (*char_writer)(int),
                                      pfstest_list_t *before,
                                      pfstest_list_t *after,
                                      pfstest_list_t *plugins,
                                      pfstest_list_t *suite)
 {
-    print_register_plugin_commands(print_char, plugins);
-    print_register_hook_commands(print_char, before,
+    print_register_plugin_commands(char_writer, plugins);
+    print_register_hook_commands(char_writer, before,
                                  pfstest_pg_str("before"));
-    print_register_hook_commands(print_char, after,
+    print_register_hook_commands(char_writer, after,
                                  pfstest_pg_str("after"));
-    print_register_test_commands(print_char, suite);
+    print_register_test_commands(char_writer, suite);
 }
 
 #define USAGE_ARGS "[-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n"
 
-void pfstest_print_usage(int (*print_char)(int), char *program_name)
+void pfstest_print_usage(int (*char_writer)(int), char *program_name)
 {
-    print_pg_str(print_char, pfstest_pg_str("usage: "));
+    print_pg_str(char_writer, pfstest_pg_str("usage: "));
     if (program_name != NULL) {
-        print_string(print_char, program_name);
-        print_pg_str(print_char, pfstest_pg_str(" "));
+        print_string(char_writer, program_name);
+        print_pg_str(char_writer, pfstest_pg_str(" "));
     }
-    print_pg_str(print_char, pfstest_pg_str(USAGE_ARGS));
+    print_pg_str(char_writer, pfstest_pg_str(USAGE_ARGS));
 }
 
-static void registered_tests_print_register_commands(int (*print_char)(int))
+static void registered_tests_print_register_commands(int (*char_writer)(int))
 {
     pfstest_list_t *plugins = pfstest_get_registered_plugins();
     pfstest_list_t *before = pfstest_get_registered_before_hooks();
     pfstest_list_t *after = pfstest_get_registered_after_hooks();
     pfstest_list_t *suite = pfstest_get_registered_tests();
 
-    pfstest_print_register_commands(print_char, before, after,
+    pfstest_print_register_commands(char_writer, before, after,
                                     plugins, suite);
 }
 
@@ -126,20 +126,20 @@ static pfstest_report_colorizer_t *select_colorizer(pfstest_arguments_t *args)
 }
 
 static pfstest_reporter_t *create_selected_reporter(
-    int (*print_char)(int),
+    int (*char_writer)(int),
     pfstest_arguments_t *args,
     pfstest_report_colorizer_t *colorizer)
 {
     if (args->verbose) {
-        return pfstest_reporter_verbose_new(print_char, colorizer);
+        return pfstest_reporter_verbose_new(char_writer, colorizer);
     } else if (args->xml) {
-        return pfstest_reporter_xml_new(print_char);
+        return pfstest_reporter_xml_new(char_writer);
     } else {
-        return pfstest_reporter_standard_new(print_char, colorizer);
+        return pfstest_reporter_standard_new(char_writer, colorizer);
     }
 }
 
-static int pfstest_start_with_args(int (*print_char)(int),
+static int pfstest_start_with_args(int (*char_writer)(int),
                                    pfstest_arguments_t *args)
 {
     pfstest_reporter_t *reporter;
@@ -147,7 +147,7 @@ static int pfstest_start_with_args(int (*print_char)(int),
     int r;
 
     colorizer = select_colorizer(args);
-    reporter = create_selected_reporter(print_char, args, colorizer);
+    reporter = create_selected_reporter(char_writer, args, colorizer);
 
     r = pfstest_run_registered_tests(
         args->filter_file, args->filter_name, reporter);
@@ -161,13 +161,13 @@ int pfstest_main(int argc, char *argv[])
     pfstest_arguments_t args;
 
     if (!pfstest_arguments_parse(&args, argc, argv)) {
-        pfstest_print_usage(stdout_print_char, args.program_name);
+        pfstest_print_usage(stdout_char_writer, args.program_name);
         return EXIT_FAILURE;
     } else if (args.print_register_commands) {
-        registered_tests_print_register_commands(stdout_print_char);
+        registered_tests_print_register_commands(stdout_char_writer);
         return EXIT_SUCCESS;
     } else {
-        return pfstest_start_with_args(stdout_print_char, &args);
+        return pfstest_start_with_args(stdout_char_writer, &args);
     }
 }
 

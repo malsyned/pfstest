@@ -21,11 +21,6 @@ static int dbg_putchar(char c, FILE *stream)
 
 static FILE mystdout = FDEV_SETUP_STREAM(dbg_putchar, NULL, _FDEV_SETUP_WRITE);
 
-static int print_char(int c)
-{
-    return putchar(c);
-}
-
 static size_t max_stack_used = 0;
 
 static void reset_stack_usage(void)
@@ -91,7 +86,7 @@ int main(void)
     stderr = stdout;
 
     reporter = pfstest_reporter_verbose_new(
-        print_char, pfstest_report_colorizer_null);
+        putchar, pfstest_report_colorizer_null);
 
     r = pfstest_run_registered_tests(NULL, NULL, reporter);
     
