@@ -1,6 +1,6 @@
-include src/src.mk
-include tests/selftestsrc.mk
-include util/automock.mk
+include src/src.inc.mk
+include tests/selftestsrc.inc.mk
+include util/automock.inc.mk
 
 MAKEFLAGS += --no-builtin-rules --jobs
 
@@ -32,8 +32,8 @@ selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c
 
-include util/test-targets.mk
-include util/test-runners.mk
+include util/test-targets.inc.mk
+include util/test-runners.inc.mk
 
 .DEFAULT_GOAL := all
 .PHONY: all

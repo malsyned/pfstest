@@ -1,8 +1,6 @@
-# Hey Emacs, this is a -*- makefile -*-
-
-include src/src.mk
-include tests/selftestsrc.mk
-include util/automock.mk
+include src/src.inc.mk
+include tests/selftestsrc.inc.mk
+include util/automock.inc.mk
 
 MCU = atmega128
 F_CPU = 8000000
@@ -100,7 +98,7 @@ test: targets
 	    $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $${elf} -W 0x20,- -T exit ; \
 	done
 
-include util/test-targets.mk
+include util/test-targets.inc.mk
 
 # TODO:
 # debugging and programming
