@@ -1,0 +1,24 @@
+uint printing can take two arguments: base and zero pad. The also can take a prefix, like "0x" (this isn't an argument passed anywhere yet, just a thing that is true about uints.)
+
+I would love to be able to make hex-ing a combinator, so that you could say "as_hex(the_u16(34))" and have it print "0x0022". I think what this would call for is:
+
+uints of various sizes have their aux values a struct containing:
+{
+    unsigned int base;
+    int zpad;
+    const pfstest_pg_ptr char *prefix;
+}
+
+and as_hex would set base = 16, zpad = value->size * 2, prefix = pfstest_pg_str("0x").
+
+The problem with this plan is that I would also need to write a version of this for is_the_u*.
+
+assert_that("", as_hex(the_u16(34)), as_hex_matcher(is_the_u16(35)))
+
+Which is duplication piling on top of duplication.
+
+If I can rewrite all of the is_ matchers to a generic is(...) matcher that takes a value as an argument and guarantees that it will do a bytewise memory comparison of their boxed argument (or if epected->size == 0, of their pointers), then I can solve that duplication and also the massive duplication of the primitive matchers.
+
+I need to think about how that will work with my struct matcher API and my float matcher API. Structs cannot be compared bytewise necessarily, as padding bytes can be different and the structs should still compare equal. maybe I introduce a naming convention in which matches_* is used when the things being compared are not going to be compared bytewise with memcmp or ==. Float matchers take additional arguments, so maybe is_close_to(number, delta) is just fine there?
+
+Alternatively, I can add an equality comparison function to every value object like Java does. Does this gain me anything, for the cost of two bytes of RAM per value on embedded platforms?
