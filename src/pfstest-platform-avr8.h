@@ -5,8 +5,8 @@
 
 # define pfstest_pg __flash
 # define pfstest_pg_ptr pfstest_pg
-/* pfstest_pg_string adapted from avr-libc PSTR macro */
-# define pfstest_pg_string(s) (__extension__({static const pfstest_pg char __c[] = (s); &__c[0];}))
+/* pfstest_pg_str adapted from avr-libc PSTR macro */
+# define pfstest_pg_str(s) (__extension__({static const pfstest_pg char __c[] = (s); &__c[0];}))
 
 # define pfstest_memcpy_pg(dest, src, n) _pfstest_memcpy_pg_avr(dest, src, n)
 # define pfstest_strcmp_pg(s1, s2) _pfstest_strcmp_pg_avr(s1, s2)
@@ -26,7 +26,7 @@ char *_pfstest_strcat_pg_avr(char *dest, const pfstest_pg_ptr char *src);
 
 # define pfstest_pg PROGMEM
 # define pfstest_pg_ptr
-# define pfstest_pg_string(string) PSTR(string)
+# define pfstest_pg_str(string) PSTR(string)
 
 /* This seems to use less ROM than calls to memcpy_P(ram, pg, size) */
 #define pfstest_memcpy_pg(ram, pg, size)        \

@@ -320,7 +320,7 @@ test(should_print_register_commands)
     pfstest_list_t after_hooks = PFSTEST_LIST_EMPTY();
     pfstest_list_t plugins = PFSTEST_LIST_EMPTY();
 
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "    register_plugin(plugin1);\n"
         "    register_plugin(plugin2);\n"
         "    register_before(before1);\n"
@@ -350,7 +350,7 @@ test(should_print_register_commands)
 
 test(should_print_usage)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "usage: program_name [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
     
     char program_name[] = "program_name";
@@ -363,7 +363,7 @@ test(should_print_usage)
 
 test(print_usage_should_cope_with_null_program_name)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "usage: [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
 
     pfstest_print_usage(capture_output_char, NULL);

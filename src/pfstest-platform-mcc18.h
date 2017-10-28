@@ -10,15 +10,15 @@
 #define exit _exit
 
 #include <stdio.h>
-#define pfstest_c_assert(test)                                          \
-    if (!(test)) {                                                      \
-        fputs(pfstest_pg_string(__FILE__ ":Assertion failed: " #test),  \
-              stdout);                                                  \
-        _exit(1);                                                       \
+#define pfstest_c_assert(test)                                      \
+    if (!(test)) {                                                  \
+        fputs(pfstest_pg_str(__FILE__ ":Assertion failed: " #test), \
+              stdout);                                              \
+        _exit(1);                                                   \
     }
 
 #define pfstest_pg far rom
-#define pfstest_pg_string(string) ((const far rom char *)string)
+#define pfstest_pg_str(string) ((const far rom char *)string)
 #define pfstest_memcpy_pg(ram, pg, size) memcpypgm2ram(ram, pg, size)
 #define pfstest_strcmp_pg(ram, pg) strcmppgm2ram(ram, pg)
 #define pfstest_strcat_pg(dest, src) strcatpgm2ram(dest, src)

@@ -90,7 +90,7 @@ pfstest_case(fails_a_verification)
 
 test(should_report_when_verification_fails)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Never called dep_func1 with (the int 2)");
 
     capture_test_results_with_plugins(fails_a_verification, plugins);
@@ -110,7 +110,7 @@ pfstest_case(fails_invocation_count)
 
 test(should_verify_invocation_counts)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Wanted dep_func1 with (the int 2) exactly 1 time\n"
         "Was called 2 times");
 
@@ -131,7 +131,7 @@ pfstest_case(fails_to_satisfy_multiple_verifiers)
 
 test(should_handle_multiple_verifiers)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Never called dep_func1 with (the int 2)");
 
     capture_test_results_with_plugins(fails_to_satisfy_multiple_verifiers,
@@ -178,7 +178,7 @@ pfstest_case(fails_to_invoke_assign_arg_expectation)
 
 test(should_print_sensible_explanation_of_assign_arg_in_failures)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Never called dep_func2 with (the int 2, any pointer)");
 
     capture_test_results_with_plugins(fails_to_invoke_assign_arg_expectation,
@@ -219,7 +219,7 @@ pfstest_case(fails_to_invoke_assign_arg_that_expectation)
 
 test(should_print_matcher_for_failures_involving_assign_arg_that)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Never called dep_func2 with (the int 2, the string \"foo\")");
 
     capture_test_results_with_plugins(
@@ -301,7 +301,7 @@ pfstest_case(fails_to_invoke_in_order)
 
 test(should_fail_when_out_of_order)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Not called in order: dep_func2 with (the int 4, the string \"foo\")\n"
         "Expected after: dep_func1 with (the int 2)");
 
@@ -359,7 +359,7 @@ pfstest_case(invokes_too_many_times)
 
 test(should_reject_too_many_invocations)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Wanted dep_func1 with (the int 1) exactly 3 times\n"
         "Was called 4 times");
 
@@ -381,7 +381,7 @@ pfstest_case(invokes_too_few_times)
 
 test(should_reject_too_few_invocations)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Wanted dep_func1 with (the int 1) exactly 3 times\n"
         "Was called 2 times");
 
@@ -416,7 +416,7 @@ pfstest_case(invokes_too_many_times_in_at_most_mode)
 
 test(at_most_should_reject_too_many_invocations)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Wanted dep_func1 with (the int 1) at most 3 times\n"
         "Was called 4 times");
 
@@ -459,7 +459,7 @@ pfstest_case(invokes_too_few_times_in_at_least_mode)
 
 test(at_least_should_reject_insufficient_invocations)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Wanted dep_func1 with (the int 1) at least 3 times\n"
         "Was called 2 times");
 
@@ -506,7 +506,7 @@ pfstest_case(fails_to_pass_verify_no_more_interactions)
 
 test(verify_no_more_interactions_should_reject_surplus_interactions)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Unexpected interactions with dep_func1");
 
     capture_test_results_with_plugins(
@@ -555,7 +555,7 @@ pfstest_case(fails_to_pass_verify_no_more_invocations)
 
 test(verify_no_more_invocations_should_reject_surplus_invocations)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Unexpected mock invocations");
 
     capture_test_results_with_plugins(

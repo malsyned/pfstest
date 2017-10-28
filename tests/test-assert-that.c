@@ -13,8 +13,7 @@ static void some_value_printer(pfstest_reporter_t *reporter,
                                pfstest_value_t *value)
 {
     (void)value;
-    pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("some value"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("some value"));
 }
 
 static pfstest_value_t some_value[1] = {{
@@ -50,7 +49,7 @@ static void nothing_printer(pfstest_reporter_t *reporter,
 {
     (void)matcher;
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("nothing (guaranteed to fail)"));
+        reporter, pfstest_pg_str("nothing (guaranteed to fail)"));
 }
 
 static pfstest_matcher_t matches_nothing[1] = {{
@@ -87,7 +86,7 @@ test(should_fail_on_false_assertion)
 
 test(should_print_explanation_on_failed_assertion)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "tests/test-assert-that.c:assert_always_fail FAIL\n"
         "    Location: tests/test-assert-that.c:76\n"
@@ -118,7 +117,7 @@ pfstest_case(assert_null_message)
 
 test(should_cope_with_null_message)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
         "Actual:   some value");
@@ -139,7 +138,7 @@ pfstest_case(assert_empty_message)
 
 test(should_cope_with_empty_message)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "Failed assertion\n"
         "Expected: nothing (guaranteed to fail)\n"
         "Actual:   some value");
@@ -158,8 +157,8 @@ pfstest_case(assert_null_value)
 
 test(should_cope_with_null_value)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "assert_that called with NULL value");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("assert_that called with NULL value");
 
     capture_test_results(assert_null_value);
 
@@ -175,8 +174,8 @@ pfstest_case(assert_null_matcher)
 
 test(should_cope_with_null_matcher)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "assert_that called with NULL matcher");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("assert_that called with NULL matcher");
 
     capture_test_results(assert_null_matcher);
 

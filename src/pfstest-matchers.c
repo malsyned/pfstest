@@ -85,14 +85,14 @@ static void matches_the_pg_string_printer(
     char c;
 
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("the string \""));
+        reporter, pfstest_pg_str("the string \""));
     
     while (pfstest_memcpy_pg(&c, expected, sizeof(c)), c) {
         pfstest_reporter_print_escaped_char(reporter, c);
         expected++;
     }
 
-    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\""));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("\""));
 }
 
 static pfstest_bool matches_the_pg_string_test(pfstest_matcher_t *matcher,
@@ -130,7 +130,7 @@ static void is_anything_printer(pfstest_reporter_t *reporter,
 {
     (void)matcher;
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("anything"));
+        reporter, pfstest_pg_str("anything"));
 }
 
 static pfstest_bool is_anything_test(pfstest_matcher_t *matcher,
@@ -161,18 +161,18 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
     struct submatcher *submatcher;
 
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("{ "));
+        reporter, pfstest_pg_str("{ "));
 
     pfstest_list_iter (submatcher, submatchers) {
         pfstest_matcher_print(reporter, submatcher->matcher);
 
         if (((pfstest_list_node_t *)submatcher)->next != NULL) {
             pfstest_reporter_print_pg_string(
-                reporter, pfstest_pg_string(", "));
+                reporter, pfstest_pg_str(", "));
         }
     }
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string(" }"));
+        reporter, pfstest_pg_str(" }"));
 }
 
 static pfstest_bool submatchers_match_value_array(

@@ -15,7 +15,7 @@ struct assert_that_args
 
 static pfstest_bool pg_str_empty(const pfstest_pg_ptr char *str)
 {
-    return (0 == pfstest_strcmp_pgpg(str, pfstest_pg_string("")));
+    return (0 == pfstest_strcmp_pgpg(str, pfstest_pg_str("")));
 }
 
 static void assert_that_printer(pfstest_reporter_t *reporter,
@@ -24,19 +24,17 @@ static void assert_that_printer(pfstest_reporter_t *reporter,
     const struct assert_that_args *args = data;
 
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("Failed assertion"));
+        reporter, pfstest_pg_str("Failed assertion"));
     if ((args->message != NULL) && !pg_str_empty(args->message))
     {
-        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(": "));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str(": "));
         pfstest_reporter_print_pg_string(reporter, args->message);
     }
-    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
-    pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("Expected: "));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("\n"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("Expected: "));
     pfstest_matcher_print(reporter, args->matcher);
-    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
-    pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("Actual:   "));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("\n"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("Actual:   "));
     pfstest_value_print(reporter, args->actual);
 }
 

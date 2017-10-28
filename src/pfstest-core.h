@@ -272,14 +272,14 @@ void pfstest_fail_with_printer(
     void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object);
 
-#define __PFSTEST_NV_FILE__ pfstest_pg_string(__PFSTEST_FILE__)
+#define __PFSTEST_NV_FILE__ pfstest_pg_str(__PFSTEST_FILE__)
 
 PFSTEST_NORETURN
 void _pfstest_fail_at_location(
     const pfstest_pg_ptr char *file, int line,
     const pfstest_pg_ptr char *message);
 #define pfstest_fail_at_location(file, line, message)                   \
-    _pfstest_fail_at_location(file, line, pfstest_pg_string(message))
+    _pfstest_fail_at_location(file, line, pfstest_pg_str(message))
 #define pfstest_fail(message)                                       \
     pfstest_fail_at_location(__PFSTEST_NV_FILE__, __LINE__, message)
 

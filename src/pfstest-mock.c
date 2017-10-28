@@ -108,16 +108,16 @@ static void pfstest_expectation_print(pfstest_reporter_t *reporter,
     unsigned int i;
 
     pfstest_reporter_print_pg_string(reporter, pfstest_mock_name(e->mock));
-    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(" with ("));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str(" with ("));
 
     for (i = 0; i < pfstest_mock_arg_count(e->mock); i++) {
         pfstest_arg_handler_print(reporter, e->arg_handlers[i]);
 
         if (i < pfstest_mock_arg_count(e->mock) - 1)
             pfstest_reporter_print_pg_string(
-                reporter, pfstest_pg_string(", "));
+                reporter, pfstest_pg_str(", "));
     }
-    pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(")"));
+    pfstest_reporter_print_pg_string(reporter, pfstest_pg_str(")"));
 }
 
 pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
@@ -316,7 +316,7 @@ struct do_verification_printer_args
 static void print_plural(pfstest_reporter_t *reporter, int count)
 {
     if (count != 1) {
-        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("s"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("s"));
     }
 }
 
@@ -326,28 +326,27 @@ static void wrong_call_count_printer(pfstest_reporter_t *reporter,
     const struct do_verification_printer_args *args = data;
 
     if (args->invocation_count == 0) {
-        pfstest_reporter_print_pg_string(
-            reporter, pfstest_pg_string("Never called "));
+        pfstest_reporter_print_pg_string(reporter,
+                                         pfstest_pg_str("Never called "));
         pfstest_expectation_print(reporter, args->expectation);
     } else if (args->invocation_count != 1) {
-        pfstest_reporter_print_pg_string(
-            reporter, pfstest_pg_string("Wanted "));
+        pfstest_reporter_print_pg_string(reporter,
+                                         pfstest_pg_str("Wanted "));
         pfstest_expectation_print(reporter, args->expectation);
 
-        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(" "));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str(" "));
         pfstest_reporter_print_pg_string(reporter, args->wanted_desc_prefix);
-        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string(" "));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str(" "));
         pfstest_reporter_print_int(reporter, args->wanted_count);
-        pfstest_reporter_print_pg_string(
-            reporter, pfstest_pg_string(" time"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str(" time"));
         print_plural(reporter, args->wanted_count);
-        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("\n"));
 
-        pfstest_reporter_print_pg_string(
-            reporter, pfstest_pg_string("Was called "));
+        pfstest_reporter_print_pg_string(reporter,
+                                         pfstest_pg_str("Was called "));
         pfstest_reporter_print_int(reporter, args->invocation_count);
-        pfstest_reporter_print_pg_string(
-            reporter, pfstest_pg_string(" time"));
+        pfstest_reporter_print_pg_string(reporter,
+                                         pfstest_pg_str(" time"));
         print_plural(reporter, args->invocation_count);
     }
 }
@@ -429,9 +428,8 @@ static void do_exactly(const pfstest_pg_ptr char *file, int line,
     int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count != wanted_count) {
-        fail_wrong_call_count(file, line, expectation,
-                              invocation_count,
-                              pfstest_pg_string("exactly"), wanted_count);
+        fail_wrong_call_count(file, line, expectation, invocation_count,
+                              pfstest_pg_str("exactly"), wanted_count);
     }
 }
 
@@ -464,9 +462,8 @@ static void do_at_most(const pfstest_pg_ptr char *file, int line,
     int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count > wanted_count) {
-        fail_wrong_call_count(file, line, expectation,
-                              invocation_count,
-                              pfstest_pg_string("at most"), wanted_count);
+        fail_wrong_call_count(file, line, expectation, invocation_count,
+                              pfstest_pg_str("at most"), wanted_count);
     }
 }
 
@@ -483,9 +480,8 @@ static void do_at_least(const pfstest_pg_ptr char *file, int line,
     int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count < wanted_count) {
-        fail_wrong_call_count(file, line, expectation,
-                              invocation_count,
-                              pfstest_pg_string("at least"), wanted_count);
+        fail_wrong_call_count(file, line, expectation, invocation_count,
+                              pfstest_pg_str("at least"), wanted_count);
     }
 }
 
@@ -505,7 +501,7 @@ static void no_more_interactions_printer(
     const struct no_more_interactions_printer_args *args = data;
 
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("Unexpected interactions with "));
+        reporter, pfstest_pg_str("Unexpected interactions with "));
     pfstest_reporter_print_pg_string(
         reporter, pfstest_mock_name(args->mock));
 }
@@ -592,12 +588,12 @@ static void in_order_fail_printer(pfstest_reporter_t *reporter,
     const struct in_order_fail_printer_args *args = data;
 
     pfstest_reporter_print_pg_string(
-        reporter, pfstest_pg_string("Not called in order: "));
+        reporter, pfstest_pg_str("Not called in order: "));
     pfstest_expectation_print(reporter, args->expectation);
     if (args->prev_expectation != NULL) {
-        pfstest_reporter_print_pg_string(reporter, pfstest_pg_string("\n"));
-        pfstest_reporter_print_pg_string(
-            reporter, pfstest_pg_string("Expected after: "));
+        pfstest_reporter_print_pg_string(reporter, pfstest_pg_str("\n"));
+        pfstest_reporter_print_pg_string(reporter,
+                                         pfstest_pg_str("Expected after: "));
         pfstest_expectation_print(reporter, args->prev_expectation);
     }
 }

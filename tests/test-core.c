@@ -35,8 +35,8 @@ before_tests(setup)
 
 test(should_run_tests)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_run should_also_run ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_run should_also_run ");
 
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
@@ -51,7 +51,7 @@ test(should_run_tests)
 
 test(should_run_before_hooks)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "should_be_run_before should_also_be_run_before should_run ");
 
     pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
@@ -68,7 +68,7 @@ test(should_run_before_hooks)
 
 test(should_run_after_hooks)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "should_run should_be_run_after should_also_be_run_after ");
 
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
@@ -85,7 +85,7 @@ test(should_run_after_hooks)
 
 test(should_skip_ignored_tests)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string("");
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("");
 
     pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
@@ -101,7 +101,7 @@ test(should_skip_ignored_tests)
 
 test(should_reset_hooks_and_tests)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "should_be_run_before should_run should_be_run_after ");
 
     /* Create some lists, which modifies ->next pointers of nodes */
@@ -133,7 +133,7 @@ test(should_reset_hooks_and_tests)
 
 test(should_report_results)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "..\n"
         "Run complete. 2 passed, 0 failed, 0 ignored\n");
@@ -151,7 +151,7 @@ test(should_report_results)
 
 test(should_report_ignored_tests)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "I\n"
         "Run complete. 0 passed, 0 failed, 1 ignored\n");
@@ -168,7 +168,7 @@ test(should_report_ignored_tests)
 
 test(should_report_failed_tests)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_fail FAIL\n"
         "    Location: core-test-cases.c:25\n"
@@ -187,7 +187,7 @@ test(should_report_failed_tests)
 
 test(should_report_results_including_failed_tests)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         ".\n"
         "core-test-cases.c:should_fail FAIL\n"
@@ -209,7 +209,7 @@ test(should_report_results_including_failed_tests)
 
 test(should_report_results_verbose)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_run PASS\n"
         "core-test-cases.c:should_fail FAIL\n"
@@ -233,7 +233,7 @@ test(should_report_results_verbose)
 #include <stdio.h>
 test(should_indent_multi_line_error_messages)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
         "    Location: core-test-cases.c:67\n"
@@ -254,7 +254,7 @@ test(should_indent_multi_line_error_messages)
 
 test(should_indent_multi_line_error_messages_verbose)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
         "    Location: core-test-cases.c:67\n"
@@ -275,7 +275,7 @@ test(should_indent_multi_line_error_messages_verbose)
 
 test(should_catch_failures_in_before_hooks)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:52\n"
@@ -296,8 +296,8 @@ test(should_catch_failures_in_before_hooks)
 
 test(should_run_after_hooks_when_test_fails)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_be_run_after ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_be_run_after ");
 
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
@@ -312,7 +312,7 @@ test(should_run_after_hooks_when_test_fails)
 
 test(should_catch_failures_in_after_hooks)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:52\n"
@@ -333,7 +333,7 @@ test(should_catch_failures_in_after_hooks)
 
 test(should_catch_multiple_after_hook_failures)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:52\n"
@@ -358,7 +358,7 @@ test(should_catch_multiple_after_hook_failures)
 
 test(should_output_multiple_after_hook_failures_correctly_verbose)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_run FAIL\n"
         "    Location: core-test-cases.c:52\n"
@@ -399,7 +399,7 @@ test(should_accept_null_after_hook_list)
 
 test(should_only_count_each_failing_test_once)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_fail FAIL\n"
         "    Location: core-test-cases.c:25\n"
@@ -455,8 +455,8 @@ test(should_return_EXIT_FAILURE_on_failure)
 
 test(should_only_call_before_hooks_in_same_file)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_be_run_before should_run ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_be_run_before should_run ");
     pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
     pfstest_hook_list_register_hook(&before_hooks, other_file_hook);
     pfstest_suite_register_test(&suite, should_run);
@@ -471,8 +471,8 @@ test(should_only_call_before_hooks_in_same_file)
 
 test(should_only_call_after_hooks_in_same_file)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_run should_be_run_after ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_run should_be_run_after ");
 
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
     pfstest_hook_list_register_hook(&after_hooks, other_file_hook);
@@ -488,8 +488,8 @@ test(should_only_call_after_hooks_in_same_file)
 
 test(should_filter_by_file_name)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_run ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_run ");
     const char filter_file[] = "core-test-cases.c";
 
     pfstest_suite_register_test(&suite, should_run);
@@ -505,8 +505,8 @@ test(should_filter_by_file_name)
 
 test(should_filter_by_test_name)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_run ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_run ");
     const char filter_name[] = "should_run";
 
     pfstest_suite_register_test(&suite, should_run);
@@ -523,17 +523,17 @@ test(should_filter_by_test_name)
 
 static void plugin_setup(void)
 {
-    pfstest_strcat_pg(call_log, pfstest_pg_string("plugin_setup "));
+    pfstest_strcat_pg(call_log, pfstest_pg_str("plugin_setup "));
 }
 
 static void plugin_checks(void)
 {
-    pfstest_strcat_pg(call_log, pfstest_pg_string("plugin_check "));
+    pfstest_strcat_pg(call_log, pfstest_pg_str("plugin_check "));
 }
 
 static void plugin_teardown(void)
 {
-    pfstest_strcat_pg(call_log, pfstest_pg_string("plugin_teardown "));
+    pfstest_strcat_pg(call_log, pfstest_pg_str("plugin_teardown "));
 }
 
 pfstest_plugin_define(setup_only_plugin, plugin_setup, NULL, NULL);
@@ -543,8 +543,8 @@ pfstest_plugin_define(plugin_with_check,
 
 test(should_call_plugin_setup_hook)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "plugin_setup should_run ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("plugin_setup should_run ");
 
     pfstest_plugin_list_register_plugin(&plugins, setup_only_plugin);
     pfstest_suite_register_test(&suite, should_run);
@@ -559,8 +559,8 @@ test(should_call_plugin_setup_hook)
 
 test(should_call_plugin_teardown_hook)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_run plugin_teardown ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_run plugin_teardown ");
 
     pfstest_plugin_list_register_plugin(&plugins, teardown_only_plugin);
     pfstest_suite_register_test(&suite, should_run);
@@ -575,8 +575,8 @@ test(should_call_plugin_teardown_hook)
 
 test(should_call_plugin_check_hook)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
-        "should_run plugin_check plugin_teardown ");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("should_run plugin_check plugin_teardown ");
 
     pfstest_plugin_list_register_plugin(&plugins, plugin_with_check);
     pfstest_suite_register_test(&suite, should_run);

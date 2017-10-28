@@ -41,10 +41,9 @@ static void print_register_plugin_commands(int (*print_char)(int),
     pfstest_list_iter (plugin, plugins) {
         pfstest_memcpy_pg(&pg_data, plugin->pg_data, sizeof(pg_data));
 
-        print_pg_string(print_char,
-                        pfstest_pg_string("    register_plugin("));
+        print_pg_string(print_char, pfstest_pg_str("    register_plugin("));
         print_pg_string(print_char, pg_data.name);
-        print_pg_string(print_char, pfstest_pg_string(");\n"));
+        print_pg_string(print_char, pfstest_pg_str(");\n"));
     }
 }
 
@@ -58,11 +57,11 @@ static void print_register_hook_commands(
     pfstest_list_iter (hook, list) {
         pfstest_memcpy_pg(&pg_data, hook->pg_data, sizeof(pg_data));
 
-        print_pg_string(print_char, pfstest_pg_string("    register_"));
+        print_pg_string(print_char, pfstest_pg_str("    register_"));
         print_pg_string(print_char, list_name);
-        print_pg_string(print_char, pfstest_pg_string("("));
+        print_pg_string(print_char, pfstest_pg_str("("));
         print_pg_string(print_char, pg_data.name);
-        print_pg_string(print_char, pfstest_pg_string(");\n"));
+        print_pg_string(print_char, pfstest_pg_str(");\n"));
     }
 }
 
@@ -75,9 +74,9 @@ static void print_register_test_commands(int (*print_char)(int),
     pfstest_list_iter (test, tests) {
         pfstest_memcpy_pg(&pg_data, test->pg_data, sizeof(pg_data));
 
-        print_pg_string(print_char, pfstest_pg_string("    register_test("));
+        print_pg_string(print_char, pfstest_pg_str("    register_test("));
         print_pg_string(print_char, pg_data.name);
-        print_pg_string(print_char, pfstest_pg_string(");\n"));
+        print_pg_string(print_char, pfstest_pg_str(");\n"));
     }
 }
 
@@ -89,9 +88,9 @@ void pfstest_print_register_commands(int (*print_char)(int),
 {
     print_register_plugin_commands(print_char, plugins);
     print_register_hook_commands(print_char, before,
-                                 pfstest_pg_string("before"));
+                                 pfstest_pg_str("before"));
     print_register_hook_commands(print_char, after,
-                                 pfstest_pg_string("after"));
+                                 pfstest_pg_str("after"));
     print_register_test_commands(print_char, suite);
 }
 
@@ -99,12 +98,12 @@ void pfstest_print_register_commands(int (*print_char)(int),
 
 void pfstest_print_usage(int (*print_char)(int), char *program_name)
 {
-    print_pg_string(print_char, pfstest_pg_string("usage: "));
+    print_pg_string(print_char, pfstest_pg_str("usage: "));
     if (program_name != NULL) {
         print_string(print_char, program_name);
-        print_pg_string(print_char, pfstest_pg_string(" "));
+        print_pg_string(print_char, pfstest_pg_str(" "));
     }
-    print_pg_string(print_char, pfstest_pg_string(USAGE_ARGS));
+    print_pg_string(print_char, pfstest_pg_str(USAGE_ARGS));
 }
 
 static void registered_tests_print_register_commands(int (*print_char)(int))
@@ -207,21 +206,21 @@ pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
     args->program_name = next_arg(&argv);
 
     while (arg = next_arg(&argv), arg != NULL) {
-        if (str_is_pg_str(arg, pfstest_pg_string("-v"))) {
+        if (str_is_pg_str(arg, pfstest_pg_str("-v"))) {
             args->verbose = pfstest_true;
             args->xml = pfstest_false;
-        } else if (str_is_pg_str(arg, pfstest_pg_string("-x"))) {
+        } else if (str_is_pg_str(arg, pfstest_pg_str("-x"))) {
             args->xml = pfstest_true;
             args->verbose = pfstest_false;
-        } else if (str_is_pg_str(arg, pfstest_pg_string("-c"))) {
+        } else if (str_is_pg_str(arg, pfstest_pg_str("-c"))) {
             args->color = pfstest_true;
-        } else if (str_is_pg_str(arg, pfstest_pg_string("-r"))) {
+        } else if (str_is_pg_str(arg, pfstest_pg_str("-r"))) {
             args->print_register_commands = pfstest_true;
-        } else if (str_is_pg_str(arg, pfstest_pg_string("-f"))) {
+        } else if (str_is_pg_str(arg, pfstest_pg_str("-f"))) {
             filter_file = next_arg(&argv);
             if (filter_file == NULL) return pfstest_false;
             args->filter_file = filter_file;
-        } else if (str_is_pg_str(arg, pfstest_pg_string("-n"))) {
+        } else if (str_is_pg_str(arg, pfstest_pg_str("-n"))) {
             filter_name = next_arg(&argv);
             if (filter_name == NULL) return pfstest_false;
             args->filter_name = filter_name;

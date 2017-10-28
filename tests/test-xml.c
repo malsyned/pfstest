@@ -15,7 +15,7 @@ before_tests(set_up_xml)
 
 test(should_print_empty_suite)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "</testsuite>\n"
@@ -31,7 +31,7 @@ test(should_print_empty_suite)
 
 test(should_write_passing_test)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"pass\" />\n"
@@ -40,8 +40,7 @@ test(should_write_passing_test)
 
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
 
@@ -52,7 +51,7 @@ test(should_write_passing_test)
 
 test(should_write_ignored_test)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"ignored\" />\n"
@@ -61,8 +60,7 @@ test(should_write_ignored_test)
 
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_ignored(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
@@ -74,7 +72,7 @@ test(should_write_ignored_test)
 
 test(should_write_failed_test)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
@@ -87,14 +85,13 @@ test(should_write_failed_test)
 
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
-        xml_reporter, pfstest_pg_string("bar.c"), 47);
+        xml_reporter, pfstest_pg_str("bar.c"), 47);
     pfstest_reporter_print_pg_string(
-        xml_reporter, pfstest_pg_string("two lines of\n"));
+        xml_reporter, pfstest_pg_str("two lines of\n"));
     pfstest_reporter_print_pg_string(
-        xml_reporter, pfstest_pg_string("message text"));
+        xml_reporter, pfstest_pg_str("message text"));
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
@@ -118,17 +115,15 @@ test(xml_should_return_EXIT_FAILURE_on_failure)
 {
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
-        xml_reporter, pfstest_pg_string("the_test"), 47);
+        xml_reporter, pfstest_pg_str("the_test"), 47);
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
-        xml_reporter, pfstest_pg_string("the_test"), 47);
+        xml_reporter, pfstest_pg_str("the_test"), 47);
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
@@ -140,7 +135,7 @@ test(xml_should_return_EXIT_FAILURE_on_failure)
 
 test(should_write_multiple_results)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"ignored\" />\n"
@@ -153,19 +148,16 @@ test(should_write_multiple_results)
 
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_ignored(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
-        xml_reporter, pfstest_pg_string("bar.c"), 47);
+        xml_reporter, pfstest_pg_str("bar.c"), 47);
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
@@ -177,7 +169,7 @@ test(should_write_multiple_results)
 
 test(should_escape_in_file_name)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo&lt;&quot;&amp;&gt;bar.c\" result=\"pass\" />\n"
@@ -185,9 +177,9 @@ test(should_escape_in_file_name)
         );
 
     pfstest_reporter_run_started(xml_reporter);
-    pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo<\"&>bar.c"));
+    pfstest_reporter_test_started(xml_reporter,
+                                  pfstest_pg_str("the_test"),
+                                  pfstest_pg_str("foo<\"&>bar.c"));
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
 
@@ -198,7 +190,7 @@ test(should_escape_in_file_name)
 
 test(should_escape_in_failure_file_name)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
@@ -209,10 +201,9 @@ test(should_escape_in_failure_file_name)
 
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
-        xml_reporter, pfstest_pg_string("bar<\"&>foo.c"), 47);
+        xml_reporter, pfstest_pg_str("bar<\"&>foo.c"), 47);
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);
@@ -224,7 +215,7 @@ test(should_escape_in_failure_file_name)
 
 test(should_escape_in_message_body)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_string(
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<testsuite version=\"" VERSION "\">\n"
         "  <test name=\"the_test\" file=\"foo.c\" result=\"fail\" "
@@ -236,12 +227,11 @@ test(should_escape_in_message_body)
 
     pfstest_reporter_run_started(xml_reporter);
     pfstest_reporter_test_started(
-        xml_reporter,
-        pfstest_pg_string("the_test"), pfstest_pg_string("foo.c"));
+        xml_reporter, pfstest_pg_str("the_test"), pfstest_pg_str("foo.c"));
     pfstest_reporter_test_failed_message_start(
-        xml_reporter, pfstest_pg_string("bar.c"), 47);
+        xml_reporter, pfstest_pg_str("bar.c"), 47);
     pfstest_reporter_print_pg_string(
-        xml_reporter, pfstest_pg_string("<\"&>"));
+        xml_reporter, pfstest_pg_str("<\"&>"));
     pfstest_reporter_test_failed_message_complete(xml_reporter);
     pfstest_reporter_test_complete(xml_reporter);
     pfstest_reporter_run_complete(xml_reporter);

@@ -89,7 +89,7 @@ pfstest_pg_ptr:
     themselves (for example, on avr-gcc). If left undefined, defaults
     to pfstest_pg. See also: pfstest_pg_ptr
 
-pfstest_pg_string(string):
+pfstest_pg_str(string):
 
     Expands to a string constant which resides in the non-volatile
     memory space.
@@ -231,8 +231,8 @@ struct _pfstest_alignment_struct
 #ifndef pfstest_pg_ptr
 # define pfstest_pg_ptr pfstest_pg
 #endif
-#ifndef pfstest_pg_string
-# define pfstest_pg_string(string) string
+#ifndef pfstest_pg_str
+# define pfstest_pg_str(string) string
 #endif
 #if !defined(pfstest_memcpy_pg) || !defined(pfstest_strcmp_pg)      \
     || !defined(pfstest_strcmp_pgpg) || !defined(pfstest_strcat_pg)
