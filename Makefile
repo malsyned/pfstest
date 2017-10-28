@@ -5,7 +5,7 @@ include util/automock.inc.mk
 MAKEFLAGS += --no-builtin-rules --jobs
 
 CC = gcc
-CFLAGS = -g -Og $(WARN) -Wfatal-errors -std=c89
+CFLAGS = -g -O3 $(WARN) -Wfatal-errors -std=c89
 WARN = -Wall -Wextra -Werror -Wwrite-strings \
        -Wsuggest-attribute=noreturn -Wmissing-include-dirs \
        -Wswitch-default -Wfloat-equal -Wpointer-arith -Wundef \
