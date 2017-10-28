@@ -39,32 +39,32 @@ typedef struct
     const pfstest_pg_ptr char *test_file;
 } builtin_reporter_t;
 
-static int print_char(builtin_reporter_t *reporter, int c)
+static int print_char(builtin_reporter_t *breporter, int c)
 {
-    pfstest_reporter_t *as_reporter = (pfstest_reporter_t *)reporter;
+    pfstest_reporter_t *reporter = (pfstest_reporter_t *)breporter;
     int i, r;
 
-    if (reporter->indent && reporter->fresh_line && c != '\n') {
+    if (breporter->indent && breporter->fresh_line && c != '\n') {
         for (i = 0; i < 4; i++) {
-            r = as_reporter->char_writer(' ');
+            r = reporter->char_writer(' ');
             if (r != ' ')
                 return r;
         }
     }
-    reporter->fresh_line = (c == '\n');
-    return as_reporter->char_writer(c);
+    breporter->fresh_line = (c == '\n');
+    return reporter->char_writer(c);
 }
 
-static void print_pg_str(builtin_reporter_t *reporter,
+static void print_pg_str(builtin_reporter_t *breporter,
                          const pfstest_pg_ptr char *s)
 {
-    pfstest_reporter_print_pg_str((pfstest_reporter_t *)reporter, s);
+    pfstest_reporter_print_pg_str((pfstest_reporter_t *)breporter, s);
 }
 
-static void get_fresh_line(builtin_reporter_t *reporter)
+static void get_fresh_line(builtin_reporter_t *breporter)
 {
-    if (!reporter->fresh_line) {
-        print_char(reporter, '\n');
+    if (!breporter->fresh_line) {
+        print_char(breporter, '\n');
     }
 }
 
@@ -73,239 +73,238 @@ static int builtin_print_char(pfstest_reporter_t *reporter, int c)
     return print_char((builtin_reporter_t *)reporter, c);
 }
 
-static void print_int(builtin_reporter_t *reporter, pfstest_intmax_t n)
+static void print_int(builtin_reporter_t *breporter, pfstest_intmax_t n)
 {
-    pfstest_reporter_print_int((pfstest_reporter_t *)reporter, n);
+    pfstest_reporter_print_int((pfstest_reporter_t *)breporter, n);
 }
 
-static void print_context(builtin_reporter_t *reporter)
+static void print_context(builtin_reporter_t *breporter)
 {
-    get_fresh_line(reporter);
-    print_pg_str(reporter, reporter->test_file);
-    print_pg_str(reporter, pfstest_pg_str(":"));
-    print_pg_str(reporter, reporter->test_name);
-    print_pg_str(reporter, pfstest_pg_str(" "));
+    get_fresh_line(breporter);
+    print_pg_str(breporter, breporter->test_file);
+    print_pg_str(breporter, pfstest_pg_str(":"));
+    print_pg_str(breporter, breporter->test_name);
+    print_pg_str(breporter, pfstest_pg_str(" "));
 }
 
-static void run_started_bookkeeping(builtin_reporter_t *reporter)
+static void run_started_bookkeeping(builtin_reporter_t *breporter)
 {
-    reporter->results.passed = 0;
-    reporter->results.failed = 0;
-    reporter->results.ignored = 0;
+    breporter->results.passed = 0;
+    breporter->results.failed = 0;
+    breporter->results.ignored = 0;
 }
 
 static void run_started(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    run_started_bookkeeping(as_builtin_reporter);
-    print_pg_str(as_builtin_reporter,
+    run_started_bookkeeping(breporter);
+    print_pg_str(breporter,
                  pfstest_pg_str("PFSTest " PFSTEST_VERSION_STRING "\n"));
-    print_pg_str(as_builtin_reporter, pfstest_pg_str("===========\n"));
+    print_pg_str(breporter, pfstest_pg_str("===========\n"));
 }
 
-static void test_started_bookkeeping(builtin_reporter_t *reporter,
+static void test_started_bookkeeping(builtin_reporter_t *breporter,
                                      const pfstest_pg_ptr char *test_name,
                                      const pfstest_pg_ptr char *test_file)
 {
-    reporter->test_failed = pfstest_false;
-    reporter->test_ignored = pfstest_false;
-    reporter->test_name = test_name;
-    reporter->test_file = test_file;
+    breporter->test_failed = pfstest_false;
+    breporter->test_ignored = pfstest_false;
+    breporter->test_name = test_name;
+    breporter->test_file = test_file;
 }
 
 static void test_started_standard(pfstest_reporter_t *reporter,
                                   const pfstest_pg_ptr char *test_name,
                                   const pfstest_pg_ptr char *test_file)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    test_started_bookkeeping(as_builtin_reporter, test_name, test_file);
+    test_started_bookkeeping(breporter, test_name, test_file);
 }
 
 static void test_started_verbose(pfstest_reporter_t *reporter,
                                  const pfstest_pg_ptr char *test_name,
                                  const pfstest_pg_ptr char *test_file)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    test_started_bookkeeping(as_builtin_reporter, test_name, test_file);
-    print_context(as_builtin_reporter);
+    test_started_bookkeeping(breporter, test_name, test_file);
+    print_context(breporter);
 }
 
-static void test_ignored_bookkeeping(builtin_reporter_t *reporter)
+static void test_ignored_bookkeeping(builtin_reporter_t *breporter)
 {
-    reporter->test_ignored = pfstest_true;
-    reporter->results.ignored++;
+    breporter->test_ignored = pfstest_true;
+    breporter->results.ignored++;
 }
 
 static void test_ignored_standard(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    test_ignored_bookkeeping(as_builtin_reporter);
-    print_char(as_builtin_reporter, 'I');
+    test_ignored_bookkeeping(breporter);
+    print_char(breporter, 'I');
 }
 
 static void test_ignored_verbose(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = as_builtin_reporter->colorizer;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
+    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
     int (*char_writer)(int) = reporter->char_writer;
 
-    test_ignored_bookkeeping(as_builtin_reporter);
+    test_ignored_bookkeeping(breporter);
     report_colorizer_start(colorizer, char_writer, REPORT_COLOR_YELLOW);
-    print_pg_str(as_builtin_reporter, pfstest_pg_str("IGNORED"));
+    print_pg_str(breporter, pfstest_pg_str("IGNORED"));
     report_colorizer_reset(colorizer, char_writer);
-    print_pg_str(as_builtin_reporter, pfstest_pg_str("\n"));
+    print_pg_str(breporter, pfstest_pg_str("\n"));
 }
 
 static void test_failed_message_start_common(
-    builtin_reporter_t *reporter, const pfstest_pg_ptr char *file, int line)
+    builtin_reporter_t *breporter, const pfstest_pg_ptr char *file, int line)
 {
-    pfstest_reporter_t *as_reporter = (pfstest_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = reporter->colorizer;
-    int(*char_writer)(int) = as_reporter->char_writer;
+    pfstest_reporter_t *reporter = (pfstest_reporter_t *)breporter;
+    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
+    int(*char_writer)(int) = reporter->char_writer;
 
     report_colorizer_start(colorizer, char_writer, REPORT_COLOR_RED);
-    print_pg_str(reporter, pfstest_pg_str("FAIL"));
+    print_pg_str(breporter, pfstest_pg_str("FAIL"));
     report_colorizer_reset(colorizer, char_writer);
 
-    print_pg_str(reporter, pfstest_pg_str("\n"));
-    print_pg_str(reporter, pfstest_pg_str("    Location: "));
+    print_pg_str(breporter, pfstest_pg_str("\n"));
+    print_pg_str(breporter, pfstest_pg_str("    Location: "));
 
     report_colorizer_start(colorizer, char_writer, REPORT_COLOR_BOLD);
-    print_pg_str(reporter, file);
-    print_pg_str(reporter, pfstest_pg_str(":"));
-    print_int(reporter, line);
+    print_pg_str(breporter, file);
+    print_pg_str(breporter, pfstest_pg_str(":"));
+    print_int(breporter, line);
     report_colorizer_reset(colorizer, char_writer);
 
-    print_pg_str(reporter, pfstest_pg_str("\n"));
+    print_pg_str(breporter, pfstest_pg_str("\n"));
 
-    reporter->indent = pfstest_true;
+    breporter->indent = pfstest_true;
 }
 
 static void test_failed_message_start_standard(
     pfstest_reporter_t *reporter, const pfstest_pg_ptr char *file, int line)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    print_context(as_builtin_reporter);
-    test_failed_message_start_common(as_builtin_reporter, file, line);
+    print_context(breporter);
+    test_failed_message_start_common(breporter, file, line);
 }
 
 static void test_failed_message_start_verbose(
     pfstest_reporter_t *reporter, const pfstest_pg_ptr char *file, int line)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    if (as_builtin_reporter->test_failed) {
-        print_context(as_builtin_reporter);
-    }
+    if (breporter->test_failed)
+        print_context(breporter);
 
-    test_failed_message_start_common(as_builtin_reporter, file, line);
+    test_failed_message_start_common(breporter, file, line);
 }
 
 static void test_failed_message_complete(pfstest_reporter_t *reporter)
 {
 
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    if (!as_builtin_reporter->test_failed) {
-        as_builtin_reporter->results.failed++;
-        as_builtin_reporter->test_failed = pfstest_true;
+    if (!breporter->test_failed) {
+        breporter->results.failed++;
+        breporter->test_failed = pfstest_true;
     }
-    print_pg_str(as_builtin_reporter, pfstest_pg_str("\n"));
-    as_builtin_reporter->indent = pfstest_false;
+    print_pg_str(breporter, pfstest_pg_str("\n"));
+    breporter->indent = pfstest_false;
 }
 
-static pfstest_bool test_passed(builtin_reporter_t *reporter)
+static pfstest_bool test_passed(builtin_reporter_t *breporter)
 {
-    return (!reporter->test_ignored && !reporter->test_failed);
+    return (!breporter->test_ignored && !breporter->test_failed);
 }
 
-static void test_passed_bookkeeping(builtin_reporter_t *reporter)
+static void test_passed_bookkeeping(builtin_reporter_t *breporter)
 {
-    reporter->results.passed++;
+    breporter->results.passed++;
 }
 
 static void test_complete_standard(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    if (test_passed(as_builtin_reporter)) {
-        test_passed_bookkeeping(as_builtin_reporter);
-        print_char(as_builtin_reporter, '.');
+    if (test_passed(breporter)) {
+        test_passed_bookkeeping(breporter);
+        print_char(breporter, '.');
     }
 }
 
 static void test_complete_verbose(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = as_builtin_reporter->colorizer;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
+    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
     int (*char_writer)(int) = reporter->char_writer;
 
-    if (test_passed(as_builtin_reporter)) {
-        test_passed_bookkeeping(as_builtin_reporter);
+    if (test_passed(breporter)) {
+        test_passed_bookkeeping(breporter);
         report_colorizer_start(colorizer, char_writer, REPORT_COLOR_GREEN);
-        print_pg_str(as_builtin_reporter, pfstest_pg_str("PASS"));
+        print_pg_str(breporter, pfstest_pg_str("PASS"));
         report_colorizer_reset(colorizer, char_writer);
-        print_pg_str(as_builtin_reporter, pfstest_pg_str("\n"));
+        print_pg_str(breporter, pfstest_pg_str("\n"));
     }
 }
 
 static void run_complete(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = as_builtin_reporter->colorizer;
-    pfstest_bool pass_green = (as_builtin_reporter->results.passed > 0
-                               && as_builtin_reporter->results.failed == 0);
-    pfstest_bool fail_red = (as_builtin_reporter->results.failed > 0);
-    pfstest_bool ignore_yellow = (as_builtin_reporter->results.ignored > 0);
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
+    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
+    pfstest_bool pass_green = (breporter->results.passed > 0
+                               && breporter->results.failed == 0);
+    pfstest_bool fail_red = (breporter->results.failed > 0);
+    pfstest_bool ignore_yellow = (breporter->results.ignored > 0);
 
-    print_pg_str(as_builtin_reporter, pfstest_pg_str("\nRun complete. "));
+    print_pg_str(breporter, pfstest_pg_str("\nRun complete. "));
 
     if (pass_green)
     {
         report_colorizer_start(colorizer, reporter->char_writer,
                                REPORT_COLOR_GREEN);
     }
-    print_int(as_builtin_reporter, as_builtin_reporter->results.passed);
-    print_pg_str(as_builtin_reporter, pfstest_pg_str(" passed"));
+    print_int(breporter, breporter->results.passed);
+    print_pg_str(breporter, pfstest_pg_str(" passed"));
     if (pass_green) {
         report_colorizer_reset(colorizer, reporter->char_writer);
     }
 
-    print_pg_str(as_builtin_reporter, pfstest_pg_str(", "));
+    print_pg_str(breporter, pfstest_pg_str(", "));
     if (fail_red) {
         report_colorizer_start(colorizer, reporter->char_writer,
                                REPORT_COLOR_VERY_RED);
     }
-    print_int(as_builtin_reporter, as_builtin_reporter->results.failed);
-    print_pg_str(as_builtin_reporter, pfstest_pg_str(" failed"));
+    print_int(breporter, breporter->results.failed);
+    print_pg_str(breporter, pfstest_pg_str(" failed"));
     if (fail_red) {
         report_colorizer_reset(colorizer, reporter->char_writer);
     }
-    print_pg_str(as_builtin_reporter, pfstest_pg_str(", "));
+    print_pg_str(breporter, pfstest_pg_str(", "));
 
     if (ignore_yellow) {
         report_colorizer_start(colorizer, reporter->char_writer,
                                REPORT_COLOR_YELLOW);
     }
-    print_int(as_builtin_reporter, as_builtin_reporter->results.ignored);
-    print_pg_str(as_builtin_reporter, pfstest_pg_str(" ignored"));
+    print_int(breporter, breporter->results.ignored);
+    print_pg_str(breporter, pfstest_pg_str(" ignored"));
     if (ignore_yellow) {
         report_colorizer_reset(colorizer, reporter->char_writer);
     }
 
-    print_pg_str(as_builtin_reporter, pfstest_pg_str("\n"));
+    print_pg_str(breporter, pfstest_pg_str("\n"));
 }
 
 static int return_value(pfstest_reporter_t *reporter)
 {
-    builtin_reporter_t *as_builtin_reporter = (builtin_reporter_t *)reporter;
+    builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    if (as_builtin_reporter->results.failed == 0)
+    if (breporter->results.failed == 0)
         return EXIT_SUCCESS;
     else
         return EXIT_FAILURE;
@@ -335,37 +334,37 @@ static const pfstest_pg pfstest_reporter_vtable_t verbose_vtable = {
     return_value
 };
 
-static void bookkeeping_init(builtin_reporter_t *reporter)
+static void bookkeeping_init(builtin_reporter_t *breporter)
 {
-    reporter->fresh_line = pfstest_true;
-    reporter->indent = pfstest_false;
+    breporter->fresh_line = pfstest_true;
+    breporter->indent = pfstest_false;
 }
 
 
 pfstest_reporter_t *pfstest_reporter_standard_new(
     int (*char_writer)(int), pfstest_report_colorizer_t *colorizer)
 {
-    builtin_reporter_t *reporter = pfstest_alloc(sizeof(*reporter));
+    builtin_reporter_t *breporter = pfstest_alloc(sizeof(*breporter));
 
-    reporter->parent.vtable = &standard_vtable;
-    reporter->parent.char_writer = char_writer;
-    reporter->colorizer = colorizer;
-    bookkeeping_init(reporter);
+    breporter->parent.vtable = &standard_vtable;
+    breporter->parent.char_writer = char_writer;
+    breporter->colorizer = colorizer;
+    bookkeeping_init(breporter);
 
-    return (pfstest_reporter_t *)reporter;
+    return (pfstest_reporter_t *)breporter;
 }
 
 pfstest_reporter_t *pfstest_reporter_verbose_new(
     int (*char_writer)(int), pfstest_report_colorizer_t *colorizer)
 {
-    builtin_reporter_t *reporter = pfstest_alloc(sizeof(*reporter));
+    builtin_reporter_t *breporter = pfstest_alloc(sizeof(*breporter));
 
-    reporter->parent.vtable = &verbose_vtable;
-    reporter->parent.char_writer = char_writer;
-    reporter->colorizer = colorizer;
-    bookkeeping_init(reporter);
+    breporter->parent.vtable = &verbose_vtable;
+    breporter->parent.char_writer = char_writer;
+    breporter->colorizer = colorizer;
+    bookkeeping_init(breporter);
 
-    return (pfstest_reporter_t *)reporter;
+    return (pfstest_reporter_t *)breporter;
 }
 
 struct _pfstest_report_colorizer_t

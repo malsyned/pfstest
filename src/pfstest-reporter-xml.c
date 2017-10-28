@@ -109,9 +109,11 @@ static int print_char(pfstest_reporter_t *reporter, int c)
 
 static void run_started(pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
-    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
-    ((xml_reporter_t *)reporter)->failed = pfstest_false;
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    xml_reporter->in_message = pfstest_false;
+    xml_reporter->in_attribute = pfstest_false;
+    xml_reporter->failed = pfstest_false;
 
     pfstest_reporter_print_pg_str(
         reporter,
@@ -125,24 +127,28 @@ static void test_started(pfstest_reporter_t *reporter,
                          const pfstest_pg_ptr char *test_name,
                          const pfstest_pg_ptr char *test_file)
 {
-    ((xml_reporter_t *)reporter)->test_ignored = pfstest_false;
-    ((xml_reporter_t *)reporter)->test_failed = pfstest_false;
-    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
-    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    xml_reporter->test_ignored = pfstest_false;
+    xml_reporter->test_failed = pfstest_false;
+    xml_reporter->in_message = pfstest_false;
+    xml_reporter->in_attribute = pfstest_false;
 
     pfstest_reporter_print_pg_str(reporter,
                                   pfstest_pg_str("  <test name=\""));
     pfstest_reporter_print_pg_str(reporter, test_name);
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\" file=\""));
-    ((xml_reporter_t *)reporter)->in_attribute = pfstest_true;
+    xml_reporter->in_attribute = pfstest_true;
     pfstest_reporter_print_pg_str(reporter, test_file);
-    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
+    xml_reporter->in_attribute = pfstest_false;
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\" result=\""));
 }
 
 static void test_ignored(pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->test_ignored = pfstest_true;
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    xml_reporter->test_ignored = pfstest_true;
 }
 
 static void test_failed_message_start(
@@ -150,42 +156,49 @@ static void test_failed_message_start(
     const pfstest_pg_ptr char *file,
     int line)
 {
-    ((xml_reporter_t *)reporter)->test_failed = pfstest_true;
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    xml_reporter->test_failed = pfstest_true;
     pfstest_reporter_print_pg_str(reporter,
                                   pfstest_pg_str("fail\" fail_file=\""));
-    ((xml_reporter_t *)reporter)->in_attribute = pfstest_true;
+    xml_reporter->in_attribute = pfstest_true;
     pfstest_reporter_print_pg_str(reporter, file);
-    ((xml_reporter_t *)reporter)->in_attribute = pfstest_false;
+    xml_reporter->in_attribute = pfstest_false;
     pfstest_reporter_print_pg_str(reporter,
                                   pfstest_pg_str("\" fail_line=\""));
     pfstest_reporter_print_int(reporter, line);
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\">\n"));
-    ((xml_reporter_t *)reporter)->in_message = pfstest_true;
+    xml_reporter->in_message = pfstest_true;
 }
 
 static void test_failed_message_complete(
     pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
-    ((xml_reporter_t *)reporter)->failed = pfstest_true;
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    xml_reporter->in_message = pfstest_false;
+    xml_reporter->failed = pfstest_true;
 }
 
 static void get_fresh_line(pfstest_reporter_t *reporter)
 {
-    if (!((xml_reporter_t *)reporter)->fresh_line) {
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    if (!xml_reporter->fresh_line)
         print_char(reporter, '\n');
-    }
 }
 
 static void test_complete(pfstest_reporter_t *reporter)
 {
-    ((xml_reporter_t *)reporter)->in_message = pfstest_false;
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
 
-    if (((xml_reporter_t *)reporter)->test_ignored)
+    xml_reporter->in_message = pfstest_false;
+
+    if (xml_reporter->test_ignored)
     {
         pfstest_reporter_print_pg_str(reporter,
                                       pfstest_pg_str("ignored\" />\n"));
-    } else if (((xml_reporter_t *)reporter)->test_failed) {
+    } else if (xml_reporter->test_failed) {
         get_fresh_line(reporter);
         pfstest_reporter_print_pg_str(reporter,
                                       pfstest_pg_str("  </test>\n"));
@@ -203,7 +216,9 @@ static void run_complete(pfstest_reporter_t *reporter)
 
 static int return_value(pfstest_reporter_t *reporter)
 {
-    if (((xml_reporter_t *)reporter)->failed)
+    xml_reporter_t *xml_reporter = (xml_reporter_t *)reporter;
+
+    if (xml_reporter->failed)
         return EXIT_FAILURE;
     else
         return EXIT_SUCCESS;
