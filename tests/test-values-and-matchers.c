@@ -750,4 +750,40 @@ test(unequal_u32s_should_not_match)
                                         the_u32(4294967294)));
 }
 
+test(the_u64_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint64_t 18446744073709551615");
+
+    pfstest_value_print(the_u64(18446744073709551615u), message_spy);
+
+    assert_that("u64s print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(should_print_hex_u64s)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint64_t 0x000fedcba9876543");
+
+    pfstest_value_print(as_hex(the_u64(0x000fedcba9876543u)), message_spy);
+
+    assert_that("u64s print themselves as hex",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(equal_u64s_should_match)
+{
+    assert_true("equal u64s match",
+                pfstest_matcher_matches(is(the_u64(18446744073709551615u)),
+                                        the_u64(18446744073709551615u)));
+}
+
+test(unequal_u64s_should_not_match)
+{
+    assert_false("equal u64s match",
+                pfstest_matcher_matches(is(the_u64(18446744073709551615u)),
+                                        the_u64(18446744073709551614u)));
+}
+
 #endif /* defined(PFSTEST_HAS_STDINT) */

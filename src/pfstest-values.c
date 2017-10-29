@@ -429,4 +429,21 @@ pfstest_value_t *pfstest_the_u32(uint32_t n)
                              known_width_unsigned_aux());
 }
 
+static void the_u64_printer(pfstest_value_t *value,
+                            pfstest_reporter_t *reporter)
+{
+    uint64_t n = *(const uint64_t *)pfstest_value_data(value);
+
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint64_t "));
+    print_unsigned(reporter, n, pfstest_value_aux(value));
+}
+
+pfstest_value_t *pfstest_the_u64(uint64_t n)
+{
+    uint64_t *data = pfstest_alloc(sizeof(n));
+    *data = n;
+    return pfstest_value_new(the_u64_printer, data, sizeof(*data),
+                             known_width_unsigned_aux());
+}
+
 #endif  /* defined(PFSTEST_HAS_STDINT) */
