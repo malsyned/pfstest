@@ -19,7 +19,7 @@ static const pfstest_pg char esc_apostrophe[] = "\\'";
 static const pfstest_pg char esc_quote[] = "\\\"";
 static const pfstest_pg char esc_question[] = "\\?";
 
-static struct escape_char_map escape_char_map[] =
+static const pfstest_pg struct escape_char_map escape_char_map[] =
 {
     {'\a', esc_a},
     {'\b', esc_b},
@@ -37,11 +37,15 @@ static struct escape_char_map escape_char_map[] =
 void pfstest_reporter_print_escaped_char(pfstest_reporter_t *reporter, int c)
 {
     size_t i;
+    char ch;
+    const pfstest_pg_ptr char *str;
 
     for (i = 0; i < sizeof(escape_char_map)/sizeof(escape_char_map[0]); i++)
     {
-        if (c == escape_char_map[i].ch) {
-            pfstest_reporter_print_pg_str(reporter, escape_char_map[i].str);
+        pfstest_memcpy_pg(&ch, &(escape_char_map[i].ch), sizeof(ch));
+        if (c == ch) {
+            pfstest_memcpy_pg(&str, &(escape_char_map[i].str), sizeof(str));
+            pfstest_reporter_print_pg_str(reporter, str);
             return;
         }
     }
