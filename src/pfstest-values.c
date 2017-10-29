@@ -366,6 +366,7 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
 }
 
 #ifdef PFSTEST_HAS_STDINT
+
 static void the_u8_printer(pfstest_value_t *value,
                            pfstest_reporter_t *reporter)
 {
@@ -409,4 +410,23 @@ pfstest_value_t *pfstest_the_u16(uint16_t n)
     return pfstest_value_new(the_u16_printer, data, sizeof(*data),
                              known_width_unsigned_aux());
 }
+
+static void the_u32_printer(pfstest_value_t *value,
+                            pfstest_reporter_t *reporter)
+{
+    uint32_t n = *(const uint32_t *)pfstest_value_data(value);
+
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint32_t "));
+    print_unsigned(reporter, n, pfstest_value_aux(value));
+}
+
+pfstest_value_t *pfstest_the_u32(uint32_t n)
+{
+    uint32_t *data = pfstest_alloc(sizeof(n));
+    *data = n;
+
+    return pfstest_value_new(the_u32_printer, data, sizeof(*data),
+                             known_width_unsigned_aux());
+}
+
 #endif  /* defined(PFSTEST_HAS_STDINT) */

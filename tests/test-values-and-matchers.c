@@ -714,4 +714,40 @@ test(unequal_u16s_should_not_match)
                 pfstest_matcher_matches(is(the_u16(65535)), the_u16(65534)));
 }
 
+test(the_u32_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint32_t 4294967295");
+
+    pfstest_value_print(the_u32(4294967295), message_spy);
+
+    assert_that("u32s print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(should_print_hex_u32s)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint32_t 0x000a1db2");
+
+    pfstest_value_print(as_hex(the_u32(0x000a1db2)), message_spy);
+
+    assert_that("u32s print themselves as hex",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(equal_u32s_should_match)
+{
+    assert_true("equal u32s match",
+                pfstest_matcher_matches(is(the_u32(4294967295)),
+                                        the_u32(4294967295)));
+}
+
+test(unequal_u32s_should_not_match)
+{
+    assert_false("equal u32s match",
+                pfstest_matcher_matches(is(the_u32(4294967295)),
+                                        the_u32(4294967294)));
+}
+
 #endif /* defined(PFSTEST_HAS_STDINT) */
