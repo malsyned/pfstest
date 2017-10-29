@@ -3,7 +3,7 @@
 #include "capture-output.h"
 #include "output-definitions.h"
 
-static pfstest_report_colorizer_t *colorizer;
+static const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer;
 
 static pfstest_list_t suite;
 

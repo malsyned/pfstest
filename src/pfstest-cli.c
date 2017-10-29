@@ -117,7 +117,8 @@ static void registered_tests_print_register_commands(int (*char_writer)(int))
                                     plugins, suite);
 }
 
-static pfstest_report_colorizer_t *select_colorizer(pfstest_arguments_t *args)
+static const pfstest_pg_ptr
+pfstest_report_colorizer_t *select_colorizer(pfstest_arguments_t *args)
 {
     if (args->color)
         return pfstest_report_colorizer_ansi;
@@ -128,7 +129,7 @@ static pfstest_report_colorizer_t *select_colorizer(pfstest_arguments_t *args)
 static pfstest_reporter_t *create_selected_reporter(
     int (*char_writer)(int),
     pfstest_arguments_t *args,
-    pfstest_report_colorizer_t *colorizer)
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer)
 {
     if (args->verbose) {
         return pfstest_reporter_verbose_new(char_writer, colorizer);
@@ -143,7 +144,7 @@ static int pfstest_start_with_args(int (*char_writer)(int),
                                    pfstest_arguments_t *args)
 {
     pfstest_reporter_t *reporter;
-    pfstest_report_colorizer_t *colorizer;
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer;
     int r;
 
     colorizer = select_colorizer(args);

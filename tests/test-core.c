@@ -5,7 +5,7 @@
 
 char call_log[150];
 
-static pfstest_report_colorizer_t *null_colorizer;
+static const pfstest_pg_ptr pfstest_report_colorizer_t *null_colorizer;
 
 static pfstest_reporter_t *standard_reporter;
 static pfstest_reporter_t *verbose_reporter;

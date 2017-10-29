@@ -5,19 +5,13 @@
 #include "pfstest-version.h"
 #include "pfstest-alloc.h"
 
-typedef enum {
-    REPORT_COLOR_GREEN,
-    REPORT_COLOR_YELLOW,
-    REPORT_COLOR_RED,
-    REPORT_COLOR_BOLD,
-    REPORT_COLOR_VERY_RED
-} report_color_t;
-
-static void report_colorizer_start(pfstest_report_colorizer_t *this,
-                                   int (*char_writer)(int),
-                                   report_color_t color);
-static void report_colorizer_reset(pfstest_report_colorizer_t *this,
-                                   int (*char_writer)(int));
+static void report_colorizer_start(
+    const pfstest_pg_ptr pfstest_report_colorizer_t *this,
+    int (*char_writer)(int),
+    pfstest_report_color_t color);
+static void report_colorizer_reset(
+    const pfstest_pg_ptr pfstest_report_colorizer_t *this,
+    int (*char_writer)(int));
 
 typedef struct
 {
@@ -29,7 +23,7 @@ typedef struct
 typedef struct
 {
     pfstest_reporter_t parent;
-    pfstest_report_colorizer_t *colorizer;
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer;
     results_t results;
     volatile pfstest_bool test_failed;
     pfstest_bool test_ignored;
@@ -150,7 +144,8 @@ static void test_ignored_standard(pfstest_reporter_t *reporter)
 static void test_ignored_verbose(pfstest_reporter_t *reporter)
 {
     builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer =
+        breporter->colorizer;
     int (*char_writer)(int) = reporter->char_writer;
 
     test_ignored_bookkeeping(breporter);
@@ -164,7 +159,8 @@ static void test_failed_message_start_common(
     builtin_reporter_t *breporter, const pfstest_pg_ptr char *file, int line)
 {
     pfstest_reporter_t *reporter = (pfstest_reporter_t *)breporter;
-    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer =
+        breporter->colorizer;
     int(*char_writer)(int) = reporter->char_writer;
 
     report_colorizer_start(colorizer, char_writer, REPORT_COLOR_RED);
@@ -241,7 +237,8 @@ static void test_complete_standard(pfstest_reporter_t *reporter)
 static void test_complete_verbose(pfstest_reporter_t *reporter)
 {
     builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer =
+        breporter->colorizer;
     int (*char_writer)(int) = reporter->char_writer;
 
     if (test_passed(breporter)) {
@@ -256,7 +253,8 @@ static void test_complete_verbose(pfstest_reporter_t *reporter)
 static void run_complete(pfstest_reporter_t *reporter)
 {
     builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
-    pfstest_report_colorizer_t *colorizer = breporter->colorizer;
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer =
+        breporter->colorizer;
     pfstest_bool pass_green = (breporter->results.passed > 0
                                && breporter->results.failed == 0);
     pfstest_bool fail_red = (breporter->results.failed > 0);
@@ -342,7 +340,8 @@ static void bookkeeping_init(builtin_reporter_t *breporter)
 
 
 pfstest_reporter_t *pfstest_reporter_standard_new(
-    int (*char_writer)(int), pfstest_report_colorizer_t *colorizer)
+    int (*char_writer)(int),
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer)
 {
     builtin_reporter_t *breporter = pfstest_alloc(sizeof(*breporter));
 
@@ -355,7 +354,8 @@ pfstest_reporter_t *pfstest_reporter_standard_new(
 }
 
 pfstest_reporter_t *pfstest_reporter_verbose_new(
-    int (*char_writer)(int), pfstest_report_colorizer_t *colorizer)
+    int (*char_writer)(int),
+    const pfstest_pg_ptr pfstest_report_colorizer_t *colorizer)
 {
     builtin_reporter_t *breporter = pfstest_alloc(sizeof(*breporter));
 
@@ -367,14 +367,8 @@ pfstest_reporter_t *pfstest_reporter_verbose_new(
     return (pfstest_reporter_t *)breporter;
 }
 
-struct _pfstest_report_colorizer_t
-{
-    void (*start)(int (*char_writer)(int), report_color_t color);
-    void (*reset)(int (*char_writer)(int));
-};
-
 static void colorizer_null_start(int (*char_writer)(int),
-                                 report_color_t color)
+                                 pfstest_report_color_t color)
 {
     (void)char_writer;
     (void)color;
@@ -397,7 +391,7 @@ static void finish_color_esc(int (*char_writer)(int))
 }
 
 static void colorizer_ansi_start(int (*char_writer)(int),
-                                 report_color_t color)
+                                 pfstest_report_color_t color)
 {
     (void)color;
     start_color_esc(char_writer);
@@ -423,34 +417,29 @@ static void colorizer_ansi_reset(int (*char_writer)(int))
     finish_color_esc(char_writer);
 }
 
-static void report_colorizer_start(pfstest_report_colorizer_t *this,
-                                   int (*char_writer)(int),
-                                   report_color_t color)
+static void report_colorizer_start(
+    const pfstest_pg_ptr pfstest_report_colorizer_t *this,
+    int (*char_writer)(int),
+    pfstest_report_color_t color)
 {
-    this->start(char_writer, color);
+    void (*start)(int (*char_writer)(int), pfstest_report_color_t color);
+    pfstest_memcpy_pg(&start, &this->start, sizeof(start));
+    start(char_writer, color);
 }
 
-static void report_colorizer_reset(pfstest_report_colorizer_t *this,
-                                   int (*char_writer)(int))
+static void report_colorizer_reset(
+    const pfstest_pg_ptr pfstest_report_colorizer_t *this,
+    int (*char_writer)(int))
 {
-    this->reset(char_writer);
+    void (*reset)(int (*char_writer)(int));
+    pfstest_memcpy_pg(&reset, &this->reset, sizeof(reset));
+    reset(char_writer);
 }
 
-static pfstest_report_colorizer_t _pfstest_report_colorizer_null[] = {
-    {
-        colorizer_null_start,
-        colorizer_null_reset,
-    }
-};
+const pfstest_pg pfstest_report_colorizer_t pfstest_report_colorizer_null[] =
+{{ colorizer_null_start,
+   colorizer_null_reset }};
 
-static pfstest_report_colorizer_t _pfstest_report_colorizer_ansi[] = {
-    {
-        colorizer_ansi_start,
-        colorizer_ansi_reset,
-    }
-};
-
-pfstest_report_colorizer_t *pfstest_report_colorizer_null =
-    _pfstest_report_colorizer_null;
-pfstest_report_colorizer_t *pfstest_report_colorizer_ansi =
-    _pfstest_report_colorizer_ansi;
+const pfstest_pg pfstest_report_colorizer_t pfstest_report_colorizer_ansi[] =
+{{ colorizer_ansi_start,
+   colorizer_ansi_reset, }};
