@@ -62,7 +62,7 @@ pfstest_value_t *pfstest_the_short(short n)
     short *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new(the_short_printer, data, sizeof(n));
+    return pfstest_value_new(the_short_printer, data, sizeof(n), NULL);
 }
 
 /* the_ushort */
@@ -80,8 +80,8 @@ pfstest_value_t *pfstest_the_ushort(unsigned short n)
     unsigned short *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new_with_aux(the_ushort_printer, data, sizeof(n),
-                                      default_unsigned_aux());
+    return pfstest_value_new(the_ushort_printer, data, sizeof(n),
+                             default_unsigned_aux());
 }
 
 /* the_int */
@@ -100,7 +100,7 @@ pfstest_value_t *pfstest_the_int(int n)
     int *data = pfstest_alloc(sizeof(n));
     *data = n;
     
-    return pfstest_value_new(the_int_printer, data, sizeof(n));
+    return pfstest_value_new(the_int_printer, data, sizeof(n), NULL);
 }
 
 /* the_uint */
@@ -119,8 +119,8 @@ pfstest_value_t *pfstest_the_uint(unsigned int n)
     unsigned int *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new_with_aux(the_uint_printer, data, sizeof(n),
-                                      default_unsigned_aux());
+    return pfstest_value_new(the_uint_printer, data, sizeof(n),
+                             default_unsigned_aux());
 }
 
 /* the_long */
@@ -137,7 +137,7 @@ pfstest_value_t *pfstest_the_long(long n)
 {
     long *data = pfstest_alloc(sizeof(n));
     *data = n;
-    return pfstest_value_new(the_long_printer, data, sizeof(n));
+    return pfstest_value_new(the_long_printer, data, sizeof(n), NULL);
 }
 
 /* the_ulong */
@@ -154,8 +154,8 @@ pfstest_value_t *pfstest_the_ulong(unsigned long n)
 {
     unsigned long *data = pfstest_alloc(sizeof(n));
     *data = n;
-    return pfstest_value_new_with_aux(the_ulong_printer, data, sizeof(n),
-                                      default_unsigned_aux());
+    return pfstest_value_new(the_ulong_printer, data, sizeof(n),
+                             default_unsigned_aux());
 }
 
 /* the_enum */
@@ -207,7 +207,7 @@ pfstest_value_t *pfstest_the_enum(
     *data = e;
     aux->name_map = name_map;
 
-    return pfstest_value_new_with_aux(the_enum_printer, data, sizeof(e), aux);
+    return pfstest_value_new(the_enum_printer, data, sizeof(e), aux);
 }
 
 /* the_bool */
@@ -230,7 +230,7 @@ pfstest_value_t *pfstest_the_bool(pfstest_bool b)
     pfstest_bool *data = pfstest_alloc(sizeof(b));
     *data = b ? pfstest_true : pfstest_false;
 
-    return pfstest_value_new(the_bool_printer, data, sizeof(b));
+    return pfstest_value_new(the_bool_printer, data, sizeof(b), NULL);
 }
 
 /* the_char */
@@ -250,7 +250,7 @@ pfstest_value_t *pfstest_the_char(char c)
     char *data = pfstest_alloc(sizeof(c));
     *data = c;
 
-    return pfstest_value_new(the_char_printer, data, sizeof(c));
+    return pfstest_value_new(the_char_printer, data, sizeof(c), NULL);
 }
 
 /* the_string */
@@ -275,7 +275,7 @@ pfstest_value_t *pfstest_the_string(const char *s)
     char *data = pfstest_alloc(strlen(s) + 1);
     strcpy(data, s);
 
-    return pfstest_value_new(the_string_printer, data, strlen(s) + 1);
+    return pfstest_value_new(the_string_printer, data, strlen(s) + 1, NULL);
 }
 
 /* the_pointer */
@@ -301,7 +301,7 @@ static void the_pointer_printer(pfstest_reporter_t *reporter,
 
 pfstest_value_t *pfstest_the_pointer(const void *p)
 {
-    return pfstest_value_new(the_pointer_printer, p, 0);
+    return pfstest_value_new(the_pointer_printer, p, 0, NULL);
 }
 
 /* the_memory */
@@ -332,7 +332,7 @@ pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
 
     memcpy(data, m, size);
 
-    return pfstest_value_new(the_memory_printer, data, size);
+    return pfstest_value_new(the_memory_printer, data, size, NULL);
 }
 
 /* the_int_array */
@@ -360,7 +360,7 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
     size_t size = length * sizeof(*a);
     void *data = pfstest_alloc(size);
     memcpy(data, a, size);
-    return pfstest_value_new(the_int_array_printer, data, size);
+    return pfstest_value_new(the_int_array_printer, data, size, NULL);
 }
 
 #ifdef PFSTEST_HAS_STDINT
@@ -386,8 +386,8 @@ pfstest_value_t *pfstest_the_u8(uint8_t n)
     uint8_t *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new_with_aux(the_u8_printer, data, sizeof(*data),
-                                      known_width_unsigned_aux());
+    return pfstest_value_new(the_u8_printer, data, sizeof(*data),
+                             known_width_unsigned_aux());
 }
 
 static void the_u16_printer(pfstest_reporter_t *reporter,
@@ -404,7 +404,7 @@ pfstest_value_t *pfstest_the_u16(uint16_t n)
     uint16_t *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new_with_aux(the_u16_printer, data, sizeof(*data),
-                                      known_width_unsigned_aux());
+    return pfstest_value_new(the_u16_printer, data, sizeof(*data),
+                             known_width_unsigned_aux());
 }
 #endif  /* defined(PFSTEST_HAS_STDINT) */
