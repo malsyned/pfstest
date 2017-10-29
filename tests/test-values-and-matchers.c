@@ -8,59 +8,53 @@ before_tests(set_up_values_and_matchers)
     capture_output_init();
 }
 
-test(should_match_shorts)
+test(the_short_should_print_itself)
 {
-    assert_that("same shorts pass", the_short(32767), is(the_short(32767)));
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the short 32767");
+
+    pfstest_value_print(message_spy, the_short(32767));
+
+    assert_that("shorts print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_shorts)
+test(the_short_should_print_negative_shorts)
 {
-    assert_that("", the_short(32767), is(the_short(-32768)));
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the short -32768");
+
+    pfstest_value_print(message_spy, the_short(-32768));
+
+    assert_that("negative shorts print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_fail_on_different_shorts)
+test(equal_shorts_should_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the short -32768\n"
-        "Actual:   the short 32767");
-
-    capture_test_results(assert_different_shorts);
-
-    assert_that("different shorts fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_true("equal shorts match",
+                pfstest_matcher_matches(is(the_short(32767)),
+                                        the_short(32767)));
 }
 
-test(should_match_ushorts)
+test(unequal_shorts_should_not_match)
 {
-    assert_that("same ushorts pass",
-                the_ushort(65535), is(the_ushort(65535)));
+    assert_false("unequal shorts don't match",
+                 pfstest_matcher_matches(is(the_short(32767)),
+                                         the_short(-32768)));
 }
 
-pfstest_case(assert_different_ushorts)
+test(the_ushort_should_print_itself)
 {
-    assert_that("", the_ushort(65535), is(the_ushort(65534)));
-}
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the ushort 65535");
 
-test(should_fail_on_different_ushorts)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the ushort 65534\n"
-        "Actual:   the ushort 65535");
+    pfstest_value_print(message_spy, the_ushort(65535));
 
-    capture_test_results(assert_different_ushorts);
-
-    assert_that("different ushorts fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("ushorts print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
 test(should_print_hex_ushorts)
 {
-    const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("the ushort 0xab2");
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the ushort 0xab2");
 
     pfstest_value_print(message_spy, as_hex(the_ushort(0xab2)));
 
@@ -69,59 +63,67 @@ test(should_print_hex_ushorts)
                 matches_the_pg_string(expected));
 }
 
-test(should_match_ints)
+test(equal_ushorts_should_match)
 {
-    assert_that("same ints pass", the_int(32767), is(the_int(32767)));
+    assert_true("equal ushorts match",
+                pfstest_matcher_matches(is(the_ushort(65535)),
+                                        the_ushort(65535)));
 }
 
-pfstest_case(assert_different_ints)
+test(unequal_ushorts_should_not_match)
 {
-    assert_that("", the_int(-32768), is(the_int(32767)));
+    assert_false("unequal ushorts don't match",
+                 pfstest_matcher_matches(is(the_ushort(65534)),
+                                         the_ushort(65535)));
 }
 
-test(should_fail_on_different_ints)
+test(the_int_should_print_itself)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the int 32767\n"
-        "Actual:   the int -32768");
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the int 32767");
 
-    capture_test_results(assert_different_ints);
+    pfstest_value_print(message_spy, the_int(32767));
 
-    assert_that("different ints fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("ints print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_match_uints)
+test(the_int_should_print_negative_ints)
 {
-    assert_that("same uints pass",
-                the_uint(65535), is(the_uint(65535)));
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the int -32768");
+
+    pfstest_value_print(message_spy, the_int(-32768));
+
+    assert_that("negative ints print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_uints)
+test(equal_ints_should_match)
 {
-    assert_that("", the_uint(65534), is(the_uint(65535)));
+    assert_true("equal ints match",
+                pfstest_matcher_matches(is(the_int(32767)),
+                                        the_int(32767)));
 }
 
-test(should_fail_on_different_uints)
+test(unequal_ints_should_not_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the uint 65535\n"
-        "Actual:   the uint 65534");
+    assert_false("unequal ints don't match",
+                 pfstest_matcher_matches(is(the_int(32767)),
+                                         the_int(-32768)));
+}
 
-    capture_test_results(assert_different_uints);
+test(the_uint_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the uint 65535");
 
-    assert_that("different uints fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    pfstest_value_print(message_spy, the_uint(65535));
+
+    assert_that("uints print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
 test(should_print_hex_uints)
 {
-    const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("the uint 0xab2");
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the uint 0xab2");
 
     pfstest_value_print(message_spy, as_hex(the_uint(0xab2)));
 
@@ -130,54 +132,66 @@ test(should_print_hex_uints)
                 matches_the_pg_string(expected));
 }
 
-test(should_match_longs)
+test(equal_uints_should_match)
 {
-    assert_that("same longs pass",
-                the_long(2147483647l), is(the_long(2147483647l)));
+    assert_true("equal uints match",
+                pfstest_matcher_matches(is(the_uint(65535)),
+                                        the_uint(65535)));
 }
 
-pfstest_case(assert_different_longs)
+test(unequal_uints_should_not_match)
 {
-    assert_that("", the_long(2147483647l), is(the_long((-2147483647l - 1))));
+    assert_false("unequal uints don't match",
+                 pfstest_matcher_matches(is(the_uint(65534)),
+                                         the_uint(65535)));
 }
 
-test(should_fail_on_different_longs)
+test(the_long_should_print_itself)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the long -2147483648\n"
-        "Actual:   the long 2147483647");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the long 2147483647");
 
-    capture_test_results(assert_different_longs);
+    pfstest_value_print(message_spy, the_long(2147483647l));
 
-    assert_that("different longs fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("longs print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_match_ulongs)
+test(the_long_should_print_negative_longs)
 {
-    assert_that("same ulongs pass",
-                the_ulong(4294967295ul), is(the_ulong(4294967295ul)));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the long -2147483648");
+
+    pfstest_value_print(message_spy, the_long((-2147483647l - 1)));
+
+    assert_that("negative longs print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_ulongs)
+
+test(equal_longs_should_match)
 {
-    assert_that("", the_ulong(4294967295ul), is(the_ulong(4294967294ul)));
+    assert_true("equal longs match",
+                pfstest_matcher_matches(is(the_long(2147483647l)),
+                                        the_long(2147483647l)));
 }
 
-test(should_fail_on_different_ulongs)
+test(unequal_longs_should_not_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the ulong 4294967294\n"
-        "Actual:   the ulong 4294967295");
+    assert_false("unequal longs don't match",
+                 pfstest_matcher_matches(is(the_long((-2147483647l - 1))),
+                                         the_long(2147483647l)));
+}
 
-    capture_test_results(assert_different_ulongs);
+test(the_ulong_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the ulong 4294967295");
 
-    assert_that("different ulongs fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    pfstest_value_print(message_spy, the_ulong(4294967295ul));
+
+    assert_that("ulongs print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
 test(should_print_hex_ulongs)
@@ -190,6 +204,20 @@ test(should_print_hex_ulongs)
     assert_that("ulongs print themselves as hex",
                 the_string(captured_output),
                 matches_the_pg_string(expected));
+}
+
+test(equal_ulongs_should_match)
+{
+    assert_true("equal ulongs match",
+                pfstest_matcher_matches(is(the_ulong(4294967295ul)),
+                                        the_ulong(4294967295ul)));
+}
+
+test(unequal_ulongs_should_not_match)
+{
+    assert_false("unequal ulongs don't match",
+                 pfstest_matcher_matches(is(the_ulong(4294967294ul)),
+                                         the_ulong(4294967295ul)));
 }
 
 enum some_enum {
@@ -209,220 +237,187 @@ const pfstest_pg_ptr char *const pfstest_pg some_enum_map[] = {
     NULL,
 };
 
-test(should_match_enums)
+test(the_enum_should_print_itself)
 {
-    assert_that("same enums pass",
-                the_enum(e_foo, some_enum_map),
-                is(the_enum(e_foo, some_enum_map)));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the enum e_foo\nthe enum e_baz");
+
+    pfstest_value_print(message_spy, the_enum(e_foo, some_enum_map));
+    pfstest_reporter_print_char(message_spy, '\n');
+    pfstest_value_print(message_spy, the_enum(e_baz, some_enum_map));
+
+    assert_that("enums print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_enums)
+test(the_enum_should_fall_back_to_printing_numeric_value)
 {
-    assert_that("",
-                the_enum(e_foo, some_enum_map),
-                is(the_enum(e_baz, some_enum_map)));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the enum 3 [out of range]\n"
+                       "the enum -1 [out of range]");
+
+    pfstest_value_print(message_spy, the_enum(3, some_enum_map));
+    pfstest_reporter_print_char(message_spy, '\n');
+    pfstest_value_print(message_spy, the_enum(-1, some_enum_map));
+
+    assert_that("enums print out-of-range values as numbers",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_fail_on_different_enums)
+test(equal_enums_should_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the enum e_baz\n"
-        "Actual:   the enum e_foo");
-
-    capture_test_results(assert_different_enums);
-
-    assert_that("different enums fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_true("equal enums match",
+                pfstest_matcher_matches(is(the_enum(e_foo, some_enum_map)),
+                                        the_enum(e_foo, some_enum_map)));
 }
 
-pfstest_case(assert_out_of_range_enums)
+test(unequal_enums_should_not_match)
 {
-    assert_that("",
-                the_enum(-1, some_enum_map),
-                is(the_enum(3, some_enum_map)));
+    assert_false("unequal enums don't match",
+                 pfstest_matcher_matches(is(the_enum(e_foo, some_enum_map)),
+                                         the_enum(e_baz, some_enum_map)));
 }
 
-test(should_print_enum_val_out_of_range)
+test(the_bool_should_print_true)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the enum 3 [out of range]\n"
-        "Actual:   the enum -1 [out of range]");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the bool <true>");
 
-    capture_test_results(assert_out_of_range_enums);
+    pfstest_value_print(message_spy, the_bool(pfstest_true));
 
-    assert_that("different enums fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("bools print true",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_match_bools)
+test(the_bool_should_print_false)
 {
-    assert_that("same bools pass",
-                the_bool(pfstest_true), is(the_bool(pfstest_true)));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the bool <false>");
+
+    pfstest_value_print(message_spy, the_bool(pfstest_false));
+
+    assert_that("bools print false",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_bools)
+test(equal_bools_should_match)
 {
-    assert_that("", the_bool(pfstest_true), is(the_bool(pfstest_false)));
+    assert_true("equal bools match",
+                pfstest_matcher_matches(is(the_bool(pfstest_true)),
+                                        the_bool(pfstest_true)));
 }
 
-test(should_fail_on_different_bools)
+test(unequal_bools_should_not_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the bool <false>\n"
-        "Actual:   the bool <true>");
-    
-    capture_test_results(assert_different_bools);
-
-    assert_that("different bools fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_false("unequal bools don't match",
+                 pfstest_matcher_matches(is(the_bool(pfstest_false)),
+                                         the_bool(pfstest_true)));
 }
 
-test(should_match_different_but_equivalent_bools)
+test(different_but_equivalent_bools_should_match)
 {
-    assert_that("equivalent bools pass", the_bool(4), is(the_bool(72)));
+    assert_true("equivalent bools match",
+                pfstest_matcher_matches(is(the_bool(72)),
+                                        the_bool(4)));
 }
 
-test(should_match_chars)
+test(the_char_should_print_itself)
 {
-    assert_that("same chars pass", the_char('c'), is(the_char('c')));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the char 'c'");
+
+    pfstest_value_print(message_spy, the_char('c'));
+
+    assert_that("chars print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_chars)
-{
-    assert_that("", the_char('c'), is(the_char('d')));
+test(the_char_should_escape_special_chars)
+{    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the char '\\n'");
+
+    pfstest_value_print(message_spy, the_char('\n'));
+
+    assert_that("special chars should print escaped",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_fail_on_different_chars)
+test(equal_chars_should_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the char 'd'\n"
-        "Actual:   the char 'c'");
-
-    capture_test_results(assert_different_chars);
-
-    assert_that("different chars fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_true("equal chars match",
+                pfstest_matcher_matches(is(the_char('c')),
+                                        the_char('c')));
 }
 
-pfstest_case(assert_special_chars)
+test(unequal_chars_should_not_match)
 {
-    assert_that("", the_char('\n'), is(the_char('n')));
+    assert_false("unequal chars don't match",
+                pfstest_matcher_matches(is(the_char('d')),
+                                        the_char('c')));
 }
 
-test(the_char_should_escape_special_chars_in_failure_messages)
+test(the_string_should_print_itself)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the char 'n'\n"
-        "Actual:   the char '\\n'");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the string \"foo\"");
+    char s1[] = "foo";
 
-    capture_test_results(assert_special_chars);
+    pfstest_value_print(message_spy, the_string(s1));
 
-    assert_that("different chars fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("strings print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_match_strings)
+test(the_string_should_escape_special_characters)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the string \"\\t\\v\\\\\\\"\\?\\a\\b\\f\\n\\r\"");
+    char s1[] = "\t\v\\\"\?\a\b\f\n\r";
+
+    pfstest_value_print(message_spy, the_string(s1));
+
+    assert_that("special chars should print escaped in strings",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(equal_strings_should_match)
 {
     char s1[] = "foo";
     char s2[] = "foo";
 
-    assert_that("same strings pass", the_string(s1), is(the_string(s2)));
+    assert_true("equal strings match",
+                pfstest_matcher_matches(is(the_string(s2)),
+                                        the_string(s1)));
 }
 
-pfstest_case(assert_different_strings)
+test(unequal_strings_should_not_match)
 {
     char s1[] = "foo";
     char s2[] = "bar";
-    assert_that("", the_string(s1), is(the_string(s2)));
+
+    assert_false("unequal strings don't match",
+                 pfstest_matcher_matches(is(the_string(s2)),
+                                         the_string(s1)));
 }
 
-test(should_fail_on_different_strings)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the string \"bar\"\n"
-        "Actual:   the string \"foo\"");
-
-    capture_test_results(assert_different_strings);
-
-    assert_that("different strings fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
-}
-
-pfstest_case(assert_shorter_actual_string)
+test(shorter_actual_string_should_not_match)
 {
     char s1[] = "foo";
     char s2[] = "foobar";
 
-    assert_that("", the_string(s1), is(the_string(s2)));
+    assert_false("shorter actual string doesn't match",
+                 pfstest_matcher_matches(is(the_string(s2)),
+                                         the_string(s1)));
 }
 
-test(should_fail_on_shorter_actual_string)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the string \"foobar\"\n"
-        "Actual:   the string \"foo\"");
-
-    capture_test_results(assert_shorter_actual_string);
-
-    assert_that("shorter actual string fails",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
-}
-
-pfstest_case(assert_shorter_expected_string)
+test(shorter_expected_string_should_not_match)
 {
     char s1[] = "foobar";
     char s2[] = "foo";
 
-    assert_that("", the_string(s1), is(the_string(s2)));
-}
-
-test(should_fail_on_shorter_expected_string)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the string \"foo\"\n"
-        "Actual:   the string \"foobar\"");
-
-    capture_test_results(assert_shorter_expected_string);
-
-    assert_that("shorter expected string fails",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
-}
-
-pfstest_case(assert_special_strings)
-{
-    char s1[] = "\a\b\f\n\r";
-    char s2[] = "\t\v\\\"\?";
-    assert_that("", the_string(s1), is(the_string(s2)));
-}
-
-test(the_string_should_escape_special_chars_in_failure_messages)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the string \"\\t\\v\\\\\\\"\\?\"\n"
-        "Actual:   the string \"\\a\\b\\f\\n\\r\"");
-
-    capture_test_results(assert_special_strings);
-
-    assert_that("different strings fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_false("shorter expected string doesn't match",
+                 pfstest_matcher_matches(is(the_string(s2)),
+                                         the_string(s1)));
 }
 
 #ifdef __18CXX
@@ -430,145 +425,98 @@ test(the_string_should_escape_special_chars_in_failure_messages)
 #pragma idata values_and_matchers_2
 #endif
 
-test(should_match_pointers)
+test(the_pointer_should_print_itself)
 {
     /* Use only 16-bit pointers, since these should work on any
      * conceivable platform */
-    assert_that("same pointers pass",
-                the_pointer((void *)0xbeef),
-                is(the_pointer((void *)0xbeef)));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the pointer <0xbeef>");
+
+    pfstest_value_print(message_spy, the_pointer((void *)0xbeef));
+
+    assert_that("pointers print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-pfstest_case(assert_different_pointers)
+test(the_pointer_should_print_null_specially)
 {
-    assert_that("",
-                the_pointer((void *)0xdead),
-                is(the_pointer((void *)0xbeef)));
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the pointer <NULL>");
+
+    pfstest_value_print(message_spy, the_pointer(NULL));
+
+    assert_that("pointers print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_fail_on_different_pointers)
+test(equal_pointers_should_match)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the pointer <0xbeef>\n"
-        "Actual:   the pointer <0xdead>");
-
-    capture_test_results(assert_different_pointers);
-
-    assert_that("different pointers fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_true("equal pointers match",
+                pfstest_matcher_matches(is(the_pointer((void *)0xbeef)),
+                                        the_pointer((void *)0xbeef)));
 }
 
-pfstest_case(assert_pointer_against_null)
+test(unequal_pointers_should_not_match)
 {
-    assert_that("", the_pointer((void *)0xdead), is(the_pointer(NULL)));
+    assert_false("equal pointers match",
+                 pfstest_matcher_matches(is(the_pointer((void *)0xbeef)),
+                                         the_pointer((void *)0xdead)));
 }
 
-test(should_print_null_pointers_specially)
+test(the_memory_should_print_itself)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the pointer <NULL>\n"
-        "Actual:   the pointer <0xdead>");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
+    char actual[] = {1, 2, 3, 4, 5};
 
-    capture_test_results(assert_pointer_against_null);
+    pfstest_value_print(message_spy, the_memory(actual, sizeof(actual)));
 
-    assert_that("NULL pointers are printed specially",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("memory buffers print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_match_memory)
+test(equal_memory_should_match)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
 
-    assert_that("same memory passes",
-                the_memory(actual, sizeof(actual)),
-                is(the_memory(expected, sizeof(expected))));
+    assert_true("equal memory buffers match",
+                pfstest_matcher_matches(
+                    is(the_memory(expected, sizeof(expected))),
+                    the_memory(actual, sizeof(actual))));
 }
 
-pfstest_case(assert_different_memory)
+test(unequal_memory_should_not_match)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 4, 4, 5};
 
-    assert_that("",
-                the_memory(actual, sizeof(actual)),
-                is(the_memory(expected, sizeof(expected))));
+    assert_false("unequal memory buffers don't match",
+                 pfstest_matcher_matches(
+                     is(the_memory(expected, sizeof(expected))),
+                     the_memory(actual, sizeof(actual))));
 }
 
-test(should_fail_on_different_memory)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the memory {0x01, 0x02, 0x04, 0x04, 0x05}\n"
-        "Actual:   the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
-
-    capture_test_results(assert_different_memory);
-
-    assert_that("different memory fails",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
-}
-
-pfstest_case(assert_longer_memory)
+test(shorter_actual_memory_should_not_match)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
 
-    assert_that("",
-                the_memory(actual, sizeof(actual)),
-                is(the_memory(expected, sizeof(expected) - 1)));
+    assert_false("shorter actual memory buffer doesn't match",
+                 pfstest_matcher_matches(
+                     is(the_memory(expected, sizeof(expected) - 1)),
+                     the_memory(actual, sizeof(actual))));
 }
 
-test(should_fail_on_longer_memory)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the memory {0x01, 0x02, 0x03, 0x04}\n"
-        "Actual:   the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
-
-    capture_test_results(assert_longer_memory);
-
-    assert_that("longer memory fails",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
-}
-
-pfstest_case(assert_shorter_memory)
+test(shorter_expected_memory_should_not_match)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
 
-    assert_that("",
-                the_memory(actual, sizeof(actual) - 1),
-                is(the_memory(expected, sizeof(expected))));
-}
-
-test(should_fail_on_shorter_memory)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the memory {0x01, 0x02, 0x03, 0x04, 0x05}\n"
-        "Actual:   the memory {0x01, 0x02, 0x03, 0x04}");
-
-    capture_test_results(assert_shorter_memory);
-
-    assert_that("shorter memory fails",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
-}
-
-test(should_match_anything)
-{
-    assert_that("is_anything matches a short",
-                the_short(5), is_anything);
-    assert_that("is_anything matches an int",
-                the_int(8), is_anything);
-    assert_that("is_anything matches a pointer",
-                the_pointer(NULL), is_anything);
+    assert_false("shorter expected memory buffer doesn't match",
+                 pfstest_matcher_matches(
+                     is(the_memory(expected, sizeof(expected))),
+                     the_memory(actual, sizeof(actual) - 1)));
 }
 
 test(is_anything_should_print_itself)
@@ -582,14 +530,25 @@ test(is_anything_should_print_itself)
                 matches_the_pg_string(expected));
 }
 
+test(should_match_anything)
+{
+    assert_true("is_anything matches a short",
+                pfstest_matcher_matches(is_anything, the_short(5)));
+    assert_true("is_anything matches an int",
+                pfstest_matcher_matches(is_anything, the_int(8)));
+    assert_true("is_anything matches a pointer",
+                pfstest_matcher_matches(is_anything, the_pointer(NULL)));
+}
+
 test(should_match_memory_with_pointer)
 {
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
 
-    assert_that("is_the_memory matches against the_pointer values",
-                the_pointer(actual),
-                is(the_memory(expected, sizeof(expected))));
+    assert_true("is_the_memory matches against the_pointer values",
+                pfstest_matcher_matches(
+                    is(the_memory(expected, sizeof(expected))),
+                    the_pointer(actual)));
 }
 
 test(should_match_primitive_with_pointer)
@@ -601,7 +560,7 @@ test(should_match_primitive_with_pointer)
                 the_pointer(&actual), is(the_int(expected)));
 }
 
-pfstest_case(assert_different_data_types)
+test(should_detect_data_type_mismatches)
 {
     unsigned char buf[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     
@@ -610,89 +569,89 @@ pfstest_case(assert_different_data_types)
      * contents of the data buffer should always match, requiring a
      * check of the sizes. This test may fail on a platform where
      * shorts are 64-bit, but I'm not aware of any such platform. */
-    assert_that("",
-                the_memory(buf, sizeof(buf)), is(the_ushort(USHRT_MAX)));
+    assert_false("different data types fail",
+                pfstest_matcher_matches(is(the_ushort(USHRT_MAX)),
+                                        the_memory(buf, sizeof(buf))));
 }
 
-test(should_detect_data_type_mismatches)
+test(is_should_print_value)
+{    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the int 3\nthe char 'c'");
+
+    pfstest_matcher_print(message_spy, is(the_int(3)));
+    pfstest_reporter_print_char(message_spy, '\n');
+    pfstest_matcher_print(message_spy, is(the_char('c')));
+
+    assert_that("int arrays print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(the_int_array_should_print_itself)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the ushort 65535\n"
-        "Actual:   the memory {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}"
-        );
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the int 1, the int 3, the int 32767, the int -4 }");
+    int actual[] = {1, 3, 32767, -4};
 
-    capture_test_results(assert_different_data_types);
+    pfstest_value_print(
+        message_spy, the_int_array(actual, sizeof(actual)/sizeof(actual[0])));
 
-    assert_that("different data types fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("the_int_array prints itself",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
-test(should_match_int_array_against_matcher_list)
+test(int_members_match_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the int 1, the int 3, the int 32767, the int -5 }");
+
+    pfstest_matcher_print(message_spy, int_members_match(is(the_int(1)),
+                                                         is(the_int(3)),
+                                                         is(the_int(32767)),
+                                                         is(the_int(-5)),
+                                                         NULL));
+
+    assert_that("int_members_match prints its member matchers",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(int_members_match_should_pass_matching_int_array)
 {
     int actual[] = {1, 3, INT_MAX, -5};
 
-    assert_that("Matcher arrays match against elements of integer array",
-                the_int_array(actual, sizeof(actual)/sizeof(actual[0])),
-                int_members_match(is(the_int(1)),
-                                  is(the_int(3)),
-                                  is(the_int(INT_MAX)),
-                                  is(the_int(-5)),
-                                  NULL));
+    assert_true("Matcher arrays match against elements of integer array",
+                pfstest_matcher_matches(
+                    int_members_match(is(the_int(1)),
+                                      is(the_int(3)),
+                                      is(the_int(INT_MAX)),
+                                      is(the_int(-5)),
+                                      NULL),
+                    the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
 }
 
-pfstest_case(assert_mismatched_arrays)
+test(int_members_match_should_fail_nonmatching_array)
 {
     int actual[] = {1, 3, 32767, -4};
 
-    assert_that("",
-                the_int_array(actual, sizeof(actual)/sizeof(actual[0])),
-                int_members_match(is(the_int(1)),
-                                  is(the_int(3)),
-                                  is(the_int(32767)),
-                                  is(the_int(-5)),
-                                  NULL));
-}
-
-test(should_fail_on_int_array_element_mismatch)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: { the int 1, the int 3, the int 32767, the int -5 }\n"
-        "Actual:   { the int 1, the int 3, the int 32767, the int -4 }");
-
-    capture_test_results(assert_mismatched_arrays);
-
-    assert_that("Non-matching integer arrays fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_false("Non-matching integer arrays fail",
+                pfstest_matcher_matches(
+                    int_members_match(is(the_int(1)),
+                                      is(the_int(3)),
+                                      is(the_int(INT_MAX)),
+                                      is(the_int(-5)),
+                                      NULL),
+                    the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
 }
 
 #ifdef PFSTEST_HAS_STDINT
 
-test(should_match_u8)
+test(the_u8_should_print_itself)
 {
-    assert_that("same u8s pass", the_u8(5), is(the_u8(5)));
-}
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the uint8_t 255");
 
-pfstest_case(assert_different_u8s)
-{
-    assert_that("", the_u8(5), is(the_u8(6)));
-}
+    pfstest_value_print(message_spy, the_u8(255));
 
-test(should_fail_on_different_u8s)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the uint8_t 6\n"
-        "Actual:   the uint8_t 5");
-
-    capture_test_results(assert_different_u8s);
-
-    assert_that("different u8s fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("u8s print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
 test(should_print_hex_u8s)
@@ -707,28 +666,28 @@ test(should_print_hex_u8s)
                 matches_the_pg_string(expected));
 }
 
-test(should_match_u16)
+test(equal_u8s_should_match)
 {
-    assert_that("same u16s pass", the_u16(256), is(the_u16(256)));
+    assert_true("equal u8s match",
+                pfstest_matcher_matches(is(the_u8(255)), the_u8(255)));
 }
 
-pfstest_case(assert_different_u16s)
+test(unequal_u8s_should_not_match)
 {
-    assert_that("", the_u16(256), is(the_u16(257)));
+    assert_false("equal u8s match",
+                pfstest_matcher_matches(is(the_u8(255)), the_u8(254)));
 }
 
-test(should_fail_on_different_u16s)
+
+test(the_u16_should_print_itself)
 {
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Failed assertion\n"
-        "Expected: the uint16_t 257\n"
-        "Actual:   the uint16_t 256");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint16_t 65535");
 
-    capture_test_results(assert_different_u16s);
+    pfstest_value_print(message_spy, the_u16(65535));
 
-    assert_that("different u16s fail",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+    assert_that("u16s print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
 test(should_print_hex_u16s)
@@ -739,8 +698,19 @@ test(should_print_hex_u16s)
     pfstest_value_print(message_spy, as_hex(the_u16(0xa1d)));
 
     assert_that("u16s print themselves as hex",
-                the_string(captured_output),
-                matches_the_pg_string(expected));
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(equal_u16s_should_match)
+{
+    assert_true("equal u16s match",
+                pfstest_matcher_matches(is(the_u16(65535)), the_u16(65535)));
+}
+
+test(unequal_u16s_should_not_match)
+{
+    assert_false("equal u16s match",
+                pfstest_matcher_matches(is(the_u16(65535)), the_u16(65534)));
 }
 
 #endif /* defined(PFSTEST_HAS_STDINT) */
