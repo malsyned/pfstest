@@ -57,6 +57,18 @@ test(should_fail_on_different_ushorts)
                 matches_the_pg_string(expected));
 }
 
+test(should_print_hex_ushorts)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the ushort 0xab2");
+
+    pfstest_value_print(message_spy, as_hex(the_ushort(0xab2)));
+
+    assert_that("ushorts print themselves as hex",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
 test(should_match_ints)
 {
     assert_that("same ints pass", the_int(32767), is(the_int(32767)));
@@ -102,6 +114,18 @@ test(should_fail_on_different_uints)
     capture_test_results(assert_different_uints);
 
     assert_that("different uints fail",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
+test(should_print_hex_uints)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint 0xab2");
+
+    pfstest_value_print(message_spy, as_hex(the_uint(0xab2)));
+
+    assert_that("uints print themselves as hex",
                 the_string(captured_output),
                 matches_the_pg_string(expected));
 }
@@ -152,6 +176,18 @@ test(should_fail_on_different_ulongs)
     capture_test_results(assert_different_ulongs);
 
     assert_that("different ulongs fail",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
+test(should_print_hex_ulongs)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the ulong 0xa1b2c3d");
+
+    pfstest_value_print(message_spy, as_hex(the_ulong(0xa1b2c3d)));
+
+    assert_that("ulongs print themselves as hex",
                 the_string(captured_output),
                 matches_the_pg_string(expected));
 }
@@ -634,6 +670,7 @@ test(should_fail_on_int_array_element_mismatch)
 }
 
 #ifdef PFSTEST_HAS_STDINT
+
 test(should_match_u8)
 {
     assert_that("same u8s pass", the_u8(5), is(the_u8(5)));
@@ -654,6 +691,18 @@ test(should_fail_on_different_u8s)
     capture_test_results(assert_different_u8s);
 
     assert_that("different u8s fail",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
+test(should_print_hex_u8s)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint8_t 0xd");
+
+    pfstest_value_print(message_spy, as_hex(the_u8(0xd)));
+
+    assert_that("u8s print themselves as hex",
                 the_string(captured_output),
                 matches_the_pg_string(expected));
 }
@@ -681,4 +730,17 @@ test(should_fail_on_different_u16s)
                 the_string(captured_output),
                 matches_the_pg_string(expected));
 }
+
+test(should_print_hex_u16s)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the uint16_t 0xa1d");
+
+    pfstest_value_print(message_spy, as_hex(the_u16(0xa1d)));
+
+    assert_that("u16s print themselves as hex",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
 #endif /* defined(PFSTEST_HAS_STDINT) */

@@ -22,6 +22,8 @@ pfstest_value_t *pfstest_the_memory(const void *m, size_t size);
 
 pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
 
+pfstest_value_t *pfstest_as_hex(pfstest_value_t *value);
+
 #ifndef PFSTEST_NOALIAS_the_short
 # define the_short pfstest_the_short
 #endif
@@ -60,6 +62,10 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
 #endif
 #ifndef PFSTEST_NOALIAS_the_int_array
 # define the_int_array pfstest_the_int_array
+#endif
+
+#ifndef PFSTEST_NOALIAS_as_hex
+# define as_hex pfstest_as_hex
 #endif
 
 #ifdef PFSTEST_HAS_STDINT
