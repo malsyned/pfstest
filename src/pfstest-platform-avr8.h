@@ -3,6 +3,8 @@
 
 #if defined(PFSTEST_AVR8_NAMED_ADDR_SPACES) && defined(__FLASH)
 
+#include <stddef.h>
+
 # define pfstest_pg __flash
 # define pfstest_pg_ptr pfstest_pg
 /* pfstest_pg_str adapted from avr-libc PSTR macro */
