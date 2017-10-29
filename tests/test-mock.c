@@ -24,38 +24,38 @@ before_tests(set_up_mock_tests)
 
 test(should_stub)
 {
-    do_return(the_int(5), when(mock_dep_func1, arg_that(is_the_int(2))));
-    do_return(the_int(10), when(mock_dep_func1, arg_that(is_the_int(4))));
+    do_return(the_int(5), when(mock_dep_func1, arg_that(is(the_int(2)))));
+    do_return(the_int(10), when(mock_dep_func1, arg_that(is(the_int(4)))));
 
     assert_that("stub returns value",
-                the_int(dep_func1(2)), is_the_int(5));
+                the_int(dep_func1(2)), is(the_int(5)));
     assert_that("stub tests args",
-                the_int(dep_func1(4)), is_the_int(10));
+                the_int(dep_func1(4)), is(the_int(10)));
     assert_that("stub keeps matching",
-                the_int(dep_func1(2)), is_the_int(5));
+                the_int(dep_func1(2)), is(the_int(5)));
     assert_that("no stub needed",
-                the_int(dep_func1(47)), is_the_int(0));
+                the_int(dep_func1(47)), is(the_int(0)));
 }
 
 test(should_reset_expectations_between_tests)
 {
     assert_that("stub returns default value",
-                the_int(dep_func1(2)), is_the_int(0));
+                the_int(dep_func1(2)), is(the_int(0)));
 }
 
 test(should_provide_default_return_value)
 {
-    when(mock_dep_func1, arg_that(is_the_int(2)));
+    when(mock_dep_func1, arg_that(is(the_int(2))));
     assert_that("stub provides default return value",
-                the_int(dep_func1(2)), is_the_int(0));
+                the_int(dep_func1(2)), is(the_int(0)));
 }
 
 test(should_return_on_first_match)
 {
-    do_return(the_int(5), when(mock_dep_func1, arg_that(is_the_int(2))));
-    do_return(the_int(6), when(mock_dep_func1, arg_that(is_the_int(2))));
+    do_return(the_int(5), when(mock_dep_func1, arg_that(is(the_int(2)))));
+    do_return(the_int(6), when(mock_dep_func1, arg_that(is(the_int(2)))));
     assert_that("stub returns result from first matching expectation",
-                the_int(dep_func1(2)), is_the_int(5));
+                the_int(dep_func1(2)), is(the_int(5)));
 }
 
 test(stub_should_return_pointer)
@@ -65,25 +65,25 @@ test(stub_should_return_pointer)
     do_return(the_pointer(s), when(mock_dep_func3));
 
     assert_that("stub returns pointer",
-                the_pointer(dep_func3()), is_the_pointer(s));
+                the_pointer(dep_func3()), is(the_pointer(s)));
 }
 
 test(stub_should_return_null_pointer_by_default)
 {
     assert_that("stub returns NULL by default",
-                the_pointer(dep_func3()), is_the_pointer(NULL));
+                the_pointer(dep_func3()), is(the_pointer(NULL)));
 }
 
 test(should_verify_a_call)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
 
     dep_func1(2);
 }
 
 pfstest_case(fails_a_verification)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
 
     dep_func1(3);
 }
@@ -102,7 +102,7 @@ test(should_report_when_verification_fails)
 
 pfstest_case(fails_invocation_count)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
 
     dep_func1(2);
     dep_func1(2);
@@ -123,8 +123,8 @@ test(should_verify_invocation_counts)
 
 pfstest_case(fails_to_satisfy_multiple_verifiers)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
-    verify(when(mock_dep_func1, arg_that(is_the_int(3))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(3)))));
 
     dep_func1(3);
 }
@@ -144,9 +144,9 @@ test(should_handle_multiple_verifiers)
 
 test(should_handle_multiple_invocations)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
     do_return(the_int(5),
-              when(mock_dep_func1, arg_that(is_the_int(3))));
+              when(mock_dep_func1, arg_that(is(the_int(3)))));
 
     dep_func1(2);
     dep_func1(3);
@@ -161,19 +161,19 @@ test(should_return_through_pointer)
     char buf[] = "foo";
 
     when(mock_dep_func2,
-         arg_that(is_the_int(2)),
+         arg_that(is(the_int(2))),
          assign_arg(the_string(bar)));
 
     dep_func2(2, buf);
 
     assert_that("string returned through pointer",
-                the_string(buf), is_the_string(bar));
+                the_string(buf), is(the_string(bar)));
 }
 
 pfstest_case(fails_to_invoke_assign_arg_expectation)
 {
     verify(when(mock_dep_func2,
-                arg_that(is_the_int(2)), assign_arg(the_string(foo))));
+                arg_that(is(the_int(2))), assign_arg(the_string(foo))));
 }
 
 test(should_print_sensible_explanation_of_assign_arg_in_failures)
@@ -195,25 +195,25 @@ test(should_match_and_return_through_pointer)
     char untouched_buf[] = "123";
 
     when(mock_dep_func2,
-         arg_that(is_the_int(2)),
-         assign_arg_that(is_the_string(foo),
+         arg_that(is(the_int(2))),
+         assign_arg_that(is(the_string(foo)),
                          the_string(bar)));
 
     dep_func2(2, untouched_buf);
     dep_func2(2, buf);
 
     assert_that("string returned through pointer on match",
-                the_string(buf), is_the_string(bar));
+                the_string(buf), is(the_string(bar)));
 
     assert_that("string untouched when not matched",
-                the_string(untouched_buf), is_the_string(one23));
+                the_string(untouched_buf), is(the_string(one23)));
 }
 
 pfstest_case(fails_to_invoke_assign_arg_that_expectation)
 {
     verify(when(mock_dep_func2,
-                arg_that(is_the_int(2)),
-                assign_arg_that(is_the_string(foo),
+                arg_that(is(the_int(2))),
+                assign_arg_that(is(the_string(foo)),
                                 the_string(bar))));
 }
 
@@ -233,31 +233,31 @@ test(should_print_matcher_for_failures_involving_assign_arg_that)
 test(should_stub_different_return_values_with_one_time)
 {
     one_time(do_return(the_int(3), when(mock_dep_func1,
-                                        arg_that(is_the_int(4)))));
+                                        arg_that(is(the_int(4))))));
     do_return(the_int(6), when(mock_dep_func1,
-                               arg_that(is_the_int(4))));
+                               arg_that(is(the_int(4)))));
 
     assert_that("First result comes from one_time expectation",
-                the_int(dep_func1(4)), is_the_int(3));
+                the_int(dep_func1(4)), is(the_int(3)));
     assert_that("Second result doesn't come from one_time expectation",
-                the_int(dep_func1(4)), is_the_int(6));
+                the_int(dep_func1(4)), is(the_int(6)));
     assert_that("Subsequent results come from infinite-repeat expectation",
-                the_int(dep_func1(4)), is_the_int(6));
+                the_int(dep_func1(4)), is(the_int(6)));
 }
 
 test(should_stub_different_return_values_with_do_times)
 {
     do_times(2,
              do_return(the_int(3), when(mock_dep_func1,
-                                        arg_that(is_the_int(4)))));
-    do_return(the_int(6), when(mock_dep_func1, arg_that(is_the_int(4))));
+                                        arg_that(is(the_int(4))))));
+    do_return(the_int(6), when(mock_dep_func1, arg_that(is(the_int(4)))));
 
     assert_that("First result comes from do_times",
-                the_int(dep_func1(4)), is_the_int(3));
+                the_int(dep_func1(4)), is(the_int(3)));
     assert_that("Second result comes from do_times",
-                the_int(dep_func1(4)), is_the_int(3));
+                the_int(dep_func1(4)), is(the_int(3)));
     assert_that("Subsequent results come from infinite-repeat expectation",
-                the_int(dep_func1(4)), is_the_int(6));
+                the_int(dep_func1(4)), is(the_int(6)));
 }
 
 test(should_verify_in_order)
@@ -265,10 +265,10 @@ test(should_verify_in_order)
     in_order_t *order = in_order_new();
 
     in_order_verify(order, when(mock_dep_func1,
-                                arg_that(is_the_int(2))));
+                                arg_that(is(the_int(2)))));
     in_order_verify(order, when(mock_dep_func2,
-                                arg_that(is_the_int(4)),
-                                arg_that(is_the_string(foo))));
+                                arg_that(is(the_int(4))),
+                                arg_that(is(the_string(foo)))));
 
     dep_func1(1);
     dep_func1(2);
@@ -287,10 +287,10 @@ pfstest_case(fails_to_invoke_in_order)
     in_order_t *order = in_order_new();
 
     in_order_verify(order, when(mock_dep_func1,
-                                arg_that(is_the_int(2))));
+                                arg_that(is(the_int(2)))));
     in_order_verify(order, when(mock_dep_func2,
-                                arg_that(is_the_int(4)),
-                                arg_that(is_the_string(foo))));
+                                arg_that(is(the_int(4))),
+                                arg_that(is(the_string(foo)))));
 
     dep_func1(1);
     dep_func2(4, foo);
@@ -318,16 +318,16 @@ test(should_verify_multiple_in_orders)
     in_order_t *order2 = in_order_new();
 
     in_order_verify(order1, when(mock_dep_func1,
-                                 arg_that(is_the_int(1))));
+                                 arg_that(is(the_int(1)))));
     in_order_verify(order1, when(mock_dep_func2,
-                                 arg_that(is_the_int(2)),
-                                 arg_that(is_the_string(foo))));
+                                 arg_that(is(the_int(2))),
+                                 arg_that(is(the_string(foo)))));
 
     in_order_verify(order2, when(mock_dep_func1,
-                                 arg_that(is_the_int(3))));
+                                 arg_that(is(the_int(3)))));
     in_order_verify(order2, when(mock_dep_func2,
-                                 arg_that(is_the_int(4)),
-                                 arg_that(is_the_string(bar))));
+                                 arg_that(is(the_int(4))),
+                                 arg_that(is(the_string(bar)))));
 
     dep_func1(1);
     dep_func1(3);
@@ -338,7 +338,7 @@ test(should_verify_multiple_in_orders)
 test(should_verify_exact_invocation_count)
 {
     verify_times(exactly(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(2);
@@ -349,7 +349,7 @@ test(should_verify_exact_invocation_count)
 pfstest_case(invokes_too_many_times)
 {
     verify_times(exactly(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(1);
@@ -373,7 +373,7 @@ test(should_reject_too_many_invocations)
 pfstest_case(invokes_too_few_times)
 {
     verify_times(exactly(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(1);
@@ -395,7 +395,7 @@ test(should_reject_too_few_invocations)
 test(should_verify_at_most_invocation_count)
 {
     verify_times(at_most(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(2);
@@ -406,7 +406,7 @@ test(should_verify_at_most_invocation_count)
 pfstest_case(invokes_too_many_times_in_at_most_mode)
 {
     verify_times(at_most(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(1);
@@ -431,7 +431,7 @@ test(at_most_should_reject_too_many_invocations)
 test(at_most_should_allow_fewer_invocations)
 {
     verify_times(at_most(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(1);
@@ -440,7 +440,7 @@ test(at_most_should_allow_fewer_invocations)
 test(should_verify_at_least_invocation_count)
 {
     verify_times(at_least(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(2);
@@ -451,7 +451,7 @@ test(should_verify_at_least_invocation_count)
 pfstest_case(invokes_too_few_times_in_at_least_mode)
 {
     verify_times(at_least(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(1);
@@ -474,7 +474,7 @@ test(at_least_should_reject_insufficient_invocations)
 test(at_least_should_allow_more_invocations)
 {
     verify_times(at_least(3),
-                 when(mock_dep_func1, arg_that(is_the_int(1))));
+                 when(mock_dep_func1, arg_that(is(the_int(1)))));
 
     dep_func1(1);
     dep_func1(1);
@@ -484,8 +484,8 @@ test(at_least_should_allow_more_invocations)
 
 test(should_verify_no_more_interactions)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(1)))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
     verify_no_more_interactions(mock_dep_func1);
 
     dep_func1(1);
@@ -495,8 +495,8 @@ test(should_verify_no_more_interactions)
 
 pfstest_case(fails_to_pass_verify_no_more_interactions)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
-    verify(when(mock_dep_func1, arg_that(is_the_int(2))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(1)))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(2)))));
     verify_no_more_interactions(mock_dep_func1);
 
     dep_func1(1);
@@ -522,7 +522,7 @@ test(in_order_should_mark_interactions)
     in_order_t *order = in_order_new();
 
     in_order_verify(order, when(mock_dep_func1,
-                                arg_that(is_the_int(2))));
+                                arg_that(is(the_int(2)))));
     verify_no_more_interactions(mock_dep_func1);
 
     dep_func1(2);
@@ -530,10 +530,10 @@ test(in_order_should_mark_interactions)
 
 test(should_verify_no_more_invocations)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(1)))));
     verify(when(mock_dep_func2,
-                arg_that(is_the_int(5)),
-                arg_that(is_the_string(foo))));
+                arg_that(is(the_int(5))),
+                arg_that(is(the_string(foo)))));
     verify_no_more_invocations();
 
     dep_func1(1);
@@ -542,10 +542,10 @@ test(should_verify_no_more_invocations)
 
 pfstest_case(fails_to_pass_verify_no_more_invocations)
 {
-    verify(when(mock_dep_func1, arg_that(is_the_int(1))));
+    verify(when(mock_dep_func1, arg_that(is(the_int(1)))));
     verify(when(mock_dep_func2,
-                arg_that(is_the_int(5)),
-                arg_that(is_the_string(foo))));
+                arg_that(is(the_int(5))),
+                arg_that(is(the_string(foo)))));
     verify_no_more_invocations();
 
     dep_func1(1);

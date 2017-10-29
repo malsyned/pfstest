@@ -10,12 +10,12 @@ before_tests(set_up_values_and_matchers)
 
 test(should_match_shorts)
 {
-    assert_that("same shorts pass", the_short(32767), is_the_short(32767));
+    assert_that("same shorts pass", the_short(32767), is(the_short(32767)));
 }
 
 pfstest_case(assert_different_shorts)
 {
-    assert_that("", the_short(32767), is_the_short(-32768));
+    assert_that("", the_short(32767), is(the_short(-32768)));
 }
 
 test(should_fail_on_different_shorts)
@@ -35,12 +35,12 @@ test(should_fail_on_different_shorts)
 test(should_match_ushorts)
 {
     assert_that("same ushorts pass",
-                the_ushort(65535), is_the_ushort(65535));
+                the_ushort(65535), is(the_ushort(65535)));
 }
 
 pfstest_case(assert_different_ushorts)
 {
-    assert_that("", the_ushort(65535), is_the_ushort(65534));
+    assert_that("", the_ushort(65535), is(the_ushort(65534)));
 }
 
 test(should_fail_on_different_ushorts)
@@ -59,12 +59,12 @@ test(should_fail_on_different_ushorts)
 
 test(should_match_ints)
 {
-    assert_that("same ints pass", the_int(32767), is_the_int(32767));
+    assert_that("same ints pass", the_int(32767), is(the_int(32767)));
 }
 
 pfstest_case(assert_different_ints)
 {
-    assert_that("", the_int(-32768), is_the_int(32767));
+    assert_that("", the_int(-32768), is(the_int(32767)));
 }
 
 test(should_fail_on_different_ints)
@@ -84,12 +84,12 @@ test(should_fail_on_different_ints)
 test(should_match_uints)
 {
     assert_that("same uints pass",
-                the_uint(65535), is_the_uint(65535));
+                the_uint(65535), is(the_uint(65535)));
 }
 
 pfstest_case(assert_different_uints)
 {
-    assert_that("", the_uint(65534), is_the_uint(65535));
+    assert_that("", the_uint(65534), is(the_uint(65535)));
 }
 
 test(should_fail_on_different_uints)
@@ -109,12 +109,12 @@ test(should_fail_on_different_uints)
 test(should_match_longs)
 {
     assert_that("same longs pass",
-                the_long(2147483647l), is_the_long(2147483647l));
+                the_long(2147483647l), is(the_long(2147483647l)));
 }
 
 pfstest_case(assert_different_longs)
 {
-    assert_that("", the_long(2147483647l), is_the_long((-2147483647l - 1)));
+    assert_that("", the_long(2147483647l), is(the_long((-2147483647l - 1))));
 }
 
 test(should_fail_on_different_longs)
@@ -134,12 +134,12 @@ test(should_fail_on_different_longs)
 test(should_match_ulongs)
 {
     assert_that("same ulongs pass",
-                the_ulong(4294967295ul), is_the_ulong(4294967295ul));
+                the_ulong(4294967295ul), is(the_ulong(4294967295ul)));
 }
 
 pfstest_case(assert_different_ulongs)
 {
-    assert_that("", the_ulong(4294967295ul), is_the_ulong(4294967294ul));
+    assert_that("", the_ulong(4294967295ul), is(the_ulong(4294967294ul)));
 }
 
 test(should_fail_on_different_ulongs)
@@ -177,14 +177,14 @@ test(should_match_enums)
 {
     assert_that("same enums pass",
                 the_enum(e_foo, some_enum_map),
-                is_the_enum(e_foo, some_enum_map));
+                is(the_enum(e_foo, some_enum_map)));
 }
 
 pfstest_case(assert_different_enums)
 {
     assert_that("",
                 the_enum(e_foo, some_enum_map),
-                is_the_enum(e_baz, some_enum_map));
+                is(the_enum(e_baz, some_enum_map)));
 }
 
 test(should_fail_on_different_enums)
@@ -205,7 +205,7 @@ pfstest_case(assert_out_of_range_enums)
 {
     assert_that("",
                 the_enum(-1, some_enum_map),
-                is_the_enum(3, some_enum_map));
+                is(the_enum(3, some_enum_map)));
 }
 
 test(should_print_enum_val_out_of_range)
@@ -225,12 +225,12 @@ test(should_print_enum_val_out_of_range)
 test(should_match_bools)
 {
     assert_that("same bools pass",
-                the_bool(pfstest_true), is_the_bool(pfstest_true));
+                the_bool(pfstest_true), is(the_bool(pfstest_true)));
 }
 
 pfstest_case(assert_different_bools)
 {
-    assert_that("", the_bool(pfstest_true), is_the_bool(pfstest_false));
+    assert_that("", the_bool(pfstest_true), is(the_bool(pfstest_false)));
 }
 
 test(should_fail_on_different_bools)
@@ -249,12 +249,12 @@ test(should_fail_on_different_bools)
 
 test(should_match_chars)
 {
-    assert_that("same chars pass", the_char('c'), is_the_char('c'));
+    assert_that("same chars pass", the_char('c'), is(the_char('c')));
 }
 
 pfstest_case(assert_different_chars)
 {
-    assert_that("", the_char('c'), is_the_char('d'));
+    assert_that("", the_char('c'), is(the_char('d')));
 }
 
 test(should_fail_on_different_chars)
@@ -273,7 +273,7 @@ test(should_fail_on_different_chars)
 
 pfstest_case(assert_special_chars)
 {
-    assert_that("", the_char('\n'), is_the_char('n'));
+    assert_that("", the_char('\n'), is(the_char('n')));
 }
 
 test(the_char_should_escape_special_chars_in_failure_messages)
@@ -295,14 +295,14 @@ test(should_match_strings)
     char s1[] = "foo";
     char s2[] = "foo";
 
-    assert_that("same strings pass", the_string(s1), is_the_string(s2));
+    assert_that("same strings pass", the_string(s1), is(the_string(s2)));
 }
 
 pfstest_case(assert_different_strings)
 {
     char s1[] = "foo";
     char s2[] = "bar";
-    assert_that("", the_string(s1), is_the_string(s2));
+    assert_that("", the_string(s1), is(the_string(s2)));
 }
 
 test(should_fail_on_different_strings)
@@ -324,7 +324,7 @@ pfstest_case(assert_shorter_actual_string)
     char s1[] = "foo";
     char s2[] = "foobar";
 
-    assert_that("", the_string(s1), is_the_string(s2));
+    assert_that("", the_string(s1), is(the_string(s2)));
 }
 
 test(should_fail_on_shorter_actual_string)
@@ -346,7 +346,7 @@ pfstest_case(assert_shorter_expected_string)
     char s1[] = "foobar";
     char s2[] = "foo";
 
-    assert_that("", the_string(s1), is_the_string(s2));
+    assert_that("", the_string(s1), is(the_string(s2)));
 }
 
 test(should_fail_on_shorter_expected_string)
@@ -367,7 +367,7 @@ pfstest_case(assert_special_strings)
 {
     char s1[] = "\a\b\f\n\r";
     char s2[] = "\t\v\\\"\?";
-    assert_that("", the_string(s1), is_the_string(s2));
+    assert_that("", the_string(s1), is(the_string(s2)));
 }
 
 test(the_string_should_escape_special_chars_in_failure_messages)
@@ -394,13 +394,15 @@ test(should_match_pointers)
     /* Use only 16-bit pointers, since these should work on any
      * conceivable platform */
     assert_that("same pointers pass",
-                the_pointer((void *)0xbeef), is_the_pointer((void *)0xbeef));
+                the_pointer((void *)0xbeef),
+                is(the_pointer((void *)0xbeef)));
 }
 
 pfstest_case(assert_different_pointers)
 {
     assert_that("",
-                the_pointer((void *)0xdead), is_the_pointer((void *)0xbeef));
+                the_pointer((void *)0xdead),
+                is(the_pointer((void *)0xbeef)));
 }
 
 test(should_fail_on_different_pointers)
@@ -419,7 +421,7 @@ test(should_fail_on_different_pointers)
 
 pfstest_case(assert_pointer_against_null)
 {
-    assert_that("", the_pointer((void *)0xdead), is_the_pointer(NULL));
+    assert_that("", the_pointer((void *)0xdead), is(the_pointer(NULL)));
 }
 
 test(should_print_null_pointers_specially)
@@ -443,7 +445,7 @@ test(should_match_memory)
 
     assert_that("same memory passes",
                 the_memory(actual, sizeof(actual)),
-                is_the_memory(expected, sizeof(expected)));
+                is(the_memory(expected, sizeof(expected))));
 }
 
 pfstest_case(assert_different_memory)
@@ -453,7 +455,7 @@ pfstest_case(assert_different_memory)
 
     assert_that("",
                 the_memory(actual, sizeof(actual)),
-                is_the_memory(expected, sizeof(expected)));
+                is(the_memory(expected, sizeof(expected))));
 }
 
 test(should_fail_on_different_memory)
@@ -477,7 +479,7 @@ pfstest_case(assert_longer_memory)
 
     assert_that("",
                 the_memory(actual, sizeof(actual)),
-                is_the_memory(expected, sizeof(expected) - 1));
+                is(the_memory(expected, sizeof(expected) - 1)));
 }
 
 test(should_fail_on_longer_memory)
@@ -501,7 +503,7 @@ pfstest_case(assert_shorter_memory)
 
     assert_that("",
                 the_memory(actual, sizeof(actual) - 1),
-                is_the_memory(expected, sizeof(expected)));
+                is(the_memory(expected, sizeof(expected))));
 }
 
 test(should_fail_on_shorter_memory)
@@ -546,7 +548,7 @@ test(should_match_memory_with_pointer)
 
     assert_that("is_the_memory matches against the_pointer values",
                 the_pointer(actual),
-                is_the_memory(expected, sizeof(expected)));
+                is(the_memory(expected, sizeof(expected))));
 }
 
 test(should_match_primitive_with_pointer)
@@ -555,7 +557,7 @@ test(should_match_primitive_with_pointer)
     int expected = 5;
 
     assert_that("is_the_int matches against the_pointer values",
-                the_pointer(&actual), is_the_int(expected));
+                the_pointer(&actual), is(the_int(expected)));
 }
 
 pfstest_case(assert_different_data_types)
@@ -568,7 +570,7 @@ pfstest_case(assert_different_data_types)
      * check of the sizes. This test may fail on a platform where
      * shorts are 64-bit, but I'm not aware of any such platform. */
     assert_that("",
-                the_memory(buf, sizeof(buf)), is_the_ushort(USHRT_MAX));
+                the_memory(buf, sizeof(buf)), is(the_ushort(USHRT_MAX)));
 }
 
 test(should_detect_data_type_mismatches)
@@ -592,10 +594,10 @@ test(should_match_int_array_against_matcher_list)
 
     assert_that("Matcher arrays match against elements of integer array",
                 the_int_array(actual, sizeof(actual)/sizeof(actual[0])),
-                int_members_match(is_the_int(1),
-                                  is_the_int(3),
-                                  is_the_int(INT_MAX),
-                                  is_the_int(-5),
+                int_members_match(is(the_int(1)),
+                                  is(the_int(3)),
+                                  is(the_int(INT_MAX)),
+                                  is(the_int(-5)),
                                   NULL));
 }
 
@@ -605,10 +607,10 @@ pfstest_case(assert_mismatched_arrays)
 
     assert_that("",
                 the_int_array(actual, sizeof(actual)/sizeof(actual[0])),
-                int_members_match(is_the_int(1),
-                                  is_the_int(3),
-                                  is_the_int(32767),
-                                  is_the_int(-5),
+                int_members_match(is(the_int(1)),
+                                  is(the_int(3)),
+                                  is(the_int(32767)),
+                                  is(the_int(-5)),
                                   NULL));
 }
 
@@ -629,12 +631,12 @@ test(should_fail_on_int_array_element_mismatch)
 #ifdef PFSTEST_HAS_STDINT
 test(should_match_u8)
 {
-    assert_that("same u8s pass", the_u8(5), is_the_u8(5));
+    assert_that("same u8s pass", the_u8(5), is(the_u8(5)));
 }
 
 pfstest_case(assert_different_u8s)
 {
-    assert_that("", the_u8(5), is_the_u8(6));
+    assert_that("", the_u8(5), is(the_u8(6)));
 }
 
 test(should_fail_on_different_u8s)
@@ -653,12 +655,12 @@ test(should_fail_on_different_u8s)
 
 test(should_match_u16)
 {
-    assert_that("same u16s pass", the_u16(256), is_the_u16(256));
+    assert_that("same u16s pass", the_u16(256), is(the_u16(256)));
 }
 
 pfstest_case(assert_different_u16s)
 {
-    assert_that("", the_u16(256), is_the_u16(257));
+    assert_that("", the_u16(256), is(the_u16(257)));
 }
 
 test(should_fail_on_different_u16s)

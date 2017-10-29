@@ -24,7 +24,7 @@ test(should_parse_program_name_argument)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("Program name argument is stored in args struct",
-                the_pointer(args.program_name), is_the_pointer(argv[0]));
+                the_pointer(args.program_name), is(the_pointer(argv[0])));
 }
 
 test(should_return_true_for_good_arg_lists)
@@ -38,7 +38,7 @@ test(should_return_true_for_good_arg_lists)
 
     assert_that("Good arg lists return true",
                 the_bool(pfstest_arguments_parse(&args, argc, argv)),
-                is_the_bool(pfstest_true));
+                is(the_bool(pfstest_true)));
 }
 
 
@@ -49,7 +49,7 @@ test(should_fail_to_parse_0_length_arg_list)
     
     assert_that("Zero length argument lists are rejected",
                 the_bool(pfstest_arguments_parse(&args, argc, argv)),
-                is_the_bool(pfstest_false));
+                is(the_bool(pfstest_false)));
 }
 
 test(should_set_program_name_NULL_on_bad_program_name_parse)
@@ -61,7 +61,7 @@ test(should_set_program_name_NULL_on_bad_program_name_parse)
 
     assert_that("Zero length argument lists set program_name to NULL",
                 the_pointer(args.program_name),
-                is_the_pointer(NULL));
+                is(the_pointer(NULL)));
 }
 
 test(should_set_default_args_from_simplest_arg_list)
@@ -75,18 +75,18 @@ test(should_set_default_args_from_simplest_arg_list)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("verbose flag defaults to false",
-                the_bool(args.verbose), is_the_bool(pfstest_false));
+                the_bool(args.verbose), is(the_bool(pfstest_false)));
     assert_that("xml flag defaults to false",
-                the_bool(args.xml), is_the_bool(pfstest_false));
+                the_bool(args.xml), is(the_bool(pfstest_false)));
     assert_that("color flag defaults to false",
-                the_bool(args.color), is_the_bool(pfstest_false));
+                the_bool(args.color), is(the_bool(pfstest_false)));
     assert_that("print_register_commands flag defaults to false",
                 the_bool(args.print_register_commands),
-                is_the_bool(pfstest_false));
+                is(the_bool(pfstest_false)));
     assert_that("filter_file defaults to false",
-                the_pointer(args.filter_file), is_the_pointer(NULL));
+                the_pointer(args.filter_file), is(the_pointer(NULL)));
     assert_that("filter_name defaults to false",
-                the_pointer(args.filter_name), is_the_pointer(NULL));
+                the_pointer(args.filter_name), is(the_pointer(NULL)));
 }
 
 test(should_parse_c_flag)
@@ -102,7 +102,7 @@ test(should_parse_c_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-c flag is parsed",
-                the_bool(args.color), is_the_bool(pfstest_true));
+                the_bool(args.color), is(the_bool(pfstest_true)));
 }
 
 test(should_parse_v_flag)
@@ -118,7 +118,7 @@ test(should_parse_v_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-v flag is parsed",
-                the_bool(args.verbose), is_the_bool(pfstest_true));
+                the_bool(args.verbose), is(the_bool(pfstest_true)));
 }
 
 test(should_parse_x_flag)
@@ -134,7 +134,7 @@ test(should_parse_x_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-x flag is parsed",
-                the_bool(args.xml), is_the_bool(pfstest_true));
+                the_bool(args.xml), is(the_bool(pfstest_true)));
 }
 
 test(x_flag_should_reset_v_flag)
@@ -152,9 +152,9 @@ test(x_flag_should_reset_v_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-x flag is parsed",
-                the_bool(args.xml), is_the_bool(pfstest_true));
+                the_bool(args.xml), is(the_bool(pfstest_true)));
     assert_that("-v flag has ben reset",
-                the_bool(args.verbose), is_the_bool(pfstest_false));
+                the_bool(args.verbose), is(the_bool(pfstest_false)));
 }
 
 test(v_flag_should_reset_x_flag)
@@ -172,9 +172,9 @@ test(v_flag_should_reset_x_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-v flag is parsed",
-                the_bool(args.verbose), is_the_bool(pfstest_true));
+                the_bool(args.verbose), is(the_bool(pfstest_true)));
     assert_that("-x flag has ben reset",
-                the_bool(args.xml), is_the_bool(pfstest_false));
+                the_bool(args.xml), is(the_bool(pfstest_false)));
 }
 
 test(should_parse_r_flag)
@@ -191,7 +191,7 @@ test(should_parse_r_flag)
 
     assert_that("-r flag is parsed",
                 the_bool(args.print_register_commands),
-                is_the_bool(pfstest_true));
+                is(the_bool(pfstest_true)));
 }
 
 test(should_parse_f_flag)
@@ -209,7 +209,7 @@ test(should_parse_f_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-f flag is parsed",
-                the_pointer(args.filter_file), is_the_pointer(argv[2]));
+                the_pointer(args.filter_file), is(the_pointer(argv[2])));
 }
 
 test(f_flag_should_require_argument)
@@ -226,7 +226,7 @@ test(f_flag_should_require_argument)
 
     assert_that("-f flag requires an argument",
                 the_bool(pfstest_arguments_parse(&args, argc, argv)),
-                is_the_bool(pfstest_false));
+                is(the_bool(pfstest_false)));
 }
 
 test(should_parse_n_flag)
@@ -244,9 +244,9 @@ test(should_parse_n_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-n flag is parsed",
-                the_pointer(args.filter_name), is_the_pointer(argv[2]));
+                the_pointer(args.filter_name), is(the_pointer(argv[2])));
     assert_that("-n flag implies verbose",
-                the_bool(args.verbose), is_the_bool(pfstest_true));
+                the_bool(args.verbose), is(the_bool(pfstest_true)));
 }
 
 test(n_flag_should_require_argument)
@@ -263,7 +263,7 @@ test(n_flag_should_require_argument)
 
     assert_that("-n flag requires an argument",
                 the_bool(pfstest_arguments_parse(&args, argc, argv)),
-                is_the_bool(pfstest_false));
+                is(the_bool(pfstest_false)));
 }
 
 test(should_reject_unknown_arguments)
@@ -278,7 +278,7 @@ test(should_reject_unknown_arguments)
     
     assert_that("Bad arg lists return false",
                 the_bool(pfstest_arguments_parse(&args, argc, argv)),
-                is_the_bool(pfstest_false));
+                is(the_bool(pfstest_false)));
 }
 
 test(should_parse_multiple_arguments)
@@ -298,9 +298,9 @@ test(should_parse_multiple_arguments)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-v flag is parsed",
-                the_bool(args.verbose), is_the_bool(pfstest_true));
+                the_bool(args.verbose), is(the_bool(pfstest_true)));
     assert_that("-f flag is parsed",
-                the_pointer(args.filter_file), is_the_pointer(argv[3]));
+                the_pointer(args.filter_file), is(the_pointer(argv[3])));
 }
 
 pfstest_case(test1) {}
