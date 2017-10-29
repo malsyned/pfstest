@@ -2,8 +2,13 @@
 
 #include "pfstest-platform.h"
 
-static const unsigned char fill_chars[] = "EMTY";
-#define get_fill_char(i) (fill_chars[(i) & 0x3])
+#ifndef PROGMEM
+# define PROGMEM
+# define pgm_read_byte(addr) (*(addr))
+#endif
+
+static const PROGMEM unsigned char fill_chars[] = "EMTY";
+#define get_fill_char(i) (pgm_read_byte(&(fill_chars[(i) & 0x3])))
 
 #if defined(__AVR__)
 
