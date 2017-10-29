@@ -36,13 +36,15 @@ static void print_unsigned(pfstest_reporter_t *reporter,
                                 aux->base, aux->zpad);
 }
 
+#define HEX_CHARS_PER_BYTE 2
+
 pfstest_value_t *pfstest_as_hex(pfstest_value_t *value)
 {
     struct unsigned_aux *aux = pfstest_value_aux(value);
     aux->base = 16;
     aux->prefix = pfstest_pg_str("0x");
     if (aux->known_width)
-        aux->zpad = (int)pfstest_value_size(value) * 2;
+        aux->zpad = (int)pfstest_value_size(value) * HEX_CHARS_PER_BYTE;
     return value;
 }
 
