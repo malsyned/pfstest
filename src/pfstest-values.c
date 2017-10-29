@@ -187,7 +187,7 @@ static void the_bool_printer(pfstest_reporter_t *reporter,
 pfstest_value_t *pfstest_the_bool(pfstest_bool b)
 {
     pfstest_bool *data = pfstest_alloc(sizeof(b));
-    *data = b;
+    *data = b ? pfstest_true : pfstest_false;
 
     return pfstest_value_new(the_bool_printer, data, sizeof(b));
 }

@@ -247,6 +247,11 @@ test(should_fail_on_different_bools)
                 matches_the_pg_string(expected));
 }
 
+test(should_match_different_but_equivalent_bools)
+{
+    assert_that("equivalent bools pass", the_bool(4), is(the_bool(72)));
+}
+
 test(should_match_chars)
 {
     assert_that("same chars pass", the_char('c'), is(the_char('c')));
