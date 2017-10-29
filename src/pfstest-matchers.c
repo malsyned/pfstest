@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "pfstest-platform.h"
 #include "pfstest-values.h"
