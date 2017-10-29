@@ -56,8 +56,7 @@ test(should_find_no_stack_or_heap_usage)
                 the_uint((unsigned)used.heap), is(the_uint(0)));
     assert_that("No stack was used",
                 the_uint((unsigned)used.stack), is(the_uint(0)));
-    assert_that("No collision was detected",
-                the_bool(used.collision), is(the_bool(false)));
+    assert_false("No collision was detected", used.collision);
 }
 
 test(should_find_heap_usage)
@@ -72,8 +71,7 @@ test(should_find_heap_usage)
                 the_uint((unsigned)used.heap), is(the_uint(2)));
     assert_that("No stack was used",
                 the_uint((unsigned)used.stack), is(the_uint(0)));
-    assert_that("No collision was detected",
-                the_bool(used.collision), is(the_bool(false)));
+    assert_false("No collision was detected", used.collision);
 }
 
 test(should_find_stack_usage)
@@ -88,8 +86,7 @@ test(should_find_stack_usage)
                 the_uint((unsigned)used.heap), is(the_uint(0)));
     assert_that("Some stack was used",
                 the_uint((unsigned)used.stack), is(the_uint(3)));
-    assert_that("No collision was detected",
-                the_bool(used.collision), is(the_bool(false)));
+    assert_false("No collision was detected", used.collision);
 }
 
 test(should_require_four_sentinels_in_stack)
@@ -102,8 +99,7 @@ test(should_require_four_sentinels_in_stack)
 
     assert_that("Stack detection requires four contiguous sentinels",
                 the_uint((unsigned)used.stack), is(the_uint(5)));
-    assert_that("No collision was detected",
-                the_bool(used.collision), is(the_bool(false)));
+    assert_false("No collision was detected", used.collision);
 }
 
 test(should_ignore_excess_sentinels_in_heap)
@@ -116,8 +112,7 @@ test(should_ignore_excess_sentinels_in_heap)
 
     assert_that("Sentinels in the heap are ignored",
                 the_uint((unsigned)used.heap), is(the_uint(6)));
-    assert_that("No collision was detected",
-                the_bool(used.collision), is(the_bool(false)));
+    assert_false("No collision was detected", used.collision);
 }
 
 test(should_identify_collisions)
@@ -128,8 +123,7 @@ test(should_identify_collisions)
 
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
-    assert_that("Collisions are detected",
-                the_bool(used.collision), is(the_bool(true)));
+    assert_true("Collisions are detected", used.collision);
 }
 
 test(should_respect_stack_pointer)

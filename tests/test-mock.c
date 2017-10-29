@@ -70,8 +70,7 @@ test(stub_should_return_pointer)
 
 test(stub_should_return_null_pointer_by_default)
 {
-    assert_that("stub returns NULL by default",
-                the_pointer(dep_func3()), is(the_pointer(NULL)));
+    assert_null("stub returns NULL by default", dep_func3());
 }
 
 test(should_verify_a_call)
