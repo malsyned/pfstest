@@ -22,3 +22,21 @@ If I can rewrite all of the is_ matchers to a generic is(...) matcher that takes
 I need to think about how that will work with my struct matcher API and my float matcher API. Structs cannot be compared bytewise necessarily, as padding bytes can be different and the structs should still compare equal. maybe I introduce a naming convention in which matches_* is used when the things being compared are not going to be compared bytewise with memcmp or ==. Float matchers take additional arguments, so maybe is_close_to(number, delta) is just fine there?
 
 Alternatively, I can add an equality comparison function to every value object like Java does. Does this gain me anything, for the cost of two bytes of RAM per value on embedded platforms?
+
+Special care will have to be taken with bools, which are not straight byte-compare equals tests, but then, special care probably already should have been. Maybe special is_true and is_false matchers, which can be referenced in the assert_true and assert_false macros.
+
+====
+
+Notes on a new "is" matcher
+
+* Ensure that the printer is a passthrough
+* Ensure that two identical items match
+* Ensure that two not-identical items don't match
+* Ensure that two different sized data items don't match
+* Except that if one of them is zero, ensure that
+    They match if equal
+*   They don't match if unequal
+*   They are compared by the size of the item that has a size
+* Except that if both of them is zero, ensure that
+    If the pointers are equal, true is returned
+*   If the pointers are unequal, false is returned
