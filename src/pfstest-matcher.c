@@ -8,14 +8,14 @@ pfstest_bool pfstest_matcher_matches(pfstest_matcher_t *matcher,
     return matcher->test(matcher, actual);
 }
 
-void pfstest_matcher_print(pfstest_reporter_t *reporter,
-                           pfstest_matcher_t *matcher)
+void pfstest_matcher_print(pfstest_matcher_t *matcher,
+                           pfstest_reporter_t *reporter)
 {
-    matcher->printer(reporter, matcher);
+    matcher->printer(matcher, reporter);
 }
 
 pfstest_matcher_t *pfstest_matcher_new(
-    void (*printer)(pfstest_reporter_t *reporter, pfstest_matcher_t *),
+    void (*printer)(pfstest_matcher_t *matcher, pfstest_reporter_t *reporter),
     pfstest_bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual),
     void *data)
 {

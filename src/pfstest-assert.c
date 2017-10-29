@@ -32,10 +32,10 @@ static void assert_that_printer(pfstest_reporter_t *reporter,
     }
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\n"));
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("Expected: "));
-    pfstest_matcher_print(reporter, args->matcher);
+    pfstest_matcher_print(args->matcher, reporter);
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\n"));
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("Actual:   "));
-    pfstest_value_print(reporter, args->actual);
+    pfstest_value_print(args->actual, reporter);
 }
 
 void _pfstest_assert_that_at_location(const pfstest_pg_ptr char *file,

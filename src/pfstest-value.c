@@ -2,13 +2,13 @@
 
 #include "pfstest-alloc.h"
 
-void pfstest_value_print(pfstest_reporter_t *reporter, pfstest_value_t *value)
+void pfstest_value_print(pfstest_value_t *value, pfstest_reporter_t *reporter)
 {
-    value->printer(reporter, value);
+    value->printer(value, reporter);
 }
 
 pfstest_value_t *pfstest_value_new(
-    void (*printer)(pfstest_reporter_t *reporter, pfstest_value_t *),
+    void (*printer)(pfstest_value_t *value, pfstest_reporter_t *reporter),
     const void *data, size_t size, void *aux)
 {
     pfstest_value_t *v = pfstest_alloc(sizeof(*v));

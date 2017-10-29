@@ -11,13 +11,13 @@
 
 /* is */
 
-static void is_printer(pfstest_reporter_t *reporter,
-                       pfstest_matcher_t *matcher)
+static void is_printer(pfstest_matcher_t *matcher,
+                       pfstest_reporter_t *reporter)
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
 
-    pfstest_value_print(reporter, expected);
+    pfstest_value_print(expected, reporter);
 }
 
 static pfstest_bool is_test(pfstest_matcher_t *matcher,
@@ -66,7 +66,7 @@ pfstest_matcher_t *pfstest_is(pfstest_value_t *expected)
 /* matches_the_pg_string */
 
 static void matches_the_pg_string_printer(
-    pfstest_reporter_t *reporter, pfstest_matcher_t *matcher)
+    pfstest_matcher_t *matcher, pfstest_reporter_t *reporter)
 {
     const pfstest_pg_ptr char **sp =
         (const pfstest_pg_ptr char **)pfstest_matcher_data(matcher);
@@ -113,8 +113,8 @@ pfstest_matcher_t *pfstest_matches_the_pg_string(
 
 /* is_anything */
 
-static void is_anything_printer(pfstest_reporter_t *reporter,
-                                pfstest_matcher_t *matcher)
+static void is_anything_printer(pfstest_matcher_t *matcher,
+                                pfstest_reporter_t *reporter)
 {
     (void)matcher;
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("anything"));
@@ -141,8 +141,8 @@ struct submatcher
     pfstest_matcher_t *matcher;
 };
 
-static void int_members_match_printer(pfstest_reporter_t *reporter,
-                                      pfstest_matcher_t *matcher)
+static void int_members_match_printer(pfstest_matcher_t *matcher,
+                                      pfstest_reporter_t *reporter)
 {
     pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
     struct submatcher *submatcher;
@@ -150,7 +150,7 @@ static void int_members_match_printer(pfstest_reporter_t *reporter,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("{ "));
 
     pfstest_list_iter (submatcher, submatchers) {
-        pfstest_matcher_print(reporter, submatcher->matcher);
+        pfstest_matcher_print(submatcher->matcher, reporter);
 
         if (((pfstest_list_node_t *)submatcher)->next != NULL) {
             pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(", "));

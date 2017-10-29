@@ -102,8 +102,8 @@ static pfstest_expectation_t *pfstest_expectation_new(
     return e;
 }
 
-static void pfstest_expectation_print(pfstest_reporter_t *reporter,
-                                      pfstest_expectation_t *e)
+static void pfstest_expectation_print(pfstest_expectation_t *e,
+                                      pfstest_reporter_t *reporter)
 {
     unsigned int i;
 
@@ -111,7 +111,7 @@ static void pfstest_expectation_print(pfstest_reporter_t *reporter,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(" with ("));
 
     for (i = 0; i < pfstest_mock_arg_count(e->mock); i++) {
-        pfstest_arg_handler_print(reporter, e->arg_handlers[i]);
+        pfstest_arg_handler_print(e->arg_handlers[i], reporter);
 
         if (i < pfstest_mock_arg_count(e->mock) - 1)
             pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(", "));
@@ -327,10 +327,10 @@ static void wrong_call_count_printer(pfstest_reporter_t *reporter,
     if (args->invocation_count == 0) {
         pfstest_reporter_print_pg_str(reporter,
                                       pfstest_pg_str("Never called "));
-        pfstest_expectation_print(reporter, args->expectation);
+        pfstest_expectation_print(args->expectation, reporter);
     } else if (args->invocation_count != 1) {
         pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("Wanted "));
-        pfstest_expectation_print(reporter, args->expectation);
+        pfstest_expectation_print(args->expectation, reporter);
 
         pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(" "));
         pfstest_reporter_print_pg_str(reporter, args->wanted_desc_prefix);
@@ -585,12 +585,12 @@ static void in_order_fail_printer(pfstest_reporter_t *reporter,
 
     pfstest_reporter_print_pg_str(reporter,
                                   pfstest_pg_str("Not called in order: "));
-    pfstest_expectation_print(reporter, args->expectation);
+    pfstest_expectation_print(args->expectation, reporter);
     if (args->prev_expectation != NULL) {
         pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\n"));
         pfstest_reporter_print_pg_str(reporter,
                                       pfstest_pg_str("Expected after: "));
-        pfstest_expectation_print(reporter, args->prev_expectation);
+        pfstest_expectation_print(args->prev_expectation, reporter);
     }
 }
 

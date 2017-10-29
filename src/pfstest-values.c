@@ -50,8 +50,8 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value)
 
 /* the_short */
 
-static void the_short_printer(pfstest_reporter_t *reporter,
-                              pfstest_value_t *value)
+static void the_short_printer(pfstest_value_t *value,
+                              pfstest_reporter_t *reporter)
 {
     short n = *(const short *)pfstest_value_data(value);
 
@@ -69,8 +69,8 @@ pfstest_value_t *pfstest_the_short(short n)
 
 /* the_ushort */
 
-static void the_ushort_printer(pfstest_reporter_t *reporter,
-                               pfstest_value_t *value)
+static void the_ushort_printer(pfstest_value_t *value,
+                               pfstest_reporter_t *reporter)
 {
     unsigned short n = *(const unsigned short *)pfstest_value_data(value);
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the ushort "));
@@ -88,8 +88,8 @@ pfstest_value_t *pfstest_the_ushort(unsigned short n)
 
 /* the_int */
 
-static void the_int_printer(pfstest_reporter_t *reporter,
-                            pfstest_value_t *value)
+static void the_int_printer(pfstest_value_t *value,
+                            pfstest_reporter_t *reporter)
 {
     int n = *(const int *)pfstest_value_data(value);
 
@@ -107,8 +107,8 @@ pfstest_value_t *pfstest_the_int(int n)
 
 /* the_uint */
 
-static void the_uint_printer(pfstest_reporter_t *reporter,
-                             pfstest_value_t *value)
+static void the_uint_printer(pfstest_value_t *value,
+                             pfstest_reporter_t *reporter)
 {
     unsigned int n = *(const unsigned int *)pfstest_value_data(value);
 
@@ -127,8 +127,8 @@ pfstest_value_t *pfstest_the_uint(unsigned int n)
 
 /* the_long */
 
-static void the_long_printer(pfstest_reporter_t *reporter,
-                             pfstest_value_t *value)
+static void the_long_printer(pfstest_value_t *value,
+                             pfstest_reporter_t *reporter)
 {
     long n = *(const long *)pfstest_value_data(value);
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the long "));
@@ -144,8 +144,8 @@ pfstest_value_t *pfstest_the_long(long n)
 
 /* the_ulong */
 
-static void the_ulong_printer(pfstest_reporter_t *reporter,
-                              pfstest_value_t *value)
+static void the_ulong_printer(pfstest_value_t *value,
+                              pfstest_reporter_t *reporter)
 {
     unsigned long n = *(const unsigned long *)pfstest_value_data(value);
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the ulong "));
@@ -167,8 +167,8 @@ struct enum_aux
     const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map;
 };
 
-static void the_enum_printer(pfstest_reporter_t *reporter,
-                             pfstest_value_t *value)
+static void the_enum_printer(pfstest_value_t *value,
+                             pfstest_reporter_t *reporter)
 {
     int e = *(const int *)pfstest_value_data(value);
     struct enum_aux *aux = pfstest_value_aux(value);
@@ -214,8 +214,8 @@ pfstest_value_t *pfstest_the_enum(
 
 /* the_bool */
 
-static void the_bool_printer(pfstest_reporter_t *reporter,
-                             pfstest_value_t *value)
+static void the_bool_printer(pfstest_value_t *value,
+                             pfstest_reporter_t *reporter)
 {
     pfstest_bool b = *(const pfstest_bool *)pfstest_value_data(value);
 
@@ -237,8 +237,8 @@ pfstest_value_t *pfstest_the_bool(pfstest_bool b)
 
 /* the_char */
 
-static void the_char_printer(pfstest_reporter_t *reporter,
-                             pfstest_value_t *value)
+static void the_char_printer(pfstest_value_t *value,
+                             pfstest_reporter_t *reporter)
 {
     char c = *(const char *)pfstest_value_data(value);
 
@@ -257,8 +257,8 @@ pfstest_value_t *pfstest_the_char(char c)
 
 /* the_string */
 
-static void the_string_printer(pfstest_reporter_t *reporter,
-                               pfstest_value_t *value)
+static void the_string_printer(pfstest_value_t *value,
+                               pfstest_reporter_t *reporter)
 {
     const char *data = pfstest_value_data(value);
     const char *p = data;
@@ -282,8 +282,8 @@ pfstest_value_t *pfstest_the_string(const char *s)
 
 /* the_pointer */
 
-static void the_pointer_printer(pfstest_reporter_t *reporter,
-                                pfstest_value_t *value)
+static void the_pointer_printer(pfstest_value_t *value,
+                                pfstest_reporter_t *reporter)
 {
     const void *data = pfstest_value_data(value);
 
@@ -308,8 +308,8 @@ pfstest_value_t *pfstest_the_pointer(const void *p)
 
 /* the_memory */
 
-static void the_memory_printer(pfstest_reporter_t *reporter,
-                               pfstest_value_t *value)
+static void the_memory_printer(pfstest_value_t *value,
+                               pfstest_reporter_t *reporter)
 {
     const unsigned char *data = pfstest_value_data(value);
     size_t size = pfstest_value_size(value);
@@ -339,8 +339,8 @@ pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
 
 /* the_int_array */
 
-static void the_int_array_printer(pfstest_reporter_t *reporter,
-                                  pfstest_value_t *value)
+static void the_int_array_printer(pfstest_value_t *value,
+                                  pfstest_reporter_t *reporter)
 {
     const int *data = (const int *)pfstest_value_data(value);
     size_t length = pfstest_value_size(value) / sizeof(data[0]);
@@ -349,7 +349,7 @@ static void the_int_array_printer(pfstest_reporter_t *reporter,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("{ "));
 
     for (i = 0; i < length; i++) {
-        pfstest_value_print(reporter, pfstest_the_int(data[i]));
+        pfstest_value_print(pfstest_the_int(data[i]), reporter);
         if (i < length - 1)
             pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(", "));
     }
@@ -366,8 +366,8 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
 }
 
 #ifdef PFSTEST_HAS_STDINT
-static void the_u8_printer(pfstest_reporter_t *reporter,
-                           pfstest_value_t *value)
+static void the_u8_printer(pfstest_value_t *value,
+                           pfstest_reporter_t *reporter)
 {
     uint8_t n = *(const uint8_t *)pfstest_value_data(value);
 
@@ -392,8 +392,8 @@ pfstest_value_t *pfstest_the_u8(uint8_t n)
                              known_width_unsigned_aux());
 }
 
-static void the_u16_printer(pfstest_reporter_t *reporter,
-                            pfstest_value_t *value)
+static void the_u16_printer(pfstest_value_t *value,
+                            pfstest_reporter_t *reporter)
 {
     uint16_t n = *(const uint16_t *)pfstest_value_data(value);
 

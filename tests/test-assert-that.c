@@ -9,8 +9,8 @@
 
 static pfstest_reporter_t *standard_reporter;
 
-static void some_value_printer(pfstest_reporter_t *reporter,
-                               pfstest_value_t *value)
+static void some_value_printer(pfstest_value_t *value,
+                               pfstest_reporter_t *reporter)
 {
     (void)value;
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("some value"));
@@ -44,8 +44,8 @@ static pfstest_bool always_return_false(pfstest_matcher_t *matcher,
     return pfstest_false;
 }
 
-static void nothing_printer(pfstest_reporter_t *reporter,
-                            pfstest_matcher_t *matcher)
+static void nothing_printer(pfstest_matcher_t *matcher,
+                            pfstest_reporter_t *reporter)
 {
     (void)matcher;
     pfstest_reporter_print_pg_str(

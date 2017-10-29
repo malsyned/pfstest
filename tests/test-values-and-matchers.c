@@ -12,7 +12,7 @@ test(the_short_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the short 32767");
 
-    pfstest_value_print(message_spy, the_short(32767));
+    pfstest_value_print(the_short(32767), message_spy);
 
     assert_that("shorts print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -22,7 +22,7 @@ test(the_short_should_print_negative_shorts)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the short -32768");
 
-    pfstest_value_print(message_spy, the_short(-32768));
+    pfstest_value_print(the_short(-32768), message_spy);
 
     assert_that("negative shorts print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -46,7 +46,7 @@ test(the_ushort_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the ushort 65535");
 
-    pfstest_value_print(message_spy, the_ushort(65535));
+    pfstest_value_print(the_ushort(65535), message_spy);
 
     assert_that("ushorts print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -56,7 +56,7 @@ test(should_print_hex_ushorts)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the ushort 0xab2");
 
-    pfstest_value_print(message_spy, as_hex(the_ushort(0xab2)));
+    pfstest_value_print(as_hex(the_ushort(0xab2)), message_spy);
 
     assert_that("ushorts print themselves as hex",
                 the_string(captured_output),
@@ -81,7 +81,7 @@ test(the_int_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the int 32767");
 
-    pfstest_value_print(message_spy, the_int(32767));
+    pfstest_value_print(the_int(32767), message_spy);
 
     assert_that("ints print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -91,7 +91,7 @@ test(the_int_should_print_negative_ints)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the int -32768");
 
-    pfstest_value_print(message_spy, the_int(-32768));
+    pfstest_value_print(the_int(-32768), message_spy);
 
     assert_that("negative ints print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -115,7 +115,7 @@ test(the_uint_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the uint 65535");
 
-    pfstest_value_print(message_spy, the_uint(65535));
+    pfstest_value_print(the_uint(65535), message_spy);
 
     assert_that("uints print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -125,7 +125,7 @@ test(should_print_hex_uints)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the uint 0xab2");
 
-    pfstest_value_print(message_spy, as_hex(the_uint(0xab2)));
+    pfstest_value_print(as_hex(the_uint(0xab2)), message_spy);
 
     assert_that("uints print themselves as hex",
                 the_string(captured_output),
@@ -151,7 +151,7 @@ test(the_long_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the long 2147483647");
 
-    pfstest_value_print(message_spy, the_long(2147483647l));
+    pfstest_value_print(the_long(2147483647l), message_spy);
 
     assert_that("longs print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -162,7 +162,7 @@ test(the_long_should_print_negative_longs)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the long -2147483648");
 
-    pfstest_value_print(message_spy, the_long((-2147483647l - 1)));
+    pfstest_value_print(the_long((-2147483647l - 1)), message_spy);
 
     assert_that("negative longs print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -188,7 +188,7 @@ test(the_ulong_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the ulong 4294967295");
 
-    pfstest_value_print(message_spy, the_ulong(4294967295ul));
+    pfstest_value_print(the_ulong(4294967295ul), message_spy);
 
     assert_that("ulongs print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -199,7 +199,7 @@ test(should_print_hex_ulongs)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the ulong 0xa1b2c3d");
 
-    pfstest_value_print(message_spy, as_hex(the_ulong(0xa1b2c3d)));
+    pfstest_value_print(as_hex(the_ulong(0xa1b2c3d)), message_spy);
 
     assert_that("ulongs print themselves as hex",
                 the_string(captured_output),
@@ -242,9 +242,9 @@ test(the_enum_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the enum e_foo\nthe enum e_baz");
 
-    pfstest_value_print(message_spy, the_enum(e_foo, some_enum_map));
+    pfstest_value_print(the_enum(e_foo, some_enum_map), message_spy);
     pfstest_reporter_print_char(message_spy, '\n');
-    pfstest_value_print(message_spy, the_enum(e_baz, some_enum_map));
+    pfstest_value_print(the_enum(e_baz, some_enum_map), message_spy);
 
     assert_that("enums print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -256,9 +256,9 @@ test(the_enum_should_fall_back_to_printing_numeric_value)
         pfstest_pg_str("the enum 3 [out of range]\n"
                        "the enum -1 [out of range]");
 
-    pfstest_value_print(message_spy, the_enum(3, some_enum_map));
+    pfstest_value_print(the_enum(3, some_enum_map), message_spy);
     pfstest_reporter_print_char(message_spy, '\n');
-    pfstest_value_print(message_spy, the_enum(-1, some_enum_map));
+    pfstest_value_print(the_enum(-1, some_enum_map), message_spy);
 
     assert_that("enums print out-of-range values as numbers",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -283,7 +283,7 @@ test(the_bool_should_print_true)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the bool <true>");
 
-    pfstest_value_print(message_spy, the_bool(pfstest_true));
+    pfstest_value_print(the_bool(pfstest_true), message_spy);
 
     assert_that("bools print true",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -294,7 +294,7 @@ test(the_bool_should_print_false)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the bool <false>");
 
-    pfstest_value_print(message_spy, the_bool(pfstest_false));
+    pfstest_value_print(the_bool(pfstest_false), message_spy);
 
     assert_that("bools print false",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -326,7 +326,7 @@ test(the_char_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the char 'c'");
 
-    pfstest_value_print(message_spy, the_char('c'));
+    pfstest_value_print(the_char('c'), message_spy);
 
     assert_that("chars print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -336,7 +336,7 @@ test(the_char_should_escape_special_chars)
 {    const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the char '\\n'");
 
-    pfstest_value_print(message_spy, the_char('\n'));
+    pfstest_value_print(the_char('\n'), message_spy);
 
     assert_that("special chars should print escaped",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -362,7 +362,7 @@ test(the_string_should_print_itself)
         pfstest_pg_str("the string \"foo\"");
     char s1[] = "foo";
 
-    pfstest_value_print(message_spy, the_string(s1));
+    pfstest_value_print(the_string(s1), message_spy);
 
     assert_that("strings print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -374,7 +374,7 @@ test(the_string_should_escape_special_characters)
         pfstest_pg_str("the string \"\\t\\v\\\\\\\"\\?\\a\\b\\f\\n\\r\"");
     char s1[] = "\t\v\\\"\?\a\b\f\n\r";
 
-    pfstest_value_print(message_spy, the_string(s1));
+    pfstest_value_print(the_string(s1), message_spy);
 
     assert_that("special chars should print escaped in strings",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -432,7 +432,7 @@ test(the_pointer_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the pointer <0xbeef>");
 
-    pfstest_value_print(message_spy, the_pointer((void *)0xbeef));
+    pfstest_value_print(the_pointer((void *)0xbeef), message_spy);
 
     assert_that("pointers print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -443,7 +443,7 @@ test(the_pointer_should_print_null_specially)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the pointer <NULL>");
 
-    pfstest_value_print(message_spy, the_pointer(NULL));
+    pfstest_value_print(the_pointer(NULL), message_spy);
 
     assert_that("pointers print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -469,7 +469,7 @@ test(the_memory_should_print_itself)
         pfstest_pg_str("the memory {0x01, 0x02, 0x03, 0x04, 0x05}");
     char actual[] = {1, 2, 3, 4, 5};
 
-    pfstest_value_print(message_spy, the_memory(actual, sizeof(actual)));
+    pfstest_value_print(the_memory(actual, sizeof(actual)), message_spy);
 
     assert_that("memory buffers print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -523,7 +523,7 @@ test(is_anything_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("anything");
 
-    pfstest_matcher_print(message_spy, is_anything);
+    pfstest_matcher_print(is_anything, message_spy);
 
     assert_that("is_anything()'s printer prints \"anything\"",
                 the_string(captured_output),
@@ -578,9 +578,9 @@ test(is_should_print_value)
 {    const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the int 3\nthe char 'c'");
 
-    pfstest_matcher_print(message_spy, is(the_int(3)));
+    pfstest_matcher_print(is(the_int(3)), message_spy);
     pfstest_reporter_print_char(message_spy, '\n');
-    pfstest_matcher_print(message_spy, is(the_char('c')));
+    pfstest_matcher_print(is(the_char('c')), message_spy);
 
     assert_that("int arrays print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -593,7 +593,7 @@ test(the_int_array_should_print_itself)
     int actual[] = {1, 3, 32767, -4};
 
     pfstest_value_print(
-        message_spy, the_int_array(actual, sizeof(actual)/sizeof(actual[0])));
+        the_int_array(actual, sizeof(actual)/sizeof(actual[0])), message_spy);
 
     assert_that("the_int_array prints itself",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -604,11 +604,12 @@ test(int_members_match_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("{ the int 1, the int 3, the int 32767, the int -5 }");
 
-    pfstest_matcher_print(message_spy, int_members_match(is(the_int(1)),
-                                                         is(the_int(3)),
-                                                         is(the_int(32767)),
-                                                         is(the_int(-5)),
-                                                         NULL));
+    pfstest_matcher_print(int_members_match(is(the_int(1)),
+                                            is(the_int(3)),
+                                            is(the_int(32767)),
+                                            is(the_int(-5)),
+                                            NULL),
+                          message_spy);
 
     assert_that("int_members_match prints its member matchers",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -648,7 +649,7 @@ test(the_u8_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the uint8_t 255");
 
-    pfstest_value_print(message_spy, the_u8(255));
+    pfstest_value_print(the_u8(255), message_spy);
 
     assert_that("u8s print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -659,7 +660,7 @@ test(should_print_hex_u8s)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the uint8_t 0x0d");
 
-    pfstest_value_print(message_spy, as_hex(the_u8(0xd)));
+    pfstest_value_print(as_hex(the_u8(0xd)), message_spy);
 
     assert_that("u8s print themselves as hex",
                 the_string(captured_output),
@@ -684,7 +685,7 @@ test(the_u16_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the uint16_t 65535");
 
-    pfstest_value_print(message_spy, the_u16(65535));
+    pfstest_value_print(the_u16(65535), message_spy);
 
     assert_that("u16s print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -695,7 +696,7 @@ test(should_print_hex_u16s)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the uint16_t 0x0a1d");
 
-    pfstest_value_print(message_spy, as_hex(the_u16(0xa1d)));
+    pfstest_value_print(as_hex(the_u16(0xa1d)), message_spy);
 
     assert_that("u16s print themselves as hex",
                 the_string(captured_output), matches_the_pg_string(expected));
