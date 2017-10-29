@@ -12,6 +12,8 @@
 struct unsigned_aux
 {
     unsigned int base;
+    pfstest_bool known_width;
+    int zpad;
     const pfstest_pg_ptr char *prefix;
 };
 
@@ -19,6 +21,8 @@ static struct unsigned_aux *default_unsigned_aux(void)
 {
     struct unsigned_aux *aux = pfstest_alloc(sizeof(*aux));
     aux->base = 10;
+    aux->known_width = pfstest_false;
+    aux->zpad = 0;
     aux->prefix = pfstest_pg_str("");
 
     return aux;
@@ -29,7 +33,7 @@ static void print_unsigned(pfstest_reporter_t *reporter,
 {
     pfstest_reporter_print_pg_str(reporter, aux->prefix);
     pfstest_reporter_print_uint(reporter, (pfstest_uintmax_t)n,
-                                aux->base, 0);
+                                aux->base, aux->zpad);
 }
 
 pfstest_value_t *pfstest_as_hex(pfstest_value_t *value)
@@ -37,6 +41,8 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value)
     struct unsigned_aux *aux = pfstest_value_aux(value);
     aux->base = 16;
     aux->prefix = pfstest_pg_str("0x");
+    if (aux->known_width)
+        aux->zpad = (int)pfstest_value_size(value) * 2;
     return value;
 }
 
@@ -367,13 +373,21 @@ static void the_u8_printer(pfstest_reporter_t *reporter,
     print_unsigned(reporter, n, pfstest_value_aux(value));
 }
 
+static struct unsigned_aux *known_width_unsigned_aux(void)
+{
+    struct unsigned_aux *aux = default_unsigned_aux();
+    aux->known_width = pfstest_true;
+    return aux;
+}
+
+
 pfstest_value_t *pfstest_the_u8(uint8_t n)
 {
     uint8_t *data = pfstest_alloc(sizeof(n));
     *data = n;
 
     return pfstest_value_new_with_aux(the_u8_printer, data, sizeof(*data),
-                                      default_unsigned_aux());
+                                      known_width_unsigned_aux());
 }
 
 static void the_u16_printer(pfstest_reporter_t *reporter,
@@ -391,6 +405,6 @@ pfstest_value_t *pfstest_the_u16(uint16_t n)
     *data = n;
 
     return pfstest_value_new_with_aux(the_u16_printer, data, sizeof(*data),
-                                      default_unsigned_aux());
+                                      known_width_unsigned_aux());
 }
 #endif  /* defined(PFSTEST_HAS_STDINT) */

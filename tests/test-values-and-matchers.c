@@ -698,7 +698,7 @@ test(should_fail_on_different_u8s)
 test(should_print_hex_u8s)
 {
     const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("the uint8_t 0xd");
+        pfstest_pg_str("the uint8_t 0x0d");
 
     pfstest_value_print(message_spy, as_hex(the_u8(0xd)));
 
@@ -734,7 +734,7 @@ test(should_fail_on_different_u16s)
 test(should_print_hex_u16s)
 {
     const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("the uint16_t 0xa1d");
+        pfstest_pg_str("the uint16_t 0x0a1d");
 
     pfstest_value_print(message_spy, as_hex(the_u16(0xa1d)));
 
