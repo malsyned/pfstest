@@ -657,6 +657,7 @@ void pfstest_in_order_verify_at_location(const pfstest_pg_ptr char *file, int li
 {
     struct in_order_expectation *ioe = pfstest_alloc(sizeof(*ioe));
     pfstest_list_node_init((pfstest_list_node_t *)ioe);
+    pfstest_one_time(expectation);
     ioe->file = file;
     ioe->line = line;
     ioe->expectation = expectation;

@@ -311,6 +311,19 @@ test(should_fail_when_out_of_order)
                 matches_the_pg_string(expected));
 }
 
+test(should_recognize_identical_function_call_twice_in_order)
+{
+    in_order_t *order = in_order_new();
+
+    in_order_verify(order, when(mock_dep_func1,
+                                arg_that(is(the_int(2)))));
+    in_order_verify(order, when(mock_dep_func1,
+                                arg_that(is(the_int(2)))));
+
+    dep_func1(2);
+    dep_func1(2);
+}
+
 test(should_verify_multiple_in_orders)
 {
     in_order_t *order1 = in_order_new();
