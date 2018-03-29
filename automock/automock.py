@@ -262,6 +262,8 @@ class MockGenerator:
             basetype = returntype.type
             if isinstance(basetype, Struct):
                 return ReturnHint.BLOB
+            elif isinstance(basetype, Enum):
+                return ReturnHint.PRIMITIVE
             elif isinstance(basetype, IdentifierType):
                 if basetype.names == ['void']:
                     return ReturnHint.VOID
