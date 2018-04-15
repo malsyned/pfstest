@@ -376,6 +376,7 @@ if __name__ == "__main__":
     from sys import stdin
     from pycparser.c_generator import CGenerator
     from extensiblecparser import ExtensibleCParser
+    from pycparser.plyparser import ParseError
 
     args = argv_parser.parse_args()
     cparser = ExtensibleCParser(
@@ -383,13 +384,17 @@ if __name__ == "__main__":
         type_qualifiers=args.type_qualifier or [],
         types=args.type or [],
         function_specifiers=args.function_specifier or [])
-    ast = cparser.parse(stdin.read(), args.headerpath)
-    mpaths = MockPathHandler(args.headerpath, args.mockroot)
-    mg = MockGenerator(mpaths, CGenerator(), ast)
-    hwriter = MockHeaderWriter(mpaths, mg)
-    cwriter = MockImplementationWriter(mpaths, mg)
+    try:
+        ast = cparser.parse(stdin.read(), args.headerpath)
+    except ParseError as err:
+        sys.stderr.write("%s: %s\n" % (sys.argv[0], err))
+    else:
+        mpaths = MockPathHandler(args.headerpath, args.mockroot)
+        mg = MockGenerator(mpaths, CGenerator(), ast)
+        hwriter = MockHeaderWriter(mpaths, mg)
+        cwriter = MockImplementationWriter(mpaths, mg)
 
-    with open(mpaths.mockheaderpath, 'w') as hstream:
-        hwriter.write_header(hstream)
-    with open(mpaths.mockimplementationpath, 'w') as cstream:
-        cwriter.write_implementation(cstream)
+        with open(mpaths.mockheaderpath, 'w') as hstream:
+            hwriter.write_header(hstream)
+        with open(mpaths.mockimplementationpath, 'w') as cstream:
+            cwriter.write_implementation(cstream)
