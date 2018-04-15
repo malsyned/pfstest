@@ -302,20 +302,20 @@ class MockGenerator:
         return hints
 
     def select_arg_hint(self, paramtype):
-            if isinstance(paramtype, TypeDecl):
-                basetype = paramtype.type
-                if isinstance(basetype, IdentifierType):
-                    if basetype.names == ['void']:
-                        return None
-                    else:
-                        return ArgHint.BLOB
-                elif isinstance(basetype, Struct):
-                    return ArgHint.BLOB
+        if isinstance(paramtype, TypeDecl):
+            basetype = paramtype.type
+            if isinstance(basetype, IdentifierType):
+                if basetype.names == ['void']:
+                    return None
                 else:
-                    # FIXME: Thow a more specific exception
-                    raise Exception("Couldn't match param type to hint")
-            elif isinstance(paramtype, PtrDecl):
-                return ArgHint.POINTER
+                    return ArgHint.BLOB
+            elif isinstance(basetype, Struct):
+                return ArgHint.BLOB
+            else:
+                # FIXME: Thow a more specific exception
+                raise Exception("Couldn't match param type to hint")
+        elif isinstance(paramtype, PtrDecl):
+            return ArgHint.POINTER
 
     def set_param_names(self, params, names, hints):
         for (param, name, hint) in zip(params, names, hints):
