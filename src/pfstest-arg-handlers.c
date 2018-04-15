@@ -127,3 +127,53 @@ pfstest_arg_handler_t *pfstest_assign_arg_that(pfstest_matcher_t *matcher,
                                    assign_arg_that_printer,
                                    args);
 }
+
+static pfstest_bool capture_arg_test(pfstest_arg_handler_t *arg_handler,
+                                     pfstest_value_t *actual)
+{
+    (void)arg_handler;
+    (void)actual;
+    return pfstest_true;
+}
+
+static pfstest_bool value_is_pointer(pfstest_value_t *actual)
+{
+    return (pfstest_value_size(actual) == 0);
+}
+
+static void copy_pointer(void *arg_p, pfstest_value_t *pointer)
+{
+    const void *data = pfstest_value_data(pointer);
+    memcpy(arg_p, &data, sizeof(data));
+}
+
+static void copy_blob(void *arg_p, pfstest_value_t *blob)
+{
+    memcpy(arg_p, pfstest_value_data(blob), pfstest_value_size(blob));
+}
+
+static void capture_arg_matched(pfstest_arg_handler_t *arg_handler,
+                                pfstest_value_t *actual)
+{
+    void *arg_p = pfstest_arg_handler_data(arg_handler);
+
+    if (value_is_pointer(actual))
+        copy_pointer(arg_p, actual);
+    else
+        copy_blob(arg_p, actual);
+}
+
+static void capture_arg_printer(pfstest_arg_handler_t *arg_handler,
+                                    pfstest_reporter_t *reporter)
+{
+    (void)arg_handler;
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("anything"));
+}
+
+pfstest_arg_handler_t *pfstest_capture_arg(void *arg_p)
+{
+    return pfstest_arg_handler_new(capture_arg_test,
+                                   capture_arg_matched,
+                                   capture_arg_printer,
+                                   arg_p);
+}

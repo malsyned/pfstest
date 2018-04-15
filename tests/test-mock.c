@@ -229,6 +229,51 @@ test(should_print_matcher_for_failures_involving_assign_arg_that)
                 matches_the_pg_string(expected));
 }
 
+test(should_capture_int_arg)
+{
+    int i = 0;
+
+    when(mock_dep_func1, capture_arg(&i));
+
+    dep_func1(5);
+
+    assert_that("capture_arg captures an integer argument",
+                the_int(i), is(the_int(5)));
+}
+
+test(should_capture_pointer_arg)
+{
+    char *c_p = NULL;
+    char c = 'P';
+
+    when(mock_dep_func2, arg_that(is_anything), capture_arg(&c_p));
+
+    dep_func2(0, &c);
+
+    assert_that("capture_arg captures a pointer argument",
+                the_pointer(c_p), is(the_pointer(&c)));
+}
+
+pfstest_case(fails_to_invoke_capture_arg_expectation)
+{
+    int i = 0;
+
+    verify(when(mock_dep_func1, capture_arg(&i)));
+}
+
+test(should_print_sensible_explanation_of_capture_arg_in_failures)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        "Never called dep_func1 with (anything)");
+
+    capture_test_results_with_plugins(
+        fails_to_invoke_capture_arg_expectation, plugins);
+
+    assert_that("capture_arg description is sensible",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
 test(should_stub_different_return_values_with_one_time)
 {
     one_time(do_return(the_int(3), when(mock_dep_func1,

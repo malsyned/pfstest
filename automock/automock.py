@@ -162,7 +162,10 @@ class MockImplementationWriter:
         ostream.write('pfstest_the_pointer(%s)' % arg_name)
 
     def arg_type_writer_blob(self, ostream, arg_name):
-        ostream.write('pfstest_the_pointer(&%s)' % arg_name)
+        ostream.write(
+            ('pfstest_the_memory(&%s,\n'
+             + '                                               sizeof(%s))')
+            % (arg_name, arg_name))
 
 class MockGenerator:
     def __init__(self, mpaths, cgen, ast):

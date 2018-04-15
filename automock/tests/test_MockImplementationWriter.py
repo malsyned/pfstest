@@ -243,7 +243,8 @@ void func1(int __pfstest_arg_0)
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
                             NULL,
-                            pfstest_the_pointer(&__pfstest_arg_0));
+                            pfstest_the_memory(&__pfstest_arg_0,
+                                               sizeof(__pfstest_arg_0)));
 
     (void)__pfstest_return_value;
 }
@@ -317,7 +318,8 @@ void func1(int __pfstest_arg_0, char *__pfstest_arg_1)
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
                             NULL,
-                            pfstest_the_pointer(&__pfstest_arg_0),
+                            pfstest_the_memory(&__pfstest_arg_0,
+                                               sizeof(__pfstest_arg_0)),
                             pfstest_the_pointer(__pfstest_arg_1));
 
     (void)__pfstest_return_value;
