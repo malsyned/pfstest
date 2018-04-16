@@ -40,6 +40,12 @@ class ExtensibleCParser(CParser):
         return ["p_extensiblecparser_%s_%s" % (production_type, i)
                 for i in range(n)]
 
+    # GCC accepts empty structs and I find them very useful for making
+    # bare bones headers for mocking yet-to-be-written modules.
+    def p_struct_declaration_list_empty(self, p):
+        """ struct_declaration_list : empty """
+        p[0] = None
+
     # Override the parse function to initialize _scope_stack with the
     # listed types
     def parse(self, text, filename='', debuglevel=0):

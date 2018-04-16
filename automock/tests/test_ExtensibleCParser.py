@@ -84,3 +84,7 @@ class ExtensibleCParserTests(TestCase):
       TypeDecl <type>: declname=foo, quals=[]
         IdentifierType <type>: names=['void']
 """)
+
+    def test_shouldAcceptEmptyStructs(self):
+        # As long as this doesn't throw an exception, I'm satisfied
+        ast = cparser.parse('struct foo {};')
