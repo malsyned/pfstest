@@ -135,6 +135,23 @@ class MockGeneratorTests(TestCase):
                                    args_info = [])
                          ])
 
+    def test_shouldHandleEnumReturnType(self):
+        # Given
+        mgen = MockGenerator(self.mpaths, cgen,
+                             cparser.parse("enum foo func1(void);",
+                                           defaulthname))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "enum foo func1(void)",
+                                   return_text = "enum foo",
+                                   return_hint = ReturnHint.PRIMITIVE,
+                                   args_info = [])
+                         ])
+
     def test_shouldHandlePrimitiveParam(self):
         # Given
         mgen = MockGenerator(self.mpaths, cgen,
