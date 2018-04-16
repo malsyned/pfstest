@@ -209,6 +209,25 @@ class MockGeneratorTests(TestCase):
                                                         ArgHint.BLOB)])
                          ])
 
+    def test_shouldHandleEnumParam(self):
+        # Given
+        mgen = MockGenerator(self.mpaths, cgen,
+                             cparser.parse("void func1(enum foo bar);",
+                                           defaulthname))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(enum foo __pfstest_arg_0)",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.BLOB)])
+                         ])
+
     def test_shouldHandleMultipleParams(self):
         # Given
         mgen = MockGenerator(self.mpaths, cgen,

@@ -314,6 +314,8 @@ class MockGenerator:
                     return ArgHint.BLOB
             elif isinstance(basetype, Struct):
                 return ArgHint.BLOB
+            elif isinstance(basetype, Enum):
+                return ArgHint.BLOB
             else:
                 # FIXME: Thow a more specific exception
                 raise Exception("Couldn't match param type to hint")
