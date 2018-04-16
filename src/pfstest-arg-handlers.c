@@ -86,6 +86,8 @@ pfstest_arg_handler_t *pfstest_assign_arg(pfstest_value_t *src)
                                    src);
 }
 
+/* assign_arg_that */
+
 struct assign_arg_that_args {
     pfstest_matcher_t *matcher;
     pfstest_value_t *src;
@@ -127,6 +129,8 @@ pfstest_arg_handler_t *pfstest_assign_arg_that(pfstest_matcher_t *matcher,
                                    assign_arg_that_printer,
                                    args);
 }
+
+/* capture_arg */
 
 static pfstest_bool capture_arg_test(pfstest_arg_handler_t *arg_handler,
                                      pfstest_value_t *actual)
