@@ -132,7 +132,8 @@ target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
 targets-exec-names = $(foreach target,$1,$(call target-exec-name,$(target)))
 
 PYTHON ?= python
-AUTOMOCK ?= $(PYTHON) $(dir $(this-makefile))../automock/automock.py
+AUTOMOCK_SRC ?= $(dir $(this-makefile))../automock/automock.py
+AUTOMOCK ?= $(PYTHON) $(AUTOMOCK_SRC)
 
 .PHONY: targets
 targets: $(call targets-exec-names,$(TARGETS))
@@ -168,7 +169,8 @@ define class-template
 	    -MT "$$(@) $$(@:%d=%o) $$(@:%d=%i)" -o $$@ $$<
 
     $$(call class-buildprefix,$1)%$$(mock-suffix).c \
-    $$(call class-buildprefix,$1)%$$(mock-suffix).h : %.h $$(MAKEFILE_LIST)
+    $$(call class-buildprefix,$1)%$$(mock-suffix).h \
+    : %.h $$(AUTOMOCK_SRC) $$(MAKEFILE_LIST)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
