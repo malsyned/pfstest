@@ -220,6 +220,43 @@ test(unequal_ulongs_should_not_match)
                                          the_ulong(4294967295ul)));
 }
 
+test(the_size_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the size_t 65535");
+
+    pfstest_value_print(the_size(65535u), message_spy);
+
+    assert_that("sizes print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(should_print_hex_sizes)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the size_t 0xab2");
+
+    pfstest_value_print(as_hex(the_size(0xab2)), message_spy);
+
+    assert_that("sizes print themselves as hex",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
+test(equal_sizes_should_match)
+{
+    assert_true("equal sizes match",
+                pfstest_matcher_matches(is(the_size(65535u)),
+                                        the_size(65535u)));
+}
+
+test(unequal_sizes_should_not_match)
+{
+    assert_false("unequal sizes don't match",
+                 pfstest_matcher_matches(is(the_size(65535u)),
+                                         the_size(65534u)));
+}
+
 enum some_enum {
     e_foo,
     e_bar,

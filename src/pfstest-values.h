@@ -12,6 +12,7 @@ pfstest_value_t *pfstest_the_int(int n);
 pfstest_value_t *pfstest_the_uint(unsigned int n);
 pfstest_value_t *pfstest_the_long(long n);
 pfstest_value_t *pfstest_the_ulong(unsigned long n);
+pfstest_value_t *pfstest_the_size(size_t size);
 pfstest_value_t *pfstest_the_enum(
     int e, const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map);
 pfstest_value_t *pfstest_the_bool(pfstest_bool b);
@@ -41,6 +42,9 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value);
 #endif
 #ifndef PFSTEST_NOALIAS_the_ulong
 # define the_ulong pfstest_the_ulong
+#endif
+#ifndef PFSTEST_NOALIAS_the_size
+# define the_size pfstest_the_size
 #endif
 #ifndef PFSTEST_NOALIAS_the_enum
 # define the_enum pfstest_the_enum

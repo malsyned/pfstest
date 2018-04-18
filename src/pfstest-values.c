@@ -160,6 +160,24 @@ pfstest_value_t *pfstest_the_ulong(unsigned long n)
                              default_unsigned_aux());
 }
 
+/* the_size */
+
+static void the_size_printer(pfstest_value_t *value,
+                              pfstest_reporter_t *reporter)
+{
+    size_t n = *(const size_t *)pfstest_value_data(value);
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the size_t "));
+    print_unsigned(reporter, n, pfstest_value_aux(value));
+}
+
+pfstest_value_t *pfstest_the_size(size_t size)
+{
+    size_t *data = pfstest_alloc(sizeof(size));
+    *data = size;
+    return pfstest_value_new(the_size_printer, data, sizeof(size),
+                             default_unsigned_aux());
+}
+
 /* the_enum */
 
 struct enum_aux
