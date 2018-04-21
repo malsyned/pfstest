@@ -4,10 +4,9 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "pfstest-platform.h"
+#include "pfstest-core.h"
 #include "pfstest-values.h"
 #include "pfstest-alloc.h"
-#include "pfstest-list.h"
 
 /* is */
 
@@ -176,29 +175,40 @@ static pfstest_bool submatchers_match_value_array(
     return pfstest_true;
 }
 
-static pfstest_value_t **box_int_members(pfstest_value_t *actual_value)
+#define primitive_boxer_define(fname, type, boxer)                  \
+    static pfstest_value_t **fname(pfstest_value_t *actual_value)   \
+    {                                                               \
+        size_t actual_count = (pfstest_value_size(actual_value)     \
+                               / sizeof(type));                     \
+        const type *actual = pfstest_value_data(actual_value);      \
+        pfstest_value_t **actual_values =                           \
+            pfstest_alloc(sizeof(*actual_values) * actual_count);   \
+        size_t i;                                                   \
+                                                                    \
+        for (i = 0; i < actual_count; i++) {                        \
+            actual_values[i] = boxer(actual[i]);                    \
+        }                                                           \
+                                                                    \
+        return actual_values;                                       \
+    } _pfstest_expect_semicolon
+
+primitive_boxer_define(box_int_members, int, the_int);
+
+static pfstest_bool members_match_test(
+    pfstest_matcher_t *matcher, pfstest_value_t *actual_value,
+    pfstest_value_t **(*reboxer)(pfstest_value_t *value))
 {
-    size_t actual_count = pfstest_value_size(actual_value) / sizeof(int);
-    const int *actual = pfstest_value_data(actual_value);
-    pfstest_value_t **actual_values =
-        pfstest_alloc(sizeof(*actual_values) * actual_count);
-    size_t i;
+    pfstest_list_t *submembers = pfstest_matcher_data(matcher);
+    pfstest_value_t **boxed_values = reboxer(actual_value);
 
-    for (i = 0; i < actual_count; i++) {
-        actual_values[i] = the_int(actual[i]);
-    }
-
-    return actual_values;
+    return submatchers_match_value_array(submembers,
+                                         boxed_values);
 }
 
 static pfstest_bool int_members_match_test(pfstest_matcher_t *matcher,
                                            pfstest_value_t *actual_value)
 {
-    pfstest_list_t *submembers = pfstest_matcher_data(matcher);
-    pfstest_value_t **boxed_values = box_int_members(actual_value);
-
-    return submatchers_match_value_array(submembers,
-                                         boxed_values);
+    return members_match_test(matcher, actual_value, box_int_members);
 }
 
 static pfstest_list_t *package_all_matcher_args(
