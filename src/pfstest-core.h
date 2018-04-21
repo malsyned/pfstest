@@ -12,6 +12,13 @@
 #define _pfstest_concat(a, b) a ## b
 #define _pfstest_econcat(a, b) _pfstest_concat(a, b)
 
+#define _pfstest_unique_name(prefix) _pfstest_econcat(prefix, __LINE__)
+
+#define _pfstest_expect_semicolon                               \
+    struct _pfstest_unique_name(_pfstest_expect_semicolon) {    \
+        char placeholder;                                       \
+    }
+
 /* So that it can be overridden in core tests */
 #ifndef __PFSTEST_FILE__
 #define __PFSTEST_FILE__ __FILE__
@@ -235,14 +242,13 @@ typedef struct
     {{ {NULL}, &_pfstest_plugin_pg_var(plugin_name) }}
 
 #if defined(pfstest_constructor)
-/* The final line is just something I know will be redundant to give
- * the caller's semicolon something to attach to. */
+
 # define pfstest_plugin_autoload(name)                                  \
     pfstest_constructor(_pfstest_econcat(__pfstest_plugin_init__, name)) \
     {                                                                   \
         pfstest_register_plugin(name);                                  \
-    }                                                                   \
-    _pfstest_plugin_decl(plugin_name)
+    } _pfstest_expect_semicolon
+
 #else  /* !defined(pfstest_constructor) */
 # define pfstest_plugin_autoload(name) _pfstest_plugin_decl(name)
 #endif
