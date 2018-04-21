@@ -16,11 +16,7 @@ static void some_value_printer(pfstest_value_t *value,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("some value"));
 }
 
-static pfstest_value_t some_value[1] = {{
-        some_value_printer,
-        NULL, 0,
-        NULL,
-    }};
+static pfstest_value_t *some_value;
 
 static pfstest_bool always_return_true(pfstest_matcher_t *matcher,
                                        pfstest_value_t *actual)
@@ -30,11 +26,7 @@ static pfstest_bool always_return_true(pfstest_matcher_t *matcher,
     return pfstest_true;
 }
 
-static pfstest_matcher_t matches_anything[1] = {{
-        NULL,
-        always_return_true,
-        NULL,
-    }};
+static pfstest_matcher_t *matches_anything;
 
 static pfstest_bool always_return_false(pfstest_matcher_t *matcher,
                                         pfstest_value_t *actual)
@@ -52,17 +44,18 @@ static void nothing_printer(pfstest_matcher_t *matcher,
         reporter, pfstest_pg_str("nothing (guaranteed to fail)"));
 }
 
-static pfstest_matcher_t matches_nothing[1] = {{
-        nothing_printer,
-        always_return_false,
-        NULL,
-    }};
+static pfstest_matcher_t *matches_nothing;
 
 before_tests(set_up_assert_that)
 {
     capture_output_init();
     standard_reporter = pfstest_reporter_standard_new(
         capture_output_char, pfstest_report_colorizer_null);
+
+    some_value = pfstest_value_new(some_value_printer, NULL, 0, NULL);
+    matches_anything = pfstest_matcher_new(NULL, always_return_true, NULL);
+    matches_nothing =
+        pfstest_matcher_new(nothing_printer, always_return_false, NULL);
 }
 
 test(should_pass_assertion)
@@ -89,7 +82,7 @@ test(should_print_explanation_on_failed_assertion)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "tests/test-assert-that.c:assert_always_fail FAIL\n"
-        "    Location: tests/test-assert-that.c:75\n"
+        "    Location: tests/test-assert-that.c:68\n"
         "    Failed assertion: always fails\n"
         "    Expected: nothing (guaranteed to fail)\n"
         "    Actual:   some value\n\n"
