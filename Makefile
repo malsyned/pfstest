@@ -40,7 +40,11 @@ include util/test-runners.inc.mk
 all: targets src/main/register-tests.c
 
 .PHONY: test
-test: run-test-targets
+test: test-automock run-test-targets
+
+.PHONY: test-automock
+test-automock: | run-test-targets
+	@$(MAKE) --no-print-directory -C automock test
 
 src/main/register-tests.c: selftest-runner \
                            src/main/register-tests.c.header \
