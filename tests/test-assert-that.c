@@ -65,7 +65,12 @@ test(should_pass_assertion)
 
 pfstest_case(assert_always_fail)
 {
+    /* Ensure predictable failure position reporting */
+#undef __PFSTEST_LINE__
+#define __PFSTEST_LINE__ 1111
     assert_that("always fails", some_value, matches_nothing);
+#undef __PFSTEST_LINE__
+#define __PFSTEST_LINE__ __LINE__
 }
 
 test(should_fail_on_false_assertion)
@@ -82,7 +87,7 @@ test(should_print_explanation_on_failed_assertion)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "tests/test-assert-that.c:assert_always_fail FAIL\n"
-        "    Location: tests/test-assert-that.c:68\n"
+        "    Location: tests/test-assert-that.c:1111\n"
         "    Failed assertion: always fails\n"
         "    Expected: nothing (guaranteed to fail)\n"
         "    Actual:   some value\n\n"

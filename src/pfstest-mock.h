@@ -49,8 +49,8 @@ pfstest_expectation_t *pfstest_when(
 pfstest_expectation_t *pfstest_do_return_at_location(
     const pfstest_pg_ptr char *file, int line,
     pfstest_value_t *return_value, pfstest_expectation_t *expectation);
-#define pfstest_do_return(return_value, expectation)                \
-    pfstest_do_return_at_location(__PFSTEST_NV_FILE__, __LINE__,    \
+#define pfstest_do_return(return_value, expectation)                    \
+    pfstest_do_return_at_location(__PFSTEST_NV_FILE__, __PFSTEST_LINE__, \
                                   return_value, expectation)
 
 pfstest_expectation_t *pfstest_do_times(int times,
@@ -96,15 +96,15 @@ struct _pfstest_verify_mode_t
 
 void pfstest_verify_at_location(const pfstest_pg_ptr char *file, int line,
                                 pfstest_expectation_t *e);
-#define pfstest_verify(e)                                           \
-    pfstest_verify_at_location(__PFSTEST_NV_FILE__, __LINE__, e)
+#define pfstest_verify(e)                                               \
+    pfstest_verify_at_location(__PFSTEST_NV_FILE__, __PFSTEST_LINE__, e)
 void pfstest_verify_times_at_location(const pfstest_pg_ptr char *file,
                                       int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e);
-#define pfstest_verify_times(m, e)                          \
-    pfstest_verify_times_at_location(__PFSTEST_NV_FILE__,   \
-                                     __LINE__, m, e)
+#define pfstest_verify_times(m, e)                              \
+    pfstest_verify_times_at_location(__PFSTEST_NV_FILE__,       \
+                                     __PFSTEST_LINE__, m, e)
 pfstest_verify_mode_t *pfstest_exactly(int times);
 pfstest_verify_mode_t *pfstest_at_most(int times);
 pfstest_verify_mode_t *pfstest_at_least(int times);
@@ -117,7 +117,7 @@ void pfstest_verify_no_more_interactions_at_location(
     const pfstest_pg_ptr pfstest_mock_t *mock);
 #define pfstest_verify_no_more_interactions(m)          \
     pfstest_verify_no_more_interactions_at_location(    \
-        __PFSTEST_NV_FILE__, __LINE__, m)
+        __PFSTEST_NV_FILE__, __PFSTEST_LINE__, m)
 
 /* No more invocations verification */
 
@@ -125,7 +125,7 @@ void pfstest_verify_no_more_invocations_at_location(
     const pfstest_pg_ptr char *file, int line);
 #define pfstest_verify_no_more_invocations()        \
     pfstest_verify_no_more_invocations_at_location( \
-        __PFSTEST_NV_FILE__, __LINE__)
+        __PFSTEST_NV_FILE__, __PFSTEST_LINE__)
 
 /* In order verification */
 
@@ -141,7 +141,7 @@ void pfstest_in_order_verify_at_location(const pfstest_pg_ptr char *file,
                                          pfstest_expectation_t *expectation);
 #define pfstest_in_order_verify(order, expectation)             \
     pfstest_in_order_verify_at_location(__PFSTEST_NV_FILE__,    \
-                                        __LINE__,               \
+                                        __PFSTEST_LINE__,       \
                                         order, expectation)
 
 /* Convenience aliases without the pfstest namespace prefix */

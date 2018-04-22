@@ -13,9 +13,9 @@ void _pfstest_assert_that_at_location(const pfstest_pg_ptr char *file,
                                         actual, matcher)                \
     _pfstest_assert_that_at_location(file, line, pfstest_pg_str(message), \
                                      actual, matcher)
-#define pfstest_assert_that(message, actual, matcher)   \
-    pfstest_assert_that_at_location(                    \
-        __PFSTEST_NV_FILE__, __LINE__, message, actual, matcher)
+#define pfstest_assert_that(message, actual, matcher)                   \
+    pfstest_assert_that_at_location(                                    \
+        __PFSTEST_NV_FILE__, __PFSTEST_LINE__, message, actual, matcher)
 
 #ifndef PFSTEST_NOALIAS_assert_that
 # define assert_that pfstest_assert_that

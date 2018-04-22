@@ -19,9 +19,12 @@
         char placeholder;                                       \
     }
 
-/* So that it can be overridden in core tests */
+/* So that they can be overridden in core tests */
 #ifndef __PFSTEST_FILE__
 #define __PFSTEST_FILE__ __FILE__
+#endif
+#ifndef __PFTEST_LINE__
+#define __PFSTEST_LINE__ __LINE__
 #endif
 
 /* Fixtures */
@@ -85,7 +88,7 @@ typedef struct
     {                                                                   \
         _pfstest_name_var(name),                                        \
         _pfstest_file_var(name),                                        \
-        __LINE__, flags,                                                \
+        __PFSTEST_LINE__, flags,                                        \
         setup_ptr, teardown_ptr,                                        \
         _pfstest_function_name(name),                                   \
     };                                                                  \
@@ -236,7 +239,7 @@ void _pfstest_fail_at_location(
 #define pfstest_fail_at_location(file, line, message)               \
     _pfstest_fail_at_location(file, line, pfstest_pg_str(message))
 #define pfstest_fail(message)                                           \
-    pfstest_fail_at_location(__PFSTEST_NV_FILE__, __LINE__, message)
+    pfstest_fail_at_location(__PFSTEST_NV_FILE__, __PFSTEST_LINE__, message)
 
 /* Framework entry points */
 
