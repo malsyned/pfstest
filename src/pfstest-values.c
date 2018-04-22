@@ -6,6 +6,7 @@
 
 #include "pfstest-platform.h"
 #include "pfstest-alloc.h"
+#include "pfstest-core.h"
 
 /* as_hex for unsigned values */
 
@@ -48,135 +49,59 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value)
     return value;
 }
 
-/* the_short */
+/* integer templates */
 
-static void the_short_printer(pfstest_value_t *value,
-                              pfstest_reporter_t *reporter)
-{
-    short n = *(const short *)pfstest_value_data(value);
+#define signed_printer_define(fname, type, str)                         \
+    static void fname(pfstest_value_t *value,                           \
+                      pfstest_reporter_t *reporter)                     \
+    {                                                                   \
+        type n = *(const type *)pfstest_value_data(value);              \
+                                                                        \
+        pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(str " ")); \
+        pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);      \
+    } _pfstest_expect_semicolon
 
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the short "));
-    pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
-}
+#define unsigned_printer_define(fname, type, str)               \
+    static void fname(pfstest_value_t *value,                   \
+                      pfstest_reporter_t *reporter)             \
+    {                                                           \
+        type n = *(const type *)pfstest_value_data(value);      \
+        pfstest_reporter_print_pg_str(reporter,                 \
+                                      pfstest_pg_str(str " ")); \
+        print_unsigned(reporter, n, pfstest_value_aux(value));  \
+    } _pfstest_expect_semicolon
 
-pfstest_value_t *pfstest_the_short(short n)
-{
-    short *data = pfstest_alloc(sizeof(n));
-    *data = n;
+#define primitive_value_define(name, type, printer, aux)            \
+    pfstest_value_t *name(type n)                                   \
+    {                                                               \
+        type *data = pfstest_alloc(sizeof(n));                      \
+        *data = n;                                                  \
+                                                                    \
+        return pfstest_value_new(printer, data, sizeof(n), aux);    \
+    } _pfstest_expect_semicolon
 
-    return pfstest_value_new(the_short_printer, data, sizeof(n), NULL);
-}
+#define printer_name(name) _pfstest_econcat(name, _printer)
 
-/* the_ushort */
+#define signed_value_define(name, type, str)                        \
+    signed_printer_define(printer_name(name), type, str);           \
+    primitive_value_define(name, type, printer_name(name), NULL)
 
-static void the_ushort_printer(pfstest_value_t *value,
-                               pfstest_reporter_t *reporter)
-{
-    unsigned short n = *(const unsigned short *)pfstest_value_data(value);
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the ushort "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
+#define unsigned_value_define(name, type, str)              \
+    unsigned_printer_define(printer_name(name), type, str); \
+    primitive_value_define(name, type, printer_name(name),  \
+                           default_unsigned_aux())
 
-pfstest_value_t *pfstest_the_ushort(unsigned short n)
-{
-    unsigned short *data = pfstest_alloc(sizeof(n));
-    *data = n;
+/* integers */
 
-    return pfstest_value_new(the_ushort_printer, data, sizeof(n),
-                             default_unsigned_aux());
-}
+signed_value_define(pfstest_the_short, short, "the short");
+signed_value_define(pfstest_the_int, int, "the int");
+signed_value_define(pfstest_the_long, long, "the long");
 
-/* the_int */
+unsigned_value_define(pfstest_the_ushort, unsigned short, "the ushort");
+unsigned_value_define(pfstest_the_uint, unsigned int, "the uint");
+unsigned_value_define(pfstest_the_ulong, unsigned long, "the ulong");
 
-static void the_int_printer(pfstest_value_t *value,
-                            pfstest_reporter_t *reporter)
-{
-    int n = *(const int *)pfstest_value_data(value);
-
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the int "));
-    pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
-}
-
-pfstest_value_t *pfstest_the_int(int n)
-{
-    int *data = pfstest_alloc(sizeof(n));
-    *data = n;
-    
-    return pfstest_value_new(the_int_printer, data, sizeof(n), NULL);
-}
-
-/* the_uint */
-
-static void the_uint_printer(pfstest_value_t *value,
-                             pfstest_reporter_t *reporter)
-{
-    unsigned int n = *(const unsigned int *)pfstest_value_data(value);
-
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
-
-pfstest_value_t *pfstest_the_uint(unsigned int n)
-{
-    unsigned int *data = pfstest_alloc(sizeof(n));
-    *data = n;
-
-    return pfstest_value_new(the_uint_printer, data, sizeof(n),
-                             default_unsigned_aux());
-}
-
-/* the_long */
-
-static void the_long_printer(pfstest_value_t *value,
-                             pfstest_reporter_t *reporter)
-{
-    long n = *(const long *)pfstest_value_data(value);
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the long "));
-    pfstest_reporter_print_int(reporter, (pfstest_intmax_t)n);
-}
-
-pfstest_value_t *pfstest_the_long(long n)
-{
-    long *data = pfstest_alloc(sizeof(n));
-    *data = n;
-    return pfstest_value_new(the_long_printer, data, sizeof(n), NULL);
-}
-
-/* the_ulong */
-
-static void the_ulong_printer(pfstest_value_t *value,
-                              pfstest_reporter_t *reporter)
-{
-    unsigned long n = *(const unsigned long *)pfstest_value_data(value);
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the ulong "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
-
-pfstest_value_t *pfstest_the_ulong(unsigned long n)
-{
-    unsigned long *data = pfstest_alloc(sizeof(n));
-    *data = n;
-    return pfstest_value_new(the_ulong_printer, data, sizeof(n),
-                             default_unsigned_aux());
-}
-
-/* the_size */
-
-static void the_size_printer(pfstest_value_t *value,
-                              pfstest_reporter_t *reporter)
-{
-    size_t n = *(const size_t *)pfstest_value_data(value);
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the size_t "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
-
-pfstest_value_t *pfstest_the_size(size_t size)
-{
-    size_t *data = pfstest_alloc(sizeof(size));
-    *data = size;
-    return pfstest_value_new(the_size_printer, data, sizeof(size),
-                             default_unsigned_aux());
-}
+unsigned_value_define(pfstest_the_size, size_t, "the size_t");
 
 /* the_enum */
 
@@ -385,14 +310,7 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
 
 #ifdef PFSTEST_HAS_STDINT
 
-static void the_u8_printer(pfstest_value_t *value,
-                           pfstest_reporter_t *reporter)
-{
-    uint8_t n = *(const uint8_t *)pfstest_value_data(value);
-
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint8_t "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
+/* stdint templates */
 
 static struct unsigned_aux *known_width_unsigned_aux(void)
 {
@@ -401,67 +319,16 @@ static struct unsigned_aux *known_width_unsigned_aux(void)
     return aux;
 }
 
+#define unsigned_stdint_value_define(name, type, str)       \
+    unsigned_printer_define(printer_name(name), type, str); \
+    primitive_value_define(name, type, printer_name(name),  \
+                           known_width_unsigned_aux())
 
-pfstest_value_t *pfstest_the_u8(uint8_t n)
-{
-    uint8_t *data = pfstest_alloc(sizeof(n));
-    *data = n;
+/* stdint values */
 
-    return pfstest_value_new(the_u8_printer, data, sizeof(*data),
-                             known_width_unsigned_aux());
-}
-
-static void the_u16_printer(pfstest_value_t *value,
-                            pfstest_reporter_t *reporter)
-{
-    uint16_t n = *(const uint16_t *)pfstest_value_data(value);
-
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint16_t "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
-
-pfstest_value_t *pfstest_the_u16(uint16_t n)
-{
-    uint16_t *data = pfstest_alloc(sizeof(n));
-    *data = n;
-
-    return pfstest_value_new(the_u16_printer, data, sizeof(*data),
-                             known_width_unsigned_aux());
-}
-
-static void the_u32_printer(pfstest_value_t *value,
-                            pfstest_reporter_t *reporter)
-{
-    uint32_t n = *(const uint32_t *)pfstest_value_data(value);
-
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint32_t "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
-
-pfstest_value_t *pfstest_the_u32(uint32_t n)
-{
-    uint32_t *data = pfstest_alloc(sizeof(n));
-    *data = n;
-
-    return pfstest_value_new(the_u32_printer, data, sizeof(*data),
-                             known_width_unsigned_aux());
-}
-
-static void the_u64_printer(pfstest_value_t *value,
-                            pfstest_reporter_t *reporter)
-{
-    uint64_t n = *(const uint64_t *)pfstest_value_data(value);
-
-    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the uint64_t "));
-    print_unsigned(reporter, n, pfstest_value_aux(value));
-}
-
-pfstest_value_t *pfstest_the_u64(uint64_t n)
-{
-    uint64_t *data = pfstest_alloc(sizeof(n));
-    *data = n;
-    return pfstest_value_new(the_u64_printer, data, sizeof(*data),
-                             known_width_unsigned_aux());
-}
+unsigned_stdint_value_define(pfstest_the_u8, uint8_t, "the uint8_t");
+unsigned_stdint_value_define(pfstest_the_u16, uint16_t, "the uint16_t");
+unsigned_stdint_value_define(pfstest_the_u32, uint32_t, "the uint32_t");
+unsigned_stdint_value_define(pfstest_the_u64, uint64_t, "the uint64_t");
 
 #endif  /* defined(PFSTEST_HAS_STDINT) */
