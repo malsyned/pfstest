@@ -239,8 +239,8 @@ test(should_catch_failures_in_setup_functions)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases-3.c:should_have_fixture FAIL\n"
-        "    Location: core-test-cases-3.c:1\n"
+        "core-test-cases.c:should_have_fixture FAIL\n"
+        "    Location: core-test-cases.c:1\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -274,8 +274,8 @@ test(should_catch_failure_in_teardown)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases-3.c:should_have_fixture FAIL\n"
-        "    Location: core-test-cases-3.c:2\n"
+        "core-test-cases.c:should_have_fixture FAIL\n"
+        "    Location: core-test-cases.c:2\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -295,11 +295,11 @@ test(should_only_count_each_failing_test_once)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases-3.c:should_fail_with_fixture FAIL\n"
-        "    Location: core-test-cases-3.c:3\n"
+        "core-test-cases.c:should_fail_with_fixture FAIL\n"
+        "    Location: core-test-cases.c:3\n"
         "    Expected failure, should have been caught\n"
-        "core-test-cases-3.c:should_fail_with_fixture FAIL\n"
-        "    Location: core-test-cases-3.c:2\n"
+        "core-test-cases.c:should_fail_with_fixture FAIL\n"
+        "    Location: core-test-cases.c:2\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
