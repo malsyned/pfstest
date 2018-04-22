@@ -230,7 +230,7 @@ test(should_report_results_verbose)
         fail("Output did not match expected output");
     }
 }
-#include <stdio.h>
+
 test(should_indent_multi_line_error_messages)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
