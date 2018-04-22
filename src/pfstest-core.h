@@ -44,8 +44,8 @@ typedef void (*_pfstest_fixture_hookp)(void);
     _pfstest_fixture_hookp_decl(name) = _pfstest_fixture_hook_name(name); \
     _pfstest_fixture_hook_decl(name)
 
-#define pfstest_setup() _pfstest_fixture_hook_define(setup)
-#define pfstest_teardown() _pfstest_fixture_hook_define(teardown)
+#define pfstest_setup() _pfstest_fixture_hook_define(setup_hook)
+#define pfstest_teardown() _pfstest_fixture_hook_define(teardown_hook)
 
 /* Tests */
 
@@ -109,12 +109,12 @@ typedef struct
 #define _pfstest_case_without_fixture_define(name, flags)   \
     _pfstest_case_define(name, flags, NULL, NULL)
 
-#define _pfstest_case_with_fixture_define(name, flags)              \
-    _pfstest_fixture_hookp_decl(setup);                             \
-    _pfstest_fixture_hookp_decl(teardown);                          \
-    _pfstest_case_define(name, flags,                               \
-                         &_pfstest_fixture_hookp_name(setup),       \
-                         &_pfstest_fixture_hookp_name(teardown))
+#define _pfstest_case_with_fixture_define(name, flags)                  \
+    _pfstest_fixture_hookp_decl(setup_hook);                            \
+    _pfstest_fixture_hookp_decl(teardown_hook);                         \
+    _pfstest_case_define(name, flags,                                   \
+                         &_pfstest_fixture_hookp_name(setup_hook),      \
+                         &_pfstest_fixture_hookp_name(teardown_hook))
 
 #define pfstest_case(name) _pfstest_case_without_fixture_define(name, 0)
 #define pfstest_case_ignored(name)                                      \
@@ -255,14 +255,11 @@ int pfstest_run_registered_tests(char *filter_file, char *filter_name,
 #ifndef PFSTEST_NOALIAS_register_test
 # define register_test pfstest_register_test
 #endif
-/* setup() and teardown() are defined here as function-like macros
- * because this header expects to use their bare names as arguments to
- * token-concatenating macros. */
 #ifndef PFSTEST_NOALIAS_setup
-# define setup() pfstest_setup()
+# define setup pfstest_setup
 #endif
 #ifndef PFSTEST_NOALIAS_teardown
-# define teardown() pfstest_teardown()
+# define teardown pfstest_teardown
 #endif
 #ifndef PFSTEST_NOALIAS_register_plugin
 # define register_plugin pfstest_register_plugin
