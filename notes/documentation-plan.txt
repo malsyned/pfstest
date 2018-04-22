@@ -1,6 +1,6 @@
 Dennis Lambe
 User documentation sketching
-Last modified: <2018-04-22 00:46:41>
+Last modified: <2018-04-22 14:26:50>
 
 * What is PFSTest
 * Quick-start examples?
@@ -16,8 +16,8 @@ Last modified: <2018-04-22 00:46:41>
 ** How to get verbose output, colored output, XML output
 ** How to filter by file name or test name
 * pfstest_alloc()
-* How to use before_tests() # NOTE: This is changing to setup {}
-* How to use after_tests() # NOTE: This is changing to teardown {}
+* How to use setup()
+* How to use teardown()
 * How to ignore tests
 * How to use assert_that
 ** Values and Matchers

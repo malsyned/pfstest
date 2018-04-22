@@ -154,8 +154,7 @@ static void run_test_function(_pfstest_test_pg_t *current_test)
 
 static void run_teardown_function(_pfstest_test_pg_t *current_test)
 {
-    if (0 == setjmp(dynamic_env->test_jmp_buf))
-        run_indirect_function(current_test->teardown_function);
+    run_indirect_function(current_test->teardown_function);
 }
 
 static void extract_plugin_descriptor(pfstest_plugin_t *the_plugin,
@@ -225,7 +224,9 @@ static void run_test(_pfstest_test_pg_t *current_test,
             run_test_function(current_test);
             run_plugin_checks(plugins);
         }
-        run_teardown_function(current_test);
+        if (0 == setjmp(dynamic_env->test_jmp_buf)) {
+            run_teardown_function(current_test);
+        }
     }
     pfstest_reporter_test_complete(reporter);
 
