@@ -209,13 +209,13 @@ static void run_test(_pfstest_test_pg_t *current_test,
     dynamic_env_t local_dynamic_env;
 
     dynamic_env_push(&local_dynamic_env);
-    dynamic_env->reporter = reporter;
     pfstest_alloc_frame_push();
 
-    setup_plugins(plugins);
-
+    dynamic_env->reporter = reporter;
     pfstest_reporter_test_started(reporter,
                                   current_test->name, current_test->file);
+
+    setup_plugins(plugins);
     if (test_ignored(current_test)) {
         pfstest_reporter_test_ignored(reporter);
     } else {
@@ -228,9 +228,9 @@ static void run_test(_pfstest_test_pg_t *current_test,
             run_teardown_function(current_test);
         }
     }
-    pfstest_reporter_test_complete(reporter);
-
     teardown_plugins(plugins);
+
+    pfstest_reporter_test_complete(reporter);
 
     pfstest_alloc_frame_pop();
     dynamic_env_pop();
