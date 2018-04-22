@@ -50,12 +50,12 @@ test(should_run_tests)
     }
 }
 
-test(should_run_setup_and_teardown)
+test(should_run_fixture_functions)
 {
     const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("setup should_setup_and_teardown teardown ");
+        pfstest_pg_str("setup should_have_fixture teardown ");
 
-    pfstest_suite_register_test(&suite, should_setup_and_teardown);
+    pfstest_suite_register_test(&suite, should_have_fixture);
 
     pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
@@ -239,13 +239,13 @@ test(should_catch_failures_in_setup_functions)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases-3.c:should_setup_and_teardown FAIL\n"
+        "core-test-cases-3.c:should_have_fixture FAIL\n"
         "    Location: core-test-cases-3.c:1\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
-    pfstest_suite_register_test(&suite, should_setup_and_teardown);
+    pfstest_suite_register_test(&suite, should_have_fixture);
 
     setup_hook_fail = 1;
 
@@ -261,7 +261,7 @@ test(should_run_teardown_when_test_fails)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("setup teardown ");
 
-    pfstest_suite_register_test(&suite, should_fail_with_setup_and_teardown);
+    pfstest_suite_register_test(&suite, should_fail_with_fixture);
 
     pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
@@ -274,13 +274,13 @@ test(should_catch_failure_in_teardown)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases-3.c:should_setup_and_teardown FAIL\n"
+        "core-test-cases-3.c:should_have_fixture FAIL\n"
         "    Location: core-test-cases-3.c:2\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
-    pfstest_suite_register_test(&suite, should_setup_and_teardown);
+    pfstest_suite_register_test(&suite, should_have_fixture);
 
     teardown_hook_fail = 1;
 
@@ -295,10 +295,10 @@ test(should_only_count_each_failing_test_once)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases-3.c:should_fail_with_setup_and_teardown FAIL\n"
+        "core-test-cases-3.c:should_fail_with_fixture FAIL\n"
         "    Location: core-test-cases-3.c:3\n"
         "    Expected failure, should have been caught\n"
-        "core-test-cases-3.c:should_fail_with_setup_and_teardown FAIL\n"
+        "core-test-cases-3.c:should_fail_with_fixture FAIL\n"
         "    Location: core-test-cases-3.c:2\n"
         "    Expected failure, should have been caught\n"
         "\n"
@@ -306,7 +306,7 @@ test(should_only_count_each_failing_test_once)
 
     teardown_hook_fail = 1;
 
-    pfstest_suite_register_test(&suite, should_fail_with_setup_and_teardown);
+    pfstest_suite_register_test(&suite, should_fail_with_fixture);
 
     pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 

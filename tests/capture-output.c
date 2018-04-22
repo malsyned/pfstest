@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#define CAPTURED_OUTPUT_SIZE 360
+#define CAPTURED_OUTPUT_SIZE 340
 char *captured_output;
 pfstest_reporter_t *message_spy;
 
