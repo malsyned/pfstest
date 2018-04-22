@@ -37,6 +37,8 @@ typedef struct
     pfstest_list_node_t node;
     const pfstest_pg_ptr pfstest_mock_t *mock;
     pfstest_arg_handler_t **arg_handlers;
+    const pfstest_pg_ptr char *return_value_file;
+    int return_value_line;
     pfstest_value_t *return_value;
     int times;
 } pfstest_expectation_t;
@@ -44,8 +46,13 @@ typedef struct
 pfstest_expectation_t *pfstest_when(
     const pfstest_pg_ptr pfstest_mock_t *mock, ...);
 
-pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
-                                         pfstest_expectation_t *expectation);
+pfstest_expectation_t *pfstest_do_return_at_location(
+    const pfstest_pg_ptr char *file, int line,
+    pfstest_value_t *return_value, pfstest_expectation_t *expectation);
+#define pfstest_do_return(return_value, expectation)                \
+    pfstest_do_return_at_location(__PFSTEST_NV_FILE__, __LINE__,    \
+                                  return_value, expectation)
+
 pfstest_expectation_t *pfstest_do_times(int times,
                                         pfstest_expectation_t *expectation);
 pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);

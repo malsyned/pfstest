@@ -129,7 +129,11 @@ class MockImplementationWriter:
                           + 'sizeof(__pfstest_default_return));\n\n')
 
         def create_default_return_argument(self, ostream):
-            ostream.write('pfstest_the_pointer(&__pfstest_default_return)')
+            ostream.write(('pfstest_the_memory(\n'
+                           + '                                ' +
+                           '&__pfstest_default_return,\n'
+                           + '                                '
+                           + 'sizeof(__pfstest_default_return))'))
 
         def return_result(self, ostream):
             ostream.write(('    return *(%s *)pfstest_value_data('
@@ -145,7 +149,11 @@ class MockImplementationWriter:
                           % self.return_type_text)
 
         def create_default_return_argument(self, ostream):
-            ostream.write('pfstest_the_pointer(&__pfstest_default_return)')
+            ostream.write(('pfstest_the_memory(\n'
+                           + '                                ' +
+                           '&__pfstest_default_return,\n'
+                           + '                                '
+                           + 'sizeof(__pfstest_default_return))'))
 
         def return_result(self, ostream):
             ostream.write(('    return *(%s *)pfstest_value_data('

@@ -123,10 +123,13 @@ static void pfstest_expectation_print(pfstest_expectation_t *e,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(")"));
 }
 
-pfstest_expectation_t *pfstest_do_return(pfstest_value_t *return_value,
-                                         pfstest_expectation_t *expectation)
+pfstest_expectation_t *pfstest_do_return_at_location(
+    const pfstest_pg_ptr char *file, int line,
+    pfstest_value_t *return_value, pfstest_expectation_t *expectation)
 {
     expectation->return_value = return_value;
+    expectation->return_value_file = file;
+    expectation->return_value_line = line;
 
     return expectation;
 }
@@ -274,6 +277,16 @@ static pfstest_expectation_t *get_default_expectation(
     return e;
 }
 
+static void fail_if_return_values_different_sizes(
+    const pfstest_pg_ptr char *file, int line,
+    pfstest_value_t *v1, pfstest_value_t *v2)
+{
+    if (pfstest_value_size(v1) != pfstest_value_size(v2)) {
+        pfstest_fail_at_location(
+            file, line, "Wrong type used for mock return value");
+    }
+}
+
 pfstest_value_t *pfstest_mock_invoke(
     const pfstest_pg_ptr pfstest_mock_t *mock,
     pfstest_value_t *default_return_value,
@@ -301,8 +314,13 @@ pfstest_value_t *pfstest_mock_invoke(
 
             invocation_add(invocation_new(e));
 
-            if (e->return_value != NULL)
+            if (e->return_value != NULL) {
+                fail_if_return_values_different_sizes(
+                    e->return_value_file, e->return_value_line,
+                    e->return_value, default_return_value);
+
                 return_value = e->return_value;
+            }
 
             if (e->times != PFSTEST_EXPECTATION_DO_TIMES_INFINITE)
                 e->times--;

@@ -135,7 +135,9 @@ int func1(void)
 
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
-                            pfstest_the_pointer(&__pfstest_default_return));
+                            pfstest_the_memory(
+                                &__pfstest_default_return,
+                                sizeof(__pfstest_default_return)));
 
     return *(int *)pfstest_value_data(__pfstest_return_value);
 }
@@ -208,7 +210,9 @@ struct foo func1(void)
 
     pfstest_value_t *__pfstest_return_value =
         pfstest_mock_invoke(mock_func1,
-                            pfstest_the_pointer(&__pfstest_default_return));
+                            pfstest_the_memory(
+                                &__pfstest_default_return,
+                                sizeof(__pfstest_default_return)));
 
     return *(struct foo *)pfstest_value_data(__pfstest_return_value);
 }

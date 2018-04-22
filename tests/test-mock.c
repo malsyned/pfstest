@@ -37,6 +37,24 @@ test(should_stub)
                 the_int(dep_func1(47)), is(the_int(0)));
 }
 
+pfstest_case(uses_a_bad_return_value)
+{
+    do_return(the_char('c'), when(mock_dep_func1, arg_that(is_anything)));
+    dep_func1(0);
+}
+
+test(should_fail_on_bad_return_value_size)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        "Wrong type used for mock return value");
+
+    capture_test_results_with_plugins(uses_a_bad_return_value, plugins);
+
+    assert_that("Wrong-sized do_return values are reported",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
+
 test(should_reset_expectations_between_tests)
 {
     assert_that("stub returns default value",
