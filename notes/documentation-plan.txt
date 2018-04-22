@@ -1,8 +1,11 @@
 Dennis Lambe
 User documentation sketching
-Last modified: <2018-04-21 23:22:35>
+Last modified: <2018-04-22 00:46:41>
 
+* What is PFSTest
+* Quick-start examples?
 * C unit testing concepts
+** Targetting the development PC and the embedded platform
 ** Linking tests and modules into executables
 ** Link-time mock substitution (save for mocking section?)
 * How to set up a GCC project Makefile
@@ -31,6 +34,9 @@ Mocks
 * Link-time mock substitution (unless it's been covered)
 ** Makefile utilities for use with mocking
 * automock.py
+** Preprocessing first
+** Arguments to cpp
+** Arguments to automock to extend the language
 * Stubs
 ** Implicit stubs with default return values (0 or NULL)
 ** do_return (on function with no argument list for starters)
@@ -56,6 +62,7 @@ Mocks
 Advanced concepts
 
 * Using target classes in Makefiles for target-specific Make variables
+* Using with Visual Studio
 * How to register tests on C89 platforms
 * How to generate registration operations automatically
 * Building for embedded targets
@@ -71,3 +78,4 @@ Advanced concepts
 * Porting
 * AVR8 specific utilities
 * Hand-coding mocks
+* Full Makefile API
