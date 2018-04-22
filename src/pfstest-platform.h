@@ -50,8 +50,8 @@ pfstest_constructor(name):
     If your compiler provides an extension that allows registering
     hooks to run at start-up, this should expand to the code which
     creates such a hook. On ports where this macro is not defined,
-    register_test, register_before, and register_after will need to be
-    called to set up the test environment before invoking pfstest.
+    register_test and register_plugin will need to be called to set up
+    the test environment before invoking pfstest.
 
 PFSTEST_NORETURN:
 

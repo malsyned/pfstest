@@ -11,8 +11,6 @@ static pfstest_reporter_t *standard_reporter;
 static pfstest_reporter_t *verbose_reporter;
 
 static pfstest_list_t suite;
-static pfstest_list_t before_hooks;
-static pfstest_list_t after_hooks;
 static pfstest_list_t plugins;
 
 int setup_hook_fail = 0;
@@ -27,8 +25,6 @@ setup()
     call_log[0] = '\0';
 
     pfstest_list_reset(&suite);
-    pfstest_list_reset(&before_hooks);
-    pfstest_list_reset(&after_hooks);
     pfstest_list_reset(&plugins);
 
     null_colorizer = pfstest_report_colorizer_null;
@@ -47,8 +43,7 @@ test(should_run_tests)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
@@ -62,42 +57,7 @@ test(should_run_setup_and_teardown)
 
     pfstest_suite_register_test(&suite, should_setup_and_teardown);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(call_log, expected)) {
-        fail("Log did not match expected log");
-    }
-}
-
-test(should_run_before_hooks)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "should_be_run_before should_also_be_run_before should_run ");
-
-    pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
-    pfstest_hook_list_register_hook(&before_hooks, should_also_be_run_before);
-    pfstest_suite_register_test(&suite, should_run);
-
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(call_log, expected)) {
-        fail("Log did not match expected log");
-    }
-}
-
-test(should_run_after_hooks)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "should_run should_be_run_after should_also_be_run_after ");
-
-    pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
-    pfstest_hook_list_register_hook(&after_hooks, should_also_be_run_after);
-    pfstest_suite_register_test(&suite, should_run);
-
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
@@ -108,44 +68,32 @@ test(should_skip_ignored_tests)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("");
 
-    pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
-    pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
-    pfstest_suite_register_test(&suite, should_be_ignored);
+    pfstest_suite_register_test(&suite, should_be_ignored_with_fixture);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
     }
 }
 
-test(should_reset_hooks_and_tests)
+test(should_reset_tests)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "should_be_run_before should_run should_be_run_after ");
+        "should_run ");
 
     /* Create some lists, which modifies ->next pointers of nodes */
-    pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
-    pfstest_hook_list_register_hook(&before_hooks, should_also_be_run_before);
-    pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
-    pfstest_hook_list_register_hook(&after_hooks, should_also_be_run_after);
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
 
     /* Reset the lists */
     pfstest_list_reset(&suite);
-    pfstest_list_reset(&before_hooks);
-    pfstest_list_reset(&after_hooks);
 
     /* Add some nodes to the lists, hoping the -> next pointers are
      * handled properly */
-    pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
-    pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
@@ -162,8 +110,7 @@ test(should_report_results)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -179,8 +126,7 @@ test(should_report_ignored_tests)
 
     pfstest_suite_register_test(&suite, should_be_ignored);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -198,8 +144,7 @@ test(should_report_failed_tests)
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_fail);
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -220,8 +165,7 @@ test(should_report_results_including_failed_tests)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_register_test(&suite, should_also_run);
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -244,8 +188,7 @@ test(should_report_results_verbose)
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_suite_register_test(&suite, should_be_ignored);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, verbose_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -257,7 +200,7 @@ test(should_indent_multi_line_error_messages)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
-        "    Location: core-test-cases.c:67\n"
+        "    Location: core-test-cases.c:35\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -265,8 +208,7 @@ test(should_indent_multi_line_error_messages)
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_have_multi_line_failure);
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -278,7 +220,7 @@ test(should_indent_multi_line_error_messages_verbose)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
-        "    Location: core-test-cases.c:67\n"
+        "    Location: core-test-cases.c:35\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -286,29 +228,7 @@ test(should_indent_multi_line_error_messages_verbose)
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
     pfstest_suite_register_test(&suite, should_have_multi_line_failure);
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, verbose_reporter);
-
-    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
-        fail("Output did not match expected output");
-    }
-}
-
-test(should_catch_failures_in_before_hooks)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        HEADER
-        "core-test-cases.c:should_run FAIL\n"
-        "    Location: core-test-cases.c:52\n"
-        "    Expected failure, should have been caught\n"
-        "\n"
-        "Run complete. 0 passed, 1 failed, 0 ignored\n");
-
-    pfstest_hook_list_register_hook(&before_hooks, hook_should_fail);
-    pfstest_suite_register_test(&suite, should_run);
-
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, verbose_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -329,27 +249,10 @@ test(should_catch_failures_in_setup_functions)
 
     setup_hook_fail = 1;
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
-    }
-}
-
-test(should_run_after_hooks_when_test_fails)
-{
-    const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("should_be_run_after ");
-
-    pfstest_suite_register_test(&suite, should_fail);
-    pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
-
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(call_log, expected)) {
-        fail("Log did not match expected log");
     }
 }
 
@@ -360,32 +263,10 @@ test(should_run_teardown_when_test_fails)
 
     pfstest_suite_register_test(&suite, should_fail_with_setup_and_teardown);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
-    }
-}
-
-test(should_catch_failures_in_after_hooks)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        HEADER
-        "core-test-cases.c:should_run FAIL\n"
-        "    Location: core-test-cases.c:52\n"
-        "    Expected failure, should have been caught\n"
-        "\n"
-        "Run complete. 0 passed, 1 failed, 0 ignored\n");
-
-    pfstest_suite_register_test(&suite, should_run);
-    pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
-
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
-        fail("Output did not match expected output");
     }
 }
 
@@ -403,98 +284,31 @@ test(should_catch_failure_in_teardown)
 
     teardown_hook_fail = 1;
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
     }
-}
-
-test(should_catch_multiple_after_hook_failures)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        HEADER
-        "core-test-cases.c:should_run FAIL\n"
-        "    Location: core-test-cases.c:52\n"
-        "    Expected failure, should have been caught\n"
-        "core-test-cases.c:should_run FAIL\n"
-        "    Location: core-test-cases.c:57\n"
-        "    Another expected failure, should have been caught\n"
-        "\n"
-        "Run complete. 0 passed, 1 failed, 0 ignored\n");
-
-    pfstest_suite_register_test(&suite, should_run);
-    pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
-    pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
-    
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
-        fail("Output did not match expected output");
-    }
-}
-
-test(should_output_multiple_after_hook_failures_correctly_verbose)
-{
-    const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        HEADER
-        "core-test-cases.c:should_run FAIL\n"
-        "    Location: core-test-cases.c:52\n"
-        "    Expected failure, should have been caught\n"
-        "core-test-cases.c:should_run FAIL\n"
-        "    Location: core-test-cases.c:57\n"
-        "    Another expected failure, should have been caught\n"
-        "\n"
-        "Run complete. 0 passed, 1 failed, 0 ignored\n");
-
-    pfstest_suite_register_test(&suite, should_run);
-    pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
-    pfstest_hook_list_register_hook(&after_hooks, hook_should_also_fail);
-    
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, verbose_reporter);
-
-    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
-        fail("Output did not match expected output");
-    }
-}
-
-test(should_accept_null_before_hook_list)
-{
-    pfstest_suite_register_test(&suite, should_run);
-
-    pfstest_suite_run(NULL, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-}
-
-test(should_accept_null_after_hook_list)
-{
-    pfstest_suite_register_test(&suite, should_run);
-
-    pfstest_suite_run(&before_hooks, NULL, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
 }
 
 test(should_only_count_each_failing_test_once)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
-        "core-test-cases.c:should_fail FAIL\n"
-        "    Location: core-test-cases.c:25\n"
+        "core-test-cases-3.c:should_fail_with_setup_and_teardown FAIL\n"
+        "    Location: core-test-cases-3.c:3\n"
         "    Expected failure, should have been caught\n"
-        "core-test-cases.c:should_fail FAIL\n"
-        "    Location: core-test-cases.c:52\n"
+        "core-test-cases-3.c:should_fail_with_setup_and_teardown FAIL\n"
+        "    Location: core-test-cases-3.c:2\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
 
-    pfstest_suite_register_test(&suite, should_fail);
-    pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
+    teardown_hook_fail = 1;
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_register_test(&suite, should_fail_with_setup_and_teardown);
+
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(captured_output, expected)) {
         fail("Output did not match expected output");
@@ -509,8 +323,7 @@ test(should_return_EXIT_SUCCESS_on_success)
     pfstest_suite_register_test(&suite, should_also_run);
 
     result = 
-        pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                          NULL, NULL, standard_reporter);
+        pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (EXIT_SUCCESS != result) {
         fail("pfstest_suite_run did not return EXIT_SUCCESS");
@@ -525,44 +338,10 @@ test(should_return_EXIT_FAILURE_on_failure)
     pfstest_suite_register_test(&suite, should_also_fail);
 
     result = 
-        pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                          NULL, NULL, standard_reporter);
+        pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (EXIT_FAILURE != result) {
         fail("pfstest_suite_run did not return EXIT_FAILURE");
-    }
-}
-
-test(should_only_call_before_hooks_in_same_file)
-{
-    const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("should_be_run_before should_run ");
-    pfstest_hook_list_register_hook(&before_hooks, should_be_run_before);
-    pfstest_hook_list_register_hook(&before_hooks, other_file_hook);
-    pfstest_suite_register_test(&suite, should_run);
-    
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(call_log, expected)) {
-        fail("Log did not match expected log");
-    }
-}
-
-test(should_only_call_after_hooks_in_same_file)
-{
-    const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("should_run should_be_run_after ");
-
-    pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
-    pfstest_hook_list_register_hook(&after_hooks, other_file_hook);
-    pfstest_suite_register_test(&suite, should_run);
-    
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
-
-    if (0 != pfstest_strcmp_pg(call_log, expected)) {
-        fail("Log did not match expected log");
     }
 }
 
@@ -575,7 +354,7 @@ test(should_filter_by_file_name)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, other_file_test);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+    pfstest_suite_run(&plugins, &suite,
                       filter_file, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
@@ -592,7 +371,7 @@ test(should_filter_by_test_name)
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
     
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+    pfstest_suite_run(&plugins, &suite,
                       NULL, filter_name, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
@@ -629,8 +408,7 @@ test(should_call_plugin_setup_hook)
     pfstest_plugin_list_register_plugin(&plugins, setup_only_plugin);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
@@ -645,8 +423,7 @@ test(should_call_plugin_teardown_hook)
     pfstest_plugin_list_register_plugin(&plugins, teardown_only_plugin);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");
@@ -661,8 +438,7 @@ test(should_call_plugin_check_hook)
     pfstest_plugin_list_register_plugin(&plugins, plugin_with_check);
     pfstest_suite_register_test(&suite, should_run);
 
-    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
-                      NULL, NULL, standard_reporter);
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
         fail("Log did not match expected log");

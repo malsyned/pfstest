@@ -91,8 +91,7 @@ test(should_print_explanation_on_failed_assertion)
     pfstest_list_reset(suite);
     pfstest_suite_register_test(suite, assert_always_fail);
 
-    pfstest_suite_run(NULL, NULL, NULL, suite, NULL, NULL,
-                      standard_reporter);
+    pfstest_suite_run(NULL, suite, NULL, NULL, standard_reporter);
 
     assert_that("Failing assertions should print an explanatory message",
                 the_string(captured_output),

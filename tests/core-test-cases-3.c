@@ -17,8 +17,15 @@ pfstest_case_with_fixture(should_setup_and_teardown)
     pfstest_strcat_pg(call_log, pfstest_pg_str("should_setup_and_teardown "));
 }
 
+pfstest_case_with_fixture_ignored(should_be_ignored_with_fixture)
+{
+    pfstest_strcat_pg(call_log,
+                      pfstest_pg_str("should_be_ignored_with_fixture "));
+}
+
 pfstest_case_with_fixture(should_fail_with_setup_and_teardown)
 {
+#line 3
     fail("Expected failure, should have been caught");
 }
 

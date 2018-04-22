@@ -25,38 +25,6 @@ pfstest_case(should_fail)
     fail("Expected failure, should have been caught");
 }
 
-pfstest_hook(should_be_run_before)
-{
-    pfstest_strcat_pg(call_log, pfstest_pg_str("should_be_run_before "));
-}
-
-pfstest_hook(should_also_be_run_before)
-{
-    pfstest_strcat_pg(call_log,
-                      pfstest_pg_str("should_also_be_run_before "));
-}
-
-pfstest_hook(should_be_run_after)
-{
-    pfstest_strcat_pg(call_log, pfstest_pg_str("should_be_run_after "));
-}
-
-pfstest_hook(should_also_be_run_after)
-{
-    pfstest_strcat_pg(call_log,
-                      pfstest_pg_str("should_also_be_run_after "));
-}
-
-pfstest_hook(hook_should_fail)
-{
-    fail("Expected failure, should have been caught");
-}
-
-pfstest_hook(hook_should_also_fail)
-{
-    fail("Another expected failure, should have been caught");
-}
-
 pfstest_case(should_also_fail)
 {
     fail("Another expected failure, should have been caught");

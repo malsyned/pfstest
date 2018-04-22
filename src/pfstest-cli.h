@@ -18,8 +18,6 @@ typedef struct
 pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
                                      int argc, char *argv[]);
 void pfstest_print_register_commands(int (*print_char)(int),
-                                     pfstest_list_t *before,
-                                     pfstest_list_t *after,
                                      pfstest_list_t *plugins,
                                      pfstest_list_t *suite);
 void pfstest_print_usage(int (*print_char)(int), char *program_name);

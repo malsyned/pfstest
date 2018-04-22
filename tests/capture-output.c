@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#define CAPTURED_OUTPUT_SIZE 320
+#define CAPTURED_OUTPUT_SIZE 360
 char *captured_output;
 pfstest_reporter_t *message_spy;
 
@@ -47,5 +47,5 @@ void capture_test_results_with_plugins(pfstest_t *the_test,
     pfstest_list_t *suite = pfstest_alloc(sizeof(*suite));
     pfstest_list_reset(suite);
     register_declared_test_with_suite(suite, the_test);
-    pfstest_suite_run(NULL, NULL, plugins, suite, NULL, NULL, message_spy);
+    pfstest_suite_run(plugins, suite, NULL, NULL, message_spy);
 }

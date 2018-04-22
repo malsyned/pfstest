@@ -5,11 +5,6 @@
 
 extern char call_log[];
 
-pfstest_hook(other_file_hook)
-{
-    pfstest_strcat_pg(call_log, pfstest_pg_str("other_file_hook "));
-}
-
 pfstest_case(other_file_test)
 {
     pfstest_strcat_pg(call_log, pfstest_pg_str("other_file_test "));

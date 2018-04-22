@@ -47,24 +47,6 @@ static void print_register_plugin_commands(int (*char_writer)(int),
     }
 }
 
-static void print_register_hook_commands(
-    int (*char_writer)(int), pfstest_list_t *list,
-    const pfstest_pg_ptr char *list_name)
-{
-    pfstest_hook_t *hook;
-    _pfstest_hook_pg_t pg_data;
-
-    pfstest_list_iter (hook, list) {
-        pfstest_memcpy_pg(&pg_data, hook->pg_data, sizeof(pg_data));
-
-        print_pg_str(char_writer, pfstest_pg_str("    register_"));
-        print_pg_str(char_writer, list_name);
-        print_pg_str(char_writer, pfstest_pg_str("("));
-        print_pg_str(char_writer, pg_data.name);
-        print_pg_str(char_writer, pfstest_pg_str(");\n"));
-    }
-}
-
 static void print_register_test_commands(int (*char_writer)(int),
                                          pfstest_list_t *tests)
 {
@@ -81,16 +63,10 @@ static void print_register_test_commands(int (*char_writer)(int),
 }
 
 void pfstest_print_register_commands(int (*char_writer)(int),
-                                     pfstest_list_t *before,
-                                     pfstest_list_t *after,
                                      pfstest_list_t *plugins,
                                      pfstest_list_t *suite)
 {
     print_register_plugin_commands(char_writer, plugins);
-    print_register_hook_commands(char_writer, before,
-                                 pfstest_pg_str("before"));
-    print_register_hook_commands(char_writer, after,
-                                 pfstest_pg_str("after"));
     print_register_test_commands(char_writer, suite);
 }
 
@@ -109,12 +85,9 @@ void pfstest_print_usage(int (*char_writer)(int), char *program_name)
 static void registered_tests_print_register_commands(int (*char_writer)(int))
 {
     pfstest_list_t *plugins = pfstest_get_registered_plugins();
-    pfstest_list_t *before = pfstest_get_registered_before_hooks();
-    pfstest_list_t *after = pfstest_get_registered_after_hooks();
     pfstest_list_t *suite = pfstest_get_registered_tests();
 
-    pfstest_print_register_commands(char_writer, before, after,
-                                    plugins, suite);
+    pfstest_print_register_commands(char_writer, plugins, suite);
 }
 
 static const pfstest_pg_ptr

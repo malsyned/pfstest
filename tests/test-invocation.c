@@ -282,10 +282,6 @@ test(should_parse_multiple_arguments)
 
 pfstest_case(test1) {}
 pfstest_case(test2) {}
-pfstest_hook(before1) {}
-pfstest_hook(before2) {}
-pfstest_hook(after1) {}
-pfstest_hook(after2) {}
 
 pfstest_plugin_define(plugin1, NULL, NULL, NULL);
 pfstest_plugin_define(plugin2, NULL, NULL, NULL);
@@ -293,32 +289,20 @@ pfstest_plugin_define(plugin2, NULL, NULL, NULL);
 test(should_print_register_commands)
 {
     pfstest_list_t suite = PFSTEST_LIST_EMPTY();
-    pfstest_list_t before_hooks = PFSTEST_LIST_EMPTY();
-    pfstest_list_t after_hooks = PFSTEST_LIST_EMPTY();
     pfstest_list_t plugins = PFSTEST_LIST_EMPTY();
 
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         "    register_plugin(plugin1);\n"
         "    register_plugin(plugin2);\n"
-        "    register_before(before1);\n"
-        "    register_before(before2);\n"
-        "    register_after(after1);\n"
-        "    register_after(after2);\n"
         "    register_test(test1);\n"
         "    register_test(test2);\n");
 
     pfstest_suite_register_test(&suite, test1);
     pfstest_suite_register_test(&suite, test2);
-    pfstest_hook_list_register_hook(&before_hooks, before1);
-    pfstest_hook_list_register_hook(&before_hooks, before2);
-    pfstest_hook_list_register_hook(&after_hooks, after1);
-    pfstest_hook_list_register_hook(&after_hooks, after2);
     pfstest_plugin_list_register_plugin(&plugins, plugin1);
     pfstest_plugin_list_register_plugin(&plugins, plugin2);
 
-    pfstest_print_register_commands(capture_output_char,
-                                    &before_hooks, &after_hooks,
-                                    &plugins, &suite);
+    pfstest_print_register_commands(capture_output_char, &plugins, &suite);
 
     assert_that("Test registrations are printed",
                 the_string(captured_output),
