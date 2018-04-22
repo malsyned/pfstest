@@ -138,7 +138,7 @@ test(should_report_failed_tests)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_fail FAIL\n"
-        "    Location: core-test-cases.c:25\n"
+        "    Location: core-test-cases.c:1111\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -157,7 +157,7 @@ test(should_report_results_including_failed_tests)
         HEADER
         ".\n"
         "core-test-cases.c:should_fail FAIL\n"
-        "    Location: core-test-cases.c:25\n"
+        "    Location: core-test-cases.c:1111\n"
         "    Expected failure, should have been caught\n"
         ".\n"
         "Run complete. 2 passed, 1 failed, 0 ignored\n");
@@ -178,7 +178,7 @@ test(should_report_results_verbose)
         HEADER
         "core-test-cases.c:should_run PASS\n"
         "core-test-cases.c:should_fail FAIL\n"
-        "    Location: core-test-cases.c:25\n"
+        "    Location: core-test-cases.c:1111\n"
         "    Expected failure, should have been caught\n"
         "core-test-cases.c:should_be_ignored IGNORED\n"
         "\n"
@@ -200,7 +200,7 @@ test(should_indent_multi_line_error_messages)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
-        "    Location: core-test-cases.c:35\n"
+        "    Location: core-test-cases.c:3333\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -220,7 +220,7 @@ test(should_indent_multi_line_error_messages_verbose)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_multi_line_failure FAIL\n"
-        "    Location: core-test-cases.c:35\n"
+        "    Location: core-test-cases.c:3333\n"
         "    Expected failure, should have been caught\n"
         "    and formatted correctly\n"
         "    across multiple lines\n"
@@ -240,7 +240,7 @@ test(should_catch_failures_in_setup_functions)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_fixture FAIL\n"
-        "    Location: core-test-cases.c:1\n"
+        "    Location: core-test-cases.c:5555\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -275,7 +275,7 @@ test(should_catch_failure_in_teardown)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_have_fixture FAIL\n"
-        "    Location: core-test-cases.c:2\n"
+        "    Location: core-test-cases.c:6666\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
@@ -296,10 +296,10 @@ test(should_only_count_each_failing_test_once)
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
         HEADER
         "core-test-cases.c:should_fail_with_fixture FAIL\n"
-        "    Location: core-test-cases.c:3\n"
+        "    Location: core-test-cases.c:4444\n"
         "    Expected failure, should have been caught\n"
         "core-test-cases.c:should_fail_with_fixture FAIL\n"
-        "    Location: core-test-cases.c:2\n"
+        "    Location: core-test-cases.c:6666\n"
         "    Expected failure, should have been caught\n"
         "\n"
         "Run complete. 0 passed, 1 failed, 0 ignored\n");
