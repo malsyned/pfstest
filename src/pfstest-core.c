@@ -25,8 +25,9 @@ static dynamic_env_t *dynamic_env = NULL;
 static pfstest_list_t registered_tests = PFSTEST_LIST_EMPTY();
 static pfstest_list_t registered_plugins = PFSTEST_LIST_EMPTY();
 
-static void dynamic_env_push(dynamic_env_t *new_env)
+static void dynamic_env_push(void)
 {
+    dynamic_env_t *new_env = pfstest_alloc(sizeof(*new_env));
     new_env->next = dynamic_env;
     dynamic_env = new_env;
 }
@@ -202,14 +203,23 @@ static pfstest_bool test_ignored(_pfstest_test_pg_t *test_desc)
     return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
 }
 
+static void push_dynamic_context(void)
+{
+    pfstest_alloc_frame_push();
+    dynamic_env_push();
+}
+
+static void pop_dynamic_context(void)
+{
+    dynamic_env_pop();
+    pfstest_alloc_frame_pop();
+}
+
 static void run_test(_pfstest_test_pg_t *current_test,
                      pfstest_list_t *plugins,
                      pfstest_reporter_t *reporter)
 {
-    dynamic_env_t local_dynamic_env;
-
-    dynamic_env_push(&local_dynamic_env);
-    pfstest_alloc_frame_push();
+    push_dynamic_context();
 
     dynamic_env->reporter = reporter;
     pfstest_reporter_test_started(reporter,
@@ -232,8 +242,7 @@ static void run_test(_pfstest_test_pg_t *current_test,
 
     pfstest_reporter_test_complete(reporter);
 
-    pfstest_alloc_frame_pop();
-    dynamic_env_pop();
+    pop_dynamic_context();
 }
 
 int pfstest_suite_run(pfstest_list_t *plugins, pfstest_list_t *suite,
