@@ -19,25 +19,37 @@
         char placeholder;                                       \
     }
 
-typedef void (*_pfstest_void_funcp)(void);
-
 /* So that it can be overridden in core tests */
 #ifndef __PFSTEST_FILE__
 #define __PFSTEST_FILE__ __FILE__
 #endif
 
-/* Tests */
+/* Fixtures */
 
-#define pfstest_setup()                                                 \
-    static void __pfstest_setup(void);                                  \
-    static const pfstest_pg _pfstest_void_funcp __pfstest_setup_ptr =   \
-        __pfstest_setup;                                                \
-    static void __pfstest_setup(void)
-#define pfstest_teardown()                                              \
-    static void __pfstest_teardown(void);                               \
-    static const pfstest_pg _pfstest_void_funcp __pfstest_teardown_ptr = \
-        __pfstest_teardown;                                             \
-    static void __pfstest_teardown(void)
+typedef void (*_pfstest_fixture_hookp)(void);
+
+#define _pfstest_fixture_hookp_name(name)               \
+    _pfstest_econcat(__pfstest_fixture_hookp__, name)
+
+#define _pfstest_fixture_hookp_decl(name)           \
+    static const pfstest_pg _pfstest_fixture_hookp  \
+    _pfstest_fixture_hookp_name(name)               \
+
+#define _pfstest_fixture_hook_name(name)        \
+    _pfstest_econcat(__pfstest_fixture__, name)
+
+#define _pfstest_fixture_hook_decl(name)                \
+    static void _pfstest_fixture_hook_name(name)(void)
+
+#define _pfstest_fixture_hook_define(name)                              \
+    _pfstest_fixture_hook_decl(name);                                   \
+    _pfstest_fixture_hookp_decl(name) = _pfstest_fixture_hook_name(name); \
+    _pfstest_fixture_hook_decl(name)
+
+#define pfstest_setup() _pfstest_fixture_hook_define(setup)
+#define pfstest_teardown() _pfstest_fixture_hook_define(teardown)
+
+/* Tests */
 
 #define _PFSTEST_FLAG_IGNORED 0x1
 
@@ -47,8 +59,8 @@ typedef void (*_pfstest_void_funcp)(void);
         const pfstest_pg_ptr char *file;
         int line;
         unsigned int flags;
-        const pfstest_pg_ptr _pfstest_void_funcp *setup_function;
-        const pfstest_pg_ptr _pfstest_void_funcp *teardown_function;
+        const pfstest_pg_ptr _pfstest_fixture_hookp *setup_function;
+        const pfstest_pg_ptr _pfstest_fixture_hookp *teardown_function;
         void (*test_function)(void);
     } _pfstest_test_pg_t;
 
@@ -99,11 +111,12 @@ typedef struct
 #define _pfstest_case_without_fixture_define(name, flags)   \
     _pfstest_case_define(name, flags, NULL, NULL)
 
-#define _pfstest_case_with_fixture_define(name, flags)                  \
-    static const pfstest_pg _pfstest_void_funcp __pfstest_setup_ptr;    \
-    static const pfstest_pg _pfstest_void_funcp __pfstest_teardown_ptr; \
-    _pfstest_case_define(name, flags,                                   \
-                         &__pfstest_setup_ptr, &__pfstest_teardown_ptr)
+#define _pfstest_case_with_fixture_define(name, flags)              \
+    _pfstest_fixture_hookp_decl(setup);                             \
+    _pfstest_fixture_hookp_decl(teardown);                          \
+    _pfstest_case_define(name, flags,                               \
+                         &_pfstest_fixture_hookp_name(setup),       \
+                         &_pfstest_fixture_hookp_name(teardown))
 
 #define pfstest_case(name) _pfstest_case_without_fixture_define(name, 0)
 #define pfstest_case_ignored(name)                                      \
@@ -244,11 +257,14 @@ int pfstest_run_registered_tests(char *filter_file, char *filter_name,
 #ifndef PFSTEST_NOALIAS_register_test
 # define register_test pfstest_register_test
 #endif
+/* setup() and teardown() are defined here as function-like macros
+ * because this header expects to use their bare names as arguments to
+ * token-concatenating macros. */
 #ifndef PFSTEST_NOALIAS_setup
-# define setup pfstest_setup
+# define setup() pfstest_setup()
 #endif
 #ifndef PFSTEST_NOALIAS_teardown
-# define teardown pfstest_teardown
+# define teardown() pfstest_teardown()
 #endif
 #ifndef PFSTEST_NOALIAS_register_plugin
 # define register_plugin pfstest_register_plugin

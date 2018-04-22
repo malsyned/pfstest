@@ -133,9 +133,9 @@ static pfstest_bool test_matches_filter(_pfstest_test_pg_t *test_desc,
     return name_passed && file_passed;
 }
 
-static void run_indirect_function(const _pfstest_void_funcp *fp)
+static void run_indirect_function(const _pfstest_fixture_hookp *fp)
 {
-    _pfstest_void_funcp func;
+    _pfstest_fixture_hookp func;
     if (fp != NULL) {
         pfstest_memcpy_pg(&func, fp, sizeof(func));
         if (func != NULL)
