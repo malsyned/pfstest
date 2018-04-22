@@ -12,12 +12,7 @@
 #define _pfstest_concat(a, b) a ## b
 #define _pfstest_econcat(a, b) _pfstest_concat(a, b)
 
-#define _pfstest_unique_name(prefix) _pfstest_econcat(prefix, __LINE__)
-
-#define _pfstest_expect_semicolon                               \
-    struct _pfstest_unique_name(_pfstest_expect_semicolon) {    \
-        char placeholder;                                       \
-    }
+#define _pfstest_expect_semicolon struct _pfstest_expect_semicolon_stuct
 
 /* So that they can be overridden in core tests */
 #ifndef __PFSTEST_FILE__
