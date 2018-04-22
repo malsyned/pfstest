@@ -7,7 +7,7 @@
 
 static pfstest_reporter_t *xml_reporter;
 
-before_tests(set_up_xml)
+setup()
 {
     capture_output_init();
     xml_reporter = pfstest_reporter_xml_new(capture_output_char);

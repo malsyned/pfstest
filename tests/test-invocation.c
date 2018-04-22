@@ -7,7 +7,7 @@
 
 static pfstest_arguments_t args;
 
-before_tests(set_up_interface_tests)
+setup()
 {
     capture_output_init();
     memset(&args, 0xa5, sizeof(args));

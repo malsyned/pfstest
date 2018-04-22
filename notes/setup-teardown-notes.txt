@@ -1,0 +1,9 @@
+Before I can consider setup/teardown complete:
+
+pfstest_case was designed to make it possible to write test cases that weren't auto-registered and that didn't have before or after hooks automatically connected to them.
+
+With the new setup/teardown system, those functions are not being auto-registered in pfstest-core.h indiscriminately. As a result, test-assert-that.c and test-mock.c haven't been cut over to using setup() for their before-test code, since that would break the pfstest-case definitions in those files.
+
+Some change to pfstest_case will have to be devised.
+
+After that, before and after hooks should be removed from all APIs.

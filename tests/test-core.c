@@ -15,8 +15,14 @@ static pfstest_list_t before_hooks;
 static pfstest_list_t after_hooks;
 static pfstest_list_t plugins;
 
-before_tests(setup)
+int setup_hook_fail = 0;
+int teardown_hook_fail = 0;
+
+setup()
 {
+    setup_hook_fail = 0;
+    teardown_hook_fail = 0;
+
     capture_output_init();
     call_log[0] = '\0';
 
@@ -40,6 +46,21 @@ test(should_run_tests)
 
     pfstest_suite_register_test(&suite, should_run);
     pfstest_suite_register_test(&suite, should_also_run);
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+test(should_run_setup_and_teardown)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("setup should_setup_and_teardown teardown ");
+
+    pfstest_suite_register_test(&suite, should_setup_and_teardown);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
@@ -294,6 +315,28 @@ test(should_catch_failures_in_before_hooks)
     }
 }
 
+test(should_catch_failures_in_setup_functions)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        HEADER
+        "core-test-cases-3.c:should_setup_and_teardown FAIL\n"
+        "    Location: core-test-cases-3.c:1\n"
+        "    Expected failure, should have been caught\n"
+        "\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+
+    pfstest_suite_register_test(&suite, should_setup_and_teardown);
+
+    setup_hook_fail = 1;
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
+        fail("Output did not match expected output");
+    }
+}
+
 test(should_run_after_hooks_when_test_fails)
 {
     const pfstest_pg_ptr char *expected =
@@ -301,6 +344,21 @@ test(should_run_after_hooks_when_test_fails)
 
     pfstest_suite_register_test(&suite, should_fail);
     pfstest_hook_list_register_hook(&after_hooks, should_be_run_after);
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+test(should_run_teardown_when_test_fails)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("setup teardown ");
+
+    pfstest_suite_register_test(&suite, should_fail_with_setup_and_teardown);
 
     pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);
@@ -322,6 +380,28 @@ test(should_catch_failures_in_after_hooks)
 
     pfstest_suite_register_test(&suite, should_run);
     pfstest_hook_list_register_hook(&after_hooks, hook_should_fail);
+
+    pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
+                      NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
+        fail("Output did not match expected output");
+    }
+}
+
+test(should_catch_failure_in_teardown)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        HEADER
+        "core-test-cases-3.c:should_setup_and_teardown FAIL\n"
+        "    Location: core-test-cases-3.c:2\n"
+        "    Expected failure, should have been caught\n"
+        "\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+
+    pfstest_suite_register_test(&suite, should_setup_and_teardown);
+
+    teardown_hook_fail = 1;
 
     pfstest_suite_run(&before_hooks, &after_hooks, &plugins, &suite,
                       NULL, NULL, standard_reporter);

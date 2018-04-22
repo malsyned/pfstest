@@ -8,7 +8,7 @@ static unsigned char *stack_pointer;
 static unsigned char *buf;
 static pfstest_avr_mem_usage_t used;
 
-before_tests(set_up_avr)
+setup()
 {
     buf = pfstest_alloc(8);
     memset(buf, 0xa5, 8);

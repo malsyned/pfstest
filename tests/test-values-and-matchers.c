@@ -3,7 +3,7 @@
 #include "pfstest.h"
 #include "capture-output.h"
 
-before_tests(set_up_values_and_matchers)
+setup()
 {
     capture_output_init();
 }

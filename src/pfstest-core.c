@@ -180,6 +180,25 @@ static pfstest_bool hook_in_file(_pfstest_hook_pg_t *hook_desc,
     return pg_strs_eq(file, hook_desc->file);
 }
 
+static void run_indirect_function(const _pfstest_void_funcp *fp)
+{
+    _pfstest_void_funcp func;
+    pfstest_memcpy_pg(&func, fp, sizeof(func));
+    if (func != NULL)
+        func();
+}
+
+static void run_setup_function(_pfstest_test_pg_t *current_test)
+{
+    run_indirect_function(current_test->setup_function);
+}
+
+static void run_teardown_function(_pfstest_test_pg_t *current_test)
+{
+    if (0 == setjmp(dynamic_env->test_jmp_buf))
+        run_indirect_function(current_test->teardown_function);
+}
+
 static void run_before_hooks(pfstest_list_t *hooks,
                              const pfstest_pg_ptr char *file)
 {
@@ -285,10 +304,12 @@ static void run_test(_pfstest_test_pg_t *current_test,
     } else {
         if (0 == setjmp(dynamic_env->test_jmp_buf)) {
             run_before_hooks(before, current_test->file);
-            current_test->function();
+            run_setup_function(current_test);
+            current_test->test_function();
             run_plugin_checks(plugins);
         }
         run_after_hooks(after, current_test->file);
+        run_teardown_function(current_test);
     }
     pfstest_reporter_test_complete(reporter);
 

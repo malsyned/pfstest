@@ -19,12 +19,25 @@
         char placeholder;                                       \
     }
 
+typedef void (*_pfstest_void_funcp)(void);
+
 /* So that it can be overridden in core tests */
 #ifndef __PFSTEST_FILE__
 #define __PFSTEST_FILE__ __FILE__
 #endif
 
 /* Tests */
+
+#define pfstest_setup()                                                 \
+    static void __pfstest_setup(void);                                  \
+    static const pfstest_pg _pfstest_void_funcp __pfstest_setup_ptr =   \
+        __pfstest_setup;                                                \
+    static void __pfstest_setup(void)
+#define pfstest_teardown()                                              \
+    static void __pfstest_teardown(void);                               \
+    static const pfstest_pg _pfstest_void_funcp __pfstest_teardown_ptr = \
+        __pfstest_teardown;                                             \
+    static void __pfstest_teardown(void)
 
 #define _PFSTEST_FLAG_IGNORED 0x1
 
@@ -34,7 +47,9 @@ typedef struct
     const pfstest_pg_ptr char *file;
     int line;
     unsigned int flags;
-    void (*function)(void);
+    const pfstest_pg_ptr _pfstest_void_funcp *setup_function;
+    const pfstest_pg_ptr _pfstest_void_funcp *teardown_function;
+    void (*test_function)(void);
 } _pfstest_test_pg_t;
 
 typedef struct
@@ -53,6 +68,8 @@ typedef struct
 #define _pfstest_object_decl(name) pfstest_t name[]
 
 #define _pfstest_object(name, flags)                                    \
+    static const pfstest_pg _pfstest_void_funcp __pfstest_setup_ptr;    \
+    static const pfstest_pg _pfstest_void_funcp __pfstest_teardown_ptr; \
     static const pfstest_pg char _pfstest_name_var(name)[] = #name;     \
     static const pfstest_pg char _pfstest_file_var(name)[] =            \
         __PFSTEST_FILE__;                                               \
@@ -61,6 +78,8 @@ typedef struct
         _pfstest_name_var(name),                                        \
         _pfstest_file_var(name),                                        \
         __LINE__, flags,                                                \
+        &__pfstest_setup_ptr,                                           \
+        &__pfstest_teardown_ptr,                                        \
         _pfstest_function_name(name),                                   \
     };                                                                  \
     pfstest_t name[1] = {{ {NULL}, &_pfstest_pg_var(name)}}
@@ -144,7 +163,7 @@ typedef struct
 
 #define _pfstest_hook_object(name)                                  \
     static const pfstest_pg char _pfstest_hook_file_var(name)[] =   \
-        __PFSTEST_FILE__;                                                   \
+        __PFSTEST_FILE__;                                           \
     static const pfstest_pg char _pfstest_hook_name_var(name)[] =   \
         #name;                                                      \
     static const pfstest_pg _pfstest_hook_pg_t                      \
@@ -226,7 +245,7 @@ typedef struct
 #define _pfstest_plugin_name_var(name)              \
     _pfstest_econcat(__pfstest_plugin_name__, name)
 
-#define _pfstest_plugin_pg_var(name)              \
+#define _pfstest_plugin_pg_var(name)                \
     _pfstest_econcat(__pfstest_plugin_pg__, name)
 
 #define _pfstest_plugin_decl(plugin_name)       \
@@ -284,9 +303,9 @@ PFSTEST_NORETURN
 void _pfstest_fail_at_location(
     const pfstest_pg_ptr char *file, int line,
     const pfstest_pg_ptr char *message);
-#define pfstest_fail_at_location(file, line, message)                   \
+#define pfstest_fail_at_location(file, line, message)               \
     _pfstest_fail_at_location(file, line, pfstest_pg_str(message))
-#define pfstest_fail(message)                                       \
+#define pfstest_fail(message)                                           \
     pfstest_fail_at_location(__PFSTEST_NV_FILE__, __LINE__, message)
 
 /* Framework entry points */
@@ -307,6 +326,12 @@ int pfstest_run_registered_tests(char *filter_file, char *filter_name,
 #endif
 #ifndef PFSTEST_NOALIAS_register_test
 # define register_test pfstest_register_test
+#endif
+#ifndef PFSTEST_NOALIAS_setup
+# define setup pfstest_setup
+#endif
+#ifndef PFSTEST_NOALIAS_teardown
+# define teardown pfstest_teardown
 #endif
 #ifndef PFSTEST_NOALIAS_before_tests
 # define before_tests pfstest_before_tests

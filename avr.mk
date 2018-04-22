@@ -31,6 +31,11 @@ WARN += -Wvariadic-macros
 WARN += -Wunsuffixed-float-constants
 WARN += -pedantic
 WARN += -pedantic-errors
+# avr-gcc uses this warning to warn about uninitialized program memory
+# in addition to uninitialized automatics. The setup and teardown
+# pointer system relies on uninitialized statics, so we have to
+# disable this warning.
+WARN += -Wno-uninitialized
 
 MCUFLAGS = -mmcu=$(MCU)
 

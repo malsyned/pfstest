@@ -10,7 +10,7 @@ static pfstest_list_t suite;
 static pfstest_reporter_t *standard_reporter;
 static pfstest_reporter_t *verbose_reporter;
 
-before_tests(setup_color_tests)
+setup()
 {
     capture_output_init();
 
