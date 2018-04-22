@@ -3,7 +3,7 @@ this-makefile := $(lastword $(MAKEFILE_LIST))
 src-path := $(dir $(this-makefile))
 
 PFSTEST_SRC := $(addprefix $(src-path), \
-                 pfstest-list.c pfstest-value.c \
+                 pfstest-list.c pfstest-tag.c pfstest-value.c \
                  pfstest-matcher.c pfstest-values.c pfstest-matchers.c \
                  pfstest-assert.c pfstest-core.c pfstest-arg-handler.c \
                  pfstest-arg-handlers.c pfstest-mock.c pfstest-reporter.c \

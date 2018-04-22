@@ -2,6 +2,8 @@
 
 #include "pfstest-alloc.h"
 
+pfstest_tag_t pfstest_matcher_tag = PFSTEST_TAG_AUTO;
+
 pfstest_bool pfstest_matcher_matches(pfstest_matcher_t *matcher,
                                      pfstest_value_t *actual)
 {
@@ -20,6 +22,7 @@ pfstest_matcher_t *pfstest_matcher_new(
     void *data)
 {
     pfstest_matcher_t *m = pfstest_alloc(sizeof(*m));
+    pfstest_tagged_init((pfstest_tagged_t *)m, &pfstest_matcher_tag);
 
     m->printer = printer;
     m->test = test;

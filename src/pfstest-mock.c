@@ -7,6 +7,10 @@
 #include "pfstest-alloc.h"
 #include "pfstest-core.h"
 
+#include "pfstest-arg-handlers.h"
+#include "pfstest-matchers.h"
+#include "pfstest-tag.h"
+
 typedef struct _dynamic_env_t
 {
     struct _dynamic_env_t *next;
@@ -142,6 +146,39 @@ pfstest_expectation_t *pfstest_do_times(int times,
     return expectation;
 }
 
+
+static pfstest_arg_handler_t *default_arg_handler_for_matcher(
+    pfstest_matcher_t *m)
+{
+    return pfstest_arg_that(m);
+}
+
+static pfstest_matcher_t *default_matcher(pfstest_value_t *v)
+{
+    return pfstest_is(v);
+}
+
+static pfstest_arg_handler_t *default_arg_handler_for_value(
+    pfstest_value_t *v)
+{
+    return default_arg_handler_for_matcher(default_matcher(v));
+}
+
+static pfstest_arg_handler_t *coerce_tagged_to_arg_handler(
+    pfstest_tagged_t *t)
+{
+    pfstest_tag_t tag = pfstest_tag_get(t);
+
+    if (tag == pfstest_arg_handler_tag)
+        return (pfstest_arg_handler_t *)t;
+    else if (tag == pfstest_matcher_tag)
+        return default_arg_handler_for_matcher((pfstest_matcher_t *)t);
+    else if (tag == pfstest_value_tag)
+        return default_arg_handler_for_value((pfstest_value_t *)t);
+
+    return NULL;
+}
+
 pfstest_expectation_t *pfstest_when(
     const pfstest_pg_ptr pfstest_mock_t *mock, ...)
 {
@@ -156,7 +193,8 @@ pfstest_expectation_t *pfstest_when(
 
     va_start(ap, mock);
     for (i = 0; i < arg_count; i++) {
-        arg_handlers[i] = va_arg(ap, pfstest_arg_handler_t *);
+        arg_handlers[i] =
+            coerce_tagged_to_arg_handler(va_arg(ap, pfstest_tagged_t *));
     }
     va_end(ap);
 

@@ -289,6 +289,22 @@ test(should_stub_different_return_values_with_one_time)
                 the_int(dep_func1(4)), is(the_int(6)));
 }
 
+test(should_coerce_matchers_to_arg_that)
+{
+    verify(when(mock_dep_func1,
+                is(the_int(5))));
+
+    dep_func1(5);
+}
+
+test(should_coerce_value_to_is_arg_that)
+{
+    verify(when(mock_dep_func1,
+                the_int(5)));
+
+    dep_func1(5);
+}
+
 test(should_stub_different_return_values_with_do_times)
 {
     do_times(2,
