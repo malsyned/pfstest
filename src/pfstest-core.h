@@ -41,16 +41,16 @@ typedef void (*_pfstest_void_funcp)(void);
 
 #define _PFSTEST_FLAG_IGNORED 0x1
 
-typedef struct
-{
-    const pfstest_pg_ptr char *name;
-    const pfstest_pg_ptr char *file;
-    int line;
-    unsigned int flags;
-    const pfstest_pg_ptr _pfstest_void_funcp *setup_function;
-    const pfstest_pg_ptr _pfstest_void_funcp *teardown_function;
-    void (*test_function)(void);
-} _pfstest_test_pg_t;
+    typedef struct
+    {
+        const pfstest_pg_ptr char *name;
+        const pfstest_pg_ptr char *file;
+        int line;
+        unsigned int flags;
+        const pfstest_pg_ptr _pfstest_void_funcp *setup_function;
+        const pfstest_pg_ptr _pfstest_void_funcp *teardown_function;
+        void (*test_function)(void);
+    } _pfstest_test_pg_t;
 
 typedef struct
 {
@@ -65,11 +65,7 @@ typedef struct
 #define _pfstest_func_decl(name)                    \
     static void _pfstest_function_name(name)(void)
 
-#define _pfstest_object_decl(name) pfstest_t name[]
-
-#define _pfstest_object(name, flags)                                    \
-    static const pfstest_pg _pfstest_void_funcp __pfstest_setup_ptr;    \
-    static const pfstest_pg _pfstest_void_funcp __pfstest_teardown_ptr; \
+#define _pfstest_object(name, flags, setup_ptr, teardown_ptr)           \
     static const pfstest_pg char _pfstest_name_var(name)[] = #name;     \
     static const pfstest_pg char _pfstest_file_var(name)[] =            \
         __PFSTEST_FILE__;                                               \
@@ -78,8 +74,7 @@ typedef struct
         _pfstest_name_var(name),                                        \
         _pfstest_file_var(name),                                        \
         __LINE__, flags,                                                \
-        &__pfstest_setup_ptr,                                           \
-        &__pfstest_teardown_ptr,                                        \
+        setup_ptr, teardown_ptr,                                        \
         _pfstest_function_name(name),                                   \
     };                                                                  \
     pfstest_t name[1] = {{ {NULL}, &_pfstest_pg_var(name)}}
@@ -96,14 +91,26 @@ typedef struct
 # define _pfstest_init_define(name)
 #endif
 
-#define _pfstest_case_define(name, flags)       \
-    _pfstest_func_decl(name);                   \
-    _pfstest_object(name, flags);               \
+#define _pfstest_case_define(name, flags, setup_ptr, teardown_ptr)  \
+    _pfstest_func_decl(name);                                       \
+    _pfstest_object(name, flags, setup_ptr, teardown_ptr);          \
     _pfstest_func_decl(name)
 
-#define pfstest_case(name) _pfstest_case_define(name, 0)
-#define pfstest_case_ignored(name)                      \
-    _pfstest_case_define(name, _PFSTEST_FLAG_IGNORED)
+#define _pfstest_case_without_fixture_define(name, flags)   \
+    _pfstest_case_define(name, flags, NULL, NULL)
+
+#define _pfstest_case_with_fixture_define(name, flags)                  \
+    static const pfstest_pg _pfstest_void_funcp __pfstest_setup_ptr;    \
+    static const pfstest_pg _pfstest_void_funcp __pfstest_teardown_ptr; \
+    _pfstest_case_define(name, flags,                                   \
+                         &__pfstest_setup_ptr, &__pfstest_teardown_ptr)
+
+#define pfstest_case(name) _pfstest_case_without_fixture_define(name, 0)
+#define pfstest_case_ignored(name)                                      \
+    _pfstest_case_without_fixture_define(name, _PFSTEST_FLAG_IGNORED)
+
+#define pfstest_case_with_fixture(name)         \
+    _pfstest_case_with_fixture_define(name, 0)
 
 void _pfstest_suite_register_test(pfstest_list_t *suite,
                                   pfstest_t *the_test);
@@ -121,9 +128,9 @@ int pfstest_suite_run(pfstest_list_t *before, pfstest_list_t *after,
                       const char *filter_name,
                       pfstest_reporter_t *reporter);
 
-#define _pfstest_define(name, flags)            \
-    _pfstest_init_define(name)                  \
-    _pfstest_case_define(name, flags)
+#define _pfstest_define(name, flags)                \
+    _pfstest_init_define(name)                      \
+    _pfstest_case_with_fixture_define(name, flags)
 
 #define pfstest(name) _pfstest_define(name, 0)
 #define pfstest_ignore_test(name)                   \

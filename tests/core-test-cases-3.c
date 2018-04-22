@@ -8,6 +8,20 @@ extern char call_log[];
 extern int setup_hook_fail;
 extern int teardown_hook_fail;
 
+/* setup() and teardown() are at the bottom because they use #line and
+ * I want accurate error location reporting in the rest of this
+ * module */
+
+pfstest_case_with_fixture(should_setup_and_teardown)
+{
+    pfstest_strcat_pg(call_log, pfstest_pg_str("should_setup_and_teardown "));
+}
+
+pfstest_case_with_fixture(should_fail_with_setup_and_teardown)
+{
+    fail("Expected failure, should have been caught");
+}
+
 setup()
 {
     pfstest_strcat_pg(call_log, pfstest_pg_str("setup "));
@@ -28,12 +42,3 @@ teardown()
     }
 }
 
-pfstest_case(should_setup_and_teardown)
-{
-    pfstest_strcat_pg(call_log, pfstest_pg_str("should_setup_and_teardown "));
-}
-
-pfstest_case(should_fail_with_setup_and_teardown)
-{
-    fail("Expected failure, should have been caught");
-}

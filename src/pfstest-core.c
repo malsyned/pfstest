@@ -183,9 +183,11 @@ static pfstest_bool hook_in_file(_pfstest_hook_pg_t *hook_desc,
 static void run_indirect_function(const _pfstest_void_funcp *fp)
 {
     _pfstest_void_funcp func;
-    pfstest_memcpy_pg(&func, fp, sizeof(func));
-    if (func != NULL)
-        func();
+    if (fp != NULL) {
+        pfstest_memcpy_pg(&func, fp, sizeof(func));
+        if (func != NULL)
+            func();
+    }
 }
 
 static void run_setup_function(_pfstest_test_pg_t *current_test)

@@ -13,7 +13,7 @@ pfstest_plugin_define(test_mock_plugin,
                       pfstest_mock_run_verifiers,
                       pfstest_mock_teardown);
 
-before_tests(set_up_mock_tests)
+setup()
 {
     plugins = pfstest_alloc(sizeof(*plugins));
     pfstest_list_reset(plugins);

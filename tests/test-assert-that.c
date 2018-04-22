@@ -46,7 +46,7 @@ static void nothing_printer(pfstest_matcher_t *matcher,
 
 static pfstest_matcher_t *matches_nothing;
 
-before_tests(set_up_assert_that)
+setup()
 {
     capture_output_init();
     standard_reporter = pfstest_reporter_standard_new(

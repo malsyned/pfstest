@@ -7,3 +7,17 @@ With the new setup/teardown system, those functions are not being auto-registere
 Some change to pfstest_case will have to be devised.
 
 After that, before and after hooks should be removed from all APIs.
+
+****************
+
+pfstest(), pfstest_case(), and pfstest_ignore_test() serve only to set flags and then call _pfstest_case_define or _pfstest_define.
+
+_pfstest_define just serves to call _pfstest_case_define after creating a constructor.
+
+
+I need two things:
+
+pfstest_case(name) and pfstest_case_with_fixture(name).
+
+pfstest_case(name) eventually passes NULL, NULL to _pfstest_object
+pfstest_case_with_fixture(name) eventually passes &__pfstest_setup_ptr, &__pfstest_teardown_ptr to _pfstest_object.
