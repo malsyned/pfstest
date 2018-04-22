@@ -1,0 +1,73 @@
+Dennis Lambe
+User documentation sketching
+Last modified: <2018-04-21 23:22:35>
+
+* C unit testing concepts
+** Linking tests and modules into executables
+** Link-time mock substitution (save for mocking section?)
+* How to set up a GCC project Makefile
+* How to write your first pfstest file (#include "pfstest.h", test(name) {})
+** fail()
+* How to run your test runner and interpret the results
+** Executables return EXIT_FAILURE unless all tests pass
+** How to get verbose output, colored output, XML output
+** How to filter by file name or test name
+* pfstest_alloc()
+* How to use before_tests() # NOTE: This is changing to setup {}
+* How to use after_tests() # NOTE: This is changing to teardown {}
+* How to ignore tests
+* How to use assert_that
+** Values and Matchers
+*** Use a few examples and cross-reference to the complete list?
+** What a failure prints
+** Empty message if desired
+** assert_true, assert_false, assert_null shorthand assertions
+* List of values and their APIs
+* List of matchers and their APIs
+** is_anything forward-references to mocks?
+
+Mocks
+
+* Link-time mock substitution (unless it's been covered)
+** Makefile utilities for use with mocking
+* automock.py
+* Stubs
+** Implicit stubs with default return values (0 or NULL)
+** do_return (on function with no argument list for starters)
+** Using arg_that to match arguments and return different values
+*** Implicit arg_that(is(...))
+*** Why is_anything is useful
+** Using assign_arg for out-parameters
+** Using assign_arg_that for in/out-parameters
+** Capturing argument values for later use
+*** Pointer parameters that just have to match across invocations
+*** Complicated analysis of parameter fields
+** Stubbing different return values with one_time, do_times
+* Verifying that calls happened
+** Scoping caveats (verification happens after test function exits)
+** Requires exactly one invocation by default
+** Controlling verification behavior with exactly, at_most, at_least
+** verify_no_more_interactions(mock_func), verify_no_more_invocations()
+* In-order verification
+** Implicit, non-overrideable one-time around in-order expectations
+** Multiple in_order_t objects
+*** Using the same expectation in multiple orderings
+
+Advanced concepts
+
+* Using target classes in Makefiles for target-specific Make variables
+* How to register tests on C89 platforms
+* How to generate registration operations automatically
+* Building for embedded targets
+* How to protect your namespace with PFSTEST_NOALIAS_... macros
+* Writing utility functions which assert or fail
+** ??_at_location functions
+* Writing values
+* Writing matchers
+* Writing reporters
+* Writing plugins
+* Harvard Architectures
+* The obstack allocator
+* Porting
+* AVR8 specific utilities
+* Hand-coding mocks
