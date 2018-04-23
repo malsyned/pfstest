@@ -89,18 +89,6 @@ typedef struct
     };                                                                  \
     pfstest_t name[1] = {{ {NULL}, &_pfstest_pg_var(name)}}
 
-#define _pfstest_case_decl(name) extern pfstest_t name[]
-#if defined(pfstest_constructor)
-# define _pfstest_init_define(name)                                 \
-    _pfstest_case_decl(the_test);                                   \
-    pfstest_constructor(_pfstest_econcat(__pfstest_init__, name))   \
-    {                                                               \
-        pfstest_register_test(name);                                \
-    }
-#else  /* !defined(pfstest_constructor) */
-# define _pfstest_init_define(name)
-#endif
-
 #define _pfstest_case_define(name, flags, setup_ptr, teardown_ptr)  \
     _pfstest_func_decl(name);                                       \
     _pfstest_object(name, flags, setup_ptr, teardown_ptr);          \
@@ -117,18 +105,39 @@ typedef struct
                          &_pfstest_fixture_hookp_name(teardown_hook))
 
 #define pfstest_case(name) _pfstest_case_without_fixture_define(name, 0)
+#define pfstest_case_with_fixture(name)         \
+    _pfstest_case_with_fixture_define(name, 0)
+
 #define pfstest_case_ignored(name)                                      \
     _pfstest_case_without_fixture_define(name, _PFSTEST_FLAG_IGNORED)
 #define pfstest_case_with_fixture_ignored(name)                     \
     _pfstest_case_with_fixture_define(name, _PFSTEST_FLAG_IGNORED)
 
-#define pfstest_case_with_fixture(name)         \
-    _pfstest_case_with_fixture_define(name, 0)
+#define _pfstest_case_extern_decl(name) extern pfstest_t name[]
+
+#if defined(pfstest_constructor)
+# define _pfstest_init_define(name)                                 \
+    _pfstest_case_extern_decl(the_test);                            \
+    pfstest_constructor(_pfstest_econcat(__pfstest_init__, name))   \
+    {                                                               \
+        pfstest_register_test(name);                                \
+    } _pfstest_expect_semicolon
+#else  /* !defined(pfstest_constructor) */
+# define _pfstest_init_define(name) _pfstest_expect_semicolon
+#endif
+
+#define _pfstest_define(name, flags)                \
+    _pfstest_init_define(name);                     \
+    _pfstest_case_with_fixture_define(name, flags)
+
+#define pfstest(name) _pfstest_define(name, 0)
+#define pfstest_ignore_test(name)                   \
+    _pfstest_define(name, _PFSTEST_FLAG_IGNORED)
 
 void _pfstest_suite_register_test(pfstest_list_t *suite,
                                   pfstest_t *the_test);
 #define pfstest_suite_register_test(suite, the_test) do {   \
-        _pfstest_case_decl(the_test);                       \
+        _pfstest_case_extern_decl(the_test);                \
         _pfstest_suite_register_test(suite, the_test);      \
     } while (0)
 
@@ -137,17 +146,9 @@ int pfstest_suite_run(pfstest_list_t *plugins, pfstest_list_t *suite,
                       const char *filter_name,
                       pfstest_reporter_t *reporter);
 
-#define _pfstest_define(name, flags)                \
-    _pfstest_init_define(name)                      \
-    _pfstest_case_with_fixture_define(name, flags)
-
-#define pfstest(name) _pfstest_define(name, 0)
-#define pfstest_ignore_test(name)                   \
-    _pfstest_define(name, _PFSTEST_FLAG_IGNORED)
-
 void _pfstest_register_test(pfstest_t *the_test);
 #define pfstest_register_test(the_test) do {    \
-        _pfstest_case_decl(the_test);           \
+        _pfstest_case_extern_decl(the_test);    \
         _pfstest_register_test(the_test);       \
     } while (0)
 pfstest_list_t *pfstest_get_registered_tests(void);
@@ -176,7 +177,7 @@ typedef struct
 #define _pfstest_plugin_pg_var(name)                \
     _pfstest_econcat(__pfstest_plugin_pg__, name)
 
-#define _pfstest_plugin_decl(plugin_name)       \
+#define _pfstest_plugin_extern_decl(plugin_name)    \
     extern pfstest_plugin_t plugin_name[]
 
 #define pfstest_plugin_define(plugin_name, setup, checks, teardown)     \
@@ -189,7 +190,6 @@ typedef struct
     {{ {NULL}, &_pfstest_plugin_pg_var(plugin_name) }}
 
 #if defined(pfstest_constructor)
-
 # define pfstest_plugin_autoload(name)                                  \
     pfstest_constructor(_pfstest_econcat(__pfstest_plugin_init__, name)) \
     {                                                                   \
@@ -197,35 +197,35 @@ typedef struct
     } _pfstest_expect_semicolon
 
 #else  /* !defined(pfstest_constructor) */
-# define pfstest_plugin_autoload(name) _pfstest_plugin_decl(name)
+# define pfstest_plugin_autoload(name) _pfstest_expect_semicolon
 #endif
 
 void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,
                                           pfstest_plugin_t *plugin);
 #define pfstest_plugin_list_register_plugin(plugin_list, plugin_name)   \
     do {                                                                \
-        _pfstest_plugin_decl(plugin_name);                              \
+        _pfstest_plugin_extern_decl(plugin_name);                       \
         _pfstest_plugin_list_register_plugin(plugin_list, plugin_name); \
     } while (0)
 
 void _pfstest_register_plugin(pfstest_plugin_t *plugin);
-#define pfstest_register_plugin(plugin_name)    \
-    do {                                        \
-        _pfstest_plugin_decl(plugin_name);      \
-        _pfstest_register_plugin(plugin_name);  \
+#define pfstest_register_plugin(plugin_name)        \
+    do {                                            \
+        _pfstest_plugin_extern_decl(plugin_name);   \
+        _pfstest_register_plugin(plugin_name);      \
     } while (0)
 
 pfstest_list_t *pfstest_get_registered_plugins(void);
 
 /* Fail interface */
 
+#define __PFSTEST_NV_FILE__ pfstest_pg_str(__PFSTEST_FILE__)
+
 PFSTEST_NORETURN
 void pfstest_fail_with_printer(
     const pfstest_pg_ptr char *file, int line,
     void (*printer)(pfstest_reporter_t *reporter, const void *),
     const void *object);
-
-#define __PFSTEST_NV_FILE__ pfstest_pg_str(__PFSTEST_FILE__)
 
 PFSTEST_NORETURN
 void _pfstest_fail_at_location(
