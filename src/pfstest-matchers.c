@@ -175,7 +175,7 @@ static pfstest_bool submatchers_match_value_array(
     return pfstest_true;
 }
 
-#define primitive_boxer_define(fname, type, boxer)                  \
+#define primitive_array_boxer_define(fname, type, boxer)            \
     static pfstest_value_t **fname(pfstest_value_t *actual_value)   \
     {                                                               \
         size_t actual_count = (pfstest_value_size(actual_value)     \
@@ -192,7 +192,7 @@ static pfstest_bool submatchers_match_value_array(
         return actual_values;                                       \
     } _pfstest_expect_semicolon
 
-primitive_boxer_define(box_int_members, int, the_int);
+primitive_array_boxer_define(box_int_members, int, the_int);
 
 static pfstest_bool members_match_test(
     pfstest_matcher_t *matcher, pfstest_value_t *actual_value,
