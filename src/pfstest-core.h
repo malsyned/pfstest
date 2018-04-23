@@ -51,16 +51,16 @@ typedef void (*_pfstest_fixture_hookp)(void);
 
 #define _PFSTEST_FLAG_IGNORED 0x1
 
-    typedef struct
-    {
-        const pfstest_pg_ptr char *name;
-        const pfstest_pg_ptr char *file;
-        int line;
-        unsigned int flags;
-        const pfstest_pg_ptr _pfstest_fixture_hookp *setup_function;
-        const pfstest_pg_ptr _pfstest_fixture_hookp *teardown_function;
-        void (*test_function)(void);
-    } _pfstest_test_pg_t;
+typedef struct
+{
+    const pfstest_pg_ptr char *name;
+    const pfstest_pg_ptr char *file;
+    int line;
+    unsigned int flags;
+    const pfstest_pg_ptr _pfstest_fixture_hookp *setup_function;
+    const pfstest_pg_ptr _pfstest_fixture_hookp *teardown_function;
+    void (*test_function)(void);
+} _pfstest_test_pg_t;
 
 typedef struct
 {
