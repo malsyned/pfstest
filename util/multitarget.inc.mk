@@ -93,16 +93,16 @@ class-includes =                                                        \
     $(addprefix -I,$(sort $(dir $(call targets-src,                     \
                                        $(call targets-in-class,$1)))))
 
-# $(call target-exec-name,target)
-target-exec-name = $(subst %,$1,$(EXEC_PATTERN))
+# $(call target-bin-name,target)
+target-bin-name = $(subst %,$1,$(BIN_PATTERN))
 
-# $(call targets-exec-names,target...)
-targets-exec-names = $(foreach target,$1,$(call target-exec-name,$(target)))
+# $(call targets-bin-names,target...)
+targets-bin-names = $(foreach target,$1,$(call target-bin-name,$(target)))
 
 # $(eval $(call target-template,$(target)))
 define target-template
 
-    $$(call target-exec-name,$1): $$(call target-obj,$1)
+    $$(call target-bin-name,$1): $$(call target-obj,$1)
 	$$(call target-cc,$1) $$(LDFLAGS) $$(call target-ldflags,$1) $$^ \
 	    $$(LDLIBS) $$(call target-ldlibs,$1) -o $$@
 
@@ -163,10 +163,10 @@ include $(MULTITARGET_PLUGINS)
 $(eval $(all-templates))
 
 .PHONY: targets
-targets: $(call targets-exec-names,$(TARGETS))
+targets: $(call targets-bin-names,$(TARGETS))
 
 clean-targets:
-	rm -f $(call targets-exec-names,$(TARGETS)) \
+	rm -f $(call targets-bin-names,$(TARGETS)) \
 	  $(sort $(call target-obj,$(TARGETS)) \
 	         $(call target-i,$(TARGETS)) \
 	         $(call target-d,$(TARGETS)))

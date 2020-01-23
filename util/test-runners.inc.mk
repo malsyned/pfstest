@@ -3,7 +3,7 @@
 # multitarget.inc.mk
 
 .PHONY: run-test-targets
-run-test-targets: $(call targets-exec-names,$(TARGETS))
+run-test-targets: $(call targets-bin-names,$(TARGETS))
 	@set -e; \
 	for runner in $^; \
 	do \

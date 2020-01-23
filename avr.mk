@@ -60,7 +60,7 @@ LDLIBS = -lm
 AUTOMOCK_CPPFLAGS = $(GCC_AUTOMOCK_CPPFLAGS)
 AUTOMOCK_FLAGS = $(AVR_GCC_AUTOMOCK_FLAGS)
 
-EXEC_PATTERN = %.elf
+BIN_PATTERN = %.elf
 BUILDPREFIX = avrbuild/
 
 SRC = $(PFSTEST_SRC) $(PFSTEST_AVR_TOOLS_SRC) \
@@ -84,7 +84,7 @@ clean: clean-targets
 
 .PHONY: sizes
 sizes:
-	@for elf in $(call targets-exec-names,$(TARGETS)); \
+	@for elf in $(call targets-bin-names,$(TARGETS)); \
 	do \
 	    if test -f $${elf}; \
 	    then \
@@ -97,7 +97,7 @@ SIMULAVR=$$HOME/local/bin/simulavr
 .PHONY: test
 test: targets
 	@set -e; \
-	for elf in $(call targets-exec-names,$(TARGETS)); \
+	for elf in $(call targets-bin-names,$(TARGETS)); \
 	do \
 	    echo ; \
 	    $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $${elf} -W 0x20,- -T exit ; \
