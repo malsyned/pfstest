@@ -144,7 +144,7 @@ all-templates =         \
     $(target-templates) \
     $(class-templates)
 
-# TARGET_PLUGINS:
+# MULTITARGET_PLUGINS:
 #
 # This file aims to be a generic, flexible way to build multiple
 # targets in the same make process. Projects might want to augment its
@@ -155,10 +155,10 @@ all-templates =         \
 # Due to dependency issues between variable and rule definitions, it
 # may not be possible get the desired behavior by including an
 # additional make fragment either before or after this file. For those
-# cases, TARGET_PLUGINS can be used to inject another Makefile
+# cases, MULTITARGET_PLUGINS can be used to inject another Makefile
 # fragment within this one, between the variables and rule
 # definitions.
-include $(TARGET_PLUGINS)
+include $(MULTITARGET_PLUGINS)
 
 $(eval $(all-templates))
 

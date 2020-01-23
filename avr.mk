@@ -103,8 +103,8 @@ test: targets
 	    $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $${elf} -W 0x20,- -T exit ; \
 	done
 
-TARGET_PLUGINS = util/automock.inc.mk
-include util/test-targets.inc.mk
+MULTITARGET_PLUGINS = util/automock.inc.mk
+include util/multitarget.inc.mk
 
 # TODO:
 # debugging and programming

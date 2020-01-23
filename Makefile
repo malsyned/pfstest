@@ -32,9 +32,8 @@ selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c
 
-TARGET_PLUGINS = util/automock.inc.mk
-include util/test-targets.inc.mk
-include util/test-runners.inc.mk
+MULTITARGET_PLUGINS = util/automock.inc.mk util/test-runners.inc.mk
+include util/multitarget.inc.mk
 
 .DEFAULT_GOAL := all
 .PHONY: all

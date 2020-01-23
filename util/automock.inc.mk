@@ -1,5 +1,6 @@
-# Do not include this file directly. Instead, Add it to TARGET_PLUGINS
-# to cause it to be included at the right point in test-targets.inc.mk
+# Do not include this file directly. Instead, Add it to
+# MULTITARGET_PLUGINS to cause it to be included at the right point in
+# multitarget.inc.mk
 
 this-makefile := $(lastword $(MAKEFILE_LIST))
 
