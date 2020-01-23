@@ -1,6 +1,6 @@
 include src/src.inc.mk
 include tests/selftestsrc.inc.mk
-include util/automock.inc.mk
+include util/automock-gcc.inc.mk
 
 MCU = atmega128
 F_CPU = 8000000
@@ -103,6 +103,7 @@ test: targets
 	    $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $${elf} -W 0x20,- -T exit ; \
 	done
 
+TARGET_PLUGINS = util/automock.inc.mk
 include util/test-targets.inc.mk
 
 # TODO:

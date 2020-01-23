@@ -1,6 +1,6 @@
 include src/src.inc.mk
 include tests/selftestsrc.inc.mk
-include util/automock.inc.mk
+include util/automock-gcc.inc.mk
 
 MAKEFLAGS += --no-builtin-rules --jobs
 
@@ -32,6 +32,7 @@ selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c
 
+TARGET_PLUGINS = util/automock.inc.mk
 include util/test-targets.inc.mk
 include util/test-runners.inc.mk
 
