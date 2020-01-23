@@ -137,9 +137,6 @@ PYTHON ?= python
 AUTOMOCK_SRC ?= $(dir $(this-makefile))../automock/automock.py
 AUTOMOCK ?= $(PYTHON) $(AUTOMOCK_SRC)
 
-.PHONY: targets
-targets: $(call targets-exec-names,$(TARGETS))
-
 # $(eval $(call target-template,$(target)))
 define target-template
 
@@ -197,6 +194,9 @@ all-templates =         \
     $(class-templates)
 
 $(eval $(all-templates))
+
+.PHONY: targets
+targets: $(call targets-exec-names,$(TARGETS))
 
 clean-targets:
 	rm -f $(call targets-exec-names,$(TARGETS)) \
