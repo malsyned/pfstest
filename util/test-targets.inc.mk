@@ -120,6 +120,8 @@ target-i = $(call targets-files,$1,.i)
 # $(call target-d,target...)
 target-d = $(call targets-files,$1,.d)
 
+makefile-list = $(filter-out $(call target-d,$(TARGETS)),$(MAKEFILE_LIST))
+
 # $(call class-includes,class)
 class-includes =                                                        \
     $(addprefix -I,$(sort $(dir $(call targets-src,                     \
@@ -149,19 +151,19 @@ endef
 
 define class-template
 
-    $$(call class-buildprefix,$1)%.o: %.c $$(MAKEFILE_LIST)
+    $$(call class-buildprefix,$1)%.o: %.c $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
 	    $$(call class-cppflags,$1) -c -o $$@ $$<
 
-    $$(call class-buildprefix,$1)%.i: %.c $$(MAKEFILE_LIST)
+    $$(call class-buildprefix,$1)%.i: %.c $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
 	    $$(call class-cppflags,$1) -E -o $$@ $$<
 
-    $$(call class-buildprefix,$1)%.d: %.c $$(MAKEFILE_LIST)
+    $$(call class-buildprefix,$1)%.d: %.c $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
@@ -170,7 +172,7 @@ define class-template
 
     $$(call class-buildprefix,$1)%$$(mock-suffix).c \
     $$(call class-buildprefix,$1)%$$(mock-suffix).h \
-    : %.h $$(AUTOMOCK_SRC) $$(MAKEFILE_LIST)
+    : %.h $$(AUTOMOCK_SRC) $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
