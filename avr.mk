@@ -73,14 +73,14 @@ self-tests-avr_MOCKS = $(SELFTEST_MOCKS)
 
 TARGETS = self-tests-avr
 
+MULTITARGET_PLUGINS = util/automock.inc.mk
+include util/multitarget.inc.mk
+
+clean-files += $(call targets-files,$(TARGETS),.lst) self-tests-avr.map
+
 .DEFAULT_GOAL := all
 .PHONY: all 
 all: targets sizes
-
-clean: clean-targets
-	rm -rf $(call targets-files,$(TARGETS),.lst)
-	rm -f self-tests-avr.map
-	rm -rf avrbuild/
 
 .PHONY: sizes
 sizes:
@@ -103,8 +103,6 @@ test: targets
 	    $(SIMULAVR) --device $(MCU) --cpufrequency $(F_CPU) -f $${elf} -W 0x20,- -T exit ; \
 	done
 
-MULTITARGET_PLUGINS = util/automock.inc.mk
-include util/multitarget.inc.mk
 
 # TODO:
 # debugging and programming

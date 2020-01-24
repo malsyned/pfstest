@@ -1,3 +1,16 @@
+# $(call reverse,list)
+reverse = $(if $(1),$(call reverse,$(wordlist 2,$(words $(1)),$(1)))) $(firstword $(1))
+
+# $(call parent,path)
+parent = $(dir $(patsubst %/,%,$(1)))
+
+# $(call parent-walk,path)
+# Return $(1) and all parent paths of $(1)
+parent-walk = $(if $(filter-out ./,$(1)),$(1) $(call parent-walk,$(call parent,$(1))))
+
+# $(call parents,paths)
+parents = $(foreach file,$(1),$(call parent-walk,$(call parent,$(file))))
+
 # $(call target-param-name,target,param)
 target-param-name = $1_$2
 
@@ -144,6 +157,19 @@ all-templates =         \
     $(target-templates) \
     $(class-templates)
 
+# NOTE: Plugins should append to clean-files, not to clean-dirs,
+#       clean-files-minimal, or clean-dirs-minimal
+clean-files = $(call targets-bin-names,$(TARGETS)) \
+              $(call target-obj,$(TARGETS)) \
+              $(call target-i,$(TARGETS)) \
+              $(call target-d,$(TARGETS))
+
+clean-dirs = $(call reverse,$(sort $(call parents,$(clean-files))))
+
+clean-files-minimal = $(wildcard $(sort $(clean-files)))
+
+clean-dirs-minimal = $(filter $(BUILDPREFIX)%,$(wildcard $(clean-dirs)))
+
 # MULTITARGET_PLUGINS:
 #
 # This file aims to be a generic, flexible way to build multiple
@@ -165,11 +191,10 @@ $(eval $(all-templates))
 .PHONY: targets
 targets: $(call targets-bin-names,$(TARGETS))
 
-clean-targets:
-	rm -f $(call targets-bin-names,$(TARGETS)) \
-	  $(sort $(call target-obj,$(TARGETS)) \
-	         $(call target-i,$(TARGETS)) \
-	         $(call target-d,$(TARGETS)))
+.PHONY: clean
+clean:
+	$(if $(clean-files-minimal),rm -f $(clean-files-minimal))
+	$(if $(clean-dirs-minimal),rmdir $(clean-dirs-minimal))
 
 .PHONY: none
 none:

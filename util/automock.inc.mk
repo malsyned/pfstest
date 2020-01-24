@@ -57,11 +57,7 @@ define class-template +=
 
 endef
 
-clean-targets: clean-mock-files
-
-.PHONY: clean-mock-files
-clean-mock-files:
-	rm -f $(call targets-mock-files,$(TARGETS))
+clean-files += $(call targets-mock-files,$(TARGETS))
 
 # Without this, GNU Make deletes mock C files after regenerating .d
 # files, even though they're still needed

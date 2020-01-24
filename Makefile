@@ -35,6 +35,8 @@ ARGS=-c
 MULTITARGET_PLUGINS = util/automock.inc.mk util/test-runners.inc.mk
 include util/multitarget.inc.mk
 
+clean-files += src/main/register-tests.c
+
 .DEFAULT_GOAL := all
 .PHONY: all
 all: targets src/main/register-tests.c
@@ -54,7 +56,3 @@ src/main/register-tests.c: selftest-runner \
 	    - \
 	    src/main/register-tests.c.footer \
 	  > $@
-
-clean: clean-targets
-	rm -rf src/main/register-tests.c
-	rm -rf build
