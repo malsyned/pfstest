@@ -37,9 +37,7 @@ include util/multitarget.inc.mk
 
 clean-files += src/main/register-tests.c
 
-.DEFAULT_GOAL := all
-.PHONY: all
-all: targets src/main/register-tests.c
+all: src/main/register-tests.c
 
 .PHONY: test
 test: test-automock run-test-targets

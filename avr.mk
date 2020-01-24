@@ -78,12 +78,10 @@ include util/multitarget.inc.mk
 
 clean-files += $(call targets-files,$(TARGETS),.lst) self-tests-avr.map
 
-.DEFAULT_GOAL := all
-.PHONY: all 
-all: targets sizes
+all: sizes
 
 .PHONY: sizes
-sizes:
+sizes: | targets
 	@for elf in $(call targets-bin-names,$(TARGETS)); \
 	do \
 	    if test -f $${elf}; \

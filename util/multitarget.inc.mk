@@ -188,6 +188,10 @@ include $(MULTITARGET_PLUGINS)
 
 $(eval $(all-templates))
 
+.PHONY: all
+all: targets
+.DEFAULT_GOAL := all
+
 .PHONY: targets
 targets: $(call targets-bin-names,$(TARGETS))
 
