@@ -2,6 +2,9 @@
 # MULTITARGET_PLUGINS to cause it to be included at the right point in
 # multitarget.inc.mk
 
+.PHONY: test
+test: run-test-targets
+
 .PHONY: run-test-targets
 run-test-targets: $(call targets-bin-names,$(TARGETS))
 	@set -e; \

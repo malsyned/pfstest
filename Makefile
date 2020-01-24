@@ -39,8 +39,7 @@ clean-files += src/main/register-tests.c
 
 all: src/main/register-tests.c
 
-.PHONY: test
-test: test-automock run-test-targets
+test: test-automock
 
 .PHONY: test-automock
 test-automock: | run-test-targets
