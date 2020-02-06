@@ -5,8 +5,6 @@
 #include <stdio.h>
 
 #include "pfstest-alloc.h"
-#include "pfstest-core.h"
-
 #include "pfstest-arg-handlers.h"
 #include "pfstest-matchers.h"
 #include "pfstest-tag.h"

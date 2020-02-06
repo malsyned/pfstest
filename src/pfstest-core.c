@@ -3,7 +3,6 @@
 #include <setjmp.h>
 #include <string.h>
 
-#include "pfstest-platform.h"
 #include "pfstest-alloc.h"
 
 #define RESULT_FAIL 1

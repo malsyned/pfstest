@@ -1,8 +1,8 @@
 #include "pfstest-assert.h"
 
-#include "pfstest-core.h"
-
 #include <stdio.h>
+
+#include "pfstest-core.h"
 
 struct assert_that_args
 {
