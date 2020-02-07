@@ -8,6 +8,17 @@ setup()
     capture_output_init();
 }
 
+test(matches_the_pg_string_should_print_expected_string)
+{
+    const pfstest_pg_ptr char *s = pfstest_pg_str("foobar");
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the string \"foobar\"");
+    pfstest_matcher_t *m = matches_the_pg_string(s);
+    pfstest_matcher_print(m, message_spy);
+    assert_that("matches_the_pg_string prints the expected string",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
 test(the_short_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the short 32767");
