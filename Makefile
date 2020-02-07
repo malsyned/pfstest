@@ -27,7 +27,7 @@ SRC = $(PFSTEST_SRC) $(PFSTEST_CLI_SRC) \
 
 TARGETS = selftest
 
-selftest_SRC = $(SELFTEST_SRC) $(SELFTEST_CLI_SRC)
+selftest_SRC = $(SELFTEST_SRC)
 selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c

@@ -8,8 +8,6 @@ SELFTEST_SRC := $(addprefix $(selftest-path), \
                   core-test-cases-2.c \
                   test-assert-that.c test-values-and-matchers.c \
                   test-mock.c test-xml.c test-color.c \
-                  test-avr.c test-shorthand.c)
-
-SELFTEST_CLI_SRC := $(selftest-path)test-invocation.c
+                  test-avr.c test-shorthand.c test-invocation.c)
 
 SELFTEST_MOCKS :=  $(selftest-path)dep.h

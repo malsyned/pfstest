@@ -68,7 +68,7 @@ SRC = $(PFSTEST_SRC) $(PFSTEST_AVR_TOOLS_SRC) \
       src/pfstest-platform-avr8.c \
       src/main/avr-main.c
 
-self-tests-avr_SRC = $(SELFTEST_SRC)
+self-tests-avr_SRC = $(SELFTEST_SRC) $(PFSTEST_CLI_SRC)
 self-tests-avr_MOCKS = $(SELFTEST_MOCKS)
 
 TARGETS = self-tests-avr
