@@ -132,7 +132,8 @@ static pfstest_bool test_matches_filter(_pfstest_test_pg_t *test_desc,
     return name_passed && file_passed;
 }
 
-static void run_indirect_function(const _pfstest_fixture_hookp *fp)
+static void run_indirect_function(
+    const pfstest_pg_ptr _pfstest_fixture_hookp *fp)
 {
     _pfstest_fixture_hookp func;
     if (fp != NULL) {
