@@ -103,7 +103,7 @@ pfstest_matcher_t *pfstest_matches_the_pg_string(
     /* The cast to (void *) in the third argument is to work around a
      * compiler bug in VC++:
 
-     * https://connect.microsoft.com/VisualStudio/feedback/details/3111046/c-compiler-incorrectly-emits-c4090-warning
+     * https://developercommunity.visualstudio.com/content/problem/390711/c-compiler-incorrect-propagation-of-const-qualifie.html
      */
     return pfstest_matcher_new(matches_the_pg_string_printer,
                                matches_the_pg_string_test,
