@@ -23,7 +23,7 @@ BUILDPREFIX = build/
 
 SRC = $(PFSTEST_SRC) $(PFSTEST_CLI_SRC) \
       $(PFSTEST_AVR_TOOLS_SRC) \
-      src/pfstest-alloc-malloc.c src/main/gcc-main.c
+      $(PFSTEST_MALLOC_SRC) src/main/gcc-main.c
 
 TARGETS = selftest
 

@@ -64,8 +64,8 @@ BIN_PATTERN = %.elf
 BUILDPREFIX = avrbuild/
 
 SRC = $(PFSTEST_SRC) $(PFSTEST_AVR_TOOLS_SRC) \
+      $(PFSTEST_MALLOC_SRC) \
       src/pfstest-platform-avr8.c \
-      src/pfstest-alloc-malloc.c \
       src/main/avr-main.c
 
 self-tests-avr_SRC = $(SELFTEST_SRC)
