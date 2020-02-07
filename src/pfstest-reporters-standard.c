@@ -190,12 +190,17 @@ static void test_failed_message_start_standard(
     test_failed_message_start_common(breporter, file, line);
 }
 
+static pfstest_bool current_test_first_failure(builtin_reporter_t *breporter)
+{
+    return !breporter->test_failed;
+}
+
 static void test_failed_message_start_verbose(
     pfstest_reporter_t *reporter, const pfstest_pg_ptr char *file, int line)
 {
     builtin_reporter_t *breporter = (builtin_reporter_t *)reporter;
 
-    if (breporter->test_failed)
+    if (!current_test_first_failure(breporter))
         print_context(breporter);
 
     test_failed_message_start_common(breporter, file, line);

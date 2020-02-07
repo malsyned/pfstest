@@ -315,6 +315,30 @@ test(should_only_count_each_failing_test_once)
     }
 }
 
+test(verbose_should_show_context_on_all_failures_in_a_test)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        HEADER
+        "core-test-cases.c:should_fail_with_fixture FAIL\n"
+        "    Location: core-test-cases.c:4444\n"
+        "    Expected failure, should have been caught\n"
+        "core-test-cases.c:should_fail_with_fixture FAIL\n"
+        "    Location: core-test-cases.c:6666\n"
+        "    Expected failure, should have been caught\n"
+        "\n"
+        "Run complete. 0 passed, 1 failed, 0 ignored\n");
+
+    teardown_hook_fail = 1;
+
+    pfstest_suite_register_test(&suite, should_fail_with_fixture);
+
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, verbose_reporter);
+
+    if (0 != pfstest_strcmp_pg(captured_output, expected)) {
+        fail("Output did not match expected output");
+    }
+}
+
 test(should_return_EXIT_SUCCESS_on_success)
 {
     int result;
