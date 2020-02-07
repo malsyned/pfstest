@@ -117,7 +117,6 @@ typedef struct
 
 #if defined(pfstest_constructor)
 # define _pfstest_init_define(name)                                 \
-    _pfstest_case_extern_decl(the_test);                            \
     pfstest_constructor(_pfstest_econcat(__pfstest_init__, name))   \
     {                                                               \
         pfstest_register_test(name);                                \
