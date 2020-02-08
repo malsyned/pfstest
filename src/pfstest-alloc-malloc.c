@@ -6,8 +6,6 @@
 #include "pfstest-platform.h"
 #include "pfstest-list.h"
 
-#define ALIGNMENT PFSTEST_ALIGNMENT
-
 typedef struct _dynamic_env_t
 {
     struct _dynamic_env_t *next;
@@ -43,7 +41,7 @@ static void *evil_malloc(size_t size)
 
 static pfstest_bool aligned(pfstest_uintptr_t n)
 {
-    return (n % ALIGNMENT == 0);
+    return (n % PFSTEST_ALIGNMENT == 0);
 }
 
 static size_t align_size(size_t size)
@@ -51,13 +49,13 @@ static size_t align_size(size_t size)
     size_t aligned_size;
 
     if (!aligned(size))
-        aligned_size = size + (ALIGNMENT - size % ALIGNMENT);
+        aligned_size = size + (PFSTEST_ALIGNMENT - size % PFSTEST_ALIGNMENT);
     else
         aligned_size = size;
 
     pfstest_c_assert(aligned(aligned_size));
     pfstest_c_assert(aligned_size >= size);
-    pfstest_c_assert(aligned_size < size + ALIGNMENT);
+    pfstest_c_assert(aligned_size < size + PFSTEST_ALIGNMENT);
 
     return aligned_size;
 }
