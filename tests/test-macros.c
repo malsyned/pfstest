@@ -28,7 +28,7 @@
  * measured in MiB or better. */
 #if (defined(__GNUC__)                              \
      && (defined(__x86_64__) || defined(__i386__)   \
-         || defined(__linux__)))
+         || defined(__unix__)))
 # define GCC_PC_LIKE
 #endif
 
