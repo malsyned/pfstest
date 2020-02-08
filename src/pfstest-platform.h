@@ -87,7 +87,7 @@ pfstest_pg_ptr:
     that this is only valid when creating pointers. It may not be
     correct to use this as a storage-class specifier for data objects
     themselves (for example, on avr-gcc). If left undefined, defaults
-    to pfstest_pg. See also: pfstest_pg_ptr
+    to pfstest_pg. See also: pfstest_pg
 
 pfstest_pg_str(string):
 
