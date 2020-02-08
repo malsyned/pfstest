@@ -53,3 +53,16 @@ src/main/register-tests.c: selftest-runner \
 	    - \
 	    src/main/register-tests.c.footer \
 	  > $@
+
+ifdef GCOV
+CFLAGS += --coverage
+LDFLAGS += --coverage
+
+.PHONY: gcov
+gcov:
+	gcov -i $(call target-obj,$(TARGETS))
+
+clean-files += $(call targets-files,$(TARGETS),.gcda)
+clean-files += $(call targets-files,$(TARGETS),.gcno)
+clean-files += $(addsuffix .gcov,$(notdir $(call targets-src,$(TARGETS))))
+endif
