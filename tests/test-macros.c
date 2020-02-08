@@ -26,10 +26,13 @@
  * compiler-specific, so these tests are only run on platforms similar
  * enough to the original development platform and likely to have RAM
  * measured in MiB or better. */
-#if (defined(__GNUC__)                                  \
-     && (defined(__x86_64__)                            \
-         || defined(__i386__)                           \
+#if (defined(__GNUC__)                              \
+     && (defined(__x86_64__) || defined(__i386__)   \
          || defined(__linux__)))
+# define GCC_PC_LIKE
+#endif
+
+#ifdef GCC_PC_LIKE
 
 /* Many of the string literals in this file are longer than the ISO
  * C89 standard of 509 characters */
@@ -219,4 +222,4 @@ test(mock_declare_macro)
                 the_string(actual), matches_the_pg_string(expected));
 }
 
-#endif /* PFSTEST_PLATFORM == PFSTEST_PLATFORM_GCC */
+#endif /* GCC_PC_LIKE */
