@@ -96,22 +96,22 @@ pfstest_pg_str(string):
 
 pfstest_memcpy_pg(ram, pg, size):
 
-    A function or macro which is a version of memcpy which copies data
+    A function or macro which is a variant of memcpy which copies data
     from the nonvolatile memory space into RAM.
 
 pfstest_strcmp_pg(ram, pg):
 
-    A function or macro which is a version of strcmp which compares a
+    A function or macro which is a variant of strcmp which compares a
     string in RAM to one in the non-volatile memory space.
 
 pfstest_strcmp_pgpg(pg1, pg2):
 
-    A function or macro which is a version of strcmp which compares
+    A function or macro which is a variant of strcmp which compares
     two strings that reside in the non-volatile memory space.
 
 pfstest_strcat_pg(ram, pg):
 
-    A function or macro which is a version of strcat which
+    A function or macro which is a variant of strcat which
     concatenates a string which resides in the non-volatile memory
     space onto the end of a string which resides in RAM.
 
