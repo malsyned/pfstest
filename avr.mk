@@ -55,7 +55,8 @@ endif
 LDFLAGS = $(MCUFLAGS)
 LDFLAGS += -Wl,-Map=$(basename $@).map,--cref
 LDFLAGS += -Wl,--gc-sections
-LDLIBS = -lm
+LDFLAGS += -Wl,-u,vfprintf
+LDLIBS = -lprintf_flt -lm
 
 AUTOMOCK_CPPFLAGS = $(GCC_AUTOMOCK_CPPFLAGS)
 AUTOMOCK_FLAGS = $(AVR_GCC_AUTOMOCK_FLAGS)

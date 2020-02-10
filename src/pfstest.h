@@ -9,6 +9,9 @@
 #include "pfstest-matchers.h"
 #include "pfstest-arg-handlers.h"
 
+#include "pfstest-fp.h"
+#include "pfstest-fp-printf.h"
+
 #include "pfstest-mock.h"
 
 #include "pfstest-reporters-standard.h"
