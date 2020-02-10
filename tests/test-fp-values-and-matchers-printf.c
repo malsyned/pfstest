@@ -50,8 +50,7 @@ test(is_a_float_near_should_printf_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("a float within 1e-06 of 1.23457");
 
-    pfstest_matcher_print(is_a_float_within(1.23456789f, 1e-6f),
-                          message_spy);
+    pfstest_matcher_print(is_a_float_near(1.23456789f), message_spy);
 
     assert_that("is_a_float_near prints its expectation and tolerance",
                 the_string(captured_output), matches_the_pg_string(expected));
