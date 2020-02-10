@@ -67,7 +67,10 @@ test(should_print_hex_ushorts)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("the ushort 0xab2");
 
-    pfstest_value_print(as_hex(the_ushort(0xab2)), message_spy);
+    pfstest_value_t *u = the_ushort(0xab2);
+    pfstest_value_t *h = as_hex(u);
+
+    pfstest_value_print(h, message_spy);
 
     assert_that("ushorts print themselves as hex",
                 the_string(captured_output),

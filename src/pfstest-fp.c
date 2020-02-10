@@ -26,7 +26,7 @@ pfstest_value_t *pfstest_the_float(float n)
     float *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new(the_float_printer, data, sizeof(n), NULL);
+    return pfstest_value_new(the_float_printer, data, sizeof(n));
 }
 
 struct float_within_args
@@ -176,7 +176,7 @@ pfstest_value_t *pfstest_the_double(double n)
     double *data = pfstest_alloc(sizeof(n));
     *data = n;
 
-    return pfstest_value_new(the_double_printer, data, sizeof(n), NULL);
+    return pfstest_value_new(the_double_printer, data, sizeof(n));
 }
 
 struct double_within_args

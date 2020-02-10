@@ -52,7 +52,7 @@ setup()
     standard_reporter = pfstest_reporter_standard_new(
         capture_output_char, pfstest_report_colorizer_null);
 
-    some_value = pfstest_value_new(some_value_printer, NULL, 0, NULL);
+    some_value = pfstest_value_new(some_value_printer, NULL, 0);
     matches_anything = pfstest_matcher_new(NULL, always_return_true, NULL);
     matches_nothing =
         pfstest_matcher_new(nothing_printer, always_return_false, NULL);
