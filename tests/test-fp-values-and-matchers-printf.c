@@ -55,3 +55,47 @@ test(is_a_float_near_should_printf_itself)
     assert_that("is_a_float_near prints its expectation and tolerance",
                 the_string(captured_output), matches_the_pg_string(expected));
 }
+
+test(the_double_should_printf_itself)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str("the double 12.3457");
+
+    pfstest_value_print(the_double(12.3456789f), message_spy);
+
+    assert_that("doubles printf themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(is_a_double_within_should_printf_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("a double within 0.01 of 1.23457");
+
+    pfstest_matcher_print(is_a_double_within(1.23456789f, 0.01f), message_spy);
+
+    assert_that("is_a_double_within prints its expectation and tolerance",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(is_a_double_within_should_always_printf_positive_tolerance)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("a double within 0.01 of 1.23457");
+
+    pfstest_matcher_print(is_a_double_within(1.23456789f, -0.01f),
+                          message_spy);
+
+    assert_that("is_a_double_within prints its expectation and tolerance",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(is_a_double_near_should_printf_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("a double within 1e-12 of 1.23457");
+
+    pfstest_matcher_print(is_a_double_near(1.23456789f), message_spy);
+
+    assert_that("is_a_double_near prints its expectation and tolerance",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
