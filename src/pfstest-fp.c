@@ -70,8 +70,7 @@ static pfstest_bool is_a_float_within_test(pfstest_matcher_t *matcher,
 
 pfstest_matcher_t *pfstest_is_a_float_within(float n, float tolerance)
 {
-    struct float_within_matcher *m =
-        (struct float_within_matcher *)pfstest_alloc(sizeof(*m));
+    struct float_within_matcher *m = pfstest_alloc(sizeof(*m));
     pfstest_matcher_init((pfstest_matcher_t *)m,
                          is_a_float_within_printer,
                          is_a_float_within_test);

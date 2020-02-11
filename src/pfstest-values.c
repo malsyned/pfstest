@@ -159,27 +159,17 @@ static void the_enum_printer(pfstest_value_t *value,
     }
 }
 
-static struct enum_value *enum_value_new(
-    void (*printer)(pfstest_value_t *value, pfstest_reporter_t *reporter),
-    const void *data, size_t size,
-    const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map)
-{
-    struct enum_value *v = pfstest_alloc(sizeof(*v));
-    pfstest_value_init((pfstest_value_t *)v, printer, data, size);
-    v->name_map = name_map;
-
-    return v;
-}
-
 pfstest_value_t *pfstest_the_enum(
     int e, const pfstest_pg_ptr char *const pfstest_pg_ptr *name_map)
 {
+    struct enum_value *v = pfstest_alloc(sizeof(*v));
     int *data = pfstest_alloc(sizeof(e));
     *data = e;
+    pfstest_value_init((pfstest_value_t *)v, the_enum_printer, data,
+                       sizeof(e));
+    v->name_map = name_map;
 
-    return (pfstest_value_t *)enum_value_new(the_enum_printer,
-                                             data, sizeof(e),
-                                             name_map);
+    return (pfstest_value_t *)v;
 }
 
 /* the_bool */
