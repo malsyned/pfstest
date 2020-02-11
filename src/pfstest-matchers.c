@@ -10,11 +10,17 @@
 
 /* is */
 
+struct is_matcher
+{
+    pfstest_matcher_t parent;
+    pfstest_value_t *expected;
+};
+
 static void is_printer(pfstest_matcher_t *matcher,
                        pfstest_reporter_t *reporter)
 {
-    pfstest_value_t *expected =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
+    struct is_matcher *is_matcher = (struct is_matcher *)matcher;
+    pfstest_value_t *expected = is_matcher->expected;
 
     pfstest_value_print(expected, reporter);
 }
@@ -22,8 +28,8 @@ static void is_printer(pfstest_matcher_t *matcher,
 static pfstest_bool is_test(pfstest_matcher_t *matcher,
                             pfstest_value_t *actual_value)
 {
-    pfstest_value_t *expected_value =
-        (pfstest_value_t *)pfstest_matcher_data(matcher);
+    struct is_matcher *is_matcher = (struct is_matcher *)matcher;
+    pfstest_value_t *expected_value = is_matcher->expected;
 
     const void *expected = pfstest_value_data(expected_value);
     size_t expected_size = pfstest_value_size(expected_value);
@@ -59,17 +65,27 @@ static pfstest_bool is_test(pfstest_matcher_t *matcher,
 
 pfstest_matcher_t *pfstest_is(pfstest_value_t *expected)
 {
-    return pfstest_matcher_new(is_printer, is_test, expected);
+    struct is_matcher *m = pfstest_alloc(sizeof(*m));
+    pfstest_matcher_init((pfstest_matcher_t *)m, is_printer, is_test);
+    m->expected = expected;
+
+    return (pfstest_matcher_t *)m;
 }
 
 /* matches_the_pg_string */
 
+struct the_pg_string_matcher
+{
+    pfstest_matcher_t parent;
+    const pfstest_pg_ptr char **sp;
+};
+
 static void matches_the_pg_string_printer(
     pfstest_matcher_t *matcher, pfstest_reporter_t *reporter)
 {
-    const pfstest_pg_ptr char **sp =
-        (const pfstest_pg_ptr char **)pfstest_matcher_data(matcher);
-    const pfstest_pg_ptr char *expected = *sp;
+    struct the_pg_string_matcher *m =
+        (struct the_pg_string_matcher *)matcher;
+    const pfstest_pg_ptr char *expected = *m->sp;
     char c;
 
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the string \""));
@@ -85,9 +101,9 @@ static void matches_the_pg_string_printer(
 static pfstest_bool matches_the_pg_string_test(pfstest_matcher_t *matcher,
                                                pfstest_value_t *actual_value)
 {
-    const pfstest_pg_ptr char **sp =
-        (const pfstest_pg_ptr char **)pfstest_matcher_data(matcher);
-    const pfstest_pg_ptr char *expected = *sp;
+    struct the_pg_string_matcher *m =
+        (struct the_pg_string_matcher *)matcher;
+    const pfstest_pg_ptr char *expected = *m->sp;
 
     const char *actual = (const char *)pfstest_value_data(actual_value);
 
@@ -97,17 +113,13 @@ static pfstest_bool matches_the_pg_string_test(pfstest_matcher_t *matcher,
 pfstest_matcher_t *pfstest_matches_the_pg_string(
     const pfstest_pg_ptr char *s)
 {
-    const pfstest_pg_ptr char **sp = pfstest_alloc(sizeof(*sp));
-    *sp = s;
-
-    /* The cast to (void *) in the third argument is to work around a
-     * compiler bug in VC++:
-
-     * https://developercommunity.visualstudio.com/content/problem/390711/c-compiler-incorrect-propagation-of-const-qualifie.html
-     */
-    return pfstest_matcher_new(matches_the_pg_string_printer,
-                               matches_the_pg_string_test,
-                               (void *)sp);
+    struct the_pg_string_matcher *m = pfstest_alloc(sizeof(*m));
+    pfstest_matcher_init((pfstest_matcher_t *)m,
+                         matches_the_pg_string_printer,
+                         matches_the_pg_string_test);
+    m->sp = pfstest_alloc(sizeof(*m->sp));
+    *m->sp = s;
+    return (pfstest_matcher_t *)m;
 }
 
 /* is_anything */
@@ -129,7 +141,7 @@ static pfstest_bool is_anything_test(pfstest_matcher_t *matcher,
 
 pfstest_matcher_t *_pfstest_is_anything(void)
 {
-    return pfstest_matcher_new(is_anything_printer, is_anything_test, NULL);
+    return pfstest_matcher_new(is_anything_printer, is_anything_test);
 }
 
 /* int_members_match */
@@ -140,15 +152,22 @@ struct submatcher
     pfstest_matcher_t *matcher;
 };
 
+struct members_matcher
+{
+    pfstest_matcher_t parent;
+    pfstest_list_t *submatchers;
+};
+
 static void int_members_match_printer(pfstest_matcher_t *matcher,
                                       pfstest_reporter_t *reporter)
 {
-    pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
+    struct members_matcher *members_matcher =
+        (struct members_matcher *)matcher;
     struct submatcher *submatcher;
 
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("{ "));
 
-    pfstest_list_iter (submatcher, submatchers) {
+    pfstest_list_iter (submatcher, members_matcher->submatchers) {
         pfstest_matcher_print(submatcher->matcher, reporter);
 
         if (((pfstest_list_node_t *)submatcher)->next != NULL) {
@@ -198,10 +217,11 @@ static pfstest_bool members_match_test(
     pfstest_matcher_t *matcher, pfstest_value_t *actual_value,
     pfstest_value_t **(*reboxer)(pfstest_value_t *value))
 {
-    pfstest_list_t *submembers = pfstest_matcher_data(matcher);
+    struct members_matcher *members_matcher =
+        (struct members_matcher *)matcher;
     pfstest_value_t **boxed_values = reboxer(actual_value);
 
-    return submatchers_match_value_array(submembers,
+    return submatchers_match_value_array(members_matcher->submatchers,
                                          boxed_values);
 }
 
@@ -234,13 +254,16 @@ static pfstest_list_t *package_all_matcher_args(
 
 pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first,...)
 {
+    struct members_matcher *members_matcher =
+        pfstest_alloc(sizeof(*members_matcher));
     va_list ap;
-    pfstest_list_t *submatchers;
+
+    pfstest_matcher_init((pfstest_matcher_t *)members_matcher,
+                         int_members_match_printer, int_members_match_test);
 
     va_start(ap, first);
-    submatchers = package_all_matcher_args(first, ap);
+    members_matcher->submatchers = package_all_matcher_args(first, ap);
     va_end(ap);
 
-    return pfstest_matcher_new(
-        int_members_match_printer, int_members_match_test, submatchers);
+    return (pfstest_matcher_t *)members_matcher;
 }

@@ -16,22 +16,22 @@ void pfstest_matcher_print(pfstest_matcher_t *matcher,
     matcher->printer(matcher, reporter);
 }
 
-pfstest_matcher_t *pfstest_matcher_new(
+void pfstest_matcher_init(
+    pfstest_matcher_t *matcher,
     void (*printer)(pfstest_matcher_t *matcher, pfstest_reporter_t *reporter),
-    pfstest_bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual),
-    void *data)
+    pfstest_bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual))
 {
-    pfstest_matcher_t *m = pfstest_alloc(sizeof(*m));
-    pfstest_tagged_init((pfstest_tagged_t *)m, &pfstest_matcher_tag);
-
-    m->printer = printer;
-    m->test = test;
-    m->data = data;
-
-    return m;
+    pfstest_tagged_init((pfstest_tagged_t *)matcher, &pfstest_matcher_tag);
+    matcher->printer = printer;
+    matcher->test = test;
 }
 
-void *pfstest_matcher_data(pfstest_matcher_t *matcher)
+pfstest_matcher_t *pfstest_matcher_new(
+    void (*printer)(pfstest_matcher_t *matcher, pfstest_reporter_t *reporter),
+    pfstest_bool (*test)(pfstest_matcher_t *matcher, pfstest_value_t *actual))
 {
-    return matcher->data;
+    pfstest_matcher_t *m = pfstest_alloc(sizeof(*m));
+    pfstest_matcher_init(m, printer, test);
+
+    return m;
 }

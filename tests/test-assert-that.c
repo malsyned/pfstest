@@ -53,9 +53,9 @@ setup()
         capture_output_char, pfstest_report_colorizer_null);
 
     some_value = pfstest_value_new(some_value_printer, NULL, 0);
-    matches_anything = pfstest_matcher_new(NULL, always_return_true, NULL);
+    matches_anything = pfstest_matcher_new(NULL, always_return_true);
     matches_nothing =
-        pfstest_matcher_new(nothing_printer, always_return_false, NULL);
+        pfstest_matcher_new(nothing_printer, always_return_false);
 }
 
 test(should_pass_assertion)
