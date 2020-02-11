@@ -335,16 +335,11 @@ pfstest_value_t *pfstest_mock_invoke(
 
 /* verify */
 
-static pfstest_verifier_t *verifier_new(
-    void (*function)(pfstest_verifier_t *verifier),
-    void *data)
+static void verifier_init(pfstest_verifier_t *verifier,
+                          void (*function)(pfstest_verifier_t *verifier))
 {
-    pfstest_verifier_t *v = pfstest_alloc(sizeof(*v));
-    pfstest_list_node_init((pfstest_list_node_t *)v);
-    v->function = function;
-    v->data = data;
-
-    return v;
+    pfstest_list_node_init((pfstest_list_node_t *)verifier);
+    verifier->function = function;
 }
 
 void pfstest_mock_run_verifiers(void)
@@ -408,8 +403,9 @@ void pfstest_verify_at_location(const pfstest_pg_ptr char *file, int line,
     pfstest_verify_times_at_location(file, line, exactly(1), e);
 }
 
-struct verify_with_mode_args
+struct with_mode_verifier
 {
+    pfstest_verifier_t parent;
     const pfstest_pg_ptr char *file;
     int line;
     pfstest_verify_mode_t *mode;
@@ -418,10 +414,13 @@ struct verify_with_mode_args
 
 static void do_verification_with_mode(pfstest_verifier_t *v)
 {
-    struct verify_with_mode_args *args = v->data;
+    struct with_mode_verifier *with_mode_verifier =
+        (struct with_mode_verifier *)v;
 
-    args->mode->function(args->file, args->line,
-                         args->mode, args->expectation);
+    with_mode_verifier->mode->function(with_mode_verifier->file,
+                                       with_mode_verifier->line,
+                                       with_mode_verifier->mode,
+                                       with_mode_verifier->expectation);
 }
 
 void pfstest_verify_times_at_location(const pfstest_pg_ptr char *file,
@@ -429,13 +428,14 @@ void pfstest_verify_times_at_location(const pfstest_pg_ptr char *file,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e)
 {
-    struct verify_with_mode_args *args = pfstest_alloc(sizeof(*args));
-    args->file = file;
-    args->line = line;
-    args->mode = mode;
-    args->expectation = e;
+    struct with_mode_verifier *v = pfstest_alloc(sizeof(*v));
+    verifier_init((pfstest_verifier_t *)v, do_verification_with_mode);
+    v->file = file;
+    v->line = line;
+    v->mode = mode;
+    v->expectation = e;
     
-    verifier_add(verifier_new(do_verification_with_mode, args));
+    verifier_add((pfstest_verifier_t *)v);
 }
 
 static int count_and_mark_invocations(pfstest_expectation_t *expectation)
@@ -471,11 +471,17 @@ static void fail_wrong_call_count(
                               (const void *)&printer_args);
 }
 
+struct counting_mode
+{
+    pfstest_verify_mode_t parent;
+    int count;
+};
+
 static void do_exactly(const pfstest_pg_ptr char *file, int line,
                        pfstest_verify_mode_t *mode,
                        pfstest_expectation_t *expectation)
 {
-    int wanted_count = *(int *)mode->data;
+    int wanted_count = ((struct counting_mode *)mode)->count;
     int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count != wanted_count) {
@@ -490,14 +496,14 @@ static pfstest_verify_mode_t *counting_mode_new(
                   pfstest_verify_mode_t *mode,
                   pfstest_expectation_t *expectation))
 {
-    pfstest_verify_mode_t *mode = pfstest_alloc(sizeof(*mode));
+    struct counting_mode *mode = pfstest_alloc(sizeof(*mode));
     int *data = pfstest_alloc(sizeof(*data));
     *data = times;
 
-    mode->function = function;
-    mode->data = data;
+    mode->parent.function = function;
+    mode->count = times;
 
-    return mode;
+    return (pfstest_verify_mode_t *)mode;
 }
 
 pfstest_verify_mode_t *pfstest_exactly(int times)
@@ -509,7 +515,7 @@ static void do_at_most(const pfstest_pg_ptr char *file, int line,
                        pfstest_verify_mode_t *mode,
                        pfstest_expectation_t *expectation)
 {
-    int wanted_count = *(int *)mode->data;
+    int wanted_count = ((struct counting_mode *)mode)->count;
     int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count > wanted_count) {
@@ -527,7 +533,7 @@ static void do_at_least(const pfstest_pg_ptr char *file, int line,
                         pfstest_verify_mode_t *mode,
                         pfstest_expectation_t *expectation)
 {
-    int wanted_count = *(int *)mode->data;
+    int wanted_count = ((struct counting_mode *)mode)->count;
     int invocation_count = count_and_mark_invocations(expectation);
 
     if (invocation_count < wanted_count) {
@@ -556,8 +562,9 @@ static void no_more_interactions_printer(
     pfstest_reporter_print_pg_str(reporter, pfstest_mock_name(args->mock));
 }
 
-struct no_more_interactions_args
+struct no_more_interactions_verifier
 {
+    pfstest_verifier_t parent;
     const pfstest_pg_ptr pfstest_mock_t *mock;
     const pfstest_pg_ptr char *file;
     int line;
@@ -565,15 +572,16 @@ struct no_more_interactions_args
 
 static void do_verify_no_more_interactions(pfstest_verifier_t *v)
 {
-    struct no_more_interactions_args *args = v->data;
+    struct no_more_interactions_verifier *nmi_verifier =
+        (struct no_more_interactions_verifier *)v;
     pfstest_invocation_t *i;
 
     pfstest_list_iter (i, &dynamic_env->invocations) {
         struct no_more_interactions_printer_args printer_args;
-        printer_args.mock = args->mock;
+        printer_args.mock = nmi_verifier->mock;
 
-        if (args->mock == i->expectation->mock && !i->mark) {
-            pfstest_fail_with_printer(args->file, args->line,
+        if (nmi_verifier->mock == i->expectation->mock && !i->mark) {
+            pfstest_fail_with_printer(nmi_verifier->file, nmi_verifier->line,
                                       no_more_interactions_printer,
                                       (const void *)&printer_args);
         }
@@ -585,30 +593,34 @@ void pfstest_verify_no_more_interactions_at_location(
     int line,
     const pfstest_pg_ptr pfstest_mock_t *mock)
 {
-    struct no_more_interactions_args *args = pfstest_alloc(sizeof(*args));
-    args->mock = mock;
-    args->file = file;
-    args->line = line;
+    struct no_more_interactions_verifier *v = pfstest_alloc(sizeof(*v));
+    verifier_init((pfstest_verifier_t *)v, do_verify_no_more_interactions);
 
-    verifier_add(verifier_new(do_verify_no_more_interactions, args));
+    v->mock = mock;
+    v->file = file;
+    v->line = line;
+
+    verifier_add((pfstest_verifier_t *)v);
 }
 
 /* No more invocations verification */
 
-struct no_more_invocations_args
+struct no_more_invocations_verifier
 {
+    pfstest_verifier_t parent;
     const pfstest_pg_ptr char *file;
     int line;
 };
 
 static void do_verify_no_more_invocations(pfstest_verifier_t *v)
 {
-    struct no_more_invocations_args *args = v->data;
+    struct no_more_invocations_verifier *nmi_verifier =
+        (struct no_more_invocations_verifier *)v;
     pfstest_invocation_t *invocation;
 
     pfstest_list_iter (invocation, &dynamic_env->invocations) {
         if (!invocation->mark) {
-            pfstest_fail_at_location(args->file, args->line,
+            pfstest_fail_at_location(nmi_verifier->file, nmi_verifier->line,
                                      "Unexpected mock invocations");
         }
     }
@@ -617,11 +629,12 @@ static void do_verify_no_more_invocations(pfstest_verifier_t *v)
 void pfstest_verify_no_more_invocations_at_location(
     const pfstest_pg_ptr char *file, int line)
 {
-    struct no_more_invocations_args *args = pfstest_alloc(sizeof(*args));
-    args->file = file;
-    args->line = line;
+    struct no_more_invocations_verifier *v = pfstest_alloc(sizeof(*v));
+    verifier_init((pfstest_verifier_t *)v, do_verify_no_more_invocations);
+    v->file = file;
+    v->line = line;
 
-    verifier_add(verifier_new(do_verify_no_more_invocations, args));
+    verifier_add((pfstest_verifier_t *)v);
 }
 
 /* in_order verifier */
@@ -648,6 +661,12 @@ static void in_order_fail_printer(pfstest_reporter_t *reporter,
     }
 }
 
+struct in_order_verifier
+{
+    pfstest_verifier_t parent;
+    in_order_t *order;
+};
+
 struct in_order_expectation
 {
     pfstest_list_node_t node;
@@ -658,10 +677,10 @@ struct in_order_expectation
 
 static void do_in_order_verification(pfstest_verifier_t *v)
 {
-    in_order_t *order = v->data;
+    struct in_order_verifier *iov = (struct in_order_verifier *)v;
     pfstest_invocation_t *invocation;
     pfstest_list_node_t *in_order_expectation_node =
-        pfstest_list_head(&order->expectations);
+        pfstest_list_head(&iov->order->expectations);
     pfstest_expectation_t *prev_expectation = NULL;
     struct in_order_expectation *in_order_expectation;
 
@@ -698,9 +717,12 @@ static void do_in_order_verification(pfstest_verifier_t *v)
 pfstest_in_order_t *pfstest_in_order_new(void)
 {
     pfstest_in_order_t *order = pfstest_alloc(sizeof(*order));
+    struct in_order_verifier *v = pfstest_alloc(sizeof(*v));
 
     pfstest_list_reset(&order->expectations);
-    verifier_add(verifier_new(do_in_order_verification, order));
+    verifier_init((pfstest_verifier_t *)v, do_in_order_verification);
+    v->order = order;
+    verifier_add((pfstest_verifier_t *)v);
 
     return order;
 }

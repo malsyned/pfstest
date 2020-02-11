@@ -78,7 +78,6 @@ struct _pfstest_verifier_t
 {
     pfstest_list_node_t node;
     void (*function)(pfstest_verifier_t *verifier);
-    void *data;
 };
 
 void pfstest_mock_run_verifiers(void);
@@ -91,7 +90,6 @@ struct _pfstest_verify_mode_t
     void (*function)(const pfstest_pg_ptr char *file, int line,
                      pfstest_verify_mode_t *mode,
                      pfstest_expectation_t *expectation);
-    void *data;
 };
 
 void pfstest_verify_at_location(const pfstest_pg_ptr char *file, int line,
