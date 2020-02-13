@@ -209,13 +209,16 @@ typedef struct
     extern pfstest_plugin_t plugin_name[]
 
 /** Create a plugin for the PFSTest core */
-#define pfstest_plugin_define(plugin_name, setup, checks, teardown)     \
-    static const pfstest_pg char                                        \
-    _pfstest_plugin_name_var(plugin_name)[] = #plugin_name;             \
-    static const pfstest_pg _pfstest_plugin_pg_t                        \
-    _pfstest_plugin_pg_var(plugin_name) =                               \
-    {_pfstest_plugin_name_var(plugin_name), {setup, checks, teardown}}; \
-    pfstest_plugin_t plugin_name[1] =                                   \
+#define pfstest_plugin_define(plugin_name, setup_cb, checks_cb, \
+                              teardown_cb)                      \
+    static const pfstest_pg char                                \
+    _pfstest_plugin_name_var(plugin_name)[] = #plugin_name;     \
+    static const pfstest_pg _pfstest_plugin_pg_t                \
+    _pfstest_plugin_pg_var(plugin_name) =                       \
+    {_pfstest_plugin_name_var(plugin_name), {setup_cb,          \
+                                             checks_cb,         \
+                                             teardown_cb}};     \
+    pfstest_plugin_t plugin_name[1] =                           \
     {{ {NULL}, &_pfstest_plugin_pg_var(plugin_name) }}
 
 #if defined(pfstest_constructor) || defined(__DOXYGEN__)
