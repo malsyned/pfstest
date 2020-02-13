@@ -9,6 +9,9 @@
 #include "pfstest-matcher.h"
 #include "pfstest-value.h"
 
+/** @name Matchers */
+/** @{ */
+
 /** Perform a byte-by-byte comparison to @p value */
 pfstest_matcher_t *pfstest_is(pfstest_value_t *value);
 
@@ -27,6 +30,11 @@ pfstest_matcher_t *_pfstest_is_anything(void);
  * in mocks.) */
 #define pfstest_is_anything (_pfstest_is_anything())
 
+/** @} */
+
+/** @nonamespace_section */
+/** @{ */
+
 #ifndef PFSTEST_NOALIAS_is
 /** @nonamespace_alias{PFSTEST_NOALIAS_is} */
 # define is pfstest_is
@@ -44,5 +52,7 @@ pfstest_matcher_t *_pfstest_is_anything(void);
 /** @nonamespace_alias{PFSTEST_NOALIAS_is_anything} */
 # define is_anything pfstest_is_anything
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_MATCHERS_H */

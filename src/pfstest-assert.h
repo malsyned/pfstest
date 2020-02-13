@@ -30,9 +30,14 @@ void _pfstest_assert_that_at_location(const pfstest_pg_ptr char *file,
     pfstest_assert_that_at_location(                                    \
         __PFSTEST_NV_FILE__, __PFSTEST_LINE__, message, actual, matcher)
 
+/** @nonamespace_section */
+/** @{ */
+
 #ifndef PFSTEST_NOALIAS_assert_that
 /** @nonamespace_alias{PFSTEST_NOALIAS_assert_that} */
 # define assert_that pfstest_assert_that
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_ASSERT_H */

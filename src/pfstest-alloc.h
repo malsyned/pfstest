@@ -11,9 +11,14 @@ void pfstest_alloc_free_frame(void);
 void pfstest_alloc_frame_push(void);
 void pfstest_alloc_frame_pop(void);
 
+/** @nonamespace_section */
+/** @{ */
+
 #ifndef PFSTEST_NOALIAS_test_alloc
 /** @nonamespace_alias{PFSTEST_NOALIAS_test_alloc} */
 # define test_alloc pfstest_alloc
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_ALLOC_H */

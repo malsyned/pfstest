@@ -24,7 +24,8 @@
 #define __PFSTEST_LINE__ __LINE__
 #endif
 
-/* Fixtures */
+/** @name Fixtures */
+/** @{ */
 
 typedef void (*_pfstest_fixture_hookp)(void);
 
@@ -51,7 +52,10 @@ typedef void (*_pfstest_fixture_hookp)(void);
 /** Start a teardown code block */
 #define pfstest_teardown() _pfstest_fixture_hook_define(teardown_hook)
 
-/* Tests */
+/** @} */
+
+/** @name Tests */
+/** @{ */
 
 #define _PFSTEST_FLAG_IGNORED 0x1
 
@@ -93,6 +97,8 @@ typedef struct
     };                                                                  \
     pfstest_t name[1] = {{ {NULL}, &_pfstest_pg_var(name)}}
 
+/** @cond pfstest_case */
+
 #define _pfstest_case_define(name, flags, setup_ptr, teardown_ptr)  \
     _pfstest_func_decl(name);                                       \
     _pfstest_object(name, flags, setup_ptr, teardown_ptr);          \
@@ -108,6 +114,7 @@ typedef struct
                          &_pfstest_fixture_hookp_name(setup_hook),      \
                          &_pfstest_fixture_hookp_name(teardown_hook))
 
+/** @internal */
 #define pfstest_case(name) _pfstest_case_without_fixture_define(name, 0)
 #define pfstest_case_with_fixture(name)         \
     _pfstest_case_with_fixture_define(name, 0)
@@ -118,6 +125,8 @@ typedef struct
     _pfstest_case_with_fixture_define(name, _PFSTEST_FLAG_IGNORED)
 
 #define _pfstest_case_extern_decl(name) extern pfstest_t name[]
+
+/** @endcond pfstest_case */
 
 #if defined(pfstest_constructor)
 # define _pfstest_init_define(name)                                 \
@@ -139,6 +148,7 @@ typedef struct
 #define pfstest_ignore_test(name)                   \
     _pfstest_define(name, _PFSTEST_FLAG_IGNORED)
 
+/** @cond pfstest_suite */
 void _pfstest_suite_register_test(pfstest_list_t *suite,
                                   pfstest_t *the_test);
 #define pfstest_suite_register_test(suite, the_test) do {   \
@@ -150,21 +160,28 @@ int pfstest_suite_run(pfstest_list_t *plugins, pfstest_list_t *suite,
                       const char *filter_file,
                       const char *filter_name,
                       pfstest_reporter_t *reporter);
+/** @endcond pfstest_suite */
 
 void _pfstest_register_test(pfstest_t *the_test);
 /** Arrange for @p the_test to be run when
  * pfstest_run_registered_tests() is called.
  *
- * If auto-registration is supported on your compiler, it is not
+ * @note If auto-registration is supported on your compiler, it is not
  * necessary to call this function. Simply defining a test with a
- * pfstest() block is sufficient. */
+ * #test block is sufficient. */
 #define pfstest_register_test(the_test) do {    \
         _pfstest_case_extern_decl(the_test);    \
         _pfstest_register_test(the_test);       \
     } while (0)
-pfstest_list_t *pfstest_get_registered_tests(void);
 
-/* Plugins */
+/** @cond pfstest_get_registered_tests */
+pfstest_list_t *pfstest_get_registered_tests(void);
+/** @endcond */
+
+/** @} */
+
+/** @name Plugins */
+/** @{ */
 
 #define _PFSTEST_PLUGIN_CALLBACK_SETUP    0
 #define _PFSTEST_PLUGIN_CALLBACK_CHECKS   1
@@ -217,6 +234,7 @@ typedef struct
 # define pfstest_plugin_autoload(name) _pfstest_expect_semicolon
 #endif
 
+/** @cond pfstest_plugin_lists */
 void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,
                                           pfstest_plugin_t *plugin);
 #define pfstest_plugin_list_register_plugin(plugin_list, plugin_name)   \
@@ -224,6 +242,9 @@ void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugins,
         _pfstest_plugin_extern_decl(plugin_name);                       \
         _pfstest_plugin_list_register_plugin(plugin_list, plugin_name); \
     } while (0)
+
+pfstest_list_t *pfstest_get_registered_plugins(void);
+/** @endcond pfstest_plugin_lists */
 
 void _pfstest_register_plugin(pfstest_plugin_t *plugin);
 /** Arrange for @p plugin_name's callbacks to be run at various points
@@ -234,9 +255,10 @@ void _pfstest_register_plugin(pfstest_plugin_t *plugin);
         _pfstest_register_plugin(plugin_name);      \
     } while (0)
 
-pfstest_list_t *pfstest_get_registered_plugins(void);
+/** @} */
 
-/* Fail interface */
+/** @name Fail interface */
+/** @{ */
 
 #define __PFSTEST_NV_FILE__ pfstest_pg_str(__PFSTEST_FILE__)
 
@@ -259,15 +281,21 @@ void _pfstest_fail_at_location(
 /** Fail the running test, with @p message specifying the reason  */
 #define pfstest_fail(message)                                           \
     pfstest_fail_at_location(__PFSTEST_NV_FILE__, __PFSTEST_LINE__, message)
+/** @} */
 
-/* Framework entry points */
+/** @name Framework entry points */
+/** @{ */
 
 /** Run all tests that have been auto-registered or registered with
  * pfstest_register_test() */
 int pfstest_run_registered_tests(char *filter_file, char *filter_name,
                                  pfstest_reporter_t *reporter);
+/** @} */
 
 /* Convenience aliases without the pfstest namespace prefix */
+
+/** @nonamespace_section */
+/** @{ */
 
 #ifndef PFSTEST_NOALIAS_test
 /** @nonamespace_alias{PFSTEST_NOALIAS_test} */
@@ -297,5 +325,7 @@ int pfstest_run_registered_tests(char *filter_file, char *filter_name,
 /** @nonamespace_alias{PFSTEST_NOALIAS_register_plugin} */
 # define register_plugin pfstest_register_plugin
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_CORE_H */

@@ -32,7 +32,8 @@ typedef struct
 void pfstest_mock_setup(void);
 void pfstest_mock_teardown(void);
 
-/* Expectation */
+/** @name Expectations */
+/** @{ */
 
 /** Describes an expected invocation of a mock and how it should be
  * handled */
@@ -51,9 +52,12 @@ typedef struct
 pfstest_expectation_t *pfstest_when(
     const pfstest_pg_ptr pfstest_mock_t *mock, ...);
 
+/** @cond pfstest_at_location */
 pfstest_expectation_t *pfstest_do_return_at_location(
     const pfstest_pg_ptr char *file, int line,
     pfstest_value_t *return_value, pfstest_expectation_t *expectation);
+/** @endcond */
+
 /** Modify an expectation to return a value other than the default */
 #define pfstest_do_return(return_value, expectation)                    \
     pfstest_do_return_at_location(__PFSTEST_NV_FILE__, __PFSTEST_LINE__, \
@@ -64,6 +68,8 @@ pfstest_expectation_t *pfstest_do_times(int times,
                                         pfstest_expectation_t *expectation);
 /** Modify an expectation to only match once */
 pfstest_expectation_t *pfstest_one_time(pfstest_expectation_t *expectation);
+
+/** @} */
 
 /* Invocation */
 
@@ -79,7 +85,8 @@ pfstest_value_t *pfstest_mock_invoke(
     pfstest_value_t *default_return_value,
     ...);
 
-/* Verification */
+/** @name Verification */
+/** @{ */
 
 typedef struct _pfstest_verifier_t pfstest_verifier_t;
 struct _pfstest_verifier_t
@@ -89,7 +96,9 @@ struct _pfstest_verifier_t
     void *data;
 };
 
+/** @cond pfstest_mock_plugins */
 void pfstest_mock_run_verifiers(void);
+/** @cond */
 
 /* Verification with mode */
 
@@ -106,16 +115,23 @@ struct _pfstest_verify_mode_t
     void *data;
 };
 
+/** @cond pfstest_at_location */
 void pfstest_verify_at_location(const pfstest_pg_ptr char *file, int line,
                                 pfstest_expectation_t *e);
+/** @endcond */
+
 /** Fail the current test if the expectation @p e never matches an
  * invocation */
 #define pfstest_verify(e)                                               \
     pfstest_verify_at_location(__PFSTEST_NV_FILE__, __PFSTEST_LINE__, e)
+
+/** @cond pfstest_at_location */
 void pfstest_verify_times_at_location(const pfstest_pg_ptr char *file,
                                       int line,
                                       pfstest_verify_mode_t *mode,
                                       pfstest_expectation_t *e);
+/** @endcond */
+
 /** Fail the current test if the expectation @p e never matches the
  * number of times described by @p m */
 #define pfstest_verify_times(m, e)                              \
@@ -133,10 +149,12 @@ pfstest_verify_mode_t *pfstest_at_least(int times);
 
 /* No more interactions verification */
 
+/** @cond pfstest_at_location */
 void pfstest_verify_no_more_interactions_at_location(
     const pfstest_pg_ptr char *file,
     int line,
     const pfstest_pg_ptr pfstest_mock_t *mock);
+/** @endcond */
 /** Fail the current test if the function mocked by @p m has been
  * called additional times beyond what was expected */
 #define pfstest_verify_no_more_interactions(m)          \
@@ -145,15 +163,20 @@ void pfstest_verify_no_more_interactions_at_location(
 
 /* No more invocations verification */
 
+/** @cond pfstest_at_location */
 void pfstest_verify_no_more_invocations_at_location(
     const pfstest_pg_ptr char *file, int line);
+/** @endcond */
 /** Fail the current test if any mocked function has been called
  * additional times beyond what was expected */
 #define pfstest_verify_no_more_invocations()        \
     pfstest_verify_no_more_invocations_at_location( \
         __PFSTEST_NV_FILE__, __PFSTEST_LINE__)
 
-/* In order verification */
+/** @} */
+
+/** @name In order verification */
+/** @{ */
 
 /** An in-order execution expectation context */
 typedef struct 
@@ -163,17 +186,23 @@ typedef struct
 
 /** Create a new in-order verification context */
 pfstest_in_order_t *pfstest_in_order_new(void);
+/** @cond pfstest_at_location */
 void pfstest_in_order_verify_at_location(const pfstest_pg_ptr char *file,
                                          int line,
                                          pfstest_in_order_t *order,
                                          pfstest_expectation_t *expectation);
+/** @endcond */
 /** Add an expectation to be verified at the end of @p order */
 #define pfstest_in_order_verify(order, expectation)             \
     pfstest_in_order_verify_at_location(__PFSTEST_NV_FILE__,    \
                                         __PFSTEST_LINE__,       \
                                         order, expectation)
+/** @} */
 
 /* Convenience aliases without the pfstest namespace prefix */
+
+/** @nonamespace_section */
+/** @{ */
 
 #ifndef PFSTEST_NOALIAS_when
 /** @nonamespace_alias{PFSTEST_NOALIAS_when} */
@@ -231,5 +260,7 @@ void pfstest_in_order_verify_at_location(const pfstest_pg_ptr char *file,
 /** @nonamespace_alias{PFSTEST_NOALIAS_in_order_verify} */
 # define in_order_verify pfstest_in_order_verify
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_MOCK_H */

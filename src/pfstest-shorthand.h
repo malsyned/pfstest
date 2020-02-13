@@ -16,6 +16,9 @@
 #define pfstest_assert_null(message, value)                             \
     pfstest_assert_that(message, the_pointer(value), is(the_pointer(NULL)))
 
+/** @nonamespace_section */
+/** @{ */
+
 #ifndef PFSTEST_NOALIAS_assert_true
 /** @nonamespace_alias{PFSTEST_NOALIAS_assert_true} */
 # define assert_true pfstest_assert_true
@@ -28,5 +31,7 @@
 /** @nonamespace_alias{PFSTEST_NOALIAS_assert_null} */
 # define assert_null pfstest_assert_null
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_SHORTHAND_H */

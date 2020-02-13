@@ -23,6 +23,9 @@ pfstest_arg_handler_t *pfstest_assign_arg_that(pfstest_matcher_t *matcher,
  * by @c arg_p */
 pfstest_arg_handler_t *pfstest_capture_arg(void *arg_p);
 
+/** @nonamespace_section */
+/** @{ */
+
 #ifndef PFSTEST_NOALIAS_arg_that
 /** @nonamespace_alias{PFSTEST_NOALIAS_arg_that} */
 # define arg_that pfstest_arg_that
@@ -39,5 +42,7 @@ pfstest_arg_handler_t *pfstest_capture_arg(void *arg_p);
 /** @nonamespace_alias{PFSTEST_NOALIAS_capture_arg} */
 # define capture_arg pfstest_capture_arg
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_ARG_HANDLERS_H */

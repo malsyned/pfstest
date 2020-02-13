@@ -70,6 +70,9 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
  */
 pfstest_value_t *pfstest_as_hex(pfstest_value_t *value);
 
+/** @nonamespace_section */
+/** @{ */
+
 #ifndef PFSTEST_NOALIAS_the_short
 /** @nonamespace_alias{PFSTEST_NOALIAS_the_short} */
 # define the_short pfstest_the_short
@@ -132,6 +135,8 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value);
 # define as_hex pfstest_as_hex
 #endif
 
+/** @} */
+
 #if (PFSTEST_HAS_STDINT) || defined(__DOXYGEN__)
 /** Box a uint8_t */
 pfstest_value_t *pfstest_the_u8(uint8_t n);
@@ -141,6 +146,9 @@ pfstest_value_t *pfstest_the_u16(uint16_t n);
 pfstest_value_t *pfstest_the_u32(uint32_t n);
 /** Box a uint64_t */
 pfstest_value_t *pfstest_the_u64(uint64_t n);
+
+/** @nonamespace_section */
+/** @{ */
 
 #ifndef PFSTEST_NOALIAS_the_u8
 /** @nonamespace_alias{PFSTEST_NOALIAS_the_u8} */
@@ -159,5 +167,7 @@ pfstest_value_t *pfstest_the_u64(uint64_t n);
 # define the_u64 pfstest_the_u64
 #endif
 #endif  /* defined(PFSTEST_HAS_STDINT) */
+
+/** @} */
 
 #endif /* !PFSTEST_VALUES_H */

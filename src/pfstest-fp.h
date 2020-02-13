@@ -6,10 +6,18 @@
 #include "pfstest-value.h"
 #include "pfstest-matcher.h"
 
+/** @name Values */
+/** @{ */
+
 /** Box a float */
 pfstest_value_t *pfstest_the_float(float n);
 /** Box a double */
 pfstest_value_t *pfstest_the_double(double n);
+
+/** @} */
+
+/** @name Matchers */
+/** @{ */
 
 /** Matches a float if @p n is within @p tolerance */
 pfstest_matcher_t *pfstest_is_a_float_within(float n, float tolerance);
@@ -45,11 +53,21 @@ pfstest_matcher_t *_pfstest_is_double_nan(void);
 /** Matches IEEE-754 double Not-a-Number */
 #define pfstest_is_double_nan _pfstest_is_double_nan()
 
+/** @} */
+
+/** @name Formatting */
+/** @{ **/
+
 /** Assign a different function to format and print floating point
  * numbers.
  *
  * By default only their type, not their value, is printed. */
 void pfstest_fp_set_printer(void (*printer)(double, pfstest_reporter_t *));
+
+/** @} */
+
+/** @nonamespace_section */
+/** @{ */
 
 #ifndef PFSTEST_NOALIAS_the_float
 /** @nonamespace_alias{PFSTEST_NOALIAS_the_float} */
@@ -100,5 +118,7 @@ void pfstest_fp_set_printer(void (*printer)(double, pfstest_reporter_t *));
 /** @nonamespace_alias{PFSTEST_NOALIAS_is_double_nan} */
 # define is_double_nan pfstest_is_double_nan
 #endif
+
+/** @} */
 
 #endif /* !PFSTEST_FP_H */
