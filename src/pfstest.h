@@ -1,6 +1,14 @@
 #ifndef PFSTEST_H
 #define PFSTEST_H
 
+/** @mainpage
+ *
+ * PFSTest is a unit testing and mocking framework for C. It aims to
+ * come as close to the feature set and ease of use of Hamcrest and
+ * Mockito as possible, while still being small enough to be used on
+ * small embedded microcontrollers.
+ */
+
 #include "pfstest-core.h"
 #include "pfstest-alloc.h"
 #include "pfstest-assert.h"

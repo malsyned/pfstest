@@ -1,6 +1,8 @@
 #ifndef PFSTEST_SHORTHAND_H
 #define PFSTEST_SHORTHAND_H
 
+/** @file */
+
 #include <stddef.h>
 
 #include "pfstest-assert.h"
@@ -15,12 +17,15 @@
     pfstest_assert_that(message, the_pointer(value), is(the_pointer(NULL)))
 
 #ifndef PFSTEST_NOALIAS_assert_true
+/** @nonamespace_alias{PFSTEST_NOALIAS_assert_true} */
 # define assert_true pfstest_assert_true
 #endif
 #ifndef PFSTEST_NOALIAS_assert_false
+/** @nonamespace_alias{PFSTEST_NOALIAS_assert_false} */
 # define assert_false pfstest_assert_false
 #endif
 #ifndef PFSTEST_NOALIAS_assert_null
+/** @nonamespace_alias{PFSTEST_NOALIAS_assert_null} */
 # define assert_null pfstest_assert_null
 #endif
 
