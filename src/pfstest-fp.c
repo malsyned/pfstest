@@ -35,8 +35,8 @@ struct float_within_args
     float tolerance;
 };
 
-static void is_a_float_within_printer(pfstest_matcher_t *matcher,
-                                      pfstest_reporter_t *reporter)
+static void close_to_float_printer(pfstest_matcher_t *matcher,
+                                   pfstest_reporter_t *reporter)
 {
     struct float_within_args *args = pfstest_matcher_data(matcher);
 
@@ -52,8 +52,8 @@ static void is_a_float_within_printer(pfstest_matcher_t *matcher,
     }
 }
 
-static pfstest_bool is_a_float_within_test(pfstest_matcher_t *matcher,
-                                           pfstest_value_t *actual)
+static pfstest_bool close_to_float_test(pfstest_matcher_t *matcher,
+                                        pfstest_value_t *actual)
 {
     struct float_within_args *args = pfstest_matcher_data(matcher);
     float expected = args->expected;
@@ -65,14 +65,14 @@ static pfstest_bool is_a_float_within_test(pfstest_matcher_t *matcher,
     return (delta <= tolerance);
 }
 
-pfstest_matcher_t *pfstest_is_a_float_within(float n, float tolerance)
+pfstest_matcher_t *pfstest_close_to_float(float n, float tolerance)
 {
     struct float_within_args *args = pfstest_alloc(sizeof(*args));
     args->expected = n;
     args->tolerance = tolerance >= 0.0f ? tolerance : -tolerance;
 
-    return pfstest_matcher_new(is_a_float_within_printer,
-                               is_a_float_within_test,
+    return pfstest_matcher_new(close_to_float_printer,
+                               close_to_float_test,
                                args);
 }
 
@@ -87,16 +87,16 @@ static pfstest_bool floats_equal(float a, float b)
 #endif
 }
 
-static void is_float_inf_printer(pfstest_matcher_t *matcher,
+static void an_inf_float_printer(pfstest_matcher_t *matcher,
                                  pfstest_reporter_t *reporter)
 {
     (void)matcher;
 
     pfstest_reporter_print_pg_str(
-        reporter, pfstest_pg_str("the float inf"));
+        reporter, pfstest_pg_str("an inf float"));
 }
 
-static pfstest_bool is_float_inf_test(pfstest_matcher_t *matcher,
+static pfstest_bool an_inf_float_test(pfstest_matcher_t *matcher,
                                       pfstest_value_t *actual)
 {
     float n = *(const float *)pfstest_value_data(actual);
@@ -105,23 +105,23 @@ static pfstest_bool is_float_inf_test(pfstest_matcher_t *matcher,
     return floats_equal(n, 1.0f/0.0f);
 }
 
-pfstest_matcher_t *_pfstest_is_float_inf(void)
+pfstest_matcher_t *pfstest_an_inf_float(void)
 {
-    return pfstest_matcher_new(is_float_inf_printer, is_float_inf_test,
+    return pfstest_matcher_new(an_inf_float_printer, an_inf_float_test,
                                NULL);
 }
 
-static void is_float_neg_inf_printer(pfstest_matcher_t *matcher,
-                                     pfstest_reporter_t *reporter)
+static void a_neg_inf_float_printer(pfstest_matcher_t *matcher,
+                                    pfstest_reporter_t *reporter)
 {
     (void)matcher;
 
     pfstest_reporter_print_pg_str(
-        reporter, pfstest_pg_str("the float -inf"));
+        reporter, pfstest_pg_str("a -inf float"));
 }
 
-static pfstest_bool is_float_neg_inf_test(pfstest_matcher_t *matcher,
-                                          pfstest_value_t *actual)
+static pfstest_bool a_neg_inf_float_test(pfstest_matcher_t *matcher,
+                                         pfstest_value_t *actual)
 {
     float n = *(const float *)pfstest_value_data(actual);
     (void)matcher;
@@ -129,22 +129,22 @@ static pfstest_bool is_float_neg_inf_test(pfstest_matcher_t *matcher,
     return floats_equal(n, -1.0f/0.0f);
 }
 
-pfstest_matcher_t *_pfstest_is_float_neg_inf(void)
+pfstest_matcher_t *pfstest_a_neg_inf_float(void)
 {
-    return pfstest_matcher_new(is_float_neg_inf_printer,
-                               is_float_neg_inf_test, NULL);
+    return pfstest_matcher_new(a_neg_inf_float_printer,
+                               a_neg_inf_float_test, NULL);
 }
 
-static void is_float_nan_printer(pfstest_matcher_t *matcher,
-                                 pfstest_reporter_t *reporter)
+static void a_nan_float_printer(pfstest_matcher_t *matcher,
+                                pfstest_reporter_t *reporter)
 {
     (void)matcher;
     pfstest_reporter_print_pg_str(
-        reporter, pfstest_pg_str("the float nan"));
+        reporter, pfstest_pg_str("a nan float"));
 }
 
-static pfstest_bool is_float_nan_test(pfstest_matcher_t *matcher,
-                                      pfstest_value_t *actual)
+static pfstest_bool a_nan_float_test(pfstest_matcher_t *matcher,
+                                     pfstest_value_t *actual)
 {
     float n = *(const float *)pfstest_value_data(actual);
     (void)matcher;
@@ -152,10 +152,10 @@ static pfstest_bool is_float_nan_test(pfstest_matcher_t *matcher,
     return !floats_equal(n, n);
 }
 
-pfstest_matcher_t *_pfstest_is_float_nan(void)
+pfstest_matcher_t *pfstest_a_nan_float(void)
 {
-    return pfstest_matcher_new(is_float_nan_printer,
-                               is_float_nan_test, NULL);
+    return pfstest_matcher_new(a_nan_float_printer,
+                               a_nan_float_test, NULL);
 }
 
 static void the_double_printer(pfstest_value_t *value,
@@ -185,8 +185,8 @@ struct double_within_args
     double tolerance;
 };
 
-static void is_a_double_within_printer(pfstest_matcher_t *matcher,
-                                       pfstest_reporter_t *reporter)
+static void close_to_double_printer(pfstest_matcher_t *matcher,
+                                    pfstest_reporter_t *reporter)
 {
     struct double_within_args *args = pfstest_matcher_data(matcher);
 
@@ -202,8 +202,8 @@ static void is_a_double_within_printer(pfstest_matcher_t *matcher,
     }
 }
 
-static pfstest_bool is_a_double_within_test(pfstest_matcher_t *matcher,
-                                            pfstest_value_t *actual)
+static pfstest_bool close_to_double_test(pfstest_matcher_t *matcher,
+                                         pfstest_value_t *actual)
 {
     struct double_within_args *args = pfstest_matcher_data(matcher);
     double expected = args->expected;
@@ -215,14 +215,14 @@ static pfstest_bool is_a_double_within_test(pfstest_matcher_t *matcher,
     return (delta <= tolerance);
 }
 
-pfstest_matcher_t *pfstest_is_a_double_within(double n, double tolerance)
+pfstest_matcher_t *pfstest_close_to_double(double n, double tolerance)
 {
     struct double_within_args *args = pfstest_alloc(sizeof(*args));
     args->expected = n;
     args->tolerance = tolerance >= 0.0f ? tolerance : -tolerance;
 
-    return pfstest_matcher_new(is_a_double_within_printer,
-                               is_a_double_within_test,
+    return pfstest_matcher_new(close_to_double_printer,
+                               close_to_double_test,
                                args);
 }
 
@@ -237,16 +237,16 @@ static pfstest_bool doubles_equal(double a, double b)
 #endif
 }
 
-static void is_double_inf_printer(pfstest_matcher_t *matcher,
+static void an_inf_double_printer(pfstest_matcher_t *matcher,
                                   pfstest_reporter_t *reporter)
 {
     (void)matcher;
 
     pfstest_reporter_print_pg_str(
-        reporter, pfstest_pg_str("the double inf"));
+        reporter, pfstest_pg_str("an inf double"));
 }
 
-static pfstest_bool is_double_inf_test(pfstest_matcher_t *matcher,
+static pfstest_bool an_inf_double_test(pfstest_matcher_t *matcher,
                                        pfstest_value_t *actual)
 {
     double n = *(const double *)pfstest_value_data(actual);
@@ -255,23 +255,23 @@ static pfstest_bool is_double_inf_test(pfstest_matcher_t *matcher,
     return doubles_equal(n, 1.0f/0.0f);
 }
 
-pfstest_matcher_t *_pfstest_is_double_inf(void)
+pfstest_matcher_t *pfstest_an_inf_double(void)
 {
-    return pfstest_matcher_new(is_double_inf_printer, is_double_inf_test,
+    return pfstest_matcher_new(an_inf_double_printer, an_inf_double_test,
                                NULL);
 }
 
-static void is_double_neg_inf_printer(pfstest_matcher_t *matcher,
-                                      pfstest_reporter_t *reporter)
+static void a_neg_inf_double_printer(pfstest_matcher_t *matcher,
+                                     pfstest_reporter_t *reporter)
 {
     (void)matcher;
 
     pfstest_reporter_print_pg_str(
-        reporter, pfstest_pg_str("the double -inf"));
+        reporter, pfstest_pg_str("a -inf double"));
 }
 
-static pfstest_bool is_double_neg_inf_test(pfstest_matcher_t *matcher,
-                                           pfstest_value_t *actual)
+static pfstest_bool a_neg_inf_double_test(pfstest_matcher_t *matcher,
+                                          pfstest_value_t *actual)
 {
     double n = *(const double *)pfstest_value_data(actual);
     (void)matcher;
@@ -279,22 +279,22 @@ static pfstest_bool is_double_neg_inf_test(pfstest_matcher_t *matcher,
     return doubles_equal(n, -1.0f/0.0f);
 }
 
-pfstest_matcher_t *_pfstest_is_double_neg_inf(void)
+pfstest_matcher_t *pfstest_a_neg_inf_double(void)
 {
-    return pfstest_matcher_new(is_double_neg_inf_printer,
-                               is_double_neg_inf_test, NULL);
+    return pfstest_matcher_new(a_neg_inf_double_printer,
+                               a_neg_inf_double_test, NULL);
 }
 
-static void is_double_nan_printer(pfstest_matcher_t *matcher,
-                                  pfstest_reporter_t *reporter)
+static void a_nan_double_printer(pfstest_matcher_t *matcher,
+                                 pfstest_reporter_t *reporter)
 {
     (void)matcher;
     pfstest_reporter_print_pg_str(
-        reporter, pfstest_pg_str("the double nan"));
+        reporter, pfstest_pg_str("a nan double"));
 }
 
-static pfstest_bool is_double_nan_test(pfstest_matcher_t *matcher,
-                                       pfstest_value_t *actual)
+static pfstest_bool a_nan_double_test(pfstest_matcher_t *matcher,
+                                      pfstest_value_t *actual)
 {
     double n = *(const double *)pfstest_value_data(actual);
     (void)matcher;
@@ -302,8 +302,8 @@ static pfstest_bool is_double_nan_test(pfstest_matcher_t *matcher,
     return !doubles_equal(n, n);
 }
 
-pfstest_matcher_t *_pfstest_is_double_nan(void)
+pfstest_matcher_t *pfstest_a_nan_double(void)
 {
-    return pfstest_matcher_new(is_double_nan_printer,
-                               is_double_nan_test, NULL);
+    return pfstest_matcher_new(a_nan_double_printer,
+                               a_nan_double_test, NULL);
 }

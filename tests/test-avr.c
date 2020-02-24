@@ -29,7 +29,7 @@ test(should_fill_whole_buffer)
     _pfstest_avr_fill_mem_with_sentinel(buf, fake_get_stack_pointer);
 
     assert_that("All of memory can be filled",
-                the_memory(buf, 8), is(the_memory(expected, 8)));
+                the_memory(buf, 8), equal_to(the_memory(expected, 8)));
 }
 
 test(should_stop_filling_at_stack_pointer)
@@ -41,7 +41,7 @@ test(should_stop_filling_at_stack_pointer)
     _pfstest_avr_fill_mem_with_sentinel(buf, fake_get_stack_pointer);
 
     assert_that("Filling stops at the stack pointer",
-                the_memory(buf, 8), is(the_memory(expected, 8)));
+                the_memory(buf, 8), equal_to(the_memory(expected, 8)));
 }
 
 test(should_find_no_stack_or_heap_usage)
@@ -53,9 +53,9 @@ test(should_find_no_stack_or_heap_usage)
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
     assert_that("No heap was used",
-                the_uint((unsigned)used.heap), is(the_uint(0)));
+                the_uint((unsigned)used.heap), equal_to(the_uint(0)));
     assert_that("No stack was used",
-                the_uint((unsigned)used.stack), is(the_uint(0)));
+                the_uint((unsigned)used.stack), equal_to(the_uint(0)));
     assert_false("No collision was detected", used.collision);
 }
 
@@ -68,9 +68,9 @@ test(should_find_heap_usage)
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
     assert_that("Some heap was used",
-                the_uint((unsigned)used.heap), is(the_uint(2)));
+                the_uint((unsigned)used.heap), equal_to(the_uint(2)));
     assert_that("No stack was used",
-                the_uint((unsigned)used.stack), is(the_uint(0)));
+                the_uint((unsigned)used.stack), equal_to(the_uint(0)));
     assert_false("No collision was detected", used.collision);
 }
 
@@ -83,9 +83,9 @@ test(should_find_stack_usage)
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
     assert_that("No heap was used",
-                the_uint((unsigned)used.heap), is(the_uint(0)));
+                the_uint((unsigned)used.heap), equal_to(the_uint(0)));
     assert_that("Some stack was used",
-                the_uint((unsigned)used.stack), is(the_uint(3)));
+                the_uint((unsigned)used.stack), equal_to(the_uint(3)));
     assert_false("No collision was detected", used.collision);
 }
 
@@ -98,7 +98,7 @@ test(should_require_four_sentinels_in_stack)
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
     assert_that("Stack detection requires four contiguous sentinels",
-                the_uint((unsigned)used.stack), is(the_uint(5)));
+                the_uint((unsigned)used.stack), equal_to(the_uint(5)));
     assert_false("No collision was detected", used.collision);
 }
 
@@ -111,7 +111,7 @@ test(should_ignore_excess_sentinels_in_heap)
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
     assert_that("Sentinels in the heap are ignored",
-                the_uint((unsigned)used.heap), is(the_uint(6)));
+                the_uint((unsigned)used.heap), equal_to(the_uint(6)));
     assert_false("No collision was detected", used.collision);
 }
 
@@ -135,7 +135,7 @@ test(should_respect_stack_pointer)
     used = _pfstest_avr_mem_usage(mem, sizeof(mem), fake_get_stack_pointer);
 
     assert_that("Bytes behind the stack pointer are assumed to be used",
-                the_uint((unsigned)used.stack), is(the_uint(6)));
+                the_uint((unsigned)used.stack), equal_to(the_uint(6)));
 }
 
 test(should_clear_above_stack)
@@ -150,5 +150,5 @@ test(should_clear_above_stack)
 
     assert_that("Previously-used stack bytes are reinitialized",
                 the_memory(mem, sizeof(mem)),
-                is(the_memory(expected, sizeof(expected))));
+                equal_to(the_memory(expected, sizeof(expected))));
 }

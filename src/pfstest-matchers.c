@@ -8,10 +8,10 @@
 #include "pfstest-values.h"
 #include "pfstest-alloc.h"
 
-/* is */
+/* equal_to */
 
-static void is_printer(pfstest_matcher_t *matcher,
-                       pfstest_reporter_t *reporter)
+static void equal_to_printer(pfstest_matcher_t *matcher,
+                             pfstest_reporter_t *reporter)
 {
     pfstest_value_t *expected =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
@@ -19,8 +19,8 @@ static void is_printer(pfstest_matcher_t *matcher,
     pfstest_value_print(expected, reporter);
 }
 
-static pfstest_bool is_test(pfstest_matcher_t *matcher,
-                            pfstest_value_t *actual_value)
+static pfstest_bool equal_to_test(pfstest_matcher_t *matcher,
+                                  pfstest_value_t *actual_value)
 {
     pfstest_value_t *expected_value =
         (pfstest_value_t *)pfstest_matcher_data(matcher);
@@ -57,9 +57,27 @@ static pfstest_bool is_test(pfstest_matcher_t *matcher,
         return (0 == memcmp(expected, actual, expected_size));
 }
 
-pfstest_matcher_t *pfstest_is(pfstest_value_t *expected)
+pfstest_matcher_t *pfstest_equal_to(pfstest_value_t *expected)
 {
-    return pfstest_matcher_new(is_printer, is_test, expected);
+    return pfstest_matcher_new(equal_to_printer, equal_to_test, expected);
+}
+
+/* is */
+
+pfstest_matcher_t *pfstest_is_at_location(const pfstest_pg_ptr char *file,
+                                          int line,
+                                          void *matcher_or_value)
+{
+    pfstest_tag_t tag = pfstest_tag_get(matcher_or_value);
+
+    if (tag == pfstest_value_tag)
+        return equal_to(matcher_or_value);
+    else if (tag == pfstest_matcher_tag)
+        return matcher_or_value;
+
+    pfstest_fail_at_location(file, line,
+                             "is() called with something other than a "
+                             "matcher or value");
 }
 
 /* matches_the_pg_string */
@@ -110,26 +128,26 @@ pfstest_matcher_t *pfstest_matches_the_pg_string(
                                (void *)sp);
 }
 
-/* is_anything */
+/* anything */
 
-static void is_anything_printer(pfstest_matcher_t *matcher,
-                                pfstest_reporter_t *reporter)
+static void anything_printer(pfstest_matcher_t *matcher,
+                             pfstest_reporter_t *reporter)
 {
     (void)matcher;
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("anything"));
 }
 
-static pfstest_bool is_anything_test(pfstest_matcher_t *matcher,
-                                     pfstest_value_t *actual)
+static pfstest_bool anything_test(pfstest_matcher_t *matcher,
+                                  pfstest_value_t *actual)
 {
     (void)matcher;
     (void)actual;
     return pfstest_true;
 }
 
-pfstest_matcher_t *_pfstest_is_anything(void)
+pfstest_matcher_t *pfstest_anything(void)
 {
-    return pfstest_matcher_new(is_anything_printer, is_anything_test, NULL);
+    return pfstest_matcher_new(anything_printer, anything_test, NULL);
 }
 
 /* int_members_match */

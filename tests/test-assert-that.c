@@ -79,7 +79,7 @@ test(should_fail_on_false_assertion)
 
     assert_that("False assertions fail",
                 the_int(pfstest_reporter_return_value(message_spy)),
-                is(the_int(EXIT_FAILURE)));
+                equal_to(the_int(EXIT_FAILURE)));
 }
 
 test(should_print_explanation_on_failed_assertion)

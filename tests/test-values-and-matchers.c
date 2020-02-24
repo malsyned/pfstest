@@ -42,14 +42,14 @@ test(the_short_should_print_negative_shorts)
 test(equal_shorts_should_match)
 {
     assert_true("equal shorts match",
-                pfstest_matcher_matches(is(the_short(32767)),
+                pfstest_matcher_matches(equal_to(the_short(32767)),
                                         the_short(32767)));
 }
 
 test(unequal_shorts_should_not_match)
 {
     assert_false("unequal shorts don't match",
-                 pfstest_matcher_matches(is(the_short(32767)),
+                 pfstest_matcher_matches(equal_to(the_short(32767)),
                                          the_short(-32768)));
 }
 
@@ -77,14 +77,14 @@ test(should_print_hex_ushorts)
 test(equal_ushorts_should_match)
 {
     assert_true("equal ushorts match",
-                pfstest_matcher_matches(is(the_ushort(65535)),
+                pfstest_matcher_matches(equal_to(the_ushort(65535)),
                                         the_ushort(65535)));
 }
 
 test(unequal_ushorts_should_not_match)
 {
     assert_false("unequal ushorts don't match",
-                 pfstest_matcher_matches(is(the_ushort(65534)),
+                 pfstest_matcher_matches(equal_to(the_ushort(65534)),
                                          the_ushort(65535)));
 }
 
@@ -111,14 +111,14 @@ test(the_int_should_print_negative_ints)
 test(equal_ints_should_match)
 {
     assert_true("equal ints match",
-                pfstest_matcher_matches(is(the_int(32767)),
+                pfstest_matcher_matches(equal_to(the_int(32767)),
                                         the_int(32767)));
 }
 
 test(unequal_ints_should_not_match)
 {
     assert_false("unequal ints don't match",
-                 pfstest_matcher_matches(is(the_int(32767)),
+                 pfstest_matcher_matches(equal_to(the_int(32767)),
                                          the_int(-32768)));
 }
 
@@ -146,14 +146,14 @@ test(should_print_hex_uints)
 test(equal_uints_should_match)
 {
     assert_true("equal uints match",
-                pfstest_matcher_matches(is(the_uint(65535)),
+                pfstest_matcher_matches(equal_to(the_uint(65535)),
                                         the_uint(65535)));
 }
 
 test(unequal_uints_should_not_match)
 {
     assert_false("unequal uints don't match",
-                 pfstest_matcher_matches(is(the_uint(65534)),
+                 pfstest_matcher_matches(equal_to(the_uint(65534)),
                                          the_uint(65535)));
 }
 
@@ -183,14 +183,14 @@ test(the_long_should_print_negative_longs)
 test(equal_longs_should_match)
 {
     assert_true("equal longs match",
-                pfstest_matcher_matches(is(the_long(2147483647l)),
+                pfstest_matcher_matches(equal_to(the_long(2147483647l)),
                                         the_long(2147483647l)));
 }
 
 test(unequal_longs_should_not_match)
 {
     assert_false("unequal longs don't match",
-                 pfstest_matcher_matches(is(the_long((-2147483647l - 1))),
+                 pfstest_matcher_matches(equal_to(the_long((-2147483647l - 1))),
                                          the_long(2147483647l)));
 }
 
@@ -220,14 +220,14 @@ test(should_print_hex_ulongs)
 test(equal_ulongs_should_match)
 {
     assert_true("equal ulongs match",
-                pfstest_matcher_matches(is(the_ulong(4294967295ul)),
+                pfstest_matcher_matches(equal_to(the_ulong(4294967295ul)),
                                         the_ulong(4294967295ul)));
 }
 
 test(unequal_ulongs_should_not_match)
 {
     assert_false("unequal ulongs don't match",
-                 pfstest_matcher_matches(is(the_ulong(4294967294ul)),
+                 pfstest_matcher_matches(equal_to(the_ulong(4294967294ul)),
                                          the_ulong(4294967295ul)));
 }
 
@@ -257,14 +257,14 @@ test(should_print_hex_sizes)
 test(equal_sizes_should_match)
 {
     assert_true("equal sizes match",
-                pfstest_matcher_matches(is(the_size(65535u)),
+                pfstest_matcher_matches(equal_to(the_size(65535u)),
                                         the_size(65535u)));
 }
 
 test(unequal_sizes_should_not_match)
 {
     assert_false("unequal sizes don't match",
-                 pfstest_matcher_matches(is(the_size(65535u)),
+                 pfstest_matcher_matches(equal_to(the_size(65535u)),
                                          the_size(65534u)));
 }
 
@@ -315,15 +315,17 @@ test(the_enum_should_fall_back_to_printing_numeric_value)
 test(equal_enums_should_match)
 {
     assert_true("equal enums match",
-                pfstest_matcher_matches(is(the_enum(e_foo, some_enum_map)),
-                                        the_enum(e_foo, some_enum_map)));
+                pfstest_matcher_matches(
+                    equal_to(the_enum(e_foo, some_enum_map)),
+                    the_enum(e_foo, some_enum_map)));
 }
 
 test(unequal_enums_should_not_match)
 {
     assert_false("unequal enums don't match",
-                 pfstest_matcher_matches(is(the_enum(e_foo, some_enum_map)),
-                                         the_enum(e_baz, some_enum_map)));
+                 pfstest_matcher_matches(
+                     equal_to(the_enum(e_foo, some_enum_map)),
+                     the_enum(e_baz, some_enum_map)));
 }
 
 test(the_bool_should_print_true)
@@ -351,21 +353,21 @@ test(the_bool_should_print_false)
 test(equal_bools_should_match)
 {
     assert_true("equal bools match",
-                pfstest_matcher_matches(is(the_bool(pfstest_true)),
+                pfstest_matcher_matches(equal_to(the_bool(pfstest_true)),
                                         the_bool(pfstest_true)));
 }
 
 test(unequal_bools_should_not_match)
 {
     assert_false("unequal bools don't match",
-                 pfstest_matcher_matches(is(the_bool(pfstest_false)),
+                 pfstest_matcher_matches(equal_to(the_bool(pfstest_false)),
                                          the_bool(pfstest_true)));
 }
 
 test(different_but_equivalent_bools_should_match)
 {
     assert_true("equivalent bools match",
-                pfstest_matcher_matches(is(the_bool(72)),
+                pfstest_matcher_matches(equal_to(the_bool(72)),
                                         the_bool(4)));
 }
 
@@ -393,14 +395,14 @@ test(the_char_should_escape_special_chars)
 test(equal_chars_should_match)
 {
     assert_true("equal chars match",
-                pfstest_matcher_matches(is(the_char('c')),
+                pfstest_matcher_matches(equal_to(the_char('c')),
                                         the_char('c')));
 }
 
 test(unequal_chars_should_not_match)
 {
     assert_false("unequal chars don't match",
-                pfstest_matcher_matches(is(the_char('d')),
+                pfstest_matcher_matches(equal_to(the_char('d')),
                                         the_char('c')));
 }
 
@@ -434,7 +436,7 @@ test(equal_strings_should_match)
     char s2[] = "foo";
 
     assert_true("equal strings match",
-                pfstest_matcher_matches(is(the_string(s2)),
+                pfstest_matcher_matches(equal_to(the_string(s2)),
                                         the_string(s1)));
 }
 
@@ -444,7 +446,7 @@ test(unequal_strings_should_not_match)
     char s2[] = "bar";
 
     assert_false("unequal strings don't match",
-                 pfstest_matcher_matches(is(the_string(s2)),
+                 pfstest_matcher_matches(equal_to(the_string(s2)),
                                          the_string(s1)));
 }
 
@@ -454,7 +456,7 @@ test(shorter_actual_string_should_not_match)
     char s2[] = "foobar";
 
     assert_false("shorter actual string doesn't match",
-                 pfstest_matcher_matches(is(the_string(s2)),
+                 pfstest_matcher_matches(equal_to(the_string(s2)),
                                          the_string(s1)));
 }
 
@@ -464,7 +466,7 @@ test(shorter_expected_string_should_not_match)
     char s2[] = "foo";
 
     assert_false("shorter expected string doesn't match",
-                 pfstest_matcher_matches(is(the_string(s2)),
+                 pfstest_matcher_matches(equal_to(the_string(s2)),
                                          the_string(s1)));
 }
 
@@ -500,14 +502,14 @@ test(the_pointer_should_print_null_specially)
 test(equal_pointers_should_match)
 {
     assert_true("equal pointers match",
-                pfstest_matcher_matches(is(the_pointer((void *)0xbeef)),
+                pfstest_matcher_matches(equal_to(the_pointer((void *)0xbeef)),
                                         the_pointer((void *)0xbeef)));
 }
 
 test(unequal_pointers_should_not_match)
 {
     assert_false("equal pointers match",
-                 pfstest_matcher_matches(is(the_pointer((void *)0xbeef)),
+                 pfstest_matcher_matches(equal_to(the_pointer((void *)0xbeef)),
                                          the_pointer((void *)0xdead)));
 }
 
@@ -530,7 +532,7 @@ test(equal_memory_should_match)
 
     assert_true("equal memory buffers match",
                 pfstest_matcher_matches(
-                    is(the_memory(expected, sizeof(expected))),
+                    equal_to(the_memory(expected, sizeof(expected))),
                     the_memory(actual, sizeof(actual))));
 }
 
@@ -541,7 +543,7 @@ test(unequal_memory_should_not_match)
 
     assert_false("unequal memory buffers don't match",
                  pfstest_matcher_matches(
-                     is(the_memory(expected, sizeof(expected))),
+                     equal_to(the_memory(expected, sizeof(expected))),
                      the_memory(actual, sizeof(actual))));
 }
 
@@ -552,7 +554,7 @@ test(shorter_actual_memory_should_not_match)
 
     assert_false("shorter actual memory buffer doesn't match",
                  pfstest_matcher_matches(
-                     is(the_memory(expected, sizeof(expected) - 1)),
+                     equal_to(the_memory(expected, sizeof(expected) - 1)),
                      the_memory(actual, sizeof(actual))));
 }
 
@@ -563,29 +565,29 @@ test(shorter_expected_memory_should_not_match)
 
     assert_false("shorter expected memory buffer doesn't match",
                  pfstest_matcher_matches(
-                     is(the_memory(expected, sizeof(expected))),
+                     equal_to(the_memory(expected, sizeof(expected))),
                      the_memory(actual, sizeof(actual) - 1)));
 }
 
-test(is_anything_should_print_itself)
+test(anything_should_print_itself)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str("anything");
 
-    pfstest_matcher_print(is_anything, message_spy);
+    pfstest_matcher_print(anything(), message_spy);
 
-    assert_that("is_anything()'s printer prints \"anything\"",
+    assert_that("anything()'s printer prints \"anything\"",
                 the_string(captured_output),
                 matches_the_pg_string(expected));
 }
 
 test(should_match_anything)
 {
-    assert_true("is_anything matches a short",
-                pfstest_matcher_matches(is_anything, the_short(5)));
-    assert_true("is_anything matches an int",
-                pfstest_matcher_matches(is_anything, the_int(8)));
-    assert_true("is_anything matches a pointer",
-                pfstest_matcher_matches(is_anything, the_pointer(NULL)));
+    assert_true("anything matches a short",
+                pfstest_matcher_matches(anything(), the_short(5)));
+    assert_true("anything matches an int",
+                pfstest_matcher_matches(anything(), the_int(8)));
+    assert_true("anything matches a pointer",
+                pfstest_matcher_matches(anything(), the_pointer(NULL)));
 }
 
 test(should_match_memory_with_pointer)
@@ -593,9 +595,9 @@ test(should_match_memory_with_pointer)
     char actual[] = {1, 2, 3, 4, 5};
     char expected[] = {1, 2, 3, 4, 5};
 
-    assert_true("is_the_memory matches against the_pointer values",
+    assert_true("equal_to compares the_memory values to the_pointer values",
                 pfstest_matcher_matches(
-                    is(the_memory(expected, sizeof(expected))),
+                    equal_to(the_memory(expected, sizeof(expected))),
                     the_pointer(actual)));
 }
 
@@ -604,8 +606,8 @@ test(should_match_primitive_with_pointer)
     int actual = 5;
     int expected = 5;
 
-    assert_that("is_the_int matches against the_pointer values",
-                the_pointer(&actual), is(the_int(expected)));
+    assert_that("equal_to compares expected value to the_pointer values",
+                the_pointer(&actual), equal_to(the_int(expected)));
 }
 
 test(should_detect_data_type_mismatches)
@@ -618,20 +620,57 @@ test(should_detect_data_type_mismatches)
      * check of the sizes. This test may fail on a platform where
      * shorts are 64-bit, but I'm not aware of any such platform. */
     assert_false("different data types fail",
-                pfstest_matcher_matches(is(the_ushort(USHRT_MAX)),
+                pfstest_matcher_matches(equal_to(the_ushort(USHRT_MAX)),
                                         the_memory(buf, sizeof(buf))));
 }
 
-test(is_should_print_value)
+test(equal_to_should_print_value)
 {    const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the int 3\nthe char 'c'");
 
-    pfstest_matcher_print(is(the_int(3)), message_spy);
+    pfstest_matcher_print(equal_to(the_int(3)), message_spy);
     pfstest_reporter_print_char(message_spy, '\n');
-    pfstest_matcher_print(is(the_char('c')), message_spy);
+    pfstest_matcher_print(equal_to(the_char('c')), message_spy);
 
     assert_that("int arrays print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(is_should_wrap_matchers)
+{
+    pfstest_matcher_t *m = equal_to(the_int(5));
+
+    assert_that("is() wraps matchers without altering them",
+                the_pointer(is(m)), equal_to(the_pointer(m)));
+}
+
+test(is_should_match_values_with_equal_to)
+{
+    assert_true("is(value) matches return true",
+                pfstest_matcher_matches(is(the_int(5)), the_int(5)));
+    assert_false("is(value) match failures return false",
+                 pfstest_matcher_matches(is(the_int(5)), the_int(6)));
+}
+
+pfstest_case(calls_is_wrong)
+{
+    char *m = test_alloc(16);
+    memset(m, 0xaa, 16);
+    is(m);
+}
+
+test(is_should_reject_wrongly_tagged_arguments)
+{
+    /* This can't be a perfect test, since a memory block could start
+     * with a tag by accident. It's worth trying, though. */
+
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("is() called with something other than a matcher or "
+                       "value");
+    capture_test_results(calls_is_wrong);
+    assert_that("is(<not a value or matcher>) fails the test",
+                the_string(captured_output),
+                is(the_string(expected)));
 }
 
 test(the_int_array_should_print_itself)
@@ -652,10 +691,10 @@ test(int_members_match_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("{ the int 1, the int 3, the int 32767, the int -5 }");
 
-    pfstest_matcher_print(int_members_match(is(the_int(1)),
-                                            is(the_int(3)),
-                                            is(the_int(32767)),
-                                            is(the_int(-5)),
+    pfstest_matcher_print(int_members_match(equal_to(the_int(1)),
+                                            equal_to(the_int(3)),
+                                            equal_to(the_int(32767)),
+                                            equal_to(the_int(-5)),
                                             NULL),
                           message_spy);
 
@@ -669,10 +708,10 @@ test(int_members_match_should_pass_matching_int_array)
 
     assert_true("Matcher arrays match against elements of integer array",
                 pfstest_matcher_matches(
-                    int_members_match(is(the_int(1)),
-                                      is(the_int(3)),
-                                      is(the_int(INT_MAX)),
-                                      is(the_int(-5)),
+                    int_members_match(equal_to(the_int(1)),
+                                      equal_to(the_int(3)),
+                                      equal_to(the_int(INT_MAX)),
+                                      equal_to(the_int(-5)),
                                       NULL),
                     the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
 }
@@ -683,10 +722,10 @@ test(int_members_match_should_fail_nonmatching_array)
 
     assert_false("Non-matching integer arrays fail",
                 pfstest_matcher_matches(
-                    int_members_match(is(the_int(1)),
-                                      is(the_int(3)),
-                                      is(the_int(INT_MAX)),
-                                      is(the_int(-5)),
+                    int_members_match(equal_to(the_int(1)),
+                                      equal_to(the_int(3)),
+                                      equal_to(the_int(INT_MAX)),
+                                      equal_to(the_int(-5)),
                                       NULL),
                     the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
 }
@@ -718,13 +757,13 @@ test(should_print_hex_u8s)
 test(equal_u8s_should_match)
 {
     assert_true("equal u8s match",
-                pfstest_matcher_matches(is(the_u8(255)), the_u8(255)));
+                pfstest_matcher_matches(equal_to(the_u8(255)), the_u8(255)));
 }
 
 test(unequal_u8s_should_not_match)
 {
     assert_false("equal u8s match",
-                pfstest_matcher_matches(is(the_u8(255)), the_u8(254)));
+                pfstest_matcher_matches(equal_to(the_u8(255)), the_u8(254)));
 }
 
 
@@ -753,13 +792,13 @@ test(should_print_hex_u16s)
 test(equal_u16s_should_match)
 {
     assert_true("equal u16s match",
-                pfstest_matcher_matches(is(the_u16(65535)), the_u16(65535)));
+                pfstest_matcher_matches(equal_to(the_u16(65535)), the_u16(65535)));
 }
 
 test(unequal_u16s_should_not_match)
 {
     assert_false("equal u16s match",
-                pfstest_matcher_matches(is(the_u16(65535)), the_u16(65534)));
+                pfstest_matcher_matches(equal_to(the_u16(65535)), the_u16(65534)));
 }
 
 test(the_u32_should_print_itself)
@@ -787,14 +826,14 @@ test(should_print_hex_u32s)
 test(equal_u32s_should_match)
 {
     assert_true("equal u32s match",
-                pfstest_matcher_matches(is(the_u32(4294967295)),
+                pfstest_matcher_matches(equal_to(the_u32(4294967295)),
                                         the_u32(4294967295)));
 }
 
 test(unequal_u32s_should_not_match)
 {
     assert_false("equal u32s match",
-                pfstest_matcher_matches(is(the_u32(4294967295)),
+                pfstest_matcher_matches(equal_to(the_u32(4294967295)),
                                         the_u32(4294967294)));
 }
 
@@ -823,14 +862,14 @@ test(should_print_hex_u64s)
 test(equal_u64s_should_match)
 {
     assert_true("equal u64s match",
-                pfstest_matcher_matches(is(the_u64(18446744073709551615u)),
+                pfstest_matcher_matches(equal_to(the_u64(18446744073709551615u)),
                                         the_u64(18446744073709551615u)));
 }
 
 test(unequal_u64s_should_not_match)
 {
     assert_false("equal u64s match",
-                pfstest_matcher_matches(is(the_u64(18446744073709551615u)),
+                pfstest_matcher_matches(equal_to(the_u64(18446744073709551615u)),
                                         the_u64(18446744073709551614u)));
 }
 

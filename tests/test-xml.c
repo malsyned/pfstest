@@ -108,7 +108,7 @@ test(xml_should_return_EXIT_SUCCESS_on_success)
 
     assert_that("EXIT_SUCCESS is returned on success",
                 the_int(pfstest_reporter_return_value(xml_reporter)),
-                is(the_int(EXIT_SUCCESS)));
+                equal_to(the_int(EXIT_SUCCESS)));
 }
 
 test(xml_should_return_EXIT_FAILURE_on_failure)
@@ -130,7 +130,7 @@ test(xml_should_return_EXIT_FAILURE_on_failure)
 
     assert_that("EXIT_FAILURE is returned on failure",
                 the_int(pfstest_reporter_return_value(xml_reporter)),
-                is(the_int(EXIT_FAILURE)));
+                equal_to(the_int(EXIT_FAILURE)));
 }
 
 test(should_write_multiple_results)

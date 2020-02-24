@@ -20,38 +20,32 @@ pfstest_value_t *pfstest_the_double(double n);
 /** @{ */
 
 /** Matches a float if @p n is within @p tolerance */
-pfstest_matcher_t *pfstest_is_a_float_within(float n, float tolerance);
+pfstest_matcher_t *pfstest_close_to_float(float n, float tolerance);
 /** Matches a float if @p n is within 1e-6 */
-#define pfstest_is_a_float_near(n) pfstest_is_a_float_within(n, 1e-6f)
+#define pfstest_nearly_float(n) pfstest_close_to_float(n, 1e-6f)
 
-pfstest_matcher_t *_pfstest_is_float_inf(void);
 /** Matches float positive infinity */
-#define pfstest_is_float_inf _pfstest_is_float_inf()
+pfstest_matcher_t *pfstest_an_inf_float(void);
 
-pfstest_matcher_t *_pfstest_is_float_neg_inf(void);
 /** Matches float negative infinity */
-#define pfstest_is_float_neg_inf _pfstest_is_float_neg_inf()
+pfstest_matcher_t *pfstest_a_neg_inf_float(void);
 
-pfstest_matcher_t *_pfstest_is_float_nan(void);
 /** Matches IEEE-754 float Not-a-Number */
-#define pfstest_is_float_nan _pfstest_is_float_nan()
+pfstest_matcher_t *pfstest_a_nan_float(void);
 
 /** Matches a double if @p n is within @p tolerance */
-pfstest_matcher_t *pfstest_is_a_double_within(double n, double tolerance);
-/** Matches a double if @p n is within 1e-6 */
-#define pfstest_is_a_double_near(n) pfstest_is_a_double_within(n, 1e-12f)
+pfstest_matcher_t *pfstest_close_to_double(double n, double tolerance);
+/** Matches a double if @p n is within 1e-12 */
+#define pfstest_nearly_double(n) pfstest_close_to_double(n, 1e-12)
 
-pfstest_matcher_t *_pfstest_is_double_inf(void);
 /** Matches double positive infinity */
-#define pfstest_is_double_inf _pfstest_is_double_inf()
+pfstest_matcher_t *pfstest_an_inf_double(void);
 
-pfstest_matcher_t *_pfstest_is_double_neg_inf(void);
 /** Matches double negative infinity */
-#define pfstest_is_double_neg_inf _pfstest_is_double_neg_inf()
+pfstest_matcher_t *pfstest_a_neg_inf_double(void);
 
-pfstest_matcher_t *_pfstest_is_double_nan(void);
 /** Matches IEEE-754 double Not-a-Number */
-#define pfstest_is_double_nan _pfstest_is_double_nan()
+pfstest_matcher_t *pfstest_a_nan_double(void);
 
 /** @} */
 
@@ -73,50 +67,50 @@ void pfstest_fp_set_printer(void (*printer)(double, pfstest_reporter_t *));
 /** @nonamespace_alias{PFSTEST_NOALIAS_the_float} */
 # define the_float pfstest_the_float
 #endif
-#ifndef PFSTEST_NOALIAS_is_a_float_within
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_a_float_within} */
-# define is_a_float_within pfstest_is_a_float_within
+#ifndef PFSTEST_NOALIAS_close_to_float
+/** @nonamespace_alias{PFSTEST_NOALIAS_close_to_float} */
+# define close_to_float pfstest_close_to_float
 #endif
-#ifndef PFSTEST_NOALIAS_is_a_float_near
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_a_float_near} */
-# define is_a_float_near pfstest_is_a_float_near
+#ifndef PFSTEST_NOALIAS_nearly_float
+/** @nonamespace_alias{PFSTEST_NOALIAS_nearly_float} */
+# define nearly_float pfstest_nearly_float
 #endif
-#ifndef PFSTEST_NOALIAS_is_float_inf
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_float_inf} */
-# define is_float_inf pfstest_is_float_inf
+#ifndef PFSTEST_NOALIAS_an_inf_float
+/** @nonamespace_alias{PFSTEST_NOALIAS_an_inf_float} */
+# define an_inf_float pfstest_an_inf_float
 #endif
-#ifndef PFSTEST_NOALIAS_is_float_neg_inf
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_float_neg_inf} */
-# define is_float_neg_inf pfstest_is_float_neg_inf
+#ifndef PFSTEST_NOALIAS_a_neg_inf_float
+/** @nonamespace_alias{PFSTEST_NOALIAS_a_neg_inf_float} */
+# define a_neg_inf_float pfstest_a_neg_inf_float
 #endif
-#ifndef PFSTEST_NOALIAS_is_float_nan
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_float_nan} */
-# define is_float_nan pfstest_is_float_nan
+#ifndef PFSTEST_NOALIAS_a_nan_float
+/** @nonamespace_alias{PFSTEST_NOALIAS_a_nan_float} */
+# define a_nan_float pfstest_a_nan_float
 #endif
 
 #ifndef PFSTEST_NOALIAS_the_double
 /** @nonamespace_alias{PFSTEST_NOALIAS_the_double} */
 # define the_double pfstest_the_double
 #endif
-#ifndef PFSTEST_NOALIAS_is_a_double_within
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_a_double_within} */
-# define is_a_double_within pfstest_is_a_double_within
+#ifndef PFSTEST_NOALIAS_close_to_double
+/** @nonamespace_alias{PFSTEST_NOALIAS_close_to_double} */
+# define close_to_double pfstest_close_to_double
 #endif
-#ifndef PFSTEST_NOALIAS_is_a_double_near
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_a_double_near} */
-# define is_a_double_near pfstest_is_a_double_near
+#ifndef PFSTEST_NOALIAS_nearly_double
+/** @nonamespace_alias{PFSTEST_NOALIAS_nearly_double} */
+# define nearly_double pfstest_nearly_double
 #endif
-#ifndef PFSTEST_NOALIAS_is_double_inf
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_double_inf} */
-# define is_double_inf pfstest_is_double_inf
+#ifndef PFSTEST_NOALIAS_an_inf_double
+/** @nonamespace_alias{PFSTEST_NOALIAS_an_inf_double} */
+# define an_inf_double pfstest_an_inf_double
 #endif
-#ifndef PFSTEST_NOALIAS_is_double_neg_inf
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_double_neg_inf} */
-# define is_double_neg_inf pfstest_is_double_neg_inf
+#ifndef PFSTEST_NOALIAS_a_neg_inf_double
+/** @nonamespace_alias{PFSTEST_NOALIAS_a_neg_inf_double} */
+# define a_neg_inf_double pfstest_a_neg_inf_double
 #endif
-#ifndef PFSTEST_NOALIAS_is_double_nan
-/** @nonamespace_alias{PFSTEST_NOALIAS_is_double_nan} */
-# define is_double_nan pfstest_is_double_nan
+#ifndef PFSTEST_NOALIAS_a_nan_double
+/** @nonamespace_alias{PFSTEST_NOALIAS_a_nan_double} */
+# define a_nan_double pfstest_a_nan_double
 #endif
 
 /** @} */

@@ -24,7 +24,7 @@ test(should_parse_program_name_argument)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("Program name argument is stored in args struct",
-                the_pointer(args.program_name), is(the_pointer(argv[0])));
+                the_pointer(args.program_name), equal_to(the_pointer(argv[0])));
 }
 
 test(should_return_true_for_good_arg_lists)
@@ -191,7 +191,7 @@ test(should_parse_f_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-f flag is parsed",
-                the_pointer(args.filter_file), is(the_pointer(argv[2])));
+                the_pointer(args.filter_file), equal_to(the_pointer(argv[2])));
 }
 
 test(f_flag_should_require_argument)
@@ -225,7 +225,7 @@ test(should_parse_n_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_that("-n flag is parsed",
-                the_pointer(args.filter_name), is(the_pointer(argv[2])));
+                the_pointer(args.filter_name), equal_to(the_pointer(argv[2])));
     assert_true("-n flag implies verbose", args.verbose);
 }
 
@@ -277,7 +277,7 @@ test(should_parse_multiple_arguments)
 
     assert_true("-v flag is parsed", args.verbose);
     assert_that("-f flag is parsed",
-                the_pointer(args.filter_file), is(the_pointer(argv[3])));
+                the_pointer(args.filter_file), equal_to(the_pointer(argv[3])));
 }
 
 pfstest_case(test1) {}
