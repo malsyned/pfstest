@@ -9,15 +9,15 @@
 #include "pfstest-values.h"
 #include "pfstest-matchers.h"
 
-#define pfstest_assert_true(message, value)                 \
-    pfstest_assert_that(message, the_bool(value),           \
-                        equal_to(the_bool(pfstest_true)))
-#define pfstest_assert_false(message, value)                \
-    pfstest_assert_that(message, the_bool(value),           \
-                        equal_to(the_bool(pfstest_false)))
-#define pfstest_assert_null(message, value)             \
-    pfstest_assert_that(message, the_pointer(value),    \
-                        equal_to(the_pointer(NULL)))
+#define pfstest_assert_true(message, value)                             \
+    pfstest_assert_that(message, pfstest_the_bool(value),               \
+                        pfstest_equal_to(pfstest_the_bool(pfstest_true)))
+#define pfstest_assert_false(message, value)                            \
+    pfstest_assert_that(message, pfstest_the_bool(value),               \
+                        pfstest_equal_to(pfstest_the_bool(pfstest_false)))
+#define pfstest_assert_null(message, value)                             \
+    pfstest_assert_that(message, pfstest_the_pointer(value),            \
+                        pfstest_equal_to(pfstest_the_pointer(NULL)))
 
 /** @nonamespace_section */
 /** @{ */
