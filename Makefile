@@ -12,7 +12,7 @@ WARN = -Wall -Wextra -Werror -Wwrite-strings \
        -Wbad-function-cast -Wcast-align \
        -Wjump-misses-init -Wconversion -Wlogical-op -Wstrict-prototypes \
        -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations \
-       -Wvariadic-macros -Wunsuffixed-float-constants \
+       -Wvariadic-macros \
        -pedantic -pedantic-errors
 
 AUTOMOCK_CPPFLAGS = $(GCC_AUTOMOCK_CPPFLAGS)
