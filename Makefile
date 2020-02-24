@@ -4,7 +4,7 @@ include util/automock-gcc.inc.mk
 
 MAKEFLAGS += --no-builtin-rules --jobs
 
-CC = gcc
+CC = $(CROSS_COMPILE)gcc
 CFLAGS = -g -O3 $(WARN) -Wfatal-errors -std=c89
 WARN = -Wall -Wextra -Werror -Wwrite-strings \
        -Wsuggest-attribute=noreturn -Wmissing-include-dirs \
