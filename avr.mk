@@ -28,7 +28,6 @@ WARN += -Wold-style-definition
 WARN += -Wmissing-prototypes
 WARN += -Wmissing-declarations
 WARN += -Wvariadic-macros
-WARN += -Wunsuffixed-float-constants
 WARN += -pedantic
 WARN += -pedantic-errors
 # avr-gcc uses this warning to warn about uninitialized program memory

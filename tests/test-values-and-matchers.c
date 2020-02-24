@@ -1,4 +1,5 @@
 #include <limits.h>
+#include <string.h>
 
 #include "pfstest.h"
 #include "capture-output.h"
@@ -654,8 +655,10 @@ test(is_should_match_values_with_equal_to)
 
 pfstest_case(calls_is_wrong)
 {
-    char *m = test_alloc(16);
+    unsigned char *m = test_alloc(16);
+
     memset(m, 0xaa, 16);
+
     is(m);
 }
 
@@ -670,7 +673,7 @@ test(is_should_reject_wrongly_tagged_arguments)
     capture_test_results(calls_is_wrong);
     assert_that("is(<not a value or matcher>) fails the test",
                 the_string(captured_output),
-                is(the_string(expected)));
+                matches_the_pg_string(expected));
 }
 
 test(the_int_array_should_print_itself)
