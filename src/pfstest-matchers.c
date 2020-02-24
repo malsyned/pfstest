@@ -70,10 +70,10 @@ pfstest_matcher_t *pfstest_is_at_location(const pfstest_pg_ptr char *file,
 {
     pfstest_tag_t tag = pfstest_tag_get(matcher_or_value);
 
-    if (tag == pfstest_value_tag)
-        return equal_to(matcher_or_value);
-    else if (tag == pfstest_matcher_tag)
+    if (tag == pfstest_matcher_tag)
         return matcher_or_value;
+    else if (tag == pfstest_value_tag)
+        return equal_to(matcher_or_value);
 
     pfstest_fail_at_location(file, line,
                              "is() called with something other than a "

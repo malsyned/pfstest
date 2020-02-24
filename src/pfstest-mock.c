@@ -163,8 +163,6 @@ static pfstest_arg_handler_t *coerce_tagged_to_arg_handler(void *handler)
         return handler;
     else
         return pfstest_arg_that(pfstest_is(handler));
-
-    return NULL;
 }
 
 pfstest_expectation_t *pfstest_when(
