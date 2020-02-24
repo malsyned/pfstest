@@ -403,8 +403,8 @@ test(equal_chars_should_match)
 test(unequal_chars_should_not_match)
 {
     assert_false("unequal chars don't match",
-                pfstest_matcher_matches(equal_to(the_char('d')),
-                                        the_char('c')));
+                 pfstest_matcher_matches(equal_to(the_char('d')),
+                                         the_char('c')));
 }
 
 test(the_string_should_print_itself)
@@ -621,8 +621,8 @@ test(should_detect_data_type_mismatches)
      * check of the sizes. This test may fail on a platform where
      * shorts are 64-bit, but I'm not aware of any such platform. */
     assert_false("different data types fail",
-                pfstest_matcher_matches(equal_to(the_ushort(USHRT_MAX)),
-                                        the_memory(buf, sizeof(buf))));
+                 pfstest_matcher_matches(equal_to(the_ushort(USHRT_MAX)),
+                                         the_memory(buf, sizeof(buf))));
 }
 
 test(equal_to_should_print_value)
@@ -724,13 +724,13 @@ test(int_members_match_should_fail_nonmatching_array)
     int actual[] = {1, 3, 32767, -4};
 
     assert_false("Non-matching integer arrays fail",
-                pfstest_matcher_matches(
-                    int_members_match(equal_to(the_int(1)),
-                                      equal_to(the_int(3)),
-                                      equal_to(the_int(INT_MAX)),
-                                      equal_to(the_int(-5)),
-                                      NULL),
-                    the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
+                 pfstest_matcher_matches(
+                     int_members_match(equal_to(the_int(1)),
+                                       equal_to(the_int(3)),
+                                       equal_to(the_int(INT_MAX)),
+                                       equal_to(the_int(-5)),
+                                       NULL),
+                     the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
 }
 
 #ifdef PFSTEST_HAS_STDINT
@@ -766,7 +766,7 @@ test(equal_u8s_should_match)
 test(unequal_u8s_should_not_match)
 {
     assert_false("equal u8s match",
-                pfstest_matcher_matches(equal_to(the_u8(255)), the_u8(254)));
+                 pfstest_matcher_matches(equal_to(the_u8(255)), the_u8(254)));
 }
 
 
@@ -801,7 +801,7 @@ test(equal_u16s_should_match)
 test(unequal_u16s_should_not_match)
 {
     assert_false("equal u16s match",
-                pfstest_matcher_matches(equal_to(the_u16(65535)), the_u16(65534)));
+                 pfstest_matcher_matches(equal_to(the_u16(65535)), the_u16(65534)));
 }
 
 test(the_u32_should_print_itself)
