@@ -809,7 +809,7 @@ test(the_u32_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the uint32_t 4294967295");
 
-    pfstest_value_print(the_u32(4294967295), message_spy);
+    pfstest_value_print(the_u32(UINT32_MAX), message_spy);
 
     assert_that("u32s print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -829,15 +829,15 @@ test(should_print_hex_u32s)
 test(equal_u32s_should_match)
 {
     assert_true("equal u32s match",
-                pfstest_matcher_matches(equal_to(the_u32(4294967295)),
-                                        the_u32(4294967295)));
+                pfstest_matcher_matches(equal_to(the_u32(UINT32_MAX)),
+                                        the_u32(UINT32_MAX)));
 }
 
 test(unequal_u32s_should_not_match)
 {
     assert_false("equal u32s match",
-                pfstest_matcher_matches(equal_to(the_u32(4294967295)),
-                                        the_u32(4294967294)));
+                 pfstest_matcher_matches(equal_to(the_u32(UINT32_MAX)),
+                                         the_u32(UINT32_MAX - 1)));
 }
 
 test(the_u64_should_print_itself)
@@ -845,18 +845,26 @@ test(the_u64_should_print_itself)
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the uint64_t 18446744073709551615");
 
-    pfstest_value_print(the_u64(18446744073709551615u), message_spy);
+    pfstest_value_print(the_u64(UINT64_MAX), message_spy);
 
     assert_that("u64s print themselves",
                 the_string(captured_output), matches_the_pg_string(expected));
 }
+
+#ifdef __GNUC__
+/* Work around a bug in glibc's stdint.h when -pedantic is used */
+#define UINT64_C_NOWARN(x) (__extension__ UINT64_C(x))
+#else
+#define UINT64_C_NOWARN(x) UINT64_C(x)
+#endif
 
 test(should_print_hex_u64s)
 {
     const pfstest_pg_ptr char *expected =
         pfstest_pg_str("the uint64_t 0x000fedcba9876543");
 
-    pfstest_value_print(as_hex(the_u64(0x000fedcba9876543u)), message_spy);
+    pfstest_value_print(as_hex(the_u64(UINT64_C_NOWARN(0x000fedcba9876543))),
+                        message_spy);
 
     assert_that("u64s print themselves as hex",
                 the_string(captured_output), matches_the_pg_string(expected));
@@ -865,15 +873,15 @@ test(should_print_hex_u64s)
 test(equal_u64s_should_match)
 {
     assert_true("equal u64s match",
-                pfstest_matcher_matches(equal_to(the_u64(18446744073709551615u)),
-                                        the_u64(18446744073709551615u)));
+                pfstest_matcher_matches(equal_to(the_u64(UINT64_MAX)),
+                                        the_u64(UINT64_MAX)));
 }
 
 test(unequal_u64s_should_not_match)
 {
     assert_false("equal u64s match",
-                pfstest_matcher_matches(equal_to(the_u64(18446744073709551615u)),
-                                        the_u64(18446744073709551614u)));
+                 pfstest_matcher_matches(equal_to(the_u64(UINT64_MAX)),
+                                         the_u64(UINT64_MAX - 1)));
 }
 
 #endif /* defined(PFSTEST_HAS_STDINT) */
