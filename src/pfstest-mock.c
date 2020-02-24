@@ -162,7 +162,7 @@ static pfstest_arg_handler_t *coerce_tagged_to_arg_handler(void *handler)
     if (tag == pfstest_arg_handler_tag)
         return handler;
     else
-        return pfstest_arg_that(is(handler));
+        return pfstest_arg_that(pfstest_is(handler));
 
     return NULL;
 }
