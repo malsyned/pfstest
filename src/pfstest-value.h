@@ -1,10 +1,14 @@
 #ifndef PFSTEST_VALUE_H
 #define PFSTEST_VALUE_H
 
+/** @file */
+
 #include <stddef.h>
 #include "pfstest-reporter.h"
 #include "pfstest-tag.h"
 
+/** A boxed value, which wraps primitive data with a size, a printer,
+ * and possibly other data */
 typedef struct _pfstest_value_t pfstest_value_t;
 
 struct _pfstest_value_t

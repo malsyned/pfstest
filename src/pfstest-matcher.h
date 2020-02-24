@@ -1,10 +1,13 @@
 #ifndef PFSTEST_MATCHER_H
 #define PFSTEST_MATCHER_H
 
+/** @file */
+
 #include "pfstest-platform.h"
 #include "pfstest-value.h"
 #include "pfstest-tag.h"
 
+/** A matcher, for use with assert_that(), arg_that(), assign_arg_that() */
 typedef struct _pfstest_matcher_t pfstest_matcher_t;
 
 struct _pfstest_matcher_t

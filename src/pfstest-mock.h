@@ -37,7 +37,7 @@ void pfstest_mock_teardown(void);
 
 /** Describes an expected invocation of a mock and how it should be
  * handled */
-typedef struct 
+typedef struct _pfstest_expectation_t
 {
     pfstest_list_node_t node;
     const pfstest_pg_ptr pfstest_mock_t *mock;
@@ -171,7 +171,7 @@ void pfstest_verify_no_more_invocations_at_location(
 /** @{ */
 
 /** An in-order execution expectation context */
-typedef struct 
+typedef struct _pfstest_in_order_t
 {
     pfstest_list_t expectations;
 } pfstest_in_order_t;
