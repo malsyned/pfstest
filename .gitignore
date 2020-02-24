@@ -32,3 +32,4 @@ register-*tests.c
 lextab.py
 yacctab.py
 html/*
+.vscode/
