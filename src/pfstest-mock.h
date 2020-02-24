@@ -88,14 +88,6 @@ pfstest_value_t *pfstest_mock_invoke(
 /** @name Verification */
 /** @{ */
 
-typedef struct _pfstest_verifier_t pfstest_verifier_t;
-struct _pfstest_verifier_t
-{
-    pfstest_list_node_t node;
-    void (*function)(pfstest_verifier_t *verifier);
-    void *data;
-};
-
 /** @cond pfstest_mock_plugins */
 void pfstest_mock_run_verifiers(void);
 /** @cond */

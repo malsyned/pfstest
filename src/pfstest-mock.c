@@ -54,7 +54,14 @@ static void invocation_add(pfstest_invocation_t *invocation)
                         (pfstest_list_node_t *)invocation);
 }
 
-static void verifier_add(pfstest_verifier_t *verifier)
+struct verifier
+{
+    pfstest_list_node_t node;
+    void (*function)(struct verifier *verifier);
+    void *data;
+};
+
+static void verifier_add(struct verifier *verifier)
 {
     pfstest_list_append(&dynamic_env->verifiers,
                         (pfstest_list_node_t *)verifier);
@@ -314,11 +321,11 @@ pfstest_value_t *pfstest_mock_invoke(
 
 /* verify */
 
-static pfstest_verifier_t *verifier_new(
-    void (*function)(pfstest_verifier_t *verifier),
+static struct verifier *verifier_new(
+    void (*function)(struct verifier *verifier),
     void *data)
 {
-    pfstest_verifier_t *v = pfstest_alloc(sizeof(*v));
+    struct verifier *v = pfstest_alloc(sizeof(*v));
     pfstest_list_node_init((pfstest_list_node_t *)v);
     v->function = function;
     v->data = data;
@@ -328,7 +335,7 @@ static pfstest_verifier_t *verifier_new(
 
 void pfstest_mock_run_verifiers(void)
 {
-    pfstest_verifier_t *verifier;
+    struct verifier *verifier;
 
     pfstest_list_iter (verifier, &dynamic_env->verifiers) {
         verifier->function(verifier);
@@ -395,7 +402,7 @@ struct verify_with_mode_args
     pfstest_expectation_t *expectation;
 };
 
-static void do_verification_with_mode(pfstest_verifier_t *v)
+static void do_verification_with_mode(struct verifier *v)
 {
     struct verify_with_mode_args *args = v->data;
 
@@ -542,7 +549,7 @@ struct no_more_interactions_args
     int line;
 };
 
-static void do_verify_no_more_interactions(pfstest_verifier_t *v)
+static void do_verify_no_more_interactions(struct verifier *v)
 {
     struct no_more_interactions_args *args = v->data;
     pfstest_invocation_t *i;
@@ -580,7 +587,7 @@ struct no_more_invocations_args
     int line;
 };
 
-static void do_verify_no_more_invocations(pfstest_verifier_t *v)
+static void do_verify_no_more_invocations(struct verifier *v)
 {
     struct no_more_invocations_args *args = v->data;
     pfstest_invocation_t *invocation;
@@ -635,7 +642,7 @@ struct in_order_expectation
     pfstest_expectation_t *expectation;
 };
 
-static void do_in_order_verification(pfstest_verifier_t *v)
+static void do_in_order_verification(struct verifier *v)
 {
     in_order_t *order = v->data;
     pfstest_invocation_t *invocation;
