@@ -1,4 +1,3 @@
-include src/src.inc.mk
 include tests/selftestsrc.inc.mk
 include util/automock-gcc.inc.mk
 
@@ -48,6 +47,7 @@ CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -Wa,-adhlns=$(basename $@).lst
 
 CPPFLAGS = -DF_CPU=$(F_CPU)UL
+CPPFLAGS += -Iinclude
 ifdef NAMED_ADDR_SPACES
 CPPFLAGS += -DPFSTEST_AVR8_NAMED_ADDR_SPACES
 endif
@@ -63,12 +63,19 @@ AUTOMOCK_FLAGS = $(AVR_GCC_AUTOMOCK_FLAGS)
 BIN_PATTERN = %.elf
 BUILDPREFIX = avrbuild/
 
-SRC = $(PFSTEST_SRC) $(PFSTEST_AVR_TOOLS_SRC) \
-      $(PFSTEST_MALLOC_SRC) \
-      src/pfstest-platform-avr8.c \
+SRC = $(wildcard src/core/*.c) \
+      $(wildcard src/matchers/*.c) \
+      $(wildcard src/mock/*.c) \
+      $(wildcard src/fp/*.c) \
+      $(wildcard src/platform/avr8/*.c) \
+      $(wildcard src/platform/avr8/tools/*.c) \
+      src/alloc/pfstest-alloc-malloc.c \
+      src/reporters/pfstest-reporter-xml.c \
       src/main/avr-main.c
 
-self-tests-avr_SRC = $(SELFTEST_SRC) $(PFSTEST_CLI_SRC)
+self-tests-avr_SRC = $(SELFTEST_SRC) \
+                     $(wildcard src/cli/*.c) \
+                     src/reporters/pfstest-reporters-standard.c
 self-tests-avr_MOCKS = $(SELFTEST_MOCKS)
 
 TARGETS = self-tests-avr

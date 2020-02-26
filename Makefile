@@ -1,4 +1,3 @@
-include src/src.inc.mk
 include tests/selftestsrc.inc.mk
 include util/automock-gcc.inc.mk
 
@@ -21,13 +20,19 @@ AUTOMOCK_FLAGS = $(GCC_AUTOMOCK_FLAGS)
 BIN_PATTERN = %-runner
 BUILDPREFIX = build/
 
-SRC = $(PFSTEST_SRC) $(PFSTEST_CLI_SRC) \
-      $(PFSTEST_AVR_TOOLS_SRC) \
-      $(PFSTEST_MALLOC_SRC) src/main/gcc-main.c
+CPPFLAGS = -Iinclude
+SRC = $(wildcard src/core/*.c) \
+      $(wildcard src/reporters/*.c) \
+      $(wildcard src/matchers/*.c) \
+      $(wildcard src/mock/*.c) \
+      $(wildcard src/fp/*.c) \
+      $(wildcard src/cli/*.c) \
+      src/alloc/pfstest-alloc-malloc.c \
+      src/main/gcc-main.c
 
 TARGETS = selftest
 
-selftest_SRC = $(SELFTEST_SRC)
+selftest_SRC = $(SELFTEST_SRC) $(wildcard src/platform/avr8/tools/*.c)
 selftest_MOCKS = $(SELFTEST_MOCKS)
 
 ARGS=-c
