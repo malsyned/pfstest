@@ -100,6 +100,22 @@ test(should_reset_tests)
     }
 }
 
+test(should_only_register_each_test_once)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        "should_run should_also_run ");
+
+    pfstest_suite_register_test(&suite, should_run);
+    pfstest_suite_register_test(&suite, should_also_run);
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
 test(should_report_results)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
@@ -465,6 +481,40 @@ test(should_call_plugin_check_hook)
     pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+test(should_handle_multiple_plugins)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("plugin_setup should_run plugin_teardown ");
+
+    pfstest_plugin_list_register_plugin(&plugins, setup_only_plugin);
+    pfstest_plugin_list_register_plugin(&plugins, teardown_only_plugin);
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(call_log, expected)) {
+        fail("Log did not match expected log");
+    }
+}
+
+test(should_only_register_each_plugin_once)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("plugin_setup should_run plugin_teardown ");
+
+    pfstest_plugin_list_register_plugin(&plugins, setup_only_plugin);
+    pfstest_plugin_list_register_plugin(&plugins, teardown_only_plugin);
+    pfstest_plugin_list_register_plugin(&plugins, setup_only_plugin);
+    pfstest_suite_register_test(&suite, should_run);
+
+    pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
+
+    if (0 != pfstest_strcmp_pg(call_log, expected)) {
+        fail(call_log);
         fail("Log did not match expected log");
     }
 }

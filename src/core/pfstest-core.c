@@ -76,7 +76,6 @@ void _pfstest_fail_at_location(
 void _pfstest_suite_register_test(pfstest_list_t *suite,
                                   pfstest_t *the_test)
 {
-    pfstest_list_node_init((pfstest_list_node_t *)the_test);
     pfstest_list_append(suite, (pfstest_list_node_t *)the_test);
 }
 
@@ -93,7 +92,6 @@ pfstest_list_t *pfstest_get_registered_tests(void)
 void _pfstest_plugin_list_register_plugin(pfstest_list_t *plugin_list,
                                           pfstest_plugin_t *plugin)
 {
-    pfstest_list_node_init((pfstest_list_node_t *)plugin);
     pfstest_list_append(plugin_list, (pfstest_list_node_t *)plugin);
 }
 

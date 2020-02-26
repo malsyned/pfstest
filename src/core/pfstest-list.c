@@ -9,10 +9,14 @@ void pfstest_list_append(pfstest_list_t *list, pfstest_list_node_t *node)
     if (list->head == NULL) {
         list->head = node;
     } else {
-        for (tail = list->head; tail->next != NULL; tail = tail->next)
-            ;
+        for (tail = list->head; tail->next != NULL; tail = tail->next) {
+            /* Bail if the node is already in the list */
+            if (tail == node)
+                return;
+        }
         tail->next = node;
     }
+    pfstest_list_node_init(node);
 }
 
 pfstest_list_node_t *pfstest_list_head(pfstest_list_t *list)
