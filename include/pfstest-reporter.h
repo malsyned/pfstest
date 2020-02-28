@@ -1,6 +1,20 @@
 #ifndef PFSTEST_REPORTER_H
 #define PFSTEST_REPORTER_H
 
+/** @file */
+
+/** @dir src/reporters
+ *
+ * Output test results in human- and machine-readable formats
+ *
+ * @section Standard
+ * - pfstest_reporter_standard_new()
+ * - pfstest_reporter_verbose_new()
+ *
+ * @section XML
+ * - pfstest_reporter_xml_new()
+ */
+
 #include "pfstest-platform.h"
 
 typedef struct _pfstest_reporter_vtable_t pfstest_reporter_vtable_t;

@@ -1,10 +1,13 @@
 #ifndef PFSTEST_ARG_HANDLER_H
 #define PFSTEST_ARG_HANDLER_H
 
+/** @file */
+
 #include "pfstest-platform.h"
 #include "pfstest-value.h"
 #include "pfstest-tag.h"
 
+/** A mock function argument handler, for use with when() */
 typedef struct _pfstest_arg_handler_t pfstest_arg_handler_t;
 
 struct _pfstest_arg_handler_t

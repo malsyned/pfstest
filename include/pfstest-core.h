@@ -3,6 +3,20 @@
 
 /** @file */
 
+/** @dir src/core
+ *
+ * Provides core test suite capabilities
+ *
+ * Such as:
+ * - test()
+ * - ignore_test()
+ * - fail()
+ * - setup()
+ * - teardown()
+ * - register_test()
+ * - register_plugin()
+ */
+
 #include <stdlib.h>
 
 #include "pfstest-platform.h"
