@@ -50,6 +50,9 @@ class-buildprefix = $(or $(call class-param,$1,BUILDPREFIX), \
 # $(call target-buildprefix,target)
 target-buildprefix = $(call class-buildprefix,$(call target-class,$1))
 
+# $(call targets-buildprefix,target...)
+targets-buildprefix = $(foreach target,$1,$(call target-buildprefix,$(target)))
+
 # $(call class-cc,class)
 class-cc = $(or $(call class-param,$1,CC),$(CC))
 
@@ -185,7 +188,10 @@ clean-dirs = $(call reverse,$(sort $(call parents,$(clean-files))))
 
 clean-files-minimal = $(wildcard $(sort $(clean-files)))
 
-clean-dirs-minimal = $(filter $(BUILDPREFIX)%,$(wildcard $(clean-dirs)))
+all-buildprefixes = $(call targets-buildprefix,$(TARGETS))
+
+clean-dirs-minimal = $(filter $(addsuffix %,$(all-buildprefixes)), \
+                     $(wildcard $(clean-dirs)))
 
 # MULTITARGET_PLUGINS:
 #
