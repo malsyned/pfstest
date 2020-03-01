@@ -10,14 +10,17 @@ AUTOMOCK ?= $(PYTHON) $(AUTOMOCK_SRC)
 
 mock-suffix = .mock
 
-# $(call target-mocks,target)
+# $(call target-mock-reqs,target)
 target-mock-reqs = $(call target-param,$1,MOCKS)
 
+# $(call target-mock-req-basenames,target)
+target-mock-req-basenames = $(basename $(call target-mock-reqs,$1))
+
 # $(call target-mock-templates,target)
-target-mock-templates =                                                 \
-    $(addsuffix $(mock-suffix),                                         \
-                $(addprefix $(call target-buildprefix,$1),              \
-                            $(basename $(call target-mock-reqs,$1))))
+target-mock-templates =                                         \
+    $(addsuffix $(mock-suffix),                                 \
+                $(call target-buildpaths,$1,                    \
+                       $(call target-mock-req-basenames,$1)))
 
 # $(call target-mock-src,target)
 target-mock-src = $(addsuffix .c,$(call target-mock-templates,$1))
@@ -42,11 +45,12 @@ class-automock-flags = $(call class-param,$1,AUTOMOCK_FLAGS)
 
 target-src +=  $(call target-mock-src,$1)
 
-define class-template +=
+# $(call class-mock-recipe-template,class,source-h)
+define class-mock-recipe-template
 
     $$(call class-buildprefix,$1)%$$(mock-suffix).c \
     $$(call class-buildprefix,$1)%$$(mock-suffix).h \
-    : %.h $$(AUTOMOCK_SRC) $$(makefile-list)
+    : $2 $$(AUTOMOCK_SRC) $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
@@ -54,6 +58,13 @@ define class-template +=
 	    $$(call class-automock-cppflags,$1) -E -o - $$<             \
 	    | $$(AUTOMOCK) $$(AUTOMOCK_FLAGS)                           \
 	      $$(call class-automock-flags,$1) $$< $$(basename $$@)
+
+endef
+
+define class-template +=
+
+    $(call class-mock-recipe-template,$1,$$(SRCPREFIX)%.h)
+    $(call class-mock-recipe-template,$1,%.h)
 
 endef
 

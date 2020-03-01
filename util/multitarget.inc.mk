@@ -80,9 +80,18 @@ target-src = $(call target-param,$1,SRC) $(SRC)
 # $(call targets-src,targets...)
 targets-src = $(foreach target,$1,$(call target-src,$(target)))
 
+# $(call rmprefix,prefix,files...)
+rmprefix = $(patsubst $(1)%,%,$2)
+
+# $(call rm-srcprefix,files...)
+rm-srcprefix = $(call rmprefix,$(SRCPREFIX),$1)
+
+# $(call target-buildpaths,target,files...)
+target-buildpaths = $(addprefix $(call target-buildprefix,$1), \
+                                $(call rm-srcprefix,$2))
+
 # $(call target-output,target,file...,extension)
-target-output = $(addprefix $(call target-buildprefix,$1), \
-                              $(patsubst %.c,%$3,$2))
+target-output = $(patsubst %.c,%$3,$(call target-buildpaths,$1,$2))
 
 # $(call target-files,target,extension)
 target-files = $(call target-output,$1,$(call target-src,$1),$2)
@@ -121,26 +130,34 @@ define target-template
 
 endef
 
-define class-template
+# $(call class-object-recipe-template,class,source-c)
+define class-object-recipe-template
 
-    $$(call class-buildprefix,$1)%.o: %.c $$(makefile-list)
+    $$(call class-buildprefix,$1)%.o: $2 $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
 	    $$(call class-cppflags,$1) -c -o $$@ $$<
 
-    $$(call class-buildprefix,$1)%.i: %.c $$(makefile-list)
+    $$(call class-buildprefix,$1)%.i: $2 $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
 	    $$(call class-cppflags,$1) -E -o $$@ $$<
 
-    $$(call class-buildprefix,$1)%.d: %.c $$(makefile-list)
+    $$(call class-buildprefix,$1)%.d: $2 $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
 	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
 	    $$(call class-cppflags,$1) -MM -MP                          \
 	    -MT "$$(@) $$(@:%d=%o) $$(@:%d=%i)" -o $$@ $$<
+
+endef
+
+define class-template
+
+    $(call class-object-recipe-template,$1,$$(SRCPREFIX)%.c)
+    $(call class-object-recipe-template,$1,%.c)
 
 endef
 
