@@ -43,7 +43,6 @@ include util/multitarget.inc.mk
 clean-files += src/main/register-tests.c
 
 all: src/main/register-tests.c
-
 test: test-automock
 
 .PHONY: test-automock
@@ -58,6 +57,21 @@ src/main/register-tests.c: selftest-runner \
 	    - \
 	    src/main/register-tests.c.footer \
 	  > $@
+
+all: doc
+.PHONY: doc clean-doc
+doc: examples
+	doxygen
+clean: clean-doc
+clean-doc:
+	$(if $(wildcard html),rm -rf html)
+
+.PHONY: examples clean-examples
+examples:
+	$(MAKE) -C examples
+clean: clean-examples
+clean-examples:
+	$(MAKE) -C examples clean
 
 ifdef GCOV
 CFLAGS += --coverage

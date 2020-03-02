@@ -33,3 +33,4 @@ lextab.py
 yacctab.py
 html/*
 .vscode/
+examples/output
