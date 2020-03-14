@@ -51,7 +51,7 @@ static pfstest_bool equal_to_test(pfstest_matcher_t *matcher,
             return pfstest_false;
     }
 
-    if (expected_size == 0)
+    if (expected_size == 0 || actual == NULL)
         return (expected == actual);
     else
         return (0 == memcmp(expected, actual, expected_size));

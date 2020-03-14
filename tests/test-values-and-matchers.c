@@ -526,6 +526,19 @@ test(the_memory_should_print_itself)
                 the_string(captured_output), matches_the_pg_string(expected));
 }
 
+test(zero_length_memory_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("the memory {}");
+    char actual[] = {1, 2, 3, 4, 5};
+
+    pfstest_value_print(the_memory(actual, 0), message_spy);
+
+    assert_that("zero-length memory buffers print themselves",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+
 test(equal_memory_should_match)
 {
     char actual[] = {1, 2, 3, 4, 5};
@@ -568,6 +581,17 @@ test(shorter_expected_memory_should_not_match)
                  pfstest_matcher_matches(
                      equal_to(the_memory(expected, sizeof(expected))),
                      the_memory(actual, sizeof(actual) - 1)));
+}
+
+test(zero_length_actual_memory_should_not_crash)
+{
+    char actual[] = {1, 2, 3, 4, 5};
+    char expected[] = {1, 2, 3, 4, 5};
+
+    assert_false("zero length memory should equality test without crashing",
+                 pfstest_matcher_matches(
+                     equal_to(the_memory(expected, sizeof(expected))),
+                     the_memory(actual, 0)));
 }
 
 test(anything_should_print_itself)
