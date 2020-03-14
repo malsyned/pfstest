@@ -272,9 +272,22 @@ static void the_memory_printer(pfstest_value_t *value,
 
 pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
 {
-    void *data = pfstest_alloc(size);
+    void *data;
 
-    memcpy(data, m, size);
+    if (size) {
+        data = pfstest_alloc(size);
+        memcpy(data, m, size);
+    } else {
+        /* You might assume that this clause is unnecessary because
+         * pfstest_alloc(0) returns NULL and memcpy(NULL, x, 0) is a
+         * no-op. However, the C standard leaves this behavior
+         * undefined (ISO/IEC 9899:2011 sec. 7.24.1 "String function
+         * conventions" subsec. 2, sec. 7.1.4 "Use of Library
+         * Functions" subsec. 1) and some compilers are reported to
+         * take advantage of that leeway
+         * (https://www.imperialviolet.org/2016/06/26/nonnull.html). */
+        data = NULL;
+    }
 
     return pfstest_value_new(the_memory_printer, data, size, NULL);
 }
