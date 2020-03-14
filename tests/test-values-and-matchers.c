@@ -661,6 +661,59 @@ test(equal_to_should_print_value)
                 the_string(captured_output), matches_the_pg_string(expected));
 }
 
+static void print_nothing(pfstest_value_t *value,
+                          pfstest_reporter_t *reporter)
+{
+    (void)value;
+    (void)reporter;
+}
+
+test(equal_to_should_reject_absurd_actual)
+{
+    int i = 5;
+    pfstest_value_t *expected = pfstest_value_new(print_nothing,
+                                                  &i, sizeof(i), NULL);
+    pfstest_value_t *actual = pfstest_value_new(print_nothing,
+                                                NULL, sizeof(i), NULL);
+
+    assert_false("Absurd actual values fail",
+                 pfstest_matcher_matches(equal_to(expected), actual));
+}
+
+test(equal_to_should_reject_absurd_expected)
+{
+    int i = 5;
+    pfstest_value_t *expected = pfstest_value_new(print_nothing,
+                                                  NULL, sizeof(i), NULL);
+    pfstest_value_t *actual = pfstest_value_new(print_nothing,
+                                                &i, sizeof(i), NULL);
+
+    assert_false("Absurd expected values fail",
+                 pfstest_matcher_matches(equal_to(expected), actual));
+}
+
+test(equal_to_should_pass_equal_absurd_values)
+{
+    int i = 5;
+    pfstest_value_t *expected = pfstest_value_new(print_nothing,
+                                                  NULL, sizeof(i), NULL);
+    pfstest_value_t *actual = pfstest_value_new(print_nothing,
+                                                NULL, sizeof(i), NULL);
+    assert_true("Absurd expected/actual with same sizes pass",
+                pfstest_matcher_matches(equal_to(expected), actual));
+}
+
+test(equal_to_should_fail_abusrd_values_different_sizes)
+{
+    int i = 5;
+    pfstest_value_t *expected = pfstest_value_new(print_nothing,
+                                                  NULL, sizeof(i), NULL);
+    pfstest_value_t *actual = pfstest_value_new(print_nothing,
+                                                NULL, sizeof(i) + 1, NULL);
+    assert_false("Absurd expected/actual with different sizes fail",
+                 pfstest_matcher_matches(equal_to(expected), actual));
+}
+
 test(is_should_wrap_matchers)
 {
     pfstest_matcher_t *m = equal_to(the_int(5));

@@ -31,6 +31,14 @@ static pfstest_bool equal_to_test(pfstest_matcher_t *matcher,
     const void *actual = pfstest_value_data(actual_value);
     size_t actual_size = pfstest_value_size(actual_value);
 
+    /* Attempt to deal gracefully with sized, NULL-data
+     * (a.k.a. "absurd") values */
+    if ((expected == NULL && expected_size != 0)
+        || (actual == NULL && actual_size != 0))
+    {
+        return (actual == expected && actual_size == expected_size);
+    }
+
     /* If someone is comparing two different-sized blocks of memory in
      * an assertion, that's almost certainly a bug in the tests, not
      * in the production code. Since we're carrying around the size

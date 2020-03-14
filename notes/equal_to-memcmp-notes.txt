@@ -1,0 +1,122 @@
+data: null, not-null
+size: 0, not-zero
+
+
+actual data null, actual size 0
+================
+expected data null, expected size 0
+intended result: true; actual result: true
+expected data null, expected size !0
+intended result: false; actual result: false
+expected data !null, expected size 0
+intended result: false; actual result: false
+expected data !null, expected size !0
+!!! intended result: false; actual result: memcmp segfault
+
+
+actual data null, actual size !0
+================
+[The actual value was created in error, as by the_memory(NULL, 5)]
+expected data null, expected size 0
+intended result: false; actual result: false
+expected data null, expected size !0, != actual size
+intended result: false; actual result: false
+expected data null, expected size !0, == actual size
+!!! intended result: true; actual result: memcmp segfault
+expected data !null, expected size 0
+intended result: false; actual result: false
+expected data !null, expected size !0, != actual size
+intended result: false; actual result: false
+expected data !null, expected size !0, == actual size
+!!! intended result: false; actual result: memcmp segfault
+
+actual data !null, actual size 0
+================
+expected data null, expected size 0
+expected result: false; actual result: false
+expected data null, expected size !0
+intended result: false; actual result: memcmp segfault
+expected data !null, expected size 0
+intended result: actual == expected; actual result: actual == expected
+expected data !null, expected size !0
+intended result: memcmp; actual result: memcmp
+
+actual data !null, actual size !0
+================
+expected data null, expected size 0
+expected result: false; actual result: false
+expected data null, expected size !0, != actual size
+expected result: false; actual result: false
+expected data null, expected size !0, == actual size
+!!! expected result: false; actual result: memcmp segfault
+expected data !null, expected size 0
+expected result: expected == actual; actual result: expected == actual
+expected data !null, expected size !0, != actual size
+expected result: false; actual result: false
+expected data !null, expected size !0, == actual size
+expected result: memcmp; actual result: memcmp
+
+
+
+actual data null, actual size 0 - the_pointer(NULL) or the_memory(..., 0)
+actual data null, actual size !0 - an error
+actual data !null, actual size 0 - the_pointer(&some_data) or automock argument
+actual data !null, actual size !0 - a typical user-created value
+
+
+expected data null, expected size 0 - the_pointer(NULL) [or the_memory(..., 0)]
+expected data null, expected size !0 - an error
+expected data !null, expected size 0 - the_pointer(&some_data)
+expected data !null, expected size !0 - a typical expectation
+
+
+
+****************
+
+Use case: actual size passed to the_memory is returned by CUT
+expected data !null, expected size !0
+intended result: false; actual result: memcmp segfault
+
+Use case: an erroneously created actual value with data == NULL, size != 0
+Is there ever a reason to return anything but false on these?
+
+Use case: an erroneously created expected value with data == NULL, size != 0
+Is there ever a reason to return anything but false on these?
+
+Use case: erroneously created actual and expected values with same size
+Is this maybe a case where you want to return true, just to be telling the truth? Or to survive a weird hack where the user is overloading the meaning of size and making data = NULL as a flag?
+
+Use case: actual the_memory on real data, expected the_pointer
+intended result: expected == actual, I guess? It'll almost always be false, except in contrived examples like:
+    m = the_memory(buf, 5);
+    p = the_pointer(buf);
+    assert_that("", m, is(p));
+But in that contrived example, it would be pretty fucking surprising to have that assertion fail.
+
+****************
+
+(original issue)
+actual data null, actual size 0
+expected data !null, expected size !0
+!!! intended result: false; actual result: memcmp segfault
+
+(absurd actual)
+actual data null, actual size !0
+expected data !null, expected size !0, == actual size
+!!! intended result: false; actual result: memcmp segfault
+
+(absurd expected)
+actual data !null, actual size !0
+expected data null, expected size !0, == actual size
+!!! expected result: false; actual result: memcmp segfault
+
+(absurd both)
+actual data null, actual size !0
+expected data null, expected size !0, == actual size
+!!! intended result: true; actual result: memcmp segfault
+
+(re-check:
+actual data null, actual size !0
+expected data null, expected size !0, != actual size
+intended result: false; actual result: memcmp segfault
+)
