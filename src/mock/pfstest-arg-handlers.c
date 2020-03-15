@@ -140,9 +140,9 @@ static pfstest_bool capture_arg_test(pfstest_arg_handler_t *arg_handler,
     return pfstest_true;
 }
 
-static pfstest_bool value_is_pointer(pfstest_value_t *actual)
+static pfstest_bool value_is_pointer(pfstest_value_t *value)
 {
-    return (pfstest_value_size(actual) == 0);
+    return (pfstest_value_size(value) == 0);
 }
 
 static void copy_pointer(void *arg_p, pfstest_value_t *pointer)
