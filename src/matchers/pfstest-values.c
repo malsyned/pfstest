@@ -270,25 +270,30 @@ static void the_memory_printer(pfstest_value_t *value,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("}"));
 }
 
-pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
+static void *alloc_copy(const void *m, size_t size)
 {
     void *data;
 
+    /* This test is necessary, even though pfstest_alloc(0) returns
+     * NULL, because passing a NULL dest to memcpy() is undefined
+     * behavior even when the size is 0 (ISO/IEC 9899:2011 sec. 7.24.1
+     * "String function conventions" subsec. 2, sec. 7.1.4 "Use of
+     * library functions" subsec. 1) and some compilers are reported
+     * to take advantage of that leeway
+     * (https://www.imperialviolet.org/2016/06/26/nonnull.html). */
     if (size) {
         data = pfstest_alloc(size);
         memcpy(data, m, size);
     } else {
-        /* You might assume that this clause is unnecessary because
-         * pfstest_alloc(0) returns NULL and memcpy(NULL, x, 0) is a
-         * no-op. However, the C standard leaves this behavior
-         * undefined (ISO/IEC 9899:2011 sec. 7.24.1 "String function
-         * conventions" subsec. 2, sec. 7.1.4 "Use of Library
-         * Functions" subsec. 1) and some compilers are reported to
-         * take advantage of that leeway
-         * (https://www.imperialviolet.org/2016/06/26/nonnull.html). */
         data = NULL;
     }
 
+    return data;
+}
+
+pfstest_value_t *pfstest_the_memory(const void *m, size_t size)
+{
+    void *data = alloc_copy(m, size);
     return pfstest_value_new(the_memory_printer, data, size, NULL);
 }
 
@@ -315,8 +320,7 @@ static void the_int_array_printer(pfstest_value_t *value,
 pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
 {
     size_t size = length * sizeof(*a);
-    void *data = pfstest_alloc(size);
-    memcpy(data, a, size);
+    void *data = alloc_copy(a, size);
     return pfstest_value_new(the_int_array_printer, data, size, NULL);
 }
 
