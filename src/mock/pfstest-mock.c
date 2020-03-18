@@ -366,7 +366,7 @@ static void wrong_call_count_printer(pfstest_reporter_t *reporter,
         pfstest_reporter_print_pg_str(reporter,
                                       pfstest_pg_str("Never called "));
         pfstest_expectation_print(args->expectation, reporter);
-    } else if (args->invocation_count != 1) {
+    } else {
         pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("Wanted "));
         pfstest_expectation_print(args->expectation, reporter);
 

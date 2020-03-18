@@ -464,18 +464,17 @@ test(should_reject_too_many_invocations)
 
 pfstest_case(invokes_too_few_times)
 {
-    verify_times(exactly(3),
+    verify_times(exactly(2),
                  when(mock_dep_func1, arg_that(equal_to(the_int(1)))));
 
-    dep_func1(1);
     dep_func1(1);
 }
 
 test(should_reject_too_few_invocations)
 {
     const pfstest_pg_ptr char *expected = pfstest_pg_str(
-        "Wanted dep_func1 with (the int 1) exactly 3 times\n"
-        "Was called 2 times");
+        "Wanted dep_func1 with (the int 1) exactly 2 times\n"
+        "Was called 1 time");
 
     capture_test_results_with_plugins(invokes_too_few_times, plugins);
 
