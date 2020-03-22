@@ -25,7 +25,7 @@
 #endif /* !defined(PFSTEST_PLATFORM) && !defined(PFSTEST_PLATFORM_NOAUTO) */
 
 
-#if !defined(PFSTEST_PLATFORM_HEADER)
+#if defined(PFSTEST_PLATFORM) && !defined(PFSTEST_PLATFORM_HEADER)
 
 # if PFSTEST_PLATFORM == PFSTEST_PLATFORM_AVR8
 #  define PFSTEST_PLATFORM_HEADER "pfstest-platform-avr8.h"
@@ -42,6 +42,8 @@
 #endif  /* !defined(PFSTEST_PLATFORM_HEADER) */
 
 
-#include PFSTEST_PLATFORM_HEADER
+#if defined(PFSTEST_PLATFORM_HEADER)
+# include PFSTEST_PLATFORM_HEADER
+#endif
 
 #endif /* !defined(PFSTEST_PLATFORM_DETECT_H) */

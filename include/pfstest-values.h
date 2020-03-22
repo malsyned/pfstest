@@ -137,7 +137,7 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value);
 
 /** @} */
 
-#if (PFSTEST_HAS_STDINT) || defined(__DOXYGEN__)
+#if defined(PFSTEST_HAS_STDINT) || defined(__DOXYGEN__)
 /** Box a uint8_t */
 pfstest_value_t *pfstest_the_u8(uint8_t n);
 /** Box a uint16_t */
