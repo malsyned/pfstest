@@ -363,7 +363,8 @@ ArgHint = enum('ArgHint', 'POINTER BLOB')
 def describe_parse_error(ex):
     return 'parse error: %s' % ex
 
-def report_parse_error(file, progname, ex):
+def report_parse_error(file, progpath, ex):
+    progname, ext = path.splitext(path.basename(progpath))
     file.write('%s: %s\n' % (progname, describe_parse_error(ex)))
 
 from argparse import ArgumentParser
