@@ -360,6 +360,12 @@ ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
 ArgInfo = namedtuple('ArgInfo', 'name hint')
 ArgHint = enum('ArgHint', 'POINTER BLOB')
 
+def describe_parse_error(ex):
+    return 'parse error: %s' % ex
+
+def report_parse_error(file, progname, ex):
+    file.write('%s: %s\n' % (progname, describe_parse_error(ex)))
+
 from argparse import ArgumentParser
 
 argv_parser = ArgumentParser(
@@ -400,7 +406,7 @@ if __name__ == "__main__":
     try:
         ast = cparser.parse(stdin.read(), args.headerpath)
     except ParseError as err:
-        sys.stderr.write("%s: %s\n" % (sys.argv[0], err))
+        report_parse_error(sys.stderr, sys.argv[0], err)
     else:
         mpaths = MockPathHandler(args.headerpath, args.mockroot)
         mg = MockGenerator(mpaths, CGenerator(), ast)
