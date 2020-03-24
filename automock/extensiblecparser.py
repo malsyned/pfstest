@@ -7,17 +7,21 @@ class ExtensibleCParser(CParser):
     def __init__(self,
                  storage_class_specifiers=[],
                  type_qualifiers=[],
-                 types=[],
+                 type_specifiers=[],
                  function_specifiers=[],
                  lexer_base=CLexer,
                  **kwargs):
-        self.initial_type_symbols = types
 
         self.lexer_class = type("ExtensibleCLexer", (CLexer,), dict())
 
-        self.add_rule("storage_class_specifier", storage_class_specifiers)
-        self.add_rule("type_qualifier", type_qualifiers)
-        self.add_rule("function_specifier", function_specifiers)
+        self.add_rule("storage_class_specifier", storage_class_specifiers,
+                      self.p_storage_class_specifier)
+        self.add_rule("type_qualifier", type_qualifiers,
+                      self.p_type_qualifier)
+        self.add_rule("function_specifier", function_specifiers,
+                      self.p_function_specifier)
+        self.add_rule("type_specifier_no_typeid", type_specifiers,
+                      self.p_type_specifier_no_typeid)
 
         kwargs['lexer'] = self.lexer_class
         kwargs['lex_optimize'] = False
@@ -26,12 +30,12 @@ class ExtensibleCParser(CParser):
 
         CParser.__init__(self, **kwargs)
 
-    def add_rule(self, nonterminal, keywords):
+    def add_rule(self, nonterminal, keywords, action):
         add_lexer_keywords(self.lexer_class, keywords)
 
         names = self.make_rule_names(nonterminal, len(keywords))
         for (name, keyword) in zip(names, keywords):
-            def rule(self, p): p[0] = p[1]
+            def rule(self, p): action(p)
             rule.__doc__ = "%s : %s\n" % (nonterminal, keyword.upper())
             rule.__name__ = name
             setattr(self.__class__, rule.__name__, rule)
@@ -45,21 +49,6 @@ class ExtensibleCParser(CParser):
     def p_struct_declaration_list_empty(self, p):
         """ struct_declaration_list : empty """
         p[0] = None
-
-    # Override the parse function to initialize _scope_stack with the
-    # listed types
-    def parse(self, text, filename='', debuglevel=0):
-        self.clex.filename = filename
-        self.clex.reset_lineno()
-        # Apart from this line, this method should be a copy of
-        # CParser.parse
-        self._scope_stack = [
-            dict((tpsym, 1) for tpsym in self.initial_type_symbols)]
-        self._last_yielded_token = None
-        return self.cparser.parse(
-                input=text,
-                lexer=self.clex,
-                debug=debuglevel)
 
 def add_lexer_keywords(cls, keywords):
     cls.keywords = cls.keywords + tuple(

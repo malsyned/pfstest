@@ -378,9 +378,9 @@ argv_parser.add_argument('-s', '--storage-class-specifier',
 argv_parser.add_argument('-q', '--type-qualifier',
                          metavar='qualifier', type=str, action='append',
                          help='Additional type qualifier to accept')
-argv_parser.add_argument('-t', '--type',
-                         metavar='type', type=str, action='append',
-                         help='Additional built-in type to accept')
+argv_parser.add_argument('-t', '--type-specifier',
+                         metavar='specifier', type=str, action='append',
+                         help='Additional type specifier to accept')
 argv_parser.add_argument('-f', '--function-specifier',
                          metavar='specifier', type=str, action='append',
                          help='Additional function specifier to accept')
@@ -395,7 +395,7 @@ if __name__ == "__main__":
     cparser = ExtensibleCParser(
         storage_class_specifiers=args.storage_class_specifier or [],
         type_qualifiers=args.type_qualifier or [],
-        types=args.type or [],
+        type_specifiers=args.type_specifier or [],
         function_specifiers=args.function_specifier or [])
     try:
         ast = cparser.parse(stdin.read(), args.headerpath)

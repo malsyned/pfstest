@@ -9,7 +9,7 @@ from extensiblecparser import ExtensibleCParser
 # limited one in each test case
 cparser = ExtensibleCParser(storage_class_specifiers=['overlay'],
                             type_qualifiers=['near','far'],
-                            types=['__builtin_va_list', 'a_builtin_type'],
+                            type_specifiers=['_Float32'],
                             function_specifiers=['__inline', '_Noreturn'],
 
                             lex_optimize = False,
@@ -56,18 +56,14 @@ class ExtensibleCParserTests(TestCase):
         IdentifierType <type>: names=['void']
 """)
 
-    def test_shouldAcceptNewTypes(self):
-        # CHECKME: Do I want to support new type specifiers (such as:
-        # int, char, short, unsigned), or just new types?
-        ast = cparser.parse('__builtin_va_list va; a_builtin_type abt;')
+    def test_shouldAcceptNewTypeSpecifiers(self):
+        ast = cparser.parse(
+            '_Complex _Float32 cacosf32;')
 
         self.assertASTShows(ast, """FileAST: 
-  Decl <ext[0]>: name=va, quals=[], storage=[], funcspec=[]
-    TypeDecl <type>: declname=va, quals=[]
-      IdentifierType <type>: names=['__builtin_va_list']
-  Decl <ext[1]>: name=abt, quals=[], storage=[], funcspec=[]
-    TypeDecl <type>: declname=abt, quals=[]
-      IdentifierType <type>: names=['a_builtin_type']
+  Decl <ext[0]>: name=cacosf32, quals=[], storage=[], funcspec=[]
+    TypeDecl <type>: declname=cacosf32, quals=[]
+      IdentifierType <type>: names=['_Complex', '_Float32']
 """)
 
     def test_shouldAcceptNewFunctionSpecifiers(self):
