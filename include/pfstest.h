@@ -146,6 +146,73 @@
     @note This example was run with @c -v to make changed test result
     more obvious.
 
+ @section assert Using Matchers and Assertions
+
+ fail() provided a quick way to get started, but most real tests in
+ PFSTest will be written using the Hamcrest-inspired assert_that and
+ matchers. We'll start with a simple example and then explain the new
+ operations it uses.
+
+ -# Add a test for a function that cubes its argument:
+    @include quickstart/4/quickstart.c
+
+    @c should_cube_numbers contains three new PFSTest
+    features:
+
+    - assert_that(description, actual_value, matcher)
+
+      Most PFSTest tests will use assert_that(). It simplifies and
+      makes more regular the process of writing assertions and
+      printing information about failures. The first argument is a
+      description, which can be an empty string. If provided, it will
+      be printed in failure messages along with the details of the
+      test expectation and the actual value. The second argument is
+      the value returned by the code under test, boxed so that it can
+      be handled generically.  The third argument is a matcher that
+      describes the expected value. In this example, equal_to() is
+      used to create a matcher.
+
+    - the_int()
+
+      In the object-oriented languages where frameworks like xUnit and
+      Hamcrest were initially developed, all types either inherit from
+      a common @c Object class or can be encapsulated into an object
+      which does. Since C lacks such a common ancestor type, all C
+      primitive values must be passed to a value boxer like the_int()
+      before being passed to PFSTest calls like assert_that(),
+      equal_to(), or when(). Value boxers return a @c pfstest_value*
+      which keeps track of the size of the data and knows how to print
+      it in messages. For more examples of value boxers, see @ref
+      include/pfstest-values.h and @ref include/pfstest-fp.h.
+
+    - equal_to()
+
+      Matchers are a flexible, composable means of describing what
+      values produced by the code under test are
+      acceptable. equal_to() returns a matcher which compares boxed
+      data using memcmp() and boxed pointers with @c ==. For more
+      examples of matchers, see @ref include/pfstest-matchers.h.
+
+ -# Create a @c cube.c / @c cube.h pair, and add an incorrect
+    implementation of @c `cube', to get past compilation and linking
+    errors.
+    @include quickstart/4f/cube.c
+
+ -# Run the test runner and see the result of the output of the
+    assertion failure:
+    @include output/quickstart4f.txt
+
+    Notice that in addition to the file and line number of the failing
+    assertion, PFSTest prints the descriptive text that was passed to
+    it, and a helpful description both of what was expected and what
+    value was actually produced.
+
+ -# Add working code to @c `cube':
+    @include quickstart/4/cube.c
+
+ -# Watch the tests pass:
+    @include output/quickstart4.txt
+
  */
 
 #include "pfstest-core.h"

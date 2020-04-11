@@ -23,7 +23,15 @@ quickstart3f_SRC = quickstart/3/quickstart.c quickstart/3f/square.c
 quickstart3_SRC = quickstart/3/quickstart.c quickstart/3/square.c
 quickstart3_ARGS = -v
 
-TARGETS = quickstart1 quickstart1v quickstart2 quickstart3f quickstart3
+quickstart4f_CPPFLAGS = -Iquickstart/4
+quickstart4f_SRC = quickstart/4/quickstart.c \
+                   quickstart/3/square.c quickstart/4f/cube.c
+
+quickstart4_SRC = quickstart/4/quickstart.c \
+                  quickstart/3/square.c quickstart/4/cube.c
+
+TARGETS = quickstart1 quickstart1v quickstart2 quickstart3f quickstart3 \
+          quickstart4f quickstart4
 
 MULTITARGET_PLUGINS = $(SRCPREFIX)util/test-runners.inc.mk
 include $(SRCPREFIX)util/multitarget.inc.mk
