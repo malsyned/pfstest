@@ -1,0 +1,7 @@
+language: c
+compiler: gcc
+addons:
+  apt:
+    packages:
+      - doxygen
+script: "make && make test"
