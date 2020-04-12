@@ -31,6 +31,6 @@ register-*tests.c
 *.pyc
 lextab.py
 yacctab.py
-html/*
+doc/*
 .vscode/
 examples/output
