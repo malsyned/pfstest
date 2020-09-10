@@ -53,8 +53,8 @@ define class-mock-recipe-template
     : $2 $$(AUTOMOCK_SRC) $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
-	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
-	    $$(call class-cppflags,$1) $$(AUTOMOCK_CPPFLAGS)            \
+	    $$(call class-cppflags,$1) $$(CPPFLAGS)                     \
+	    $$(AUTOMOCK_CPPFLAGS) $$(call class-includes,$1)            \
 	    $$(call class-automock-cppflags,$1) -E -o - $$<             \
 	    | $$(AUTOMOCK) $$(AUTOMOCK_FLAGS)                           \
 	      $$(call class-automock-flags,$1) $$< $$(basename $$@)

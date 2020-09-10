@@ -139,14 +139,14 @@ define class-object-recipe-template
     $$(call class-buildprefix,$1)%.o: $2 $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
-	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
+	    $$(CPPFLAGS) $$(call class-includes,$1)                     \
 	    $$(call class-cppflags,$1) -c -o $$@ $$<
 
     $$(call class-buildprefix,$1)%.i: $2 $$(makefile-list)
 	@mkdir -p $$(dir $$@)
 	$$(call class-cc,$1) $$(CFLAGS) $$(call class-cflags,$1)        \
-	    $$(call class-includes,$1) $$(CPPFLAGS)                     \
-	    $$(call class-cppflags,$1) -E -o $$@ $$<
+	    $$(call class-cppflags,$1) $$(CPPFLAGS)                     \
+	    $$(call class-includes,$1) -E -o $$@ $$<
 
     $$(call class-buildprefix,$1)%.d: $2 $$(makefile-list)
 	@mkdir -p $$(dir $$@)
