@@ -408,6 +408,7 @@ if __name__ == "__main__":
         ast = cparser.parse(stdin.read(), args.headerpath)
     except ParseError as err:
         report_parse_error(sys.stderr, sys.argv[0], err)
+        exit(1)
     else:
         mpaths = MockPathHandler(args.headerpath, args.mockroot)
         mg = MockGenerator(mpaths, CGenerator(), ast)
