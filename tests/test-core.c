@@ -514,7 +514,6 @@ test(should_only_register_each_plugin_once)
     pfstest_suite_run(&plugins, &suite, NULL, NULL, standard_reporter);
 
     if (0 != pfstest_strcmp_pg(call_log, expected)) {
-        fail(call_log);
         fail("Log did not match expected log");
     }
 }
