@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest.h"
 
 /* PFSTest makes extensive use of C preprocessor macros to provide a

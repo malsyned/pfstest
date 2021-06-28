@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 this-makefile := $(lastword $(MAKEFILE_LIST))
 
 selftest-path := $(dir $(this-makefile))

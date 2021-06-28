@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 SRCPREFIX = ../
 BIN_PATTERN = build/%-runner
 BUILDPREFIX = build/

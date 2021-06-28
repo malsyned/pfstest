@@ -1,0 +1,11 @@
+Copyright (C) 2014, 2015, 2017, 2018, 2020, 2021 Dennis Lambe Jr.
+Portions Copyright (C) 2017 Eli Bendersky
+
+PFSTest is provided under:
+
+    SPDX-License-Identifier: LGPL-2.1-or-later
+
+Being under the terms of the GNU Lesser General Public License v2.1 or
+later, according with:
+
+    lgpl-2.1.txt

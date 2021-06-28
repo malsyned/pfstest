@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #ifndef OUTPUT_DEFINITIONS_H
 #define OUTPUT_DEFINITIONS_H
 

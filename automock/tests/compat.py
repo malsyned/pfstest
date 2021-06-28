@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 import sys
 if (sys.version_info[0] >= 3):
     from io import StringIO

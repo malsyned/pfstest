@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #ifndef PFSTEST_ALLOC_PIC_H
 #define PFSTEST_ALLOC_PIC_H
 

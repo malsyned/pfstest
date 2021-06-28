@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest-avr-mem.h"
 
 #include "pfstest-platform.h"

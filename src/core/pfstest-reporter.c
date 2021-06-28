@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest-reporter.h"
 
 struct escape_char_map

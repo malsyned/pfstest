@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 GCC_AUTOMOCK_CPPFLAGS = -D"__attribute__(x)=" \
                         -D"__asm__(x)=" \
                         -D"__extension__="

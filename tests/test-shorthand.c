@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest.h"
 
 /* These are very minimal tests, mostly to make sure that the headers

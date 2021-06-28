@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #ifndef CAPTURE_OUTPUT_H
 #define CAPTURE_OUTPUT_H
 

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #ifndef PFSTEST_ASSERT_H
 #define PFSTEST_ASSERT_H
 

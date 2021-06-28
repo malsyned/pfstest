@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest-fp.h"
 
 #include "pfstest-alloc.h"

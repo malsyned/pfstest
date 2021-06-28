@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #ifndef PFSTEST_ARG_HANDLERS_H
 #define PFSTEST_ARG_HANDLERS_H
 

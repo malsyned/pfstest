@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest-tag.h"
 
 static pfstest_tag_t next_auto_tag = 1;

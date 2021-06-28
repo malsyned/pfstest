@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
 #include "pfstest-platform-mcc18.h"
 
 int _pfstest_strcmp_pgpg_mcc18(const far rom char *s1, const far rom char *s2)
