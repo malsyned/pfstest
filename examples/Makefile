@@ -46,7 +46,7 @@ example-output: $(call targets-bin-names,$(TARGETS))
 	$(foreach target,$(TARGETS),                         \
 	          ./$(call target-bin-name,$(target))        \
                   $(call target-args,$(target))              \
-                  | sed 's/[a-zA-Z0-9_-/]*\///g'             \
+                  | sed 's/[a-zA-Z0-9_/-]*\///g'             \
                   > $(OUTPUTPREFIX)$(target).txt || true; )
 
 clean-files += $(foreach target,$(TARGETS),$(OUTPUTPREFIX)$(target).txt)
