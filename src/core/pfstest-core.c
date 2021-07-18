@@ -199,7 +199,7 @@ static void teardown_plugins(pfstest_list_t *plugins)
 
 static pfstest_bool test_ignored(_pfstest_test_pg_t *test_desc)
 {
-    return 0 != (test_desc->flags & _PFSTEST_FLAG_IGNORED);
+    return (test_desc->flags & _PFSTEST_FLAG_IGNORED);
 }
 
 static void push_dynamic_context(void)
