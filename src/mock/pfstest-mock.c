@@ -472,9 +472,9 @@ static void do_exactly(const pfstest_pg_ptr char *file, int line,
 
 static pfstest_verify_mode_t *counting_mode_new(
     int times,
-    void function(const pfstest_pg_ptr char *file, int line,
-                  pfstest_verify_mode_t *mode,
-                  pfstest_expectation_t *expectation))
+    void (*function)(const pfstest_pg_ptr char *file, int line,
+                     pfstest_verify_mode_t *mode,
+                     pfstest_expectation_t *expectation))
 {
     pfstest_verify_mode_t *mode = pfstest_alloc(sizeof(*mode));
     int *data = pfstest_alloc(sizeof(*data));
