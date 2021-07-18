@@ -103,9 +103,8 @@ static void matches_the_pg_string_printer(
 
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("the string \""));
     
-    while (pfstest_memcpy_pg(&c, expected, sizeof(c)), c) {
+    while (PFSTEST_READ_RETURN_PG(c, *expected++)) {
         pfstest_reporter_print_escaped_char(reporter, c);
-        expected++;
     }
 
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("\""));

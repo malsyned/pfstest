@@ -14,9 +14,8 @@ static void print_pg_str(int (*char_writer)(int),
 {
     char c;
 
-    while (pfstest_memcpy_pg(&c, s, sizeof(c)), c) {
+    while (PFSTEST_READ_RETURN_PG(c, *s++)) {
         char_writer(c);
-        s++;
     }
 }
 
@@ -41,7 +40,7 @@ static void print_register_plugin_commands(int (*char_writer)(int),
     _pfstest_plugin_pg_t pg_data;
 
     pfstest_list_iter (plugin, plugins) {
-        pfstest_memcpy_pg(&pg_data, plugin->pg_data, sizeof(pg_data));
+        PFSTEST_READ_PG(pg_data, *plugin->pg_data);
 
         print_pg_str(char_writer, pfstest_pg_str("    register_plugin("));
         print_pg_str(char_writer, pg_data.name);
@@ -56,7 +55,7 @@ static void print_register_test_commands(int (*char_writer)(int),
     _pfstest_test_pg_t pg_data;
 
     pfstest_list_iter (test, tests) {
-        pfstest_memcpy_pg(&pg_data, test->pg_data, sizeof(pg_data));
+        PFSTEST_READ_PG(pg_data, *test->pg_data);
 
         print_pg_str(char_writer, pfstest_pg_str("    register_test("));
         print_pg_str(char_writer, pg_data.name);

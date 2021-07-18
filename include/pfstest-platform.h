@@ -252,6 +252,14 @@ struct _pfstest_alignment_struct
 #ifndef pfstest_strcat_pg
 # define pfstest_strcat_pg(dest, src) strcat(dest, src)
 #endif
+#ifndef PFSTEST_READ_PG
+/** \"\p to = \p from\" when \p from is in program memory */
+# define PFSTEST_READ_PG(to, from)                  \
+    pfstest_memcpy_pg(&(to), &(from), sizeof(to))
+#endif
+#ifndef PFSTEST_READ_RETURN_PG
+# define PFSTEST_READ_RETURN_PG(to, from) (PFSTEST_READ_PG(to, from), (to))
+#endif
 
 /* mcc18 special snowflake */
 #ifndef pfstest_c_assert

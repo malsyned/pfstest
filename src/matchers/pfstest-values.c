@@ -123,7 +123,7 @@ static void the_enum_printer(pfstest_value_t *value,
     pfstest_bool in_range = pfstest_false;
 
     for (count = 0, name_p = name_map;
-         pfstest_memcpy_pg(&name, name_p, sizeof(name)), name != NULL;
+         PFSTEST_READ_PG(name, *name_p), name != NULL;
          count++, name_p++)
     {
         if (count == e) {

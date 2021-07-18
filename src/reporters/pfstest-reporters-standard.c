@@ -430,7 +430,7 @@ static void report_colorizer_start(
     pfstest_report_color_t color)
 {
     void (*start)(int (*char_writer)(int), pfstest_report_color_t color);
-    pfstest_memcpy_pg(&start, &this->start, sizeof(start));
+    PFSTEST_READ_PG(start, this->start);
     start(char_writer, color);
 }
 
@@ -439,7 +439,7 @@ static void report_colorizer_reset(
     int (*char_writer)(int))
 {
     void (*reset)(int (*char_writer)(int));
-    pfstest_memcpy_pg(&reset, &this->reset, sizeof(reset));
+    PFSTEST_READ_PG(reset, this->reset);
     reset(char_writer);
 }
 

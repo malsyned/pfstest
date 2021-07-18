@@ -117,7 +117,7 @@ static pfstest_bool str_eq_pg_str(
 static void extract_test_descriptor(pfstest_t *the_test,
                                     _pfstest_test_pg_t *test_desc)
 {
-    pfstest_memcpy_pg(test_desc, the_test->pg_data, sizeof(*test_desc));
+    PFSTEST_READ_PG(*test_desc, *the_test->pg_data);
 }
 
 static pfstest_bool test_matches_filter(_pfstest_test_pg_t *test_desc,
@@ -137,7 +137,7 @@ static void run_indirect_function(
 {
     _pfstest_fixture_hookp func;
     if (fp != NULL) {
-        pfstest_memcpy_pg(&func, fp, sizeof(func));
+        PFSTEST_READ_PG(func, *fp);
         if (func != NULL)
             func();
     }
@@ -161,8 +161,7 @@ static void run_teardown_function(_pfstest_test_pg_t *current_test)
 static void extract_plugin_descriptor(pfstest_plugin_t *the_plugin,
                                     _pfstest_plugin_pg_t *plugin_desc)
 {
-    pfstest_memcpy_pg(plugin_desc, the_plugin->pg_data,
-                      sizeof(*plugin_desc));
+    PFSTEST_READ_PG(*plugin_desc, *the_plugin->pg_data);
 }
 
 static void plugins_run_callback(pfstest_list_t *plugins, int id)

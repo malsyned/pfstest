@@ -44,9 +44,9 @@ void pfstest_reporter_print_escaped_char(pfstest_reporter_t *reporter, int c)
 
     for (i = 0; i < sizeof(escape_char_map)/sizeof(escape_char_map[0]); i++)
     {
-        pfstest_memcpy_pg(&ch, &(escape_char_map[i].ch), sizeof(ch));
+        PFSTEST_READ_PG(ch, escape_char_map[i].ch);
         if (c == ch) {
-            pfstest_memcpy_pg(&str, &(escape_char_map[i].str), sizeof(str));
+            PFSTEST_READ_PG(str, escape_char_map[i].str);
             pfstest_reporter_print_pg_str(reporter, str);
             return;
         }
@@ -59,9 +59,8 @@ void pfstest_reporter_print_pg_str(pfstest_reporter_t *reporter,
 {
     char c;
 
-    while (pfstest_memcpy_pg(&c, s, sizeof(c)), c) {
+    while (PFSTEST_READ_RETURN_PG(c, *s++)) {
         pfstest_reporter_print_char(reporter, c);
-        s++;
     }
 }
 
@@ -91,7 +90,7 @@ static char digit_char(unsigned int digit)
 
     pfstest_c_assert(digit <= 0xf);
 
-    pfstest_memcpy_pg(&d, &digits[digit], sizeof(d));
+    PFSTEST_READ_PG(d, digits[digit]);
 
     return d;
 }
@@ -124,10 +123,7 @@ void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
 int pfstest_reporter_print_char(pfstest_reporter_t *reporter, int c)
 {
     int (*print_char)(pfstest_reporter_t *, int);
-    const pfstest_pg_ptr void *print_char_rom =
-        &(reporter->vtable->print_char);
-    pfstest_memcpy_pg(&print_char, print_char_rom,
-                      sizeof(print_char));
+    PFSTEST_READ_PG(print_char, reporter->vtable->print_char);
 
     return print_char(reporter, c);
 }
@@ -135,10 +131,7 @@ int pfstest_reporter_print_char(pfstest_reporter_t *reporter, int c)
 void pfstest_reporter_run_started(pfstest_reporter_t *reporter)
 {
     void (*run_started)(pfstest_reporter_t *);
-    const pfstest_pg_ptr void *run_started_rom =
-        &(reporter->vtable->run_started);
-    pfstest_memcpy_pg(&run_started, run_started_rom,
-                      sizeof(run_started));
+    PFSTEST_READ_PG(run_started, reporter->vtable->run_started);
 
     run_started(reporter);
 }
@@ -150,10 +143,7 @@ void pfstest_reporter_test_started(pfstest_reporter_t *reporter,
     void (*test_started)(pfstest_reporter_t *,
                          const pfstest_pg_ptr char *,
                          const pfstest_pg_ptr char *);
-    const pfstest_pg_ptr void *test_started_rom =
-        &reporter->vtable->test_started;
-    pfstest_memcpy_pg(&test_started, test_started_rom,
-                      sizeof(test_started));
+    PFSTEST_READ_PG(test_started, reporter->vtable->test_started);
 
     test_started(reporter, test_name, test_file);
 }
@@ -161,10 +151,7 @@ void pfstest_reporter_test_started(pfstest_reporter_t *reporter,
 void pfstest_reporter_test_ignored(pfstest_reporter_t *reporter)
 {
     void (*test_ignored)(pfstest_reporter_t *);
-    const pfstest_pg_ptr void *test_ignored_rom =
-        &reporter->vtable->test_ignored;
-    pfstest_memcpy_pg(&test_ignored, test_ignored_rom,
-                      sizeof(test_ignored));
+    PFSTEST_READ_PG(test_ignored, reporter->vtable->test_ignored);
 
     test_ignored(reporter);
 }
@@ -175,11 +162,8 @@ void pfstest_reporter_test_failed_message_start(
     void (*test_failed_message_start)(pfstest_reporter_t *,
                                       const pfstest_pg_ptr char *,
                                       int);
-    const pfstest_pg_ptr void *test_failed_message_start_rom =
-        &reporter->vtable->test_failed_message_start;
-    pfstest_memcpy_pg(&test_failed_message_start,
-                      test_failed_message_start_rom,
-                      sizeof(test_failed_message_start));
+    PFSTEST_READ_PG(test_failed_message_start,
+                    reporter->vtable->test_failed_message_start);
     
     test_failed_message_start(reporter, file, line);
 }
@@ -188,11 +172,8 @@ void pfstest_reporter_test_failed_message_complete(
     pfstest_reporter_t *reporter)
 {
     void (*test_failed_message_complete)(pfstest_reporter_t *);
-    const pfstest_pg_ptr void *test_failed_message_complete_rom =
-        &reporter->vtable->test_failed_message_complete;
-    pfstest_memcpy_pg(&test_failed_message_complete,
-                      test_failed_message_complete_rom,
-                      sizeof(test_failed_message_complete));
+    PFSTEST_READ_PG(test_failed_message_complete,
+                    reporter->vtable->test_failed_message_complete);
         
     test_failed_message_complete(reporter);
 }
@@ -200,10 +181,7 @@ void pfstest_reporter_test_failed_message_complete(
 void pfstest_reporter_test_complete(pfstest_reporter_t *reporter)
 {
     void (*test_complete)(pfstest_reporter_t *);
-    const pfstest_pg_ptr void *test_complete_rom =
-        &reporter->vtable->test_complete;
-    pfstest_memcpy_pg(&test_complete, test_complete_rom,
-                      sizeof(test_complete));
+    PFSTEST_READ_PG(test_complete, reporter->vtable->test_complete);
         
     test_complete(reporter);
 }
@@ -211,10 +189,7 @@ void pfstest_reporter_test_complete(pfstest_reporter_t *reporter)
 void pfstest_reporter_run_complete(pfstest_reporter_t *reporter)
 {
     void (*run_complete)(pfstest_reporter_t *);
-    const pfstest_pg_ptr void *run_complete_rom =
-        &reporter->vtable->run_complete;
-    pfstest_memcpy_pg(&run_complete, run_complete_rom,
-                      sizeof(run_complete));
+    PFSTEST_READ_PG(run_complete, reporter->vtable->run_complete);
         
     run_complete(reporter);
 }
@@ -222,10 +197,7 @@ void pfstest_reporter_run_complete(pfstest_reporter_t *reporter)
 int pfstest_reporter_return_value(pfstest_reporter_t *reporter)
 {
     int (*return_value)(pfstest_reporter_t *);
-    const pfstest_pg_ptr void *return_value_rom =
-        &reporter->vtable->return_value;
-    pfstest_memcpy_pg(&return_value, return_value_rom,
-                      sizeof(return_value));
+    PFSTEST_READ_PG(return_value, reporter->vtable->return_value);
         
     return return_value(reporter);
 }

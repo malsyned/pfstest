@@ -24,11 +24,10 @@ static int print_pg_str_raw(pfstest_reporter_t *reporter,
     char c;
     int r = 0;
 
-    while (pfstest_memcpy_pg(&c, s, sizeof(c)), c) {
+    while (PFSTEST_READ_RETURN_PG(c, *s++)) {
         r = reporter->char_writer(c);
         if (r != c)
             return r;
-        s++;
     }
 
     return r;
@@ -68,7 +67,7 @@ static int print_escaped_char(
     size_t i;
 
     for (i = 0; i < table_length; i++) {
-        pfstest_memcpy_pg(&row, &ref_table[i], sizeof(row));
+        PFSTEST_READ_PG(row, ref_table[i]);
         if (row.c == c)
             return print_pg_str_raw(reporter, row.ref);
     }

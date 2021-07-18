@@ -81,7 +81,7 @@ static unsigned int  pfstest_mock_arg_count(
     const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     pfstest_mock_t m;
-    pfstest_memcpy_pg(&m, mock, sizeof(m));
+    PFSTEST_READ_PG(m, *mock);
 
     return m.arg_count;
 }
@@ -90,7 +90,7 @@ static const pfstest_pg_ptr char *pfstest_mock_name(
     const pfstest_pg_ptr pfstest_mock_t *mock)
 {
     pfstest_mock_t m;
-    pfstest_memcpy_pg(&m, mock, sizeof(m));
+    PFSTEST_READ_PG(m, *mock);
 
     return m.name;
 }
