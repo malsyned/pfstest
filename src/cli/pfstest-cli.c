@@ -146,64 +146,137 @@ int pfstest_main(int argc, char *argv[])
     }
 }
 
-static char *next_arg(char **argv[])
+static void reset_args(pfstest_arguments_t *args)
 {
-    char *r = **argv;
-    (*argv)++;
-
-    return r;
-}
-
-static pfstest_bool str_is_pg_str(char *s1, const pfstest_pg_ptr char *s2)
-{
-    return (0 == pfstest_strcmp_pg(s1, s2));
-}
-
-pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
-                                     int argc, char *argv[])
-{
-    char *arg;
-    char *filter_file;
-    char *filter_name;
-
+    args->program_name = NULL;
     args->verbose = pfstest_false;
     args->xml = pfstest_false;
     args->color = pfstest_false;
     args->print_register_commands = pfstest_false;
     args->filter_file = NULL;
     args->filter_name = NULL;
+}
 
-    if (argc < 1 || argv[0] == NULL) {
-        args->program_name = NULL;
+static void sanitize_args(pfstest_arguments_t *args)
+{
+    if (args->filter_name)
+        args->verbose = pfstest_true;
+    if (args->xml)
+        args->verbose = pfstest_false;
+}
+
+static pfstest_bool progname_valid(int argc, char *argv[])
+{
+    return (argc > 0 && argv[0]);
+}
+
+/** Parse a flag that takes no arguments */
+static int parse_flag(char *argp[], void *data)
+{
+    pfstest_bool *flag = data;
+    (void)argp;
+
+    *flag = pfstest_true;
+    return 1;
+}
+
+/** Parse a flag that takes a single string argument */
+static int parse_value(char *argp[], void *data)
+{
+    char *flag_arg = argp[1];
+    char **value = data;
+
+    if (!flag_arg)
+        return -1;
+
+    *value = flag_arg;
+    return 2;
+}
+
+typedef struct {
+    const pfstest_pg_ptr char *flag;
+    int (*parse)(char **, void *);
+    size_t offset;
+} arg_parser;
+
+static const pfstest_pg char dash_v[] = "-v";
+static const pfstest_pg char dash_c[] = "-c";
+static const pfstest_pg char dash_x[] = "-x";
+static const pfstest_pg char dash_r[] = "-r";
+static const pfstest_pg char dash_f[] = "-f";
+static const pfstest_pg char dash_n[] = "-n";
+
+#define ARG_OFFSET(field) offsetof(pfstest_arguments_t, field)
+
+static const pfstest_pg arg_parser arg_parsers[] = {
+        {dash_v, parse_flag, ARG_OFFSET(verbose)},
+        {dash_c, parse_flag, ARG_OFFSET(color)},
+        {dash_x, parse_flag, ARG_OFFSET(xml)},
+        {dash_r, parse_flag, ARG_OFFSET(print_register_commands)},
+        {dash_f, parse_value, ARG_OFFSET(filter_file)},
+        {dash_n, parse_value, ARG_OFFSET(filter_name)}
+};
+
+static pfstest_bool str_eq_pg_str(char *s1, const pfstest_pg_ptr char *s2)
+{
+    return (0 == pfstest_strcmp_pg(s1, s2));
+}
+
+static int try_parse(arg_parser *p, pfstest_arguments_t *args, char *argp[])
+{
+    if (!str_eq_pg_str(*argp, p->flag))
+        return 0;
+    return p->parse(argp, ((char *)args) + p->offset);
+}
+
+static pfstest_bool is_parse_error(int r)
+{
+    return (r < 0);
+}
+
+static pfstest_bool is_parse_matched(int r)
+{
+    return (r > 0);
+}
+
+static int args_consumed(int r)
+{
+    return r;
+}
+
+pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
+                                     int argc, char *argv[])
+{
+    size_t num_arg_parsers = sizeof(arg_parsers) / sizeof(arg_parsers[0]);
+    arg_parser p;
+    size_t i;
+    int r;
+
+    reset_args(args);
+
+    if (!progname_valid(argc, argv))
         return pfstest_false;
-    }
+    args->program_name = *argv++;
 
-    args->program_name = next_arg(&argv);
+    while (*argv) {
+        for (i = 0; i < num_arg_parsers; i++) {
+            PFSTEST_READ_PG(p, arg_parsers[i]);
+            r = try_parse(&p, args, argv);
 
-    while (arg = next_arg(&argv), arg != NULL) {
-        if (str_is_pg_str(arg, pfstest_pg_str("-v"))) {
-            args->verbose = pfstest_true;
-            args->xml = pfstest_false;
-        } else if (str_is_pg_str(arg, pfstest_pg_str("-x"))) {
-            args->xml = pfstest_true;
-            args->verbose = pfstest_false;
-        } else if (str_is_pg_str(arg, pfstest_pg_str("-c"))) {
-            args->color = pfstest_true;
-        } else if (str_is_pg_str(arg, pfstest_pg_str("-r"))) {
-            args->print_register_commands = pfstest_true;
-        } else if (str_is_pg_str(arg, pfstest_pg_str("-f"))) {
-            filter_file = next_arg(&argv);
-            if (filter_file == NULL) return pfstest_false;
-            args->filter_file = filter_file;
-        } else if (str_is_pg_str(arg, pfstest_pg_str("-n"))) {
-            filter_name = next_arg(&argv);
-            if (filter_name == NULL) return pfstest_false;
-            args->filter_name = filter_name;
-            args->verbose = pfstest_true;
-        } else {
-            return pfstest_false;
+            if (is_parse_error(r))
+                return pfstest_false;
+
+            if (is_parse_matched(r)) {
+                argv += args_consumed(r);
+                break;
+            }
         }
+        if (i == num_arg_parsers)
+            /* Flag didn't match any parser */
+            return pfstest_false;
     }
+
+    sanitize_args(args);
 
     return pfstest_true;
 }

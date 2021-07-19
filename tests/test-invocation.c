@@ -142,10 +142,10 @@ test(x_flag_should_reset_v_flag)
     pfstest_arguments_parse(&args, argc, argv);
 
     assert_true("-x flag is parsed", args.xml);
-    assert_false("-v flag has ben reset", args.verbose);
+    assert_false("-v flag has been reset", args.verbose);
 }
 
-test(v_flag_should_reset_x_flag)
+test(x_flag_should_nullify_v_flag)
 {
     char *argv[4];
     int argc = sizeof(argv)/sizeof(argv[0]);
@@ -159,8 +159,8 @@ test(v_flag_should_reset_x_flag)
 
     pfstest_arguments_parse(&args, argc, argv);
 
-    assert_true("-v flag is parsed", args.verbose);
-    assert_false("-x flag has ben reset", args.xml);
+    assert_true("-x flag is parsed", args.xml);
+    assert_false("-v flag has been reset", args.verbose);
 }
 
 test(should_parse_r_flag)
