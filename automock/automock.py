@@ -305,12 +305,11 @@ class MockGenerator:
     def arg_hints(self, typedefs, params):
         hints = []
         for param in params:
-            paramtype = param.type
-            typedef = self.find_typedef(typedefs, paramtype)
-            if typedef:
-                hints.append(self.select_arg_hint(typedef))
-            else:
-                hints.append(self.select_arg_hint(paramtype))
+            typedef = self.find_typedef(typedefs, param.type)
+            type = typedef or param.type
+            hints.append(self.select_arg_hint(type))
+        if ArgHint.VOID in hints:
+            return []
         return hints
 
     def select_arg_hint(self, paramtype):
@@ -318,7 +317,7 @@ class MockGenerator:
             basetype = paramtype.type
             if isinstance(basetype, IdentifierType):
                 if basetype.names == ['void']:
-                    return None
+                    return ArgHint.VOID
                 else:
                     return ArgHint.BLOB
             elif isinstance(basetype, Struct):
@@ -333,13 +332,11 @@ class MockGenerator:
 
     def set_param_names(self, params, names, hints):
         for (param, name, hint) in zip(params, names, hints):
-            if hint != None:    # Don't set a name for (void)
-                self.set_declname(param, name)
+            self.set_declname(param, name)
 
     def make_args_info(self, names, hints):
         return [ArgInfo(name, hint)
-                for (name, hint) in zip(names, hints)
-                if hint != None] # Don't make ArgInfo for (void)
+                for (name, hint) in zip(names, hints)]
 
 def enum(name, fields):
     class EnumValue:
@@ -359,7 +356,7 @@ MockInfo = namedtuple('MockInfo',
 ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
 
 ArgInfo = namedtuple('ArgInfo', 'name hint')
-ArgHint = enum('ArgHint', 'POINTER BLOB')
+ArgHint = enum('ArgHint', 'VOID POINTER BLOB')
 
 def report_parse_error(file, progpath, ex):
     BOLD_RED = combine_ansi_formats(ANSI_RED, ANSI_BOLD)
