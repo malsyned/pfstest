@@ -361,12 +361,27 @@ ReturnHint = enum('ReturnHint', 'VOID PRIMITIVE POINTER BLOB')
 ArgInfo = namedtuple('ArgInfo', 'name hint')
 ArgHint = enum('ArgHint', 'POINTER BLOB')
 
-def describe_parse_error(ex):
-    return 'parse error: %s' % ex
-
 def report_parse_error(file, progpath, ex):
+    BOLD_RED = combine_ansi_formats(ANSI_RED, ANSI_BOLD)
     progname, ext = path.splitext(path.basename(progpath))
-    file.write('%s: %s\n' % (progname, describe_parse_error(ex)))
+    ansi_format_on_terminal(file, ANSI_BOLD, progname + ':')
+    file.write(' ')
+    ansi_format_on_terminal(file, BOLD_RED, 'parse error:')
+    file.write(' %s\n' % ex)
+
+def ansi_format_on_terminal(file, color_code, s):
+    if file.isatty():
+        s = ansi_format(color_code, s)
+    file.write(s)
+
+def ansi_format(color_code, s):
+    return '\033[%sm%s\033[m' % (color_code, s)
+
+def combine_ansi_formats(*codes):
+    return ';'.join(codes)
+
+ANSI_BOLD = '1'
+ANSI_RED = '31'
 
 from argparse import ArgumentParser
 
