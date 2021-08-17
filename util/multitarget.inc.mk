@@ -115,10 +115,10 @@ target-d = $(call targets-files,$1,.d)
 
 makefile-list = $(filter-out $(call target-d,$(TARGETS)),$(MAKEFILE_LIST))
 
-# $(call class-includes,class)
-class-includes =                                                        \
-    $(addprefix -I,$(sort $(dir $(call targets-src,                     \
-                                       $(call targets-in-class,$1)))))
+class-includes =                                                          \
+    $(addprefix -I,                                                       \
+      $(patsubst %/,%,                                                    \
+        $(sort $(dir $(call targets-src,$(call targets-in-class,$1))))))
 
 # $(call target-bin-name,target)
 target-bin-name = $(subst %,$1,$(BIN_PATTERN))
