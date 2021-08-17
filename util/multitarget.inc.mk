@@ -182,6 +182,7 @@ all-templates =         \
 # NOTE: Plugins should append to clean-files, not to clean-dirs,
 #       clean-files-minimal, or clean-dirs-minimal
 clean-files = $(call targets-bin-names,$(TARGETS)) \
+              $(addsuffix .exe, $(call targets-bin-names,$(TARGETS))) \
               $(call target-obj,$(TARGETS)) \
               $(call target-i,$(TARGETS)) \
               $(call target-d,$(TARGETS))
