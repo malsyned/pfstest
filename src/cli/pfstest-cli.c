@@ -165,9 +165,9 @@ static void sanitize_args(pfstest_arguments_t *args)
         args->verbose = pfstest_false;
 }
 
-static pfstest_bool progname_valid(int argc, char *argv[])
+static pfstest_bool argv_empty(char *argv[])
 {
-    return (argc > 0 && argv[0]);
+    return !argv[0];
 }
 
 /** Parse a flag that takes no arguments */
@@ -251,11 +251,12 @@ pfstest_bool pfstest_arguments_parse(pfstest_arguments_t *args,
     arg_parser p;
     size_t i;
     int r;
+    (void)argc;
 
     reset_args(args);
 
-    if (!progname_valid(argc, argv))
-        return pfstest_false;
+    if (argv_empty(argv))
+        return pfstest_true;
     args->program_name = *argv++;
 
     while (*argv) {

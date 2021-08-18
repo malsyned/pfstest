@@ -42,13 +42,12 @@ test(should_return_true_for_good_arg_lists)
                 pfstest_arguments_parse(&args, argc, argv));
 }
 
-
-test(should_fail_to_parse_0_length_arg_list)
+test(should_accept_0_length_arg_list)
 {
     char *argv[] = {NULL};
     int argc = sizeof(argv)/sizeof(argv[0]);
     
-    assert_false("Zero length argument lists are rejected",
+    assert_true("Zero length argument lists are accepted",
                  pfstest_arguments_parse(&args, argc, argv));
 }
 
