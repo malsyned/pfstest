@@ -76,7 +76,7 @@ void pfstest_print_register_commands(int (*char_writer)(int),
 void pfstest_print_usage(int (*char_writer)(int), char *program_name)
 {
     print_pg_str(char_writer, pfstest_pg_str("usage: "));
-    if (program_name != NULL) {
+    if (program_name != NULL && program_name[0] != '\0') {
         print_string(char_writer, program_name);
         print_pg_str(char_writer, pfstest_pg_str(" "));
     }

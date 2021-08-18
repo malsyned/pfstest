@@ -335,3 +335,16 @@ test(print_usage_should_cope_with_null_program_name)
                 the_string(captured_output),
                 matches_the_pg_string(expected));
 }
+
+test(print_usage_should_cope_with_empty_program_name)
+{
+    const pfstest_pg_ptr char *expected = pfstest_pg_str(
+        "usage: [-r] [-v|-x] [-c] [-f source-file] [-n test-name]\n");
+
+    char program_name[] = "";
+    pfstest_print_usage(capture_output_char, program_name);
+
+    assert_that("Usage message is printed with empty program name",
+                the_string(captured_output),
+                matches_the_pg_string(expected));
+}
