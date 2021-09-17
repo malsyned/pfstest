@@ -231,11 +231,12 @@ pfstest_matcher_t *pfstest_close_to_double(double n, double tolerance)
 static pfstest_bool doubles_equal(double a, double b)
 {
 #ifdef __GNUC__
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
     return a == b;
 #ifdef __GNUC__
-#pragma GCC diagnostic error "-Wfloat-equal"
+#pragma GCC diagnostic pop
 #endif
 }
 
