@@ -47,10 +47,17 @@ test(close_to_float_should_always_printf_positive_tolerance)
                 the_string(captured_output), matches_the_pg_string(expected));
 }
 
+/* Windows printf is non-conforming and writes minimum 3 digits in exponent */
+#if defined(_WIN32)
+#define W32_HACK "0"
+#else
+#define W32_HACK
+#endif
+
 test(nearly_float_should_printf_itself)
 {
     const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("a float within 1e-06 of 1.23457");
+        pfstest_pg_str("a float within 1e-" W32_HACK "06 of 1.23457");
 
     pfstest_matcher_print(nearly_float(1.23456789f), message_spy);
 
@@ -94,7 +101,7 @@ test(close_to_double_should_always_printf_positive_tolerance)
 test(nearly_double_should_printf_itself)
 {
     const pfstest_pg_ptr char *expected =
-        pfstest_pg_str("a double within 1e-12 of 1.23457");
+        pfstest_pg_str("a double within 1e-" W32_HACK "12 of 1.23457");
 
     pfstest_matcher_print(nearly_double(1.23456789f), message_spy);
 
