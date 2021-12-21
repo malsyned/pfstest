@@ -59,6 +59,9 @@ pfstest_value_t *pfstest_the_memory(const void *m, size_t size);
 /** Box an int[] */
 pfstest_value_t *pfstest_the_int_array(const int *a, size_t length);
 
+/** Box an unsigned int[] */
+pfstest_value_t *pfstest_the_uint_array(const unsigned int *a, size_t length);
+
 /** Wrap unsigned primitive integers to cause them to be printed in
  * hexadecimal in failure messages.
  *
@@ -131,6 +134,10 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value);
 /** @nonamespace_alias{PFSTEST_NOALIAS_the_int_array} */
 # define the_int_array pfstest_the_int_array
 #endif
+#ifndef PFSTEST_NOALIAS_the_uint_array
+/** @nonamespace_alias{PFSTEST_NOALIAS_the_uint_array} */
+# define the_uint_array pfstest_the_uint_array
+#endif
 
 #ifndef PFSTEST_NOALIAS_as_hex
 /** @nonamespace_alias{PFSTEST_NOALIAS_as_hex} */
@@ -148,6 +155,9 @@ pfstest_value_t *pfstest_the_u16(uint16_t n);
 pfstest_value_t *pfstest_the_u32(uint32_t n);
 /** Box a uint64_t */
 pfstest_value_t *pfstest_the_u64(uint64_t n);
+
+/** Box a uint16_t[] */
+pfstest_value_t *pfstest_the_u16_array(const uint16_t *a, size_t length);
 
 /** @nonamespace_section */
 /** @{ */
@@ -170,6 +180,10 @@ pfstest_value_t *pfstest_the_u64(uint64_t n);
 #endif
 #endif  /* defined(PFSTEST_HAS_STDINT) */
 
+#ifndef PFSTEST_NOALIAS_the_u16_array
+/** @nonamespace_alias{PFSTEST_NOALIAS_the_u16_array} */
+# define the_u16_array pfstest_the_u16_array
+#endif
 /** @} */
 
 #endif /* !PFSTEST_VALUES_H */

@@ -14,8 +14,8 @@
 struct unsigned_aux
 {
     unsigned int base;
-    pfstest_bool known_width;
-    int zpad;
+    unsigned int known_width;
+    unsigned int zpad;
     const pfstest_pg_ptr char *prefix;
 };
 
@@ -23,7 +23,7 @@ static struct unsigned_aux *default_unsigned_aux(void)
 {
     struct unsigned_aux *aux = pfstest_alloc(sizeof(*aux));
     aux->base = 10;
-    aux->known_width = pfstest_false;
+    aux->known_width = 0;
     aux->zpad = 0;
     aux->prefix = pfstest_pg_str("");
 
@@ -46,7 +46,7 @@ pfstest_value_t *pfstest_as_hex(pfstest_value_t *value)
     aux->base = 16;
     aux->prefix = pfstest_pg_str("0x");
     if (aux->known_width)
-        aux->zpad = (int)pfstest_value_size(value) * HEX_CHARS_PER_BYTE;
+        aux->zpad = aux->known_width * HEX_CHARS_PER_BYTE;
     return value;
 }
 
@@ -319,6 +319,26 @@ static void the_int_array_printer(pfstest_value_t *value,
     pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(" }"));
 }
 
+static void the_uint_array_printer(pfstest_value_t *value,
+                                   pfstest_reporter_t *reporter)
+{
+    const unsigned int *data = (const unsigned int *)pfstest_value_data(value);
+    size_t length = pfstest_value_size(value) / sizeof(data[0]);
+    size_t i;
+
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("{ "));
+
+    for (i = 0; i < length; i++) {
+        pfstest_value_t *elem_as_value = pfstest_the_uint(data[i]);
+        elem_as_value->aux = value->aux;
+        pfstest_value_print(elem_as_value, reporter);
+        if (i < length - 1)
+            pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(", "));
+    }
+
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(" }"));
+}
+
 pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
 {
     size_t size = length * sizeof(*a);
@@ -326,21 +346,29 @@ pfstest_value_t *pfstest_the_int_array(const int *a, size_t length)
     return pfstest_value_new(the_int_array_printer, data, size, NULL);
 }
 
+pfstest_value_t *pfstest_the_uint_array(const unsigned int *a, size_t length)
+{
+    size_t size = length * sizeof(*a);
+    void *data = alloc_copy(a, size);
+    return pfstest_value_new(the_uint_array_printer, data, size,
+                             default_unsigned_aux());
+}
+
 #ifdef PFSTEST_HAS_STDINT
 
 /* stdint templates */
 
-static struct unsigned_aux *known_width_unsigned_aux(void)
+static struct unsigned_aux *known_width_unsigned_aux(unsigned int width)
 {
     struct unsigned_aux *aux = default_unsigned_aux();
-    aux->known_width = pfstest_true;
+    aux->known_width = width;
     return aux;
 }
 
-#define unsigned_stdint_value_define(name, type, str)       \
-    unsigned_printer_define(printer_name(name), type, str); \
-    primitive_value_define(name, type, printer_name(name),  \
-                           known_width_unsigned_aux())
+#define unsigned_stdint_value_define(name, type, str)               \
+    unsigned_printer_define(printer_name(name), type, str);         \
+    primitive_value_define(name, type, printer_name(name),          \
+                           known_width_unsigned_aux(sizeof(type)))
 
 /* stdint values */
 
@@ -348,5 +376,33 @@ unsigned_stdint_value_define(pfstest_the_u8, uint8_t, "the uint8_t");
 unsigned_stdint_value_define(pfstest_the_u16, uint16_t, "the uint16_t");
 unsigned_stdint_value_define(pfstest_the_u32, uint32_t, "the uint32_t");
 unsigned_stdint_value_define(pfstest_the_u64, uint64_t, "the uint64_t");
+
+static void the_u16_array_printer(pfstest_value_t *value,
+                                  pfstest_reporter_t *reporter)
+{
+    const uint16_t *data = (const uint16_t *)pfstest_value_data(value);
+    size_t length = pfstest_value_size(value) / sizeof(data[0]);
+    size_t i;
+
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str("{ "));
+
+    for (i = 0; i < length; i++) {
+        pfstest_value_t *elem_as_value = pfstest_the_u16(data[i]);
+        elem_as_value->aux = value->aux;
+        pfstest_value_print(elem_as_value, reporter);
+        if (i < length - 1)
+            pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(", "));
+    }
+
+    pfstest_reporter_print_pg_str(reporter, pfstest_pg_str(" }"));
+}
+
+pfstest_value_t *pfstest_the_u16_array(const uint16_t *a, size_t length)
+{
+    size_t size = length * sizeof(*a);
+    void *data = alloc_copy(a, size);
+    return pfstest_value_new(the_u16_array_printer, data, size,
+                             known_width_unsigned_aux(sizeof *a));
+}
 
 #endif  /* defined(PFSTEST_HAS_STDINT) */

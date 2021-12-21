@@ -97,10 +97,10 @@ static char digit_char(unsigned int digit)
 
 void pfstest_reporter_print_uint(pfstest_reporter_t *reporter,
                                  pfstest_uintmax_t n,
-                                 unsigned int base, int zpad)
+                                 unsigned int base, unsigned int zpad)
 {
     pfstest_uintmax_t d = 1;
-    int digits = 1;
+    unsigned int digits = 1;
 
     while (n / d > (base - 1)) {
         d *= base;

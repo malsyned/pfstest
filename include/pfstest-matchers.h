@@ -38,6 +38,10 @@ pfstest_matcher_t *pfstest_matches_the_pg_string(
  * with a matcher from the NULL-terminated argument list */
 pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first, ...);
 
+/** Test each member of an @c unsigned @c int array as boxed by #the_uint_array
+ * with a matcher from the NULL-terminated argument list */
+pfstest_matcher_t *pfstest_uint_members_match(pfstest_matcher_t *first, ...);
+
 /** This matcher matches any value (useful for disregarding arguments
  * in mocks.) */
 pfstest_matcher_t *pfstest_anything(void);
@@ -63,6 +67,10 @@ pfstest_matcher_t *pfstest_anything(void);
 #ifndef PFSTEST_NOALIAS_int_members_match
 /** @nonamespace_alias{PFSTEST_NOALIAS_int_members_match} */
 # define int_members_match pfstest_int_members_match
+#endif
+#ifndef PFSTEST_NOALIAS_uint_members_match
+/** @nonamespace_alias{PFSTEST_NOALIAS_uint_members_match} */
+# define uint_members_match pfstest_uint_members_match
 #endif
 #ifndef PFSTEST_NOALIAS_anything
 /** @nonamespace_alias{PFSTEST_NOALIAS_anything} */

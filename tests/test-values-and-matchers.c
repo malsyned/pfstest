@@ -768,6 +768,33 @@ test(the_int_array_should_print_itself)
                 the_string(captured_output), matches_the_pg_string(expected));
 }
 
+test(the_uint_array_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the uint 1, the uint 3, the uint 65535, the uint 4 }");
+    unsigned int actual[] = {1, 3, 65535, 4};
+
+    pfstest_value_print(
+        the_uint_array(actual, sizeof(actual)/sizeof(actual[0])), message_spy);
+
+    assert_that("the_uint_array prints itself",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(should_print_hex_uint_arrays)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the uint 0x1, the uint 0x3, the uint 0xffff, the uint 0x4 }");
+    unsigned int actual[] = {1, 3, 65535, 4};
+
+    pfstest_value_print(
+        as_hex(the_uint_array(actual, sizeof(actual)/sizeof(actual[0]))),
+        message_spy);
+
+    assert_that("uint arrays print themselves as hex",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
 test(int_members_match_should_print_itself)
 {
     const pfstest_pg_ptr char *expected =
@@ -810,6 +837,47 @@ test(int_members_match_should_fail_nonmatching_array)
                                        equal_to(the_int(-5)),
                                        NULL),
                      the_int_array(actual, sizeof(actual)/sizeof(actual[0]))));
+}
+
+test(uint_members_match_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the uint 1, the uint 3, the uint 65535 }");
+
+    pfstest_matcher_print(uint_members_match(equal_to(the_uint(1)),
+                                             equal_to(the_uint(3)),
+                                             equal_to(the_uint(65535)),
+                                             NULL),
+                          message_spy);
+
+    assert_that("uint_members_match prints its member matchers",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(uint_members_match_should_pass_matching_int_array)
+{
+    unsigned int actual[] = {1, 3, UINT_MAX};
+
+    assert_true("Matcher arrays match against elements of integer array",
+                pfstest_matcher_matches(
+                    uint_members_match(equal_to(the_uint(1)),
+                                       equal_to(the_uint(3)),
+                                       equal_to(the_uint(UINT_MAX)),
+                                       NULL),
+                    the_uint_array(actual, sizeof(actual)/sizeof(actual[0]))));
+}
+
+test(uint_members_match_should_fail_nonmatching_array)
+{
+    unsigned int actual[] = {1, 3, UINT_MAX};
+
+    assert_false("Non-matching integer arrays fail",
+                 pfstest_matcher_matches(
+                     uint_members_match(equal_to(the_uint(1)),
+                                        equal_to(the_uint(3)),
+                                        equal_to(the_uint(UINT_MAX - 1)),
+                                        NULL),
+                     the_uint_array(actual, sizeof(actual)/sizeof(actual[0]))));
 }
 
 #ifdef PFSTEST_HAS_STDINT
@@ -961,6 +1029,33 @@ test(unequal_u64s_should_not_match)
     assert_false("equal u64s match",
                  pfstest_matcher_matches(equal_to(the_u64(UINT64_MAX)),
                                          the_u64(UINT64_MAX - 1)));
+}
+
+test(the_u16_array_should_print_itself)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the uint16_t 1, the uint16_t 3, the uint16_t 65535, the uint16_t 4 }");
+    uint16_t actual[] = {1, 3, 65535, 4};
+
+    pfstest_value_print(
+        the_u16_array(actual, sizeof(actual)/sizeof(actual[0])), message_spy);
+
+    assert_that("the_u16_array prints itself",
+                the_string(captured_output), matches_the_pg_string(expected));
+}
+
+test(should_print_hex_u16_arrays)
+{
+    const pfstest_pg_ptr char *expected =
+        pfstest_pg_str("{ the uint16_t 0x0001, the uint16_t 0x0003, the uint16_t 0xffff, the uint16_t 0x0004 }");
+    uint16_t actual[] = {1, 3, 65535, 4};
+
+    pfstest_value_print(
+        as_hex(the_u16_array(actual, sizeof(actual)/sizeof(actual[0]))),
+        message_spy);
+
+    assert_that("u16 arrays print themselves as hex",
+                the_string(captured_output), matches_the_pg_string(expected));
 }
 
 #endif /* defined(PFSTEST_HAS_STDINT) */

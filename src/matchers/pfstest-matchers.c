@@ -168,8 +168,8 @@ struct submatcher
     pfstest_matcher_t *matcher;
 };
 
-static void int_members_match_printer(pfstest_matcher_t *matcher,
-                                      pfstest_reporter_t *reporter)
+static void members_match_printer(pfstest_matcher_t *matcher,
+                                  pfstest_reporter_t *reporter)
 {
     pfstest_list_t *submatchers = pfstest_matcher_data(matcher);
     struct submatcher *submatcher;
@@ -270,5 +270,28 @@ pfstest_matcher_t *pfstest_int_members_match(pfstest_matcher_t *first,...)
     va_end(ap);
 
     return pfstest_matcher_new(
-        int_members_match_printer, int_members_match_test, submatchers);
+        members_match_printer, int_members_match_test, submatchers);
+}
+
+/* uint_members_match */
+
+primitive_array_boxer_define(box_uint_members, unsigned int, the_uint);
+
+static pfstest_bool uint_members_match_test(pfstest_matcher_t *matcher,
+                                            pfstest_value_t *actual_value)
+{
+    return members_match_test(matcher, actual_value, box_uint_members);
+}
+
+pfstest_matcher_t *pfstest_uint_members_match(pfstest_matcher_t *first,...)
+{
+    va_list ap;
+    pfstest_list_t *submatchers;
+
+    va_start(ap, first);
+    submatchers = package_all_matcher_args(first, ap);
+    va_end(ap);
+
+    return pfstest_matcher_new(
+        members_match_printer, uint_members_match_test, submatchers);
 }
