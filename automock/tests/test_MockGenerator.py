@@ -192,6 +192,25 @@ class MockGeneratorTests(TestCase):
                                                         ArgHint.POINTER)])
                          ])
 
+    def test_shouldHandleArrayParam(self):
+        # Given
+        mgen = MockGenerator(self.mpaths, cgen,
+                             cparser.parse("void func1(char foo[]);",
+                                           defaulthname))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = \
+                                   "void func1(char __pfstest_arg_0[])",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [ArgInfo("__pfstest_arg_0",
+                                                        ArgHint.POINTER)])
+                         ])
+
     def test_shouldHandleStructParam(self):
         # Given
         mgen = MockGenerator(self.mpaths, cgen,

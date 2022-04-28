@@ -329,6 +329,8 @@ class MockGenerator:
                 raise Exception("Couldn't match param type to hint")
         elif isinstance(paramtype, PtrDecl):
             return ArgHint.POINTER
+        elif isinstance(paramtype, ArrayDecl):
+            return ArgHint.POINTER
 
     def set_param_names(self, params, names, hints):
         for (param, name, hint) in zip(params, names, hints):
