@@ -11,6 +11,7 @@ GCC_AUTOMOCK_FLAGS = -t __builtin_va_list \
                     -f __inline \
                     -f __inline__ \
                     -q __const \
-                    -q __restrict
+                    -q __restrict \
+                    -q __restrict__
 
 AVR_GCC_AUTOMOCK_FLAGS = $(GCC_AUTOMOCK_FLAGS) -q __flash
