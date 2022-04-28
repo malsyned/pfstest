@@ -6,6 +6,7 @@ GCC_AUTOMOCK_CPPFLAGS = -D"__attribute__(x)=" \
                         -D"__volatile__(x)="
 
 GCC_AUTOMOCK_FLAGS = -t __builtin_va_list \
+                    -t _Float128 \
                     -t __float128 \
                     -f __inline \
                     -f __inline__ \
