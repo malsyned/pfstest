@@ -227,7 +227,10 @@ class MockGenerator:
 
     def function_is_variadic(self, funcdecl):
         return any(isinstance(param, EllipsisParam)
-                   for param in funcdecl.args.params)
+                   for param in self.funcdecl_params(funcdecl))
+
+    def funcdecl_params(self, funcdecl):
+        return funcdecl.args.params if funcdecl.args else []
 
     def extract_funcname(self, funcdecl):
         return self.extract_typedecl(funcdecl).declname
@@ -245,7 +248,7 @@ class MockGenerator:
             return_hint = self.select_return_hint(returntype)
         returntextnode = self.make_return_text_node(returntype)
 
-        params = funcdecl.args.params
+        params = self.funcdecl_params(funcdecl)
         arg_names = self.arg_names(params)
         arg_hints = self.arg_hints(typedefs, params)
         self.set_param_names(params, arg_names, arg_hints)

@@ -173,6 +173,23 @@ class MockGeneratorTests(TestCase):
                                                         ArgHint.BLOB)])
                          ])
 
+    def test_shouldHandleEmptyParams(self):
+        # Given
+        mgen = MockGenerator(self.mpaths, cgen,
+                             cparser.parse("void func1();",
+                                           defaulthname))
+        # When
+        mocks = mgen.mocks
+        # Then
+        self.assertEqual(mocks,
+                         [MockInfo(mockname = "mock_func1",
+                                   funcname = "func1",
+                                   prototype = "void func1()",
+                                   return_text = "void",
+                                   return_hint = ReturnHint.VOID,
+                                   args_info = [])
+                         ])
+
     def test_shouldHandlePointerParam(self):
         # Given
         mgen = MockGenerator(self.mpaths, cgen,
