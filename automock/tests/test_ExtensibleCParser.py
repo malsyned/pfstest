@@ -13,7 +13,7 @@ from extensiblecparser import ExtensibleCParser
 cparser = ExtensibleCParser(storage_class_specifiers=['overlay'],
                             type_qualifiers=['near','far'],
                             type_specifiers=['_Float32'],
-                            function_specifiers=['__inline', '_Noreturn'],
+                            function_specifiers=['__inline'],
 
                             lex_optimize = False,
                             yacc_optimize = False)
@@ -34,13 +34,13 @@ class ExtensibleCParserTests(TestCase):
         ast = cparser.parse('void foo(overlay char a);')
 
         self.assertASTShows(ast, """FileAST:
-  Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=[]
+  Decl <ext[0]>: name=foo, quals=[], align=[], storage=[], funcspec=[]
     FuncDecl <type>:
       ParamList <args>:
-        Decl <params[0]>: name=a, quals=[], storage=['overlay'], funcspec=[]
-          TypeDecl <type>: declname=a, quals=[]
+        Decl <params[0]>: name=a, quals=[], align=[], storage=['overlay'], funcspec=[]
+          TypeDecl <type>: declname=a, quals=[], align=None
             IdentifierType <type>: names=['char']
-      TypeDecl <type>: declname=foo, quals=[]
+      TypeDecl <type>: declname=foo, quals=[], align=None
         IdentifierType <type>: names=['void']
 """)
 
@@ -49,18 +49,18 @@ class ExtensibleCParserTests(TestCase):
         ast = cparser.parse('void foo(near char *a, far int *b);')
 
         self.assertASTShows(ast, """FileAST:
-  Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=[]
+  Decl <ext[0]>: name=foo, quals=[], align=[], storage=[], funcspec=[]
     FuncDecl <type>:
       ParamList <args>:
-        Decl <params[0]>: name=a, quals=['near'], storage=[], funcspec=[]
+        Decl <params[0]>: name=a, quals=['near'], align=[], storage=[], funcspec=[]
           PtrDecl <type>: quals=[]
-            TypeDecl <type>: declname=a, quals=['near']
+            TypeDecl <type>: declname=a, quals=['near'], align=None
               IdentifierType <type>: names=['char']
-        Decl <params[1]>: name=b, quals=['far'], storage=[], funcspec=[]
+        Decl <params[1]>: name=b, quals=['far'], align=[], storage=[], funcspec=[]
           PtrDecl <type>: quals=[]
-            TypeDecl <type>: declname=b, quals=['far']
+            TypeDecl <type>: declname=b, quals=['far'], align=None
               IdentifierType <type>: names=['int']
-      TypeDecl <type>: declname=foo, quals=[]
+      TypeDecl <type>: declname=foo, quals=[], align=None
         IdentifierType <type>: names=['void']
 """)
 
@@ -69,8 +69,8 @@ class ExtensibleCParserTests(TestCase):
             '_Complex _Float32 cacosf32;')
 
         self.assertASTShows(ast, """FileAST:
-  Decl <ext[0]>: name=cacosf32, quals=[], storage=[], funcspec=[]
-    TypeDecl <type>: declname=cacosf32, quals=[]
+  Decl <ext[0]>: name=cacosf32, quals=[], align=[], storage=[], funcspec=[]
+    TypeDecl <type>: declname=cacosf32, quals=[], align=None
       IdentifierType <type>: names=['_Complex', '_Float32']
 """)
 
@@ -79,13 +79,13 @@ class ExtensibleCParserTests(TestCase):
         ast = cparser.parse('_Noreturn void foo(void);')
 
         self.assertASTShows(ast, """FileAST:
-  Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=['_Noreturn']
+  Decl <ext[0]>: name=foo, quals=[], align=[], storage=[], funcspec=['_Noreturn']
     FuncDecl <type>:
       ParamList <args>:
-        Typename <params[0]>: name=None, quals=[]
-          TypeDecl <type>: declname=None, quals=[]
+        Typename <params[0]>: name=None, quals=[], align=None
+          TypeDecl <type>: declname=None, quals=[], align=None
             IdentifierType <type>: names=['void']
-      TypeDecl <type>: declname=foo, quals=[]
+      TypeDecl <type>: declname=foo, quals=[], align=None
         IdentifierType <type>: names=['void']
 """)
 

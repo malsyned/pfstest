@@ -294,6 +294,7 @@ class MockGenerator:
     def make_return_text_node(self, returntype):
         returntextnode = Typename(name=None,
                                   quals=[],
+                                  align=None,
                                   type=copy.deepcopy(returntype))
         self.set_declname(returntextnode, None)
         return returntextnode
