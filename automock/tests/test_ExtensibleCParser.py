@@ -3,6 +3,7 @@
 from unittest import TestCase
 
 from compat import StringIO
+import re
 
 from extensiblecparser import ExtensibleCParser
 
@@ -17,20 +18,25 @@ cparser = ExtensibleCParser(storage_class_specifiers=['overlay'],
                             lex_optimize = False,
                             yacc_optimize = False)
 
+def trim_trailing_whitespace(s: str) -> str:
+  return re.sub(' +\n', '\n', s)
+
 class ExtensibleCParserTests(TestCase):
     def assertASTShows(self, ast, string):
         showbuf = StringIO()
         ast.show(buf=showbuf, nodenames=True, attrnames=True)
-        self.assertEqual(showbuf.getvalue(), string)
+        actual = trim_trailing_whitespace(showbuf.getvalue())
+        expected = trim_trailing_whitespace(string)
+        self.assertEqual(actual, expected)
 
     def test_shouldAcceptNewStorageClassSpecifiers(self):
         # such as: auto, register, static, extern
         ast = cparser.parse('void foo(overlay char a);')
 
-        self.assertASTShows(ast, """FileAST: 
+        self.assertASTShows(ast, """FileAST:
   Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=[]
-    FuncDecl <type>: 
-      ParamList <args>: 
+    FuncDecl <type>:
+      ParamList <args>:
         Decl <params[0]>: name=a, quals=[], storage=['overlay'], funcspec=[]
           TypeDecl <type>: declname=a, quals=[]
             IdentifierType <type>: names=['char']
@@ -42,10 +48,10 @@ class ExtensibleCParserTests(TestCase):
         # such as: const, volatile, restrict
         ast = cparser.parse('void foo(near char *a, far int *b);')
 
-        self.assertASTShows(ast, """FileAST: 
+        self.assertASTShows(ast, """FileAST:
   Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=[]
-    FuncDecl <type>: 
-      ParamList <args>: 
+    FuncDecl <type>:
+      ParamList <args>:
         Decl <params[0]>: name=a, quals=['near'], storage=[], funcspec=[]
           PtrDecl <type>: quals=[]
             TypeDecl <type>: declname=a, quals=['near']
@@ -62,7 +68,7 @@ class ExtensibleCParserTests(TestCase):
         ast = cparser.parse(
             '_Complex _Float32 cacosf32;')
 
-        self.assertASTShows(ast, """FileAST: 
+        self.assertASTShows(ast, """FileAST:
   Decl <ext[0]>: name=cacosf32, quals=[], storage=[], funcspec=[]
     TypeDecl <type>: declname=cacosf32, quals=[]
       IdentifierType <type>: names=['_Complex', '_Float32']
@@ -72,10 +78,10 @@ class ExtensibleCParserTests(TestCase):
         # such as: inline
         ast = cparser.parse('_Noreturn void foo(void);')
 
-        self.assertASTShows(ast, """FileAST: 
+        self.assertASTShows(ast, """FileAST:
   Decl <ext[0]>: name=foo, quals=[], storage=[], funcspec=['_Noreturn']
-    FuncDecl <type>: 
-      ParamList <args>: 
+    FuncDecl <type>:
+      ParamList <args>:
         Typename <params[0]>: name=None, quals=[]
           TypeDecl <type>: declname=None, quals=[]
             IdentifierType <type>: names=['void']
